@@ -1,4 +1,4 @@
-﻿namespace Obli.Exceptions.DateRangeExceptions;
+﻿namespace DepoQuick.Domain.Exceptions.DateRangeExceptions;
 
 public class InvalidDateRangeException : Exception
 {

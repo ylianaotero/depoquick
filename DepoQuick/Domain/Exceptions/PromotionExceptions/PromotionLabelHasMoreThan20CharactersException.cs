@@ -1,4 +1,4 @@
-﻿namespace Obli.Exceptions.PromotionExceptions;
+﻿namespace DepoQuick.Domain.Exceptions.PromotionExceptions;
 
 public class PromotionLabelHasMoreThan20CharactersException : Exception
 {

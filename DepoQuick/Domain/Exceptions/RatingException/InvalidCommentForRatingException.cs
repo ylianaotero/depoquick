@@ -1,4 +1,4 @@
-﻿namespace Obli.Exceptions.RatingException;
+﻿namespace DepoQuick.Domain.Exceptions.RatingException;
 
 public class InvalidCommentForRatingException : Exception
 {

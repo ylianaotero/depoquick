@@ -1,4 +1,4 @@
-﻿namespace Obli.Exceptions.DepositExceptions;
+﻿namespace DepoQuick.Domain.Exceptions.DepositExceptions;
 
 public class DepositWithInvalidSizeException : Exception
 {
