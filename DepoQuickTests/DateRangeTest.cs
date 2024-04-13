@@ -51,4 +51,15 @@ public class DateRangeTest
         
     }
     
+    [TestMethod]
+    public void TestNumberOfDays()
+    {
+        DateTime dateFrom = new DateTime(2024, 4, 1).Date;
+        DateTime dateTo = new DateTime(2024,4,5).Date;
+        
+        DateRange date = new DateRange(dateFrom, dateTo);
+        Assert.AreEqual(4,date.numberOfDays());
+        
+    }
+    
 }

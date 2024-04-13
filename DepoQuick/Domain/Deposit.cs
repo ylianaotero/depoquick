@@ -24,7 +24,18 @@ public class Deposit
     private bool _reserved;
     private List<Promotion> _promotions; 
     private List<Rating> _ratings;
-    
+    public Deposit(Char area, String size, bool airConditioning, bool reserved)
+    {
+        if (depositIsValid(area, size))
+        {
+            _area = area;
+            _reserved = reserved;
+            _airConditioning = airConditioning;
+            _size = size;
+            _ratings = new List<Rating>();
+            _promotions = new List<Promotion>(); 
+        }
+    }
     public int Id
     {
         get => _id;
@@ -197,19 +208,6 @@ public class Deposit
     public List<Rating> getRating()
     {
         return _ratings; 
-    }
-
-    public Deposit(Char area, String size, bool airConditioning, bool reserved)
-    {
-        if (depositIsValid(area, size))
-        {
-            _area = area;
-            _reserved = reserved;
-            _airConditioning = airConditioning;
-            _size = size;
-            _ratings = new List<Rating>();
-            _promotions = new List<Promotion>(); 
-        }
     }
 
     private bool depositIsValid(Char area, String size)

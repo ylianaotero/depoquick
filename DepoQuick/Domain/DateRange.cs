@@ -7,6 +7,12 @@ public class DateRange
     private DateTime _initialDate { get; set; }
     private DateTime _finalDate { get; set; }
 
+    public int numberOfDays()
+    {
+        TimeSpan difference = _finalDate - _initialDate;
+        int numberOfDays = difference.Days;
+        return numberOfDays;
+    }
     public DateRange(DateTime initialDate, DateTime finalDate)
     {
         if (datesAreValid(initialDate, finalDate))
