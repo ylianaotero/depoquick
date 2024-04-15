@@ -19,4 +19,8 @@
       <ProjectReference Include="..\DepoQuick\DepoQuick.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+      <Compile Remove="TestTest.cs" />
+    </ItemGroup>
+
 </Project>
