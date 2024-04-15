@@ -18,5 +18,12 @@ public class ClientTests
         Assert.AreEqual(_password, client.GetPassword());
     }
     
+    [TestMethod]
+    public void TestNewClientHasNoReservations()
+    {
+        Client client = new Client(_name, _email, _password);
+        Assert.AreEqual(0, client.GetReservations().Count);
+    }
+    
     
 }
