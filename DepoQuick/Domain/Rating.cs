@@ -9,11 +9,6 @@ public class Rating
     private int _stars;
     private String _comment;
     
-    public int Id
-    {
-        get => _id;
-        set => _id = value;
-    }
     
     public Rating(int stars, String comment)
     {
@@ -33,25 +28,11 @@ public class Rating
     public int Stars
     {
         get => _stars;
-        set
-        {
-            if(starsAreValid(value))
-            {
-                _stars = value; 
-            }
-        }
     }
     
     public String Comment
     {
         get => _comment;
-        set
-        {
-            if(commentIsValid(value))
-            {
-                _comment = value; 
-            }
-        }
     }
 
     private bool commentIsValid(String comment)

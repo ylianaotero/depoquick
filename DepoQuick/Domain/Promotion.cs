@@ -3,7 +3,6 @@
 namespace DepoQuick.Domain;
 public class Promotion
 {
-    private int _id; 
     private String _label;
     private Double _discountRate;
     private DateRange _validityDate;
@@ -13,11 +12,6 @@ public class Promotion
         
     }
     
-    public int Id
-    {
-        get => _id;
-        set => _id = value;
-    }
 
     public String Label
     {
