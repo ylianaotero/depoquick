@@ -9,6 +9,8 @@ public class User
     private string _email;
     private string _password;
     private List<(string, DateTime)> _logs = new();
+    private static int _lastId = 0;
+    private int _id = ++_lastId;
 
 public User(string name, string email, string password)
     {
@@ -92,7 +94,6 @@ public User(string name, string email, string password)
         }
     }
     
-    
     public List<(string, DateTime)> GetLogs()
     {
         return _logs;
@@ -111,5 +112,10 @@ public User(string name, string email, string password)
     public string GetPassword()
     {
         return _password;
+    }
+    
+    public int GetId()
+    {
+        return _id;
     }
 }
