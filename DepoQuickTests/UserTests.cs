@@ -26,6 +26,23 @@ public class UserTests
         Assert.AreEqual(_password, _user.GetPassword());
     }
 
+    [TestMethod]
+    public void TestTwoUsersHaveDifferentIDs()
+    {
+        User user1 = new User(_name, _email, _password);
+        User user2 = new User(_name, _email, _password);
+
+        Assert.AreNotEqual(user1.GetId(), user2.GetId());
+    }
+
+    [TestMethod]
+    public void TestIDIsIncremental()
+    {
+        User user1 = new User(_name, _email, _password);
+        User user2 = new User(_name, _email, _password);
+
+        Assert.IsTrue(user1.GetId() < user2.GetId());
+    }
 
     [TestMethod]
     [ExpectedException(typeof(EmptyUserNameException))]
