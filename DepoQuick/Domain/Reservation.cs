@@ -1,4 +1,6 @@
-﻿namespace DepoQuick.Domain;
+﻿using DepoQuick.Domain.Exceptions.ReservationExceptions;
+
+namespace DepoQuick.Domain;
 
 public class Reservation
 {
@@ -17,20 +19,83 @@ public class Reservation
         _state = 0;
     }
 
-    public Client getClient()
+    public void SetClient(Client expectedClient)
+    {
+        _client = expectedClient;
+    }
+
+    public Client GetClient()
     {
         return _client;
     }
-    
-    public DateRange getDateRange()
+
+    public void SetDeposit(Deposit expectedDeposit)
     {
-        return _date;
+        _deposit = expectedDeposit;
     }
-    
-    public Deposit getDeposit()
+
+    public Deposit GetDeposit()
     {
         return _deposit;
     }
 
+    public void SetMessage(string expectedMessage)
+    {
+        if (MessageIsValid(expectedMessage))
+        {
+            _message = expectedMessage;
+        }
+    }
 
+    private bool MessageIsValid(string expectedMessage)
+    {
+        if (MessageIsEmpty(expectedMessage))
+        {
+            throw new ReservationWithEmptyMessageException("El mensaje no debe ser vacio");
+        }
+        else
+        {
+            if (MessageHasMoreThan300Characters(expectedMessage))
+            {
+                throw new ReservationMessageHasMoreThan300CharactersException("El mensaje no debe tener un largo mayor a 300 caracteres");
+            }
+        }
+
+        return true;
+    }
+
+    private bool MessageHasMoreThan300Characters(string expectedMessage)
+    {
+        return expectedMessage.Length > 300;
+    }
+
+    private bool MessageIsEmpty(string expectedMessage)
+    {
+        return string.IsNullOrWhiteSpace(expectedMessage);
+    }
+
+    public string GetMessage()
+    {
+        return _message;
+    }
+
+    public void SetSate(int expectedState)
+    {
+        _state = expectedState;
+    }
+
+    public int GetSate()
+    {
+        return _state;
+    }
+
+    public void SetDateRange(DateRange newStay)
+    {
+        _date = newStay;
+    }
+
+    public DateRange GetDateRange()
+    {
+        return _date;
+    }
 }
