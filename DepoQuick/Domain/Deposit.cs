@@ -36,11 +36,6 @@ public class Deposit
             _promotions = new List<Promotion>(); 
         }
     }
-    public int Id
-    {
-        get => _id;
-        set => _id = value;
-    }
 
     public int calculatePrice(int numberOfDays)
     {
@@ -179,13 +174,11 @@ public class Deposit
     public bool AirConditioning
     {
         get => _airConditioning;
-        set => _airConditioning = value;
     }
     
     public bool Reserved
     {
         get => _reserved;
-        set => _reserved = value;
     }
     
     public String Size

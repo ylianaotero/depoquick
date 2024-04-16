@@ -8,8 +8,6 @@ public class User
     private string _name;
     private string _email;
     private string _password;
-    private int _id;
-    private static int _lastId = 0;
     private List<(string, DateTime)> _logs = new();
 
 public User(string name, string email, string password)
@@ -21,8 +19,6 @@ public User(string name, string email, string password)
         _name = name;
         _email = email;
         _password = password;
-        _id = ++_lastId;
-        _lastId = _id;
     }
     
     private void ValidateName(string name)
@@ -115,10 +111,5 @@ public User(string name, string email, string password)
     public string GetPassword()
     {
         return _password;
-    }
-    
-    public int GetId()
-    {
-        return _id;
     }
 }

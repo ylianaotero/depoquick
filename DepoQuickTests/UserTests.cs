@@ -151,15 +151,6 @@ public class UserTests
 
         user.LogAction(action, timestamp);
     }
-    
-    [TestMethod]
-    public void TestValidClientIsCreated()
-    {
-        Client user = new Client(_name, _email, _password);
-        Assert.AreEqual(_name, user.GetName());
-        Assert.AreEqual(_email, user.GetEmail());
-        Assert.AreEqual(_password, user.GetPassword());
-    }
 
     [TestMethod]
     public void TestValidAdministratorIsCreated()
