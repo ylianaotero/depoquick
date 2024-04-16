@@ -8,7 +8,9 @@ public class User
     private string _name;
     private string _email;
     private string _password;
-    private List<(string, DateTime)> _logs = new();
+    private List<(string, DateTime)> _logs;
+    private static int _lastId = 0;
+    private int _id;
 
 public User(string name, string email, string password)
     {
@@ -19,6 +21,11 @@ public User(string name, string email, string password)
         _name = name;
         _email = email;
         _password = password;
+
+        _logs = new();
+
+        _id = _lastId + 1;
+        _lastId = _id;
     }
     
     private void ValidateName(string name)
@@ -92,7 +99,6 @@ public User(string name, string email, string password)
         }
     }
     
-    
     public List<(string, DateTime)> GetLogs()
     {
         return _logs;
@@ -111,5 +117,10 @@ public User(string name, string email, string password)
     public string GetPassword()
     {
         return _password;
+    }
+    
+    public int GetId()
+    {
+        return _id;
     }
 }
