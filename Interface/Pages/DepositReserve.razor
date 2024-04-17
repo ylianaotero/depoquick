@@ -172,7 +172,8 @@
   {
     //if (_controller.GetUser().IsAdministrator())
     //{
-      
+    _client = (Client)_controller.GetUser();
+    Reservation newReservation = new Reservation(_deposit,  _client , _date); 
    // }
     
   }
