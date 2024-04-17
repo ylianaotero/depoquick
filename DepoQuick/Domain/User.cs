@@ -15,6 +15,7 @@ public class User
     private string _email;
     private string _password;
     private List<(string, DateTime)> _logs;
+    private bool _isAdministrator; 
     
 public User(string name, string email, string password)
     {
@@ -107,6 +108,17 @@ public User(string name, string email, string password)
     {
         return _logs;
     }
+    
+    public bool IsAdministrator()
+    {
+        return _isAdministrator; 
+    }
+
+    public void SetIsAdministrator(bool isAdministrator)
+    {
+        _isAdministrator = isAdministrator; 
+    }
+
     
     public string GetName()
     {
