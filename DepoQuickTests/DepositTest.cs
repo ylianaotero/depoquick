@@ -365,6 +365,53 @@ public class DepositTest
 
     }
     
+    [TestMethod]
+    public void TestAddIdToAValidDeposit()
+    {
+        char area = 'a';
+        String size = "Mediano";
+        bool airConditioning = true;
+        bool reserved = false;
+        
+        Deposit newDeposit = new Deposit(area, size, airConditioning, reserved);
+
+        int id = 2; 
+
+        newDeposit.SetId(id); 
+        
+        Assert.AreEqual(id, newDeposit.GetId());
+    }
+    
+    [TestMethod]
+    public void TestTwoDepositsHaveDifferentIDs()
+    {
+        char area = 'a';
+        String size = "Mediano";
+        bool airConditioning = true;
+        bool reserved = false;
+        
+        Deposit newDeposit1 = new Deposit(area, size, airConditioning, reserved);
+        Deposit newDeposit2 = new Deposit(area, size, airConditioning, reserved); 
+
+        Assert.AreNotEqual(newDeposit1.GetId(), newDeposit2.GetId());
+    }
+
+    [TestMethod]
+    public void TestIDIsIncremental()
+    {
+        char area = 'a';
+        String size = "Mediano";
+        bool airConditioning = true;
+        bool reserved = false;
+        
+        Deposit newDeposit1 = new Deposit(area, size, airConditioning, reserved);
+        Deposit newDeposit2 = new Deposit(area, size, airConditioning, reserved);
+
+        Assert.IsTrue(newDeposit1.GetId() < newDeposit2.GetId());
+    }
+
+
+    
     
 
 }
