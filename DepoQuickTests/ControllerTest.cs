@@ -66,6 +66,18 @@ public class ControllerTest
         controller.GetDeposit(-34); 
 
     }
-    
-    
+
+    [TestMethod]
+    public void TestLoginUser()
+    {
+        Controller controller = new Controller();
+
+        User user = new User("Juan Perez", "juanperez@gmail.com", "Contrasena#1");
+
+        controller.LoginUser(user);
+        
+        Assert.AreEqual(controller.GetUser(), user);
+    }
+
+
 }

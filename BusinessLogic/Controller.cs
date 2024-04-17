@@ -57,8 +57,14 @@ public class Controller
         return deposit == null; 
     }
 
+    public void LoginUser(User user)
+    {
+        _user = user;
+    }
+    
     public User GetUser()
     {
         return _user; 
     }
+    
 }
