@@ -25,8 +25,8 @@ public class RatingTest
         Rating newRating = new Rating(stars, comment); 
         
         Assert.IsNotNull(newRating);
-        Assert.AreEqual(stars, newRating.Stars);
-        Assert.AreEqual(comment, newRating.Comment);
+        Assert.AreEqual(stars, newRating.GetStars());
+        Assert.AreEqual(comment, newRating.GetComment());
     }
     
     [TestMethod]
@@ -38,8 +38,8 @@ public class RatingTest
         Rating newRating = new Rating(stars, comment); 
         
         Assert.IsNotNull(newRating);
-        Assert.AreEqual(stars, newRating.Stars);
-        Assert.AreEqual(comment, newRating.Comment);
+        Assert.AreEqual(stars, newRating.GetStars());
+        Assert.AreEqual(comment, newRating.GetComment());
     }
     
     [TestMethod]
@@ -74,7 +74,7 @@ public class RatingTest
         
         
         Assert.IsNotNull(newRating);
-        Assert.AreEqual(stars, newRating.Stars);
-        Assert.AreEqual(comment, newRating.Comment);
+        Assert.AreEqual(stars, newRating.GetStars());
+        Assert.AreEqual(comment, newRating.GetComment());
     }
 }

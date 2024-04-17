@@ -4,44 +4,91 @@ namespace DepoQuick.Domain;
 
 public class DateRange
 {
-    private DateTime _initialDate { get; set; }
-    private DateTime _finalDate { get; set; }
-
-    public int numberOfDays()
-    {
-        TimeSpan difference = _finalDate - _initialDate;
-        int numberOfDays = difference.Days;
-        return numberOfDays;
-    }
+    private DateTime _initialDate;
+    private DateTime _finalDate;
+    
     public DateRange(DateTime initialDate, DateTime finalDate)
     {
-        if (datesAreValid(initialDate, finalDate))
+        if (DatesAreValid(initialDate, finalDate))
         {
             _initialDate = initialDate;
             _finalDate = finalDate;
         }
     }
     
-    public DateTime getInitialDate()
+    public DateTime GetInitialDate()
     {
         return _initialDate;
     }
     
-    public DateTime getFinalDate()
+    public DateTime GetFinalDate()
     {
         return _finalDate;
     }
     
-    private bool datesAreValid(DateTime initialDate, DateTime finalDate)
+    public int NumberOfDays()
     {
-        if (dateIsNotEmpty(initialDate) && dateIsNotEmpty(finalDate) && endDateIsLater(initialDate, finalDate))
+        TimeSpan difference = _finalDate - _initialDate;
+        int numberOfDays = difference.Days;
+        return numberOfDays;
+    }
+    
+    private bool DatesAreValid(DateTime initialDate, DateTime finalDate)
+    {
+        if (TheTwoDatesAreEmpty(initialDate,finalDate))
+        {
+            throw new EmptyDateRangeException ("Ambas fechas vacias, no se puede");
+        }
+        if (InitialDateIsEmpty(initialDate))
+        {
+            throw new EmptyDateRangeException ("Fecha inicial vacia, no se puede");
+        }
+
+        if (FinalDateIsEmpty(finalDate))
+        {
+            throw new EmptyDateRangeException ("Fecha final vacia, no se puede");
+        }
+
+        if (!EndDateIsLater(initialDate, finalDate))
+        {
+            throw new InvalidDateRangeException("Rango de fechas no valido, fecha final debe ser posterior a fecha inicial");
+        }
+
+        return true; 
+
+
+    }
+
+    private bool TheTwoDatesAreEmpty(DateTime initialDate, DateTime finalDate)
+    {
+        if (!DateIsNotEmpty(initialDate) && !DateIsNotEmpty(finalDate))
         {
             return true; 
         }
         return false; 
     }
 
-    private bool dateIsNotEmpty(DateTime date)
+    private bool InitialDateIsEmpty(DateTime initialDate)
+    {
+        if (!DateIsNotEmpty(initialDate))
+        {
+            return true; 
+        }
+
+        return false; 
+    }
+    
+    private bool FinalDateIsEmpty(DateTime finalDate)
+    {
+        if (!DateIsNotEmpty(finalDate))
+        {
+            return true; 
+        }
+
+        return false; 
+    }
+
+    private bool DateIsNotEmpty(DateTime date)
     {
         if (date != DateTime.MinValue)
         {
@@ -49,11 +96,11 @@ public class DateRange
         }
         else
         {
-            throw new EmptyDateRangeException ("No se puede ingresar una fecha vacia");
+            return false;
         }
     }
 
-    private bool endDateIsLater(DateTime initialDate, DateTime finalDate)
+    private bool EndDateIsLater(DateTime initialDate, DateTime finalDate)
     {
         if (initialDate < finalDate)
         {
@@ -61,7 +108,7 @@ public class DateRange
         }
         else
         {
-            throw new InvalidDateRangeException("Rango de fechas no valido, fecha final debe ser posterior a fecha inicial");
+            return false; 
         }
     }
     

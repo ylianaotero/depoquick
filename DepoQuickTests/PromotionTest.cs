@@ -12,8 +12,8 @@ public class PromotionTest
     public void TestEmptyLabel()
     {
         Promotion newPromotion = new Promotion();
-        
-        newPromotion.Label = " ";
+
+        newPromotion.SetLabel(" "); 
         
     }
     
@@ -22,9 +22,9 @@ public class PromotionTest
     {
         Promotion newPromotion = new Promotion();
 
-        newPromotion.Label = "12 12"; 
+        newPromotion.SetLabel("12 12"); 
         
-        Assert.AreEqual("12 12", newPromotion.Label);
+        Assert.AreEqual("12 12", newPromotion.GetLabel());
         
     }
     
@@ -34,8 +34,8 @@ public class PromotionTest
     {
         Promotion newPromotion = new Promotion();
         
-        newPromotion.Label = "acahay21caracteressss";
-        
+        newPromotion.SetLabel("acahay21caracteressss"); 
+
     }
     
     [TestMethod]
@@ -43,9 +43,9 @@ public class PromotionTest
     {
         Promotion newPromotion = new Promotion();
         
-        newPromotion.Label = "acahay20caracteresss"; 
+        newPromotion.SetLabel( "acahay20caracteresss");  
         
-        Assert.AreEqual("acahay20caracteresss", newPromotion.Label);
+        Assert.AreEqual("acahay20caracteresss", newPromotion.GetLabel());
         
     }
     
@@ -55,7 +55,7 @@ public class PromotionTest
     {
         Promotion newPromotion = new Promotion();
         
-        newPromotion.DiscountRate = 0;
+        newPromotion.SetDiscountRate(0); 
         
     }
     
@@ -65,7 +65,7 @@ public class PromotionTest
     {
         Promotion newPromotion = new Promotion();
         
-        newPromotion.DiscountRate = -100;
+        newPromotion.SetDiscountRate(-100); 
         
     }
     
@@ -74,9 +74,9 @@ public class PromotionTest
     {
         Promotion newPromotion = new Promotion();
         
-        newPromotion.DiscountRate = 0.05; 
+        newPromotion.SetDiscountRate(0.05); 
         
-        Assert.AreEqual(0.05, newPromotion.DiscountRate);
+        Assert.AreEqual(0.05, newPromotion.GetDiscountRate());
         
     }
     
@@ -85,9 +85,9 @@ public class PromotionTest
     {
         Promotion newPromotion = new Promotion();
         
-        newPromotion.DiscountRate = 0.75; 
+        newPromotion.SetDiscountRate(0.75);
         
-        Assert.AreEqual(0.75, newPromotion.DiscountRate);
+        Assert.AreEqual(0.75, newPromotion.GetDiscountRate());
         
     }
     
@@ -96,9 +96,9 @@ public class PromotionTest
     {
         Promotion newPromotion = new Promotion();
         
-        newPromotion.DiscountRate = 0.55; 
+        newPromotion.SetDiscountRate(0.55);
         
-        Assert.AreEqual(0.55, newPromotion.DiscountRate);
+        Assert.AreEqual(0.55,newPromotion.GetDiscountRate());
         
     }
     
@@ -108,7 +108,7 @@ public class PromotionTest
     {
         Promotion newPromotion = new Promotion();
         
-        newPromotion.DiscountRate = 4;
+        newPromotion.SetDiscountRate(4);
         
     }
     
@@ -120,11 +120,11 @@ public class PromotionTest
         DateTime dateFrom = new DateTime(2024, 4, 8).Date;
         DateTime dateTo  = new DateTime(2024, 4, 10).Date;
 
-        DateRange dateRange = new DateRange(dateFrom, dateTo); 
+        DateRange dateRange = new DateRange(dateFrom, dateTo);
+
+        newPromotion.SetValidityDate(dateRange);
         
-        newPromotion.ValidityDate = dateRange; 
-        
-        Assert.AreEqual(dateRange, newPromotion.ValidityDate);
+        Assert.AreEqual(dateRange, newPromotion.GetValidityDate());
         
     }
     

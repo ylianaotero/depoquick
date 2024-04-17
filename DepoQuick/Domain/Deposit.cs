@@ -4,18 +4,22 @@ namespace DepoQuick.Domain;
 
 public class Deposit
 {
-    private const int DEFAULT_ADDIONAL_PRICE_FOR_AIR_CONDITIONING = 20;
+    private const int DefaultAddionalPriceForAirConditioning = 20;
     
-    private const int DEFAULT_PRICE_FOR_SMALL_DEPOSIT = 50;
-    private const int DEFAULT_PRICE_FOR_MEDIUM_DEPOSIT = 75;
-    private const int DEFAULT_PRICE_FOR_BIG_DEPOSIT = 100;
+    private const int DefaultPriceForSmallDeposit = 50;
+    private const int DefaultPriceForMediumDeposit = 75;
+    private const int DefaultPriceForBigDeposit = 100;
     
-    private const int DEFAULT_NUMBER_OF_DAYS_FOR_LONG_STAYS = 7;
-    private const int DEFAULT_NUMBER_OF_DAYS_FOR_VERY_LONG_STAYS = 14;
+    private const int DefaultNumberOfDaysForLongStays = 7;
+    private const int DefaultNumberOfDaysForVeryLongStays = 14;
     
-    private const int DEFAULT_DISCOUNT = 0; 
-    private const double DEFAULT_DISCOUNT_FOR_LONG_STAY = 0.05;
-    private const double DEFAULT_DISCOUNT_FOR_VERY_LONG_STAY = 0.1;
+    private const int DefaultDiscount = 0; 
+    private const double DefaultDiscountForLongStay = 0.05;
+    private const double DefaultDiscountForVeryLongStay = 0.1;
+
+    private const String DefaultSmallSize = "PEQUEÑO"; 
+    private const String DefaultMediumSize = "MEDIANO";
+    private const String DefaultBigSize = "GRANDE";   
 
     private int _id; 
     private Char _area;
@@ -24,43 +28,193 @@ public class Deposit
     private bool _reserved;
     private List<Promotion> _promotions; 
     private List<Rating> _ratings;
+    
+    
     public Deposit(Char area, String size, bool airConditioning, bool reserved)
     {
-        if (depositIsValid(area, size))
+        if (DepositIsValid(area, size))
         {
-            _area = area;
+            _area = char.ToUpper(area);
             _reserved = reserved;
             _airConditioning = airConditioning;
-            _size = size;
+            _size = size.ToUpper();
             _ratings = new List<Rating>();
             _promotions = new List<Promotion>(); 
         }
     }
-
-    public int calculatePrice(int numberOfDays)
+    
+    private bool DepositIsValid(Char area, String size)
     {
-        int basePrice = multiply(priceAccordingToSize(), numberOfDays);
-        int priceWithDiscountForNumberOfDays = applyDiscount(basePrice, discountAccordingToNumberOfDays(numberOfDays));
-        int priceWithIncreaseForAirConditioning =
-            applyIncreaseForAirConditioning(priceWithDiscountForNumberOfDays, numberOfDays);
-        int finalPrice = priceWithIncreaseForAirConditioning; 
-        if (isThereAnySpecialDiscount())
+        if (!AreaIsValid(area))
         {
-            finalPrice = applyDiscount(priceWithIncreaseForAirConditioning, getAvailableDiscount()); 
+            throw new DepositWithInvalidAreaException("Area no válida (Debe ser A, B, C, D o E)");
+        }
+
+        if (!SizeIsValid(size))
+        {
+            throw new DepositWithInvalidSizeException("Tamaño no válido (Puede ser Pequeño, Mediano o Grande)");
+        }
+        
+        return true; 
+    }
+
+    private bool AreaIsValid(Char area)
+    {
+        List<Char> possibleAreas = new List<char> { 'A', 'B', 'C', 'D', 'E' };
+        if (possibleAreas.Contains(char.ToUpper(area)))
+        {
+            return true; 
+        }
+        return false; 
+    }
+
+    private bool SizeIsValid(String size)
+    {
+        List<String> possibleSize = new List<String> {DefaultSmallSize,DefaultMediumSize,DefaultBigSize};
+        if (possibleSize.Contains(size.ToUpper()))
+        {
+            return true; 
+        }
+        return false;
+    }
+    
+    public void AddPromotion(Promotion promotion)
+    {
+        _promotions.Add(promotion);
+    }
+    
+    public List<Promotion> GetPromotions()
+    {
+        return _promotions; 
+    }
+
+    public Char GetArea()
+    {
+        return _area; 
+    }
+
+    public bool GetAirConditioning()
+    {
+        return _airConditioning; 
+    }
+
+    public bool IsReserved()
+    {
+        return _reserved; 
+    }
+
+    public String GetSize()
+    {
+        return _size; 
+    }
+    
+    public void AddRating(Rating rating)
+    {
+        _ratings.Add(rating);
+    }
+    
+    public List<Rating> GetRatings()
+    {
+        return _ratings; 
+    }
+
+    public int CalculatePrice(int numberOfDays)
+    {
+        int basePrice = Multiply(PriceAccordingToSize(), numberOfDays);
+        int priceWithDiscountForNumberOfDays = ApplyDiscount(basePrice, DiscountAccordingToNumberOfDays(numberOfDays));
+        int priceWithIncreaseForAirConditioning =
+            ApplyIncreaseForAirConditioning(priceWithDiscountForNumberOfDays, numberOfDays);
+        int finalPrice = priceWithIncreaseForAirConditioning; 
+        if (IsThereAnySpecialDiscount())
+        {
+            finalPrice = ApplyDiscount(priceWithIncreaseForAirConditioning, GetAvailableDiscount()); 
         }
         return finalPrice; 
     }
-
-    private double getAvailableDiscount()
+    
+    private int Multiply(int numberOne, int numberTwo)
     {
-        List<Promotion> listOfPromotion = getPromotions();
+        return numberOne * numberTwo; 
+    }
+    
+    private int PriceAccordingToSize()
+    {
+        switch (_size)
+        {
+            case DefaultMediumSize:
+                return DefaultPriceForMediumDeposit;
+            case DefaultBigSize:
+                return DefaultPriceForBigDeposit;
+            default:
+                return DefaultPriceForSmallDeposit;
+        }
+        
+    }
+    
+    private int ApplyDiscount(int price, double discount)
+    {
+        return (int) (price * (1 - discount));
+    }
+    
+    private double DiscountAccordingToNumberOfDays(int numberOfDays)
+    {
+        double discount = DefaultDiscount; 
+        if (numberOfDays >= DefaultNumberOfDaysForLongStays && numberOfDays <= DefaultNumberOfDaysForVeryLongStays)
+        {
+            discount =  DefaultDiscountForLongStay;
+        }
+        if (numberOfDays > DefaultNumberOfDaysForVeryLongStays)
+        {
+            discount = DefaultDiscountForVeryLongStay;
+        }
+        return discount; 
+    }
+    
+    private int ApplyIncreaseForAirConditioning(int price, int numberOfDays)
+    {
+        if (_airConditioning)
+        {
+            price += (Multiply(numberOfDays, DefaultAddionalPriceForAirConditioning)); 
+        }
+
+        return price; 
+    }
+    
+    private bool IsThereAnySpecialDiscount()
+    {
+        List<Promotion> listOfPromotion = GetPromotions();
+        foreach (Promotion promotion in listOfPromotion)
+        {
+            DateRange dateRange = promotion.GetValidityDate();
+            if (DateRangeIsWithinToday(dateRange))
+            {
+                return true; 
+            }
+            
+        }
+        return false; 
+    }
+    
+    private bool DateRangeIsWithinToday(DateRange dateRange)
+    {
+        return dateRange.GetInitialDate() <= Today() && dateRange.GetFinalDate() >= Today(); 
+    }
+
+    private DateTime Today()
+    {
+        return DateTime.Now.Date; 
+    }
+
+    private double GetAvailableDiscount()
+    {
+        List<Promotion> listOfPromotion = GetPromotions();
         double discount = 0; 
         foreach (Promotion promotion in listOfPromotion)
         {
-            DateRange dateRange = promotion.ValidityDate;
-            if (dateRangeIsWithinToday(dateRange) && Issmaller(discount, promotion.DiscountRate))
+            DateRange dateRange = promotion.GetValidityDate();
+            if (DateRangeIsWithinToday(dateRange) && Issmaller(discount, promotion.GetDiscountRate()))
             {
-                discount =  promotion.DiscountRate; 
+                discount =  promotion.GetDiscountRate(); 
             }
             
         }
@@ -72,174 +226,8 @@ public class Deposit
     {
         return numberOne < numberTwo; 
     }
-
-    private bool isThereAnySpecialDiscount()
-    {
-        List<Promotion> listOfPromotion = getPromotions();
-        foreach (Promotion promotion in listOfPromotion)
-        {
-            DateRange dateRange = promotion.ValidityDate;
-            if (dateRangeIsWithinToday(dateRange))
-            {
-                return true; 
-            }
-            
-        }
-
-        return false; 
-
-    }
-    
-
-    private bool dateRangeIsWithinToday(DateRange dateRange)
-    {
-        return dateRange.getInitialDate() <= today() && dateRange.getFinalDate() >= today(); 
-    }
-
-    private DateTime today()
-    {
-        return DateTime.Now.Date; 
-    }
-
-    private int applyIncreaseForAirConditioning(int price, int numberOfDays)
-    {
-        if (_airConditioning)
-        {
-            price += (multiply(numberOfDays, DEFAULT_ADDIONAL_PRICE_FOR_AIR_CONDITIONING)); 
-        }
-
-        return price; 
-    }
-
-    private int applyDiscount(int price, double discount)
-    {
-        return (int) (price * (1 - discount));
-    }
-
-    private int multiply(int numberOne, int numberTwo)
-    {
-        return numberOne * numberTwo; 
-    }
-
-    private int priceAccordingToSize()
-    {
-        switch (_size)
-        {
-            case "Mediano":
-                return DEFAULT_PRICE_FOR_MEDIUM_DEPOSIT;
-            case "Grande":
-                return DEFAULT_PRICE_FOR_BIG_DEPOSIT;
-            default:
-                return DEFAULT_PRICE_FOR_SMALL_DEPOSIT;
-        }
-        
-    }
-    
-    private double discountAccordingToNumberOfDays(int numberOfDays)
-    {
-        double discount = DEFAULT_DISCOUNT; 
-        if (numberOfDays >= DEFAULT_NUMBER_OF_DAYS_FOR_LONG_STAYS && numberOfDays <= DEFAULT_NUMBER_OF_DAYS_FOR_VERY_LONG_STAYS)
-        {
-            discount =  DEFAULT_DISCOUNT_FOR_LONG_STAY;
-        }
-        if (numberOfDays > DEFAULT_NUMBER_OF_DAYS_FOR_VERY_LONG_STAYS)
-        {
-            discount = DEFAULT_DISCOUNT_FOR_VERY_LONG_STAY;
-        }
-        return discount; 
-    }
-    
-    public void addPromotion(Promotion promotion)
-    {
-        _promotions.Add(promotion);
-    }
-    
-    public List<Promotion> getPromotions()
-    {
-        return _promotions; 
-    }
-    
-    public Char Area
-    {
-        get => _area;
-        set
-        {
-            if(areaIsValid(value))
-            {
-                _area = value; 
-            }
-        }
-    }
-    
-    public bool AirConditioning
-    {
-        get => _airConditioning;
-    }
-    
-    public bool Reserved
-    {
-        get => _reserved;
-    }
-    
-    public String Size
-    {
-        get => _size;
-        set
-        {
-            if(sizeIsValid(value))
-            {
-                _size = value; 
-            }
-        }
-    }
-
-    public void addRating(Rating rating)
-    {
-        _ratings.Add(rating);
-    }
-    
-    public List<Rating> getRating()
-    {
-        return _ratings; 
-    }
-
-    private bool depositIsValid(Char area, String size)
-    {
-        if (areaIsValid(area) && sizeIsValid(size))
-        {
-            return true; 
-        }
-        return false; 
-    }
-
-    private bool areaIsValid(Char area)
-    {
-        List<Char> possibleAreas = new List<char> { 'A', 'B', 'C', 'D', 'E' };
-        if (possibleAreas.Contains(area))
-        {
-            return true; 
-        }
-        else
-        { 
-            throw new DepositWithInvalidAreaException("Area no válida (Debe ser A, B, C, D o E)");
-            
-        }
-    }
-
-    private bool sizeIsValid(String size)
-    {
-        List<String> possibleSize = new List<String> {"Pequeño","Mediano","Grande"};
-        if (possibleSize.Contains(size))
-        {
-            return true; 
-        }
-        else
-        {
-            throw new DepositWithInvalidSizeException("Tamaño no válido (Puede ser Pequeño, Mediano o Grande)");
-        }
-    }
-    
     
 
 
+    
 }
