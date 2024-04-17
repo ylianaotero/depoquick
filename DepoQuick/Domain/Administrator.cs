@@ -10,4 +10,10 @@ public class Administrator : User
     {
         reservation.SetSate(1);
     }
+    
+    public void RejectReservation(Reservation reservation, string reason)
+    {
+        reservation.SetSate(-1);
+        reservation.SetMessage(reason);
+    }
 }
