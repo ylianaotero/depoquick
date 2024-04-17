@@ -56,9 +56,5 @@ public class Controller
     {
         return deposit == null; 
     }
-
-    public User GetUser()
-    {
-        return _user; 
-    }
+    
 }
