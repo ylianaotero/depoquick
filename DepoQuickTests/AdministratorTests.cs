@@ -33,9 +33,6 @@ public class AdministratorTests
 
     }
     
-    
-    
-    
     [TestMethod]
     public void TestValidAdministratorIsCreated()
     {
@@ -48,19 +45,11 @@ public class AdministratorTests
     [TestMethod]
     public void TestAdministratorCanApproveReservations()
     {
-        Administrator admin = new Administrator(_adminName, _adminEmail, _adminPassword);
+        Assert.IsTrue(_reservation.GetSate() == 0);
         
-        Client client = new Client("Juan Perez", "juanperez@gmail.com", _adminPassword);
-        Deposit deposit = new Deposit('A', "Mediano", true, false);
-        DateRange dateRange = new DateRange(DateTime.Now.AddDays(2), DateTime.Now.AddDays(5));
+        _admin.ApproveReservation(_reservation);
         
-        Reservation reservation = new Reservation(deposit, client, dateRange);
-        
-        Assert.IsTrue(reservation.GetSate() == 0);
-        
-        admin.ApproveReservation(reservation);
-        
-        Assert.IsTrue(reservation.GetSate() == 1);
+        Assert.IsTrue(_reservation.GetSate() == 1);
     }
 
     [TestMethod]
