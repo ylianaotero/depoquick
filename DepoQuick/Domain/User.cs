@@ -9,7 +9,7 @@ public class User
     private string _email;
     private string _password;
     private List<(string, DateTime)> _logs;
-    private static int _lastId = 0;
+    private static int s_lastId = 0;
     private int _id;
 
 public User(string name, string email, string password)
@@ -24,8 +24,8 @@ public User(string name, string email, string password)
 
         _logs = new();
 
-        _id = _lastId + 1;
-        _lastId = _id;
+        _id = s_lastId + 1;
+        s_lastId = _id;
     }
     
     private void ValidateName(string name)
