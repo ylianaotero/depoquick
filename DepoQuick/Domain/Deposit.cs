@@ -4,6 +4,9 @@ namespace DepoQuick.Domain;
 
 public class Deposit
 {
+    
+    private static int _nextId = 0;
+
     private const int DefaultAddionalPriceForAirConditioning = 20;
     
     private const int DefaultPriceForSmallDeposit = 50;
@@ -34,6 +37,8 @@ public class Deposit
     {
         if (DepositIsValid(area, size))
         {
+            _id = _nextId; 
+            _nextId++; 
             _area = char.ToUpper(area);
             _reserved = reserved;
             _airConditioning = airConditioning;
@@ -76,6 +81,16 @@ public class Deposit
             return true; 
         }
         return false;
+    }
+    
+    public void SetId(int id)
+    {
+        _id = id; 
+    }
+
+    public int GetId()
+    {
+        return _id; 
     }
     
     public void AddPromotion(Promotion promotion)
