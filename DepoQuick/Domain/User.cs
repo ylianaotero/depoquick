@@ -79,14 +79,12 @@ public User(string name, string email, string password)
         }
     }
     
-    public static bool ValidatePasswordConfirmation(string password, string passwordConfirmation)
+    public static void ValidatePasswordConfirmation(string password, string passwordConfirmation)
     {
         if (password != passwordConfirmation)
         {
             throw new UserPasswordsDoNotMatchException("Las contraseñas no coinciden.");
         }
-
-        return true; 
     }
     
     public void LogAction(string message, DateTime timestamp)

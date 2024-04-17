@@ -146,7 +146,7 @@ public class UserTests
     {
         string password = "Contrasena#1";
         string confirmation = "Contrasena#1";
-        Assert.IsTrue(User.ValidatePasswordConfirmation(password, confirmation));
+        Assert.IsFalse(ThrowsException(() => User.ValidatePasswordConfirmation(password, confirmation)));
     }
 
     [TestMethod]
