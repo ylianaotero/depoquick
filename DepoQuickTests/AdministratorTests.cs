@@ -36,4 +36,24 @@ public class AdministratorTests
         
         Assert.IsTrue(reservation.GetSate() == 1);
     }
+
+    [TestMethod]
+    public void TestAdministratorCanRejectReservations()
+    {
+        Administrator admin = new Administrator(_name, _email, _password);
+
+        Client client = new Client("Juan Perez", "juanperez@gmail.com", _password);
+        Deposit deposit = new Deposit('A', "Mediano", true, false);
+        DateRange dateRange = new DateRange(DateTime.Now.AddDays(2), DateTime.Now.AddDays(5));
+
+        Reservation reservation = new Reservation(deposit, client, dateRange);
+
+        Assert.IsTrue(reservation.GetSate() == 0 && reservation.GetMessage() == "");
+
+        string reason = "No hay disponibilidad.";
+
+        admin.RejectReservation(reservation, reason);
+
+        Assert.IsTrue(reservation.GetSate() == -1 && reservation.GetMessage() == reason);
+    }
 }
