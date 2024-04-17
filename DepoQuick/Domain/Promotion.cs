@@ -7,33 +7,23 @@ public class Promotion
     private Double _discountRate;
     private DateRange _validityDate;
 
-    public Promotion()
+    public void SetLabel(String label)
     {
-        
-    }
-    
-
-    public String Label
-    {
-        get => _label;
-        set
+        if(LabelIsValid(label))
         {
-            if(labelIsValid(value))
-            {
-                _label = value; 
-            }
+            _label = label; 
         }
     }
     
-    private bool labelIsValid(String label)
+    private bool LabelIsValid(String label)
     {
-        if (labelIsEmpty(label))
+        if (LabelIsEmpty(label))
         {
             throw new PromotionWithEmptyLabelException("La etiqueta no debe ser vacia");
         }
         else
         {
-            if (labelHasMoreThan20Characters(label))
+            if (LabelHasMoreThan20Characters(label))
             {
                 throw new PromotionLabelHasMoreThan20CharactersException("La etiqueta no debe ser de largo mayor a 20 caracteres");
             }
@@ -42,31 +32,33 @@ public class Promotion
         return true; 
     }
 
-    private bool labelIsEmpty(String label)
+    private bool LabelIsEmpty(String label)
     {
         return string.IsNullOrWhiteSpace(label);
     }
 
-    private bool labelHasMoreThan20Characters(String label)
+    private bool LabelHasMoreThan20Characters(String label)
     {
         return label.Length > 20;
     }
     
-    public Double DiscountRate
+    public String GetLabel()
     {
-        get => _discountRate;
-        set
-        {
-            if(percentageIsValid(value))
-            {
-                _discountRate = value; 
-            }
-        }
+        return _label; 
     }
 
-    private bool percentageIsValid(double percent)
+    public void SetDiscountRate(Double discountRate)
     {
-        if (itsBetween5And75Percent(percent))
+        if(PercentageIsValid(discountRate))
+        {
+            _discountRate = discountRate; 
+        }
+    }
+    
+
+    private bool PercentageIsValid(double percent)
+    {
+        if (ItsBetween5And75Percent(percent))
         {
             return true; 
         }
@@ -76,16 +68,24 @@ public class Promotion
         }
     }
 
-    private bool itsBetween5And75Percent(double number)
+    private bool ItsBetween5And75Percent(double number)
     {
         return number >= 0.05 && number <= 0.75; 
     }
-    
-    public DateRange ValidityDate
+
+    public Double GetDiscountRate()
     {
-        get => _validityDate;
-        set => _validityDate = value;
+        return _discountRate; 
+    }
+
+    public void SetValidityDate(DateRange validityDate)
+    {
+        _validityDate = validityDate; 
+    }
+
+    public DateRange GetValidityDate()
+    {
+        return _validityDate; 
     }
     
-
 }

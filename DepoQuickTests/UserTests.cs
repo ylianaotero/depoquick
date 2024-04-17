@@ -140,6 +140,14 @@ public class UserTests
         string confirmation = "Contrasena#2";
         User.ValidatePasswordConfirmation(password, confirmation);
     }
+    
+    [TestMethod]
+    public void TestUserPasswordAndConfirmationMatch()
+    {
+        string password = "Contrasena#1";
+        string confirmation = "Contrasena#1";
+        Assert.IsFalse(ThrowsException(() => User.ValidatePasswordConfirmation(password, confirmation)));
+    }
 
     [TestMethod]
     public void TestValidActionGetsLogged()

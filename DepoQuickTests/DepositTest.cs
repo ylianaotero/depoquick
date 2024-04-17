@@ -22,7 +22,7 @@ public class DepositTest
     [ExpectedException(typeof(DepositWithInvalidAreaException))] 
     public void TestInvalidSizeAndArea()
     {
-        char area = 'a';
+        char area = 'l';
         String size = "Enorme";
         bool airConditioning = true;
         bool reserved = false;
@@ -33,7 +33,7 @@ public class DepositTest
     [TestMethod]
     public void TestValidDeposit()
     {
-        char area = 'A';
+        char area = 'a';
         String size = "Mediano";
         bool airConditioning = true;
         bool reserved = false;
@@ -41,10 +41,10 @@ public class DepositTest
         Deposit newDeposit = new Deposit(area, size, airConditioning, reserved); 
         
         Assert.IsNotNull(newDeposit);
-        Assert.AreEqual(area, newDeposit.Area);
-        Assert.AreEqual(size, newDeposit.Size);
-        Assert.AreEqual(airConditioning, newDeposit.AirConditioning);
-        Assert.AreEqual(reserved, newDeposit.Reserved);
+        Assert.AreEqual(char.ToUpper(area), newDeposit.GetArea());
+        Assert.AreEqual(size.ToUpper(), newDeposit.GetSize());
+        Assert.AreEqual(airConditioning, newDeposit.GetAirConditioning());
+        Assert.AreEqual(reserved, newDeposit.IsReserved());
     }
     
     [TestMethod]
@@ -76,14 +76,14 @@ public class DepositTest
         
         Deposit newDeposit = new Deposit(area, size, airConditioning, reserved); 
         
-        newDeposit.addRating(newRating);
+        newDeposit.AddRating(newRating);
         
         Assert.IsNotNull(newDeposit);
-        Assert.AreEqual(area, newDeposit.Area);
-        Assert.AreEqual(size, newDeposit.Size);
-        Assert.AreEqual(airConditioning, newDeposit.AirConditioning);
-        Assert.AreEqual(reserved, newDeposit.Reserved);
-        CollectionAssert.Contains(newDeposit.getRating(), newRating);
+        Assert.AreEqual(char.ToUpper(area), newDeposit.GetArea());
+        Assert.AreEqual(size.ToUpper(), newDeposit.GetSize());
+        Assert.AreEqual(airConditioning, newDeposit.GetAirConditioning());
+        Assert.AreEqual(reserved, newDeposit.IsReserved());
+        CollectionAssert.Contains(newDeposit.GetRatings(), newRating);
     }
     
     [TestMethod]
@@ -97,9 +97,9 @@ public class DepositTest
         
         Promotion newPromotion = new Promotion();
         
-        newPromotion.DiscountRate = discountRate;
-        newPromotion.ValidityDate = dateRange;
-        newPromotion.Label = label; 
+        newPromotion.SetDiscountRate(discountRate); 
+        newPromotion.SetValidityDate(dateRange);
+        newPromotion.SetLabel(label);
         
         char area = 'A';
         String size = "Pequeño";
@@ -108,14 +108,14 @@ public class DepositTest
         
         Deposit newDeposit = new Deposit(area, size, airConditioning, reserved); 
         
-        newDeposit.addPromotion(newPromotion);
+        newDeposit.AddPromotion(newPromotion);
         
         Assert.IsNotNull(newDeposit);
-        Assert.AreEqual(area, newDeposit.Area);
-        Assert.AreEqual(size, newDeposit.Size);
-        Assert.AreEqual(airConditioning, newDeposit.AirConditioning);
-        Assert.AreEqual(reserved, newDeposit.Reserved);
-        CollectionAssert.Contains(newDeposit.getPromotions(), newPromotion);
+        Assert.AreEqual(char.ToUpper(area), newDeposit.GetArea());
+        Assert.AreEqual(size.ToUpper(), newDeposit.GetSize());
+        Assert.AreEqual(airConditioning, newDeposit.GetAirConditioning());
+        Assert.AreEqual(reserved, newDeposit.IsReserved());
+        CollectionAssert.Contains(newDeposit.GetPromotions(), newPromotion);
     }
     
     [TestMethod]
@@ -134,7 +134,7 @@ public class DepositTest
 
         int expectedDepositPrice = numberOfDays * basePrice; 
         
-        Assert.AreEqual(expectedDepositPrice, newDeposit.calculatePrice(numberOfDays));
+        Assert.AreEqual(expectedDepositPrice, newDeposit.CalculatePrice(numberOfDays));
 
     }
     
@@ -154,7 +154,7 @@ public class DepositTest
 
         int expectedDepositPrice = numberOfDays * basePrice; 
         
-        Assert.AreEqual(expectedDepositPrice, newDeposit.calculatePrice(numberOfDays));
+        Assert.AreEqual(expectedDepositPrice, newDeposit.CalculatePrice(numberOfDays));
 
     }
     
@@ -174,7 +174,7 @@ public class DepositTest
 
         int expectedDepositPrice = numberOfDays * basePrice; 
         
-        Assert.AreEqual(expectedDepositPrice, newDeposit.calculatePrice(numberOfDays));
+        Assert.AreEqual(expectedDepositPrice, newDeposit.CalculatePrice(numberOfDays));
 
     }
     
@@ -197,7 +197,7 @@ public class DepositTest
         int expectedDepositPrice = (int)(numberOfDays * basePrice * (1.0 - discountForNumberOfDays));
 
         
-        Assert.AreEqual(expectedDepositPrice, newDeposit.calculatePrice(numberOfDays));
+        Assert.AreEqual(expectedDepositPrice, newDeposit.CalculatePrice(numberOfDays));
 
     }
     
@@ -220,7 +220,7 @@ public class DepositTest
         int expectedDepositPrice = (int)(numberOfDays * basePrice * (1.0 - discountForNumberOfDays));
 
         
-        Assert.AreEqual(expectedDepositPrice, newDeposit.calculatePrice(numberOfDays));
+        Assert.AreEqual(expectedDepositPrice, newDeposit.CalculatePrice(numberOfDays));
 
     }
     
@@ -243,7 +243,7 @@ public class DepositTest
         int expectedDepositPrice = (int)(numberOfDays * basePrice * (1.0 - discountForNumberOfDays));
 
         
-        Assert.AreEqual(expectedDepositPrice, newDeposit.calculatePrice(numberOfDays));
+        Assert.AreEqual(expectedDepositPrice, newDeposit.CalculatePrice(numberOfDays));
 
     }
     
@@ -271,7 +271,7 @@ public class DepositTest
         }
 
         
-        Assert.AreEqual(expectedDepositPrice, newDeposit.calculatePrice(numberOfDays));
+        Assert.AreEqual(expectedDepositPrice, newDeposit.CalculatePrice(numberOfDays));
 
     }
     
@@ -286,9 +286,9 @@ public class DepositTest
         
         Promotion newPromotion = new Promotion();
         
-        newPromotion.DiscountRate = discountRate;
-        newPromotion.ValidityDate = dateRange;
-        newPromotion.Label = label; 
+        newPromotion.SetDiscountRate(discountRate); 
+        newPromotion.SetValidityDate(dateRange);
+        newPromotion.SetLabel(label);
         
         char area = 'A';
         String size = "Grande";
@@ -297,7 +297,7 @@ public class DepositTest
         
         Deposit newDeposit = new Deposit(area, size, airConditioning, reserved);
         
-        newDeposit.addPromotion(newPromotion);
+        newDeposit.AddPromotion(newPromotion);
 
         int numberOfDays = 15;
 
@@ -313,8 +313,8 @@ public class DepositTest
         }
 
         
-        Assert.AreEqual(expectedDepositPrice, newDeposit.calculatePrice(numberOfDays));
-        CollectionAssert.Contains(newDeposit.getPromotions(), newPromotion);
+        Assert.AreEqual(expectedDepositPrice, newDeposit.CalculatePrice(numberOfDays));
+        CollectionAssert.Contains(newDeposit.GetPromotions(), newPromotion);
 
     }
     
@@ -329,9 +329,9 @@ public class DepositTest
         
         Promotion newPromotion = new Promotion();
         
-        newPromotion.DiscountRate = discountRate;
-        newPromotion.ValidityDate = dateRange;
-        newPromotion.Label = label; 
+        newPromotion.SetDiscountRate(discountRate); 
+        newPromotion.SetValidityDate(dateRange);
+        newPromotion.SetLabel(label);
         
         char area = 'A';
         String size = "Grande";
@@ -340,7 +340,7 @@ public class DepositTest
         
         Deposit newDeposit = new Deposit(area, size, airConditioning, reserved);
         
-        newDeposit.addPromotion(newPromotion);
+        newDeposit.AddPromotion(newPromotion);
 
         int numberOfDays = 15;
 
@@ -361,7 +361,7 @@ public class DepositTest
         }
 
         
-        Assert.AreEqual(expectedDepositPrice, newDeposit.calculatePrice(numberOfDays));
+        Assert.AreEqual(expectedDepositPrice, newDeposit.CalculatePrice(numberOfDays));
 
     }
     
