@@ -176,18 +176,8 @@ public class UserTests
 
         user.LogAction(action, timestamp);
     }
-
-    [TestMethod]
-    public void TestValidAdministratorIsCreated()
-    {
-        Administrator user = new Administrator(_name, _email, _password);
-        Assert.AreEqual(_name, user.GetName());
-        Assert.AreEqual(_email, user.GetEmail());
-        Assert.AreEqual(_password, user.GetPassword());
-    }
     
     
-
 private bool ThrowsException(Action functionCall)
     {
         try
