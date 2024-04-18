@@ -12,5 +12,10 @@ public class Client : User
     {
         return _reservations;
     }
+
+    public void AddReservation(Reservation reservation)
+    {
+        _reservations.Add(reservation);
+    }
 }
 

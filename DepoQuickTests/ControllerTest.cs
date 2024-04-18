@@ -17,24 +17,36 @@ public class ControllerTest
     private bool airConditioning2 = true;
     private bool reserved2 = false;
     
+    private string _name = "Juan Perez";
+    private string _email = "nombre@dominio.es";
+    private string _password = "Contrasena#1";
+    
+    private Deposit deposit = new Deposit('A', "Pequeño", true, false);
+    private DateRange stay = new DateRange(new DateTime(2024, 04, 07), new DateTime(2024, 04, 08));
+
+    
     [TestMethod]
     public void TestAddValidDeposit()
     {
-        Controller controller = new Controller();
+        MemoryDataBase memoryDataBase = new MemoryDataBase(); 
+        
+        Controller controller = new Controller(memoryDataBase);
         
         Deposit newDeposit = new Deposit(area, size, airConditioning, reserved);
 
         controller.AddDeposit(newDeposit); 
         
-        CollectionAssert.Contains(controller.GetListOfDeposits(), newDeposit);
+        CollectionAssert.Contains(memoryDataBase.GetListOfDeposits(), newDeposit);
         
     }
     
     [TestMethod]
     public void TestSearchForADepositById()
     {
-        Controller controller = new Controller();
+        MemoryDataBase memoryDataBase = new MemoryDataBase(); 
         
+        Controller controller = new Controller(memoryDataBase);
+
         Deposit newDeposit0 = new Deposit(area, size, airConditioning, reserved);
         Deposit newDeposit1 = new Deposit(area2, size2, airConditioning2, reserved2);
 
@@ -55,8 +67,10 @@ public class ControllerTest
     [ExpectedException(typeof(ExceptionDepositNotFound))] 
     public void TestSearchForADepositUsingAnInvalidId()
     {
-        Controller controller = new Controller();
+        MemoryDataBase memoryDataBase = new MemoryDataBase(); 
         
+        Controller controller = new Controller(memoryDataBase);
+
         Deposit newDeposit0 = new Deposit(area, size, airConditioning, reserved);
         Deposit newDeposit1 = new Deposit(area2, size2, airConditioning2, reserved2);
         
@@ -66,17 +80,66 @@ public class ControllerTest
         controller.GetDeposit(-34); 
 
     }
-
+    
     [TestMethod]
-    public void TestLoginUser()
+    public void TestAddAReservationToController()
     {
-        Controller controller = new Controller();
-
-        User user = new User("Juan Perez", "juanperez@gmail.com", "Contrasena#1");
-
-        controller.LoginUser(user);
+        MemoryDataBase memoryDataBase = new MemoryDataBase(); 
         
-        Assert.AreEqual(controller.GetUser(), user);
+        Controller controller = new Controller(memoryDataBase);
+
+        Client client = new Client(_name, _email, _password);
+        
+        Reservation reservation = new Reservation(deposit, client, stay);
+
+        controller.AddReservation(reservation); 
+        
+        CollectionAssert.Contains(memoryDataBase.GetReservations(), reservation);
+    }
+    
+    [TestMethod]
+    public void TestSearchForAReservationById()
+    {
+        MemoryDataBase memoryDataBase = new MemoryDataBase(); 
+        
+        Controller controller = new Controller(memoryDataBase);
+
+        Client client = new Client(_name, _email, _password);
+        
+        Reservation reservation1 = new Reservation(deposit, client, stay);
+        Reservation reservation2 = new Reservation(deposit, client, stay);
+
+        int id = reservation1.GetId(); 
+        
+        controller.AddReservation(reservation1);
+        controller.AddReservation(reservation2);
+
+        Assert.AreEqual(deposit, controller.GetReservation(id).GetDeposit());
+        Assert.AreEqual(client, controller.GetReservation(id).GetClient());
+        Assert.AreEqual(stay, controller.GetReservation(id).GetDateRange());
+        
+        Assert.AreEqual(id, controller.GetReservation(id).GetId());
+        
+    }
+    
+    [TestMethod]
+    [ExpectedException(typeof(ExceptionReservationNotFound))] 
+    public void TestSearchForAReservationUsingAnInvalidId()
+    {
+        MemoryDataBase memoryDataBase = new MemoryDataBase(); 
+        
+        Controller controller = new Controller(memoryDataBase);
+
+        Client client = new Client(_name, _email, _password);
+        
+        Reservation reservation1 = new Reservation(deposit, client, stay);
+        Reservation reservation2 = new Reservation(deposit, client, stay);
+        
+        controller.AddReservation(reservation1);
+        controller.AddReservation(reservation2);
+
+        controller.GetReservation(-34); 
+
     }
 
 

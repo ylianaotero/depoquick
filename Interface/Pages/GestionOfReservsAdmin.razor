@@ -1,0 +1,185 @@
+﻿@page "/GestionOfReservsAdmin"
+
+@inject MemoryDataBase MemoryDataBase
+@using BusinessLogic
+@using DepoQuick.Domain
+@using DepoQuick.Domain.Exceptions.ControllerExceptions
+@using DepoQuick.Domain.Exceptions.ReservationExceptions
+
+@if (_showAlertReservationNotFound)
+{
+    <br>
+    <div class="alert alert-danger" role="alert">
+        ¡No se encontro deposito con ese id, no se puede aprobar ni rechazar, intente de nuevo!
+    </div>
+    <br>
+}
+
+@if (_showAlertInvalidComment)
+  {
+    <br>
+     <div class="alert alert-danger" role="alert">
+       ¡Comentario invalido, debe tener menos de 300 caractres!
+     </div>
+    <br>
+  }
+
+@if (_showAlertEmptyComment)
+  {
+    <br>
+     <div class="alert alert-danger" role="alert">
+       ¡Comentario invalido, no debe estar vacio!
+     </div>
+    <br>
+  }
+
+<table class="table">
+        <thead>
+            <tr>
+                <th>Cliente</th>
+                <th>Deposito</th>
+                <th>Desde</th>
+                <th>Hasta</th>
+                <th>Acciones</th>
+                <th>Comentario</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (Reservation reservation in _listOfReservations)
+            {
+                <tr>
+                    <td>@reservation.GetClient().GetName()</td>
+                    <td>Deposito @reservation.GetDeposit().GetId()</td>
+                    <td>@reservation.GetDateRange().GetInitialDate().ToString("dd/MM/yyyy")</td>
+                    <td>@reservation.GetDateRange().GetFinalDate().ToString("dd/MM/yyyy")</td>
+                    @if (reservation.GetSate() == 0)
+                    {
+                        <td>
+                            <button @onclick="() => ApproveReservation(reservation.GetId())" class="btn btn-success btn-sm">Aprobar</button>
+                            <button @onclick="() => WantToRejectReservation()" class="btn btn-danger btn-sm">Rechazar</button>
+                            @if (_showTextArea)
+                            {
+                                <form>
+                                    <div class="form-group">
+                                        <br>
+                                        <label for="reservationText">Por favor, especifique el motivo del rechazo de la reserva</label>
+                                        <br> 
+                                        <textarea @bind="_comment" class="form-control" id="reservationText" name="reservationText" rows="4" cols="50"></textarea>
+                                        <br>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <button @onclick="() => RejectReservation(reservation.GetId())" class="btn btn-danger btn-sm">Rechazar</button>
+                                        <button @onclick="() => HideTextArea()" class="btn btn-primary btn-sm">Cancelar</button>
+                                    </div>
+                                </form>
+                            }
+                        </td>
+                        
+                    }
+                    else
+                    {
+                        @if (reservation.GetSate() == 1)
+                        {
+                            <td>
+                                <button class="btn btn-primary btn-sm">Aprobada</button>
+                            </td>
+                            
+                        }
+                        else
+                        {
+                            @if (reservation.GetSate() == -1)
+                            {
+                                <td>
+                                    <button class="btn btn-secondary btn-sm">Rechazada</button>
+                                </td>
+                            }
+                        }
+                    }
+                    <td>@reservation.GetMessage()</td>
+                </tr>
+                
+                
+            }
+        </tbody>
+    </table>
+
+@code {
+    private Controller _controller;
+    private List<Reservation> _listOfReservations;
+
+    private bool _showAlertReservationNotFound; 
+    private bool _showTextArea;
+    private bool _showAlertInvalidComment;
+    private bool _showAlertEmptyComment; 
+
+    private String _comment; 
+    
+    protected override void OnInitialized()
+    {
+        _controller = new Controller(MemoryDataBase);
+        _listOfReservations = MemoryDataBase.GetReservations();
+        _showTextArea = false;
+        HideAllAlerts(); 
+    }
+
+    private void HideAllAlerts()
+    {
+        _showAlertReservationNotFound = false;
+        _showAlertInvalidComment = false;
+        _showAlertEmptyComment = false;
+
+    }
+
+    private void ApproveReservation(int id)
+    {
+        try
+        {
+            Reservation reservation = _controller.GetReservation(id);
+            reservation.SetSate(1);
+        }
+        catch (ExceptionReservationNotFound exceptionReservationNotFound)
+        {
+            _showAlertReservationNotFound = true;
+        }
+        
+    }
+    
+    private void RejectReservation(int id)
+    {
+        try
+        {
+            Reservation reservation = _controller.GetReservation(id);
+            reservation.SetMessage(_comment);
+            reservation.SetSate(-1);
+        }
+        catch (ExceptionReservationNotFound exceptionReservationNotFound)
+        {
+            _showAlertReservationNotFound = true;
+
+        }
+        catch (ReservationMessageHasMoreThan300CharactersException reservationMessageHasMoreThan300CharactersException)
+        {
+            _showAlertInvalidComment = true;
+        }
+        catch (ReservationWithEmptyMessageException reservationWithEmptyMessageException)
+        {
+            _showAlertEmptyComment = true; 
+        }
+        
+    }
+    
+    private void WantToRejectReservation()
+    {
+        _showTextArea = true; 
+
+    }
+    
+    
+
+    private void HideTextArea()
+    {
+        _showTextArea = false;
+    }
+    
+}

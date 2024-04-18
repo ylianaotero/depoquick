@@ -152,5 +152,53 @@ public class ReservationTest
         Assert.AreEqual(stay,reservation.GetDateRange());
     }
     
+    [TestMethod]
+    public void TestAddIdToAValidDeposit()
+    {
+        Client client = new Client("Maria Perez","maria@gmail.com","Maria1..");
+        Deposit deposit = new Deposit('A', "Pequeño", true, false);
+        DateTime dayIn = new DateTime(2024, 04, 07);
+        DateTime dayOut = new DateTime(2024, 04, 08);
+        DateRange stay = new DateRange(dayIn, dayOut);
+        
+        Reservation reservation = new Reservation(deposit, client, stay);
+
+        int id = 2; 
+
+        reservation.SetId(id); 
+        
+        Assert.AreEqual(id, reservation.GetId());
+    }
+    
+    [TestMethod]
+    public void TestTwoDepositsHaveDifferentIDs()
+    {
+        Client client = new Client("Maria Perez","maria@gmail.com","Maria1..");
+        Deposit deposit = new Deposit('A', "Pequeño", true, false);
+        DateTime dayIn = new DateTime(2024, 04, 07);
+        DateTime dayOut = new DateTime(2024, 04, 08);
+        DateRange stay = new DateRange(dayIn, dayOut);
+        
+        Reservation reservation1 = new Reservation(deposit, client, stay);
+        Reservation reservation2 = new Reservation(deposit, client, stay);
+
+        Assert.AreNotEqual(reservation1.GetId(), reservation2.GetId());
+    }
+
+    [TestMethod]
+    public void TestIDIsIncremental()
+    {
+        Client client = new Client("Maria Perez","maria@gmail.com","Maria1..");
+        Deposit deposit = new Deposit('A', "Pequeño", true, false);
+        DateTime dayIn = new DateTime(2024, 04, 07);
+        DateTime dayOut = new DateTime(2024, 04, 08);
+        DateRange stay = new DateRange(dayIn, dayOut);
+        
+        Reservation reservation1 = new Reservation(deposit, client, stay);
+        Reservation reservation2 = new Reservation(deposit, client, stay);
+
+        Assert.IsTrue(reservation1.GetId() < reservation2.GetId());
+    }
+    
     //testear resrva vacia
 }

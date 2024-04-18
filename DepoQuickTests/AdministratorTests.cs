@@ -6,7 +6,7 @@ namespace DepoQuickTests;
 public class AdministratorTests
 {
     private Administrator _admin;
-    private Client _client;
+    private Client? _client;
     private Deposit _deposit;
     private Reservation _reservation;
     
