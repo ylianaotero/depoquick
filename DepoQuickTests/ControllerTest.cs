@@ -179,6 +179,23 @@ public class ControllerTest
         
     }
     
+    [TestMethod]
+    [ExpectedException(typeof(PromotionNotFoundException))]
+    public void TestSearchForAPromotionUsingAnInvalidId()
+    {
+        MemoryDataBase memoryDataBase = new MemoryDataBase(); 
+        
+        Controller controller = new Controller(memoryDataBase);
+
+        Promotion promotion1 = new Promotion();
+        Promotion promotion2 = new Promotion();
+        
+        controller.AddPromotion(promotion1);
+        controller.AddPromotion(promotion2);
+
+        controller.GetPromotion(-4); 
+    }
+    
     
     
 
