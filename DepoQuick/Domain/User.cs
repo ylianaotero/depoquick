@@ -20,7 +20,7 @@ public class User
     private List<(string, DateTime)> _logs;
     
     
-public User(string name, string email, string password)
+    public User(string name, string email, string password)
     {
         ValidateName(name);
         ValidateEmail(email);
