@@ -58,5 +58,10 @@ public class Controller
     {
         _memoryDataBase.GetReservations().Add(reservation);
     }
+
+    public void AddPromotion(Promotion promotion)
+    {
+        _memoryDataBase.GetPromotions().Add(promotion);
+    }
     
 }
