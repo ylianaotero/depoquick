@@ -4,14 +4,29 @@ namespace DepoQuick.Domain;
 
 public class Reservation
 {
+    private static int _nextId = 0;
+    
+    private int _id; 
     private Deposit _deposit; 
     private Client _client;
     private DateRange _date;
     private string _message;
     private int _state;
+    
+    public void SetId(int id)
+    {
+        _id = id; 
+    }
+
+    public int GetId()
+    {
+        return _id; 
+    }
 
     public Reservation(Deposit deposit, Client client, DateRange date)
     {
+        _id = _nextId; 
+        _nextId++; 
         _deposit = deposit;
         _client = client;
         _date = date;

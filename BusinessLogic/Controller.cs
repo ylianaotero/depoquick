@@ -3,41 +3,24 @@ using DepoQuick.Domain.Exceptions.ControllerExceptions;
 
 namespace BusinessLogic;
 
-
 public class Controller
 {
+    private readonly MemoryDataBase _memoryDataBase;
     
-    private List<Deposit> _listOfDeposits;
-    private User _user; 
-
-    public Controller()
+    public Controller(MemoryDataBase memoryDatabase)
     {
-        //agrego usuario para probar pq todavia no esta listo
-        //_user = new User("Juan Perez", "nombre@dominio.es", "Contrasena#1"); 
-        //le estoy poniendo depositos de ejemplo para probar mientras 
-        _listOfDeposits = new List<Deposit>()
-            /* {
-                 new Deposit('a', "Mediano", true, false),
-                 new Deposit('B', "Mediano", true, false),
-                 new Deposit('A', "Mediano", false, false)
-             }*/
-            ; 
+        _memoryDataBase = memoryDatabase;
     }
     
     public void AddDeposit(Deposit deposit)
     {
-        _listOfDeposits.Add(deposit);
+        _memoryDataBase.GetListOfDeposits().Add(deposit);
     }
-
-    public List<Deposit> GetListOfDeposits()
-    {
-        return _listOfDeposits; 
-    }
-
+    
     public Deposit GetDeposit(int id)
     {
         Deposit deposit = SearchDeposit(id); 
-        if (IsNull(deposit))
+        if (deposit == null)
         {
             throw new ExceptionDepositNotFound("Deposito no encontrado"); 
         }
@@ -46,25 +29,34 @@ public class Controller
             return deposit; 
         }
     }
+    
 
     public Deposit SearchDeposit(int id)
     {
-        return _listOfDeposits.FirstOrDefault(deposit => deposit.GetId() == id);
-    }
-
-    public bool IsNull(Deposit deposit)
-    {
-        return deposit == null; 
-    }
-
-    public void LoginUser(User user)
-    {
-        _user = user;
+        return _memoryDataBase.GetListOfDeposits().FirstOrDefault(deposit => deposit.GetId() == id);
     }
     
-    public User GetUser()
+    public Reservation GetReservation(int id)
     {
-        return _user; 
+        Reservation reservation = SearchReservation(id); 
+        if (reservation == null)
+        {
+            throw new ExceptionReservationNotFound("Reservacion no encontrada"); 
+        }
+        else
+        {
+            return reservation; 
+        }
+    }
+    
+    private Reservation SearchReservation(int id)
+    {
+        return _memoryDataBase.GetReservations().FirstOrDefault(reservation => reservation.GetId() == id);
+    }
+
+    public void AddReservation(Reservation reservation)
+    {
+        _memoryDataBase.GetReservations().Add(reservation);
     }
     
 }

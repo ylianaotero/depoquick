@@ -1,0 +1,38 @@
+﻿@page "/GestionOfReservs"
+@inject MemoryDataBase MemoryDataBase
+@inject NavigationManager NavigationManager
+@using BusinessLogic
+
+@code {
+    
+    private NavigationManager _navigationManager;
+    
+    protected override void OnInitialized()
+    {
+        _navigationManager = NavigationManager; 
+        if (UserIsAdministrator())
+        {
+            GoToGestionOfReservsForAdmins(); 
+        }
+        else
+        {
+            GoToGestionOfReservsForClients(); 
+        }
+    }
+
+    private bool UserIsAdministrator()
+    {
+        return MemoryDataBase.GetUser().IsAdministrator(); 
+    }
+
+    private void GoToGestionOfReservsForAdmins()
+    {
+        _navigationManager.NavigateTo("/GestionOfReservsAdmin");
+    }
+
+    private void GoToGestionOfReservsForClients()
+    {
+        _navigationManager.NavigateTo("/GestionOfReservsClient");
+    }
+    
+}

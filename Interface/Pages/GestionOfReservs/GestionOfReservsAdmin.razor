@@ -1,0 +1,118 @@
+﻿@page "/GestionOfReservsAdmin"
+
+@inject MemoryDataBase MemoryDataBase
+@using BusinessLogic
+@using DepoQuick.Domain
+@using DepoQuick.Domain.Exceptions.ControllerExceptions
+
+
+<html lang="es">
+  <head>
+      <meta charset="utf-8"/>
+      <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+  </head>
+
+    <body>
+
+        <h3>Gestión de reservas</h3>
+
+        @if (_showAlertReservationNotFound)
+        {
+            <br>
+            <div class="alert alert-danger" role="alert">
+                "Lo sentimos, no encontramos ningún depósito con ese ID. No podemos aprobar ni rechazar. ¡Por favor, inténtalo de nuevo!"
+            </div>
+            <br>
+        }
+
+
+        <table class="table">
+            <thead>
+            <tr>
+                <th>Cliente</th>
+                <th>Depósito</th>
+                <th>Desde</th>
+                <th>Hasta</th>
+                <th>Acciones</th>
+                <th>Comentario</th>
+            </tr>
+            </thead>
+            <tbody>
+            @foreach (Reservation reservation in _listOfReservations)
+            {
+                <tr>
+                    <td>@reservation.GetClient().GetName()</td>
+                    <td>Depósito @reservation.GetDeposit().GetId()</td>
+                    <td>@reservation.GetDateRange().GetInitialDate().ToString("dd/MM/yyyy")</td>
+                    <td>@reservation.GetDateRange().GetFinalDate().ToString("dd/MM/yyyy")</td>
+                    @if (reservation.GetSate() == 0)
+                    {
+                        <td>
+                            <button @onclick="() => ApproveReservation(reservation.GetId())" class="btn btn-success btn-sm">Aprobar</button>
+                            <a href="/Reject/@reservation.GetId()" class="btn btn-danger btn-sm">Rechazar</a>
+                        </td>
+                        <td>-</td>
+                    }
+                    else
+                    {
+                        @if (reservation.GetSate() == 1)
+                        {
+                            <td>
+                                <button class="btn btn-primary btn-sm">Aprobada</button>
+                            </td>
+                            <td>-</td>
+                                    
+                        }
+                        else
+                        {
+                            @if (reservation.GetSate() == -1)
+                            {
+                                <td>
+                                    <button class="btn btn-secondary btn-sm">Rechazada</button>
+                                </td>
+                                <td>@reservation.GetMessage()</td>
+                            }
+                        }
+                    }
+                </tr>
+            }
+            </tbody>
+        </table>
+    </body>
+</html>
+
+@code {
+    private Controller _controller;
+    private List<Reservation> _listOfReservations;
+
+    private bool _showAlertReservationNotFound; 
+
+    private String _comment; 
+    
+    protected override void OnInitialized()
+    {
+        _controller = new Controller(MemoryDataBase);
+        _listOfReservations = MemoryDataBase.GetReservations();
+        HideAllAlerts(); 
+    }
+
+    private void HideAllAlerts()
+    {
+        _showAlertReservationNotFound = false;
+
+    }
+
+    private void ApproveReservation(int id)
+    {
+        try
+        {
+            Reservation reservation = _controller.GetReservation(id);
+            reservation.SetSate(1);
+        }
+        catch (ExceptionReservationNotFound exceptionReservationNotFound)
+        {
+            _showAlertReservationNotFound = true;
+        }
+        
+    }
+}
