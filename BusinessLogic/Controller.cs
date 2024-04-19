@@ -66,8 +66,7 @@ public class Controller
 
     public Promotion GetPromotion(int id)
     {
-        Promotion promotion = _memoryDataBase.GetPromotions().Find(p => p.GetId() == id);
-        return promotion;
+        return _memoryDataBase.GetPromotions().Find(p => p.GetId() == id);
     }
     
 }

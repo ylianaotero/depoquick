@@ -6,18 +6,12 @@ public class Promotion
     private String _label;
     private Double _discountRate;
     private DateRange _validityDate;
-    private static int lastId = 0;
-    private int id;
+    private static int s_lastId = 0;
+    private int _id;
 
     public Promotion()
     {
-        id = lastId + 1;
-        lastId = id;
-    }
-
-    public int GetId()
-    {
-        return id;
+        _id = s_lastId++;
     }
 
     public void SetLabel(String label)
@@ -101,4 +95,8 @@ public class Promotion
         return _validityDate; 
     }
     
+    public int GetId()
+    {
+        return _id;
+    }
 }
