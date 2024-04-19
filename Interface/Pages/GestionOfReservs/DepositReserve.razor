@@ -7,91 +7,90 @@
 @using DepoQuick.Domain.Exceptions.DateRangeExceptions
 
 <html lang="es">
-<head>
-    <meta charset="utf-8"/>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
-</head>
+  <head>
+      <meta charset="utf-8"/>
+      <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+  </head>
 
-<body>
-  <h3>Realizar reserva de un depósito</h3>
+  <body>
+    <h3>Realizar reserva de un depósito</h3>
 
-  @if (_showAlert)
-  {
+    @if (_showAlertPrice)
+    {
+      <br>
+       <div class="alert alert-primary" role="alert">
+        <h4 class="alert-heading">¿Estás seguro?</h4>
+        <p>Estas a punto de realizar la reservación del depósito @_deposit.GetId() que tiene un costo de: $ @_deposit.CalculatePrice(_date.NumberOfDays())</p>
+        <hr>
+        <input @onclick="AddReservation" type="submit" class="btn btn-primary" value="Aceptar">
+      </div>
+      <br>
+    }
 
-    <br>
-     <div class="alert alert-primary" role="alert">
-      <h4 class="alert-heading">¿Estás seguro?</h4>
-      <p>Estas a punto de realizar la reservación del depósito @_deposit.GetId() que tiene un costo de: $ @_deposit.CalculatePrice(_date.NumberOfDays())</p>
-      <hr>
-      <input @onclick="AddReservation" type="submit" class="btn btn-primary" value="Aceptar">
-    </div>
-    <br>
-  }
-
-  @if (_showAlertReservationMade)
-  {
-    <div class="alert alert-success" role="alert">
-      <h4 class="alert-heading"> ¡Reserva realizada!</h4>
-      <p>¡Gracias por tu reserva! Estamos procesando tu solicitud y te contactaremos pronto para confirmarla. Mientras tanto, puedes revisar el estado de tu reserva en la sección de Gestión de Reservas.</p>
-      <hr>
-      <p class="mb-0">¡Gracias por elegirnos!</p>
-    </div>
-  }
-
-
-  @if (_showAlertInvalidDeposit)
-  {
-    <br>
-     <div class="alert alert-danger" role="alert">
-       ¡Depósito inválido, intente de nuevo!
-     </div>
-    <br>
-  }
-
-  @if (_showAlertAnAdministratorCantMakeAReservation)
-  {
-    <br>
-     <div class="alert alert-danger" role="alert">
-       El Administrador no puede hacer una reservación
-     </div>
-    <br>
-  }
-
-  @if (_showAlertInvalidAlert)
-  {
-    <br>
-     <div class="alert alert-danger" role="alert">
-       ¡Fecha inválida, la fecha inicial debe ser anterior a la fecha final!
-     </div>
-    <br>
-  }
+    @if (_showAlertReservationMade)
+    {
+      <div class="alert alert-success" role="alert">
+        <h4 class="alert-heading"> ¡Reserva realizada!</h4>
+        <p>¡Gracias por tu reserva! Estamos procesando tu solicitud y te contactaremos pronto para confirmarla. Mientras tanto, puedes revisar el estado de tu reserva en la sección de Gestión de Reservas.</p>
+        <hr>
+        <p class="mb-0">¡Gracias por elegirnos!</p>
+      </div>
+    }
 
 
-  <form action="#" method="POST">
-    <div class="mb-3">
-      <label for="deposit" class="form-label">Seleccionar depósito que desea reservar:</label>
-      <select class="form-select" id="deposit" name="deposit" @onchange="HandleDepositChange">
-        <option value=" ">Seleccionar depósito</option>
-        @foreach (Deposit deposit in _listOfDeposits)
-        {
-          <option value="@deposit.GetId()">Depósito @deposit.GetId()</option>
-        }
-      </select>
-    </div>
+    @if (_showAlertInvalidDeposit)
+    {
+      <br>
+       <div class="alert alert-danger" role="alert">
+         ¡Depósito inválido, intente de nuevo!
+       </div>
+      <br>
+    }
 
-    <div class="mb-3">
-      <label for="initialDate" class="form-label">Desde:</label>
-      <input type="date" class="form-control" id="initialDate" name="initialDate" @bind="InitialDate">
-    </div>
+    @if (_showAlertAnAdministratorCantMakeAReservation)
+    {
+      <br>
+       <div class="alert alert-danger" role="alert">
+         El Administrador no puede hacer una reservación
+       </div>
+      <br>
+    }
 
-    <div class="mb-3">
-      <label for="finalDate" class="form-label">Hasta:</label>
-      <input type="date" class="form-control"  id="finalDate" name="finalDate" @bind="FinalDate">
-    </div>
-    
-    <input @onclick="ShowAlert"  id="wantToMakeTheReservation" class="btn btn-primary" value="Hacer reservación">
-  </form>
-</body>
+    @if (_showAlertInvalidAlert)
+    {
+      <br>
+       <div class="alert alert-danger" role="alert">
+         ¡Fecha inválida, la fecha inicial debe ser anterior a la fecha final!
+       </div>
+      <br>
+    }
+
+
+    <form action="#" method="POST">
+      <div class="mb-3">
+        <label for="deposit" class="form-label">Seleccionar depósito que desea reservar:</label>
+        <select class="form-select" id="deposit" name="deposit" @onchange="HandleDepositChange">
+          <option value=" ">Seleccionar depósito</option>
+          @foreach (Deposit deposit in _listOfDeposits)
+          {
+            <option value="@deposit.GetId()">Depósito @deposit.GetId()</option>
+          }
+        </select>
+      </div>
+
+      <div class="mb-3">
+        <label for="initialDate" class="form-label">Desde:</label>
+        <input type="date" class="form-control" id="initialDate" name="initialDate" @bind="_initialDate">
+      </div>
+
+      <div class="mb-3">
+        <label for="finalDate" class="form-label">Hasta:</label>
+        <input type="date" class="form-control"  id="finalDate" name="finalDate" @bind="_finalDate">
+      </div>
+      
+      <input @onclick="ShowAlert"  id="wantToMakeTheReservation" class="btn btn-primary" value="Hacer reservación">
+    </form>
+  </body>
 </html>
 
 
@@ -100,7 +99,7 @@
   private Controller _controller;
   private List<Deposit> _listOfDeposits;
 
-  private bool _showAlert;
+  private bool _showAlertPrice;
   private bool _showAlertInvalidDeposit; 
   private bool _showAlertInvalidAlert;
   private bool _showAlertAnAdministratorCantMakeAReservation;
@@ -127,26 +126,6 @@
     
   }
 
-  private DateTime InitialDate
-  {
-    get => _initialDate;
-    set {
-      HideAllAlerts();
-      _initialDate = value; 
-
-    }
-  }
-  
-  private DateTime FinalDate
-  {
-    get => _finalDate;
-    set {
-      HideAllAlerts();
-      _finalDate = value; 
-
-    }
-  }
-
   private void ShowAlert()
   {
     HideAllAlerts(); 
@@ -157,7 +136,7 @@
       {
         if (IsAClient())
         {
-          _showAlert = true;
+          _showAlertPrice = true;
         }
         else
         {
@@ -206,7 +185,7 @@
 
   private void HideAllAlerts()
   {
-    _showAlert = false;
+    _showAlertPrice = false;
     _showAlertInvalidDeposit = false; 
     _showAlertInvalidAlert = false;
     _showAlertAnAdministratorCantMakeAReservation = false; 

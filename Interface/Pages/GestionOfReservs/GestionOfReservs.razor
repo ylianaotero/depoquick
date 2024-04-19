@@ -10,14 +10,29 @@
     protected override void OnInitialized()
     {
         _navigationManager = NavigationManager; 
-        if (MemoryDataBase.GetUser().IsAdministrator())
+        if (UserIsAdministrator())
         {
-            _navigationManager.NavigateTo("/GestionOfReservsAdmin");
+            GoToGestionOfReservsForAdmins(); 
         }
         else
         {
-            _navigationManager.NavigateTo("/GestionOfReservsClient");
+            GoToGestionOfReservsForClients(); 
         }
+    }
+
+    private bool UserIsAdministrator()
+    {
+        return MemoryDataBase.GetUser().IsAdministrator(); 
+    }
+
+    private void GoToGestionOfReservsForAdmins()
+    {
+        _navigationManager.NavigateTo("/GestionOfReservsAdmin");
+    }
+
+    private void GoToGestionOfReservsForClients()
+    {
+        _navigationManager.NavigateTo("/GestionOfReservsClient");
     }
     
 }

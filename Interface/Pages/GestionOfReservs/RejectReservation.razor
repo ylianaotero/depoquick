@@ -6,47 +6,56 @@
 @using DepoQuick.Domain.Exceptions.ControllerExceptions
 @using DepoQuick.Domain.Exceptions.ReservationExceptions
 
+<html lang="es">
+  <head>
+      <meta charset="utf-8"/>
+      <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+  </head>
 
-<h3>Rechazar reservacion</h3>
+    <body>
+        <h3>Rechazar reservación</h3>
 
-@if (_showAlertReservationNotFound)
-{
-    <br>
-    <div class="alert alert-danger" role="alert">
-        ¡No se encontro deposito con ese id, no se puede aprobar ni rechazar, intente de nuevo!
-    </div>
-    <br>
-}
+        @if (_showAlertReservationNotFound)
+        {
+            <br>
+            <div class="alert alert-danger" role="alert">
+                Lo sentimos, no encontramos ningún depósito con ese ID. No podemos aprobar ni rechazar. ¡Por favor, inténtalo de nuevo!
+            </div>
+            <br>
+        }
 
-@if (_showAlertInvalidComment)
-  {
-    <br>
-     <div class="alert alert-danger" role="alert">
-       ¡Comentario invalido, debe tener menos de 300 caractres!
-     </div>
-    <br>
-  }
+        @if (_showAlertInvalidComment)
+          {
+            <br>
+             <div class="alert alert-danger" role="alert">
+               Comentario inválido. Debe tener menos de 300 caracteres.
+             </div>
+            <br>
+          }
 
-@if (_showAlertEmptyComment)
-  {
-    <br>
-     <div class="alert alert-danger" role="alert">
-       ¡Comentario invalido, no debe estar vacio!
-     </div>
-    <br>
-  }
+        @if (_showAlertEmptyComment)
+          {
+            <br>
+             <div class="alert alert-danger" role="alert">
+               Comentario inválido. No puede estar vacío.
+             </div>
+            <br>
+          }
 
-<form>
-    <div class="form-group">
-        <br>
-        <label>Por favor, especifique el motivo del rechazo de la reserva</label>
-        <br> 
-        <textarea @bind="Comment" class="form-control" id="reservationText" name="reservationText" rows="4" cols="50"></textarea>
-        <br>
-    </div>
-</form>
-<button @onclick="() => RejectTheReservation(_currentReservation.GetId())" class="btn btn-danger btn-sm">Rechazar</button>
-<a href="/GestionOfReservsAdmin" class="btn btn-primary btn-sm">Cancelar</a>
+        <form>
+            <div class="form-group">
+                <br>
+                <label>Por favor, especifique el motivo de rechazo para la reserva.</label>
+                <br> 
+                <textarea @bind="_comment" class="form-control" id="reservationText" name="reservationText" rows="4" cols="50"></textarea>
+                <br>
+            </div>
+        </form>
+        <button @onclick="() => RejectTheReservation(_currentReservation.GetId())" class="btn btn-danger btn-sm">Rechazar</button>
+        <a href="/GestionOfReservsAdmin" class="btn btn-primary btn-sm">Cancelar</a>
+    </body>
+</html>
+
 
 @code {
     private NavigationManager _navigationManager;
@@ -69,13 +78,6 @@
         _currentReservation = _controller.GetReservation(Id);
         _navigationManager = NavigationManager; 
     }
-
-    private String Comment
-    {
-        get => _comment;
-        set { _comment = value; }
-    }
-    
     
     private void RejectTheReservation(int id)
     {

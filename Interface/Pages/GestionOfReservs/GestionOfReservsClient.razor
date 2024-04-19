@@ -3,59 +3,69 @@
 @using DepoQuick.Domain
 @inject MemoryDataBase MemoryDataBase
 
-<h3>Hola! @_client.GetName(), aqui puedes ver tus reservaciones</h3>
+<html lang="es">
+  <head>
+      <meta charset="utf-8"/>
+      <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+  </head>
 
-<table class="table">
-        <thead>
-            <tr>
-                <th>Deposito</th>
-                <th>Desde</th>
-                <th>Hasta</th>
-                <th>Estado</th>
-                <th>Comentario</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (Reservation reservation in _listOfReservations)
-            {
-                <tr>
-                    <td>Deposito @reservation.GetDeposit().GetId()</td>
-                    <td>@reservation.GetDateRange().GetInitialDate().ToString("dd/MM/yyyy")</td>
-                    <td>@reservation.GetDateRange().GetFinalDate().ToString("dd/MM/yyyy")</td>
-                    @if (reservation.GetSate() == 0)
+    <body>
+
+        <h3>¡Hola, @_client.GetName()! Aquí puedes revisar tus reservaciones.</h3>
+
+        <table class="table">
+                <thead>
+                    <tr>
+                        <th>Depósito</th>
+                        <th>Desde</th>
+                        <th>Hasta</th>
+                        <th>Estado</th>
+                        <th>Comentario</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (Reservation reservation in _listOfReservations)
                     {
-                        <td>
-                            <button class="btn btn-secondary btn-sm">En espera</button>
-                        </td>
-                        <td>-</td>
-                    }
-                    else
-                    {
-                        @if (reservation.GetSate() == 1)
-                        {
-                            <td>
-                                <button class="btn btn-success btn-sm">Aprobada</button>
-                            </td>
-                            <td>-</td>
-                            
-                        }
-                        else
-                        {
-                            @if (reservation.GetSate() == -1)
+                        <tr>
+                            <td>Depósito @reservation.GetDeposit().GetId()</td>
+                            <td>@reservation.GetDateRange().GetInitialDate().ToString("dd/MM/yyyy")</td>
+                            <td>@reservation.GetDateRange().GetFinalDate().ToString("dd/MM/yyyy")</td>
+                            @if (reservation.GetSate() == 0)
                             {
                                 <td>
-                                    <button class="btn btn-danger btn-sm">Rechazada</button>
+                                    <button class="btn btn-secondary btn-sm">En espera</button>
                                 </td>
-                                <td>@reservation.GetMessage()</td>
+                                <td>-</td>
                             }
-                        }
+                            else
+                            {
+                                @if (reservation.GetSate() == 1)
+                                {
+                                    <td>
+                                        <button class="btn btn-success btn-sm">Aprobada</button>
+                                    </td>
+                                    <td>-</td>
+                                }
+                                else
+                                {
+                                    @if (reservation.GetSate() == -1)
+                                    {
+                                        <td>
+                                            <button class="btn btn-danger btn-sm">Rechazada</button>
+                                        </td>
+                                        <td>@reservation.GetMessage()</td>
+                                    }
+                                }
+                            }
+                        </tr>
                     }
-                </tr>
-                
-                
-            }
-        </tbody>
-    </table>
+                </tbody>
+            </table>
+    </body>
+</html>
+
+
+
 
 @code {
     private Controller _controller;

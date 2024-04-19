@@ -6,35 +6,43 @@
 @using DepoQuick.Domain.Exceptions.ControllerExceptions
 
 
-<h3>Gestion de reservas</h3>
+<html lang="es">
+  <head>
+      <meta charset="utf-8"/>
+      <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+  </head>
 
-@if (_showAlertReservationNotFound)
-{
-    <br>
-    <div class="alert alert-danger" role="alert">
-        ¡No se encontro deposito con ese id, no se puede aprobar ni rechazar, intente de nuevo!
-    </div>
-    <br>
-}
+    <body>
+
+        <h3>Gestión de reservas</h3>
+
+        @if (_showAlertReservationNotFound)
+        {
+            <br>
+            <div class="alert alert-danger" role="alert">
+                "Lo sentimos, no encontramos ningún depósito con ese ID. No podemos aprobar ni rechazar. ¡Por favor, inténtalo de nuevo!"
+            </div>
+            <br>
+        }
 
 
-<table class="table">
-        <thead>
+        <table class="table">
+            <thead>
             <tr>
                 <th>Cliente</th>
-                <th>Deposito</th>
+                <th>Depósito</th>
                 <th>Desde</th>
                 <th>Hasta</th>
                 <th>Acciones</th>
                 <th>Comentario</th>
             </tr>
-        </thead>
-        <tbody>
+            </thead>
+            <tbody>
             @foreach (Reservation reservation in _listOfReservations)
             {
                 <tr>
                     <td>@reservation.GetClient().GetName()</td>
-                    <td>Deposito @reservation.GetDeposit().GetId()</td>
+                    <td>Depósito @reservation.GetDeposit().GetId()</td>
                     <td>@reservation.GetDateRange().GetInitialDate().ToString("dd/MM/yyyy")</td>
                     <td>@reservation.GetDateRange().GetFinalDate().ToString("dd/MM/yyyy")</td>
                     @if (reservation.GetSate() == 0)
@@ -53,7 +61,7 @@
                                 <button class="btn btn-primary btn-sm">Aprobada</button>
                             </td>
                             <td>-</td>
-                            
+                                    
                         }
                         else
                         {
@@ -67,18 +75,17 @@
                         }
                     }
                 </tr>
-                
-                
             }
-        </tbody>
-    </table>
+            </tbody>
+        </table>
+    </body>
+</html>
 
 @code {
     private Controller _controller;
     private List<Reservation> _listOfReservations;
 
     private bool _showAlertReservationNotFound; 
-    private bool _showTextArea = true;
 
     private String _comment; 
     
@@ -87,15 +94,6 @@
         _controller = new Controller(MemoryDataBase);
         _listOfReservations = MemoryDataBase.GetReservations();
         HideAllAlerts(); 
-    }
-    
-    private String Comment
-    {
-        get => _comment;
-        set {
-            _comment = value; 
-
-        }
     }
 
     private void HideAllAlerts()
@@ -117,6 +115,4 @@
         }
         
     }
-    
-    
 }
