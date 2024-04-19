@@ -195,6 +195,23 @@ public class ControllerTest
 
         controller.GetPromotion(-4); 
     }
+
+    [TestMethod]
+    [ExpectedException(typeof(PromotionNotFoundException))]
+    public void TestDeletePromotion()
+    {
+        MemoryDataBase memoryDataBase = new MemoryDataBase(); 
+        
+        Controller controller = new Controller(memoryDataBase);
+
+        Promotion promotion = new Promotion();
+
+        controller.AddPromotion(promotion);
+
+        int id = promotion.GetId();
+
+        controller.DeletePromotion(id);
+    }
     
     
     
