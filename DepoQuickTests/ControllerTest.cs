@@ -7,22 +7,22 @@ namespace DepoQuickTests;
 [TestClass]
 public class ControllerTest
 {
-    private char area = 'a';
-    private String size = "Mediano";
-    private bool airConditioning = true;
-    private bool reserved = false;
+    private char _area = 'a';
+    private String _size = "Mediano";
+    private bool _airConditioning = true;
+    private bool _reserved = false;
     
-    private char area2 = 'B';
-    private String size2 = "Grande";
-    private bool airConditioning2 = true;
-    private bool reserved2 = false;
+    private char _area2 = 'B';
+    private String _size2 = "Grande";
+    private bool _airConditioning2 = true;
+    private bool _reserved2 = false;
     
     private string _name = "Juan Perez";
     private string _email = "nombre@dominio.es";
     private string _password = "Contrasena#1";
     
-    private Deposit deposit = new Deposit('A', "Pequeño", true, false);
-    private DateRange stay = new DateRange(new DateTime(2024, 04, 07), new DateTime(2024, 04, 08));
+    private Deposit _deposit = new Deposit('A', "Pequeño", true, false);
+    private DateRange _stay = new DateRange(new DateTime(2024, 04, 07), new DateTime(2024, 04, 08));
 
     
     [TestMethod]
@@ -32,7 +32,7 @@ public class ControllerTest
         
         Controller controller = new Controller(memoryDataBase);
         
-        Deposit newDeposit = new Deposit(area, size, airConditioning, reserved);
+        Deposit newDeposit = new Deposit(_area, _size, _airConditioning, _reserved);
 
         controller.AddDeposit(newDeposit); 
         
@@ -47,32 +47,32 @@ public class ControllerTest
         
         Controller controller = new Controller(memoryDataBase);
 
-        Deposit newDeposit0 = new Deposit(area, size, airConditioning, reserved);
-        Deposit newDeposit1 = new Deposit(area2, size2, airConditioning2, reserved2);
+        Deposit newDeposit0 = new Deposit(_area, _size, _airConditioning, _reserved);
+        Deposit newDeposit1 = new Deposit(_area2, _size2, _airConditioning2, _reserved2);
 
         int id = newDeposit1.GetId(); 
         
         controller.AddDeposit(newDeposit0);
         controller.AddDeposit(newDeposit1);
 
-        Assert.AreEqual(char.ToUpper(area2), controller.GetDeposit(id).GetArea());
-        Assert.AreEqual(size2.ToUpper(), controller.GetDeposit(id).GetSize());
-        Assert.AreEqual(airConditioning2, controller.GetDeposit(id).GetAirConditioning());
-        Assert.AreEqual(reserved2, controller.GetDeposit(id).IsReserved());
+        Assert.AreEqual(char.ToUpper(_area2), controller.GetDeposit(id).GetArea());
+        Assert.AreEqual(_size2.ToUpper(), controller.GetDeposit(id).GetSize());
+        Assert.AreEqual(_airConditioning2, controller.GetDeposit(id).GetAirConditioning());
+        Assert.AreEqual(_reserved2, controller.GetDeposit(id).IsReserved());
         Assert.AreEqual(id, controller.GetDeposit(id).GetId());
         
     }
     
     [TestMethod]
-    [ExpectedException(typeof(ExceptionDepositNotFound))] 
+    [ExpectedException(typeof(DepositNotFoundException))] 
     public void TestSearchForADepositUsingAnInvalidId()
     {
         MemoryDataBase memoryDataBase = new MemoryDataBase(); 
         
         Controller controller = new Controller(memoryDataBase);
 
-        Deposit newDeposit0 = new Deposit(area, size, airConditioning, reserved);
-        Deposit newDeposit1 = new Deposit(area2, size2, airConditioning2, reserved2);
+        Deposit newDeposit0 = new Deposit(_area, _size, _airConditioning, _reserved);
+        Deposit newDeposit1 = new Deposit(_area2, _size2, _airConditioning2, _reserved2);
         
         controller.AddDeposit(newDeposit0);
         controller.AddDeposit(newDeposit1);
@@ -90,7 +90,7 @@ public class ControllerTest
 
         Client client = new Client(_name, _email, _password);
         
-        Reservation reservation = new Reservation(deposit, client, stay);
+        Reservation reservation = new Reservation(_deposit, client, _stay);
 
         controller.AddReservation(reservation); 
         
@@ -106,24 +106,24 @@ public class ControllerTest
 
         Client client = new Client(_name, _email, _password);
         
-        Reservation reservation1 = new Reservation(deposit, client, stay);
-        Reservation reservation2 = new Reservation(deposit, client, stay);
+        Reservation reservation1 = new Reservation(_deposit, client, _stay);
+        Reservation reservation2 = new Reservation(_deposit, client, _stay);
 
         int id = reservation1.GetId(); 
         
         controller.AddReservation(reservation1);
         controller.AddReservation(reservation2);
 
-        Assert.AreEqual(deposit, controller.GetReservation(id).GetDeposit());
+        Assert.AreEqual(_deposit, controller.GetReservation(id).GetDeposit());
         Assert.AreEqual(client, controller.GetReservation(id).GetClient());
-        Assert.AreEqual(stay, controller.GetReservation(id).GetDateRange());
+        Assert.AreEqual(_stay, controller.GetReservation(id).GetDateRange());
         
         Assert.AreEqual(id, controller.GetReservation(id).GetId());
         
     }
     
     [TestMethod]
-    [ExpectedException(typeof(ExceptionReservationNotFound))] 
+    [ExpectedException(typeof(ReservationNotFoundException))] 
     public void TestSearchForAReservationUsingAnInvalidId()
     {
         MemoryDataBase memoryDataBase = new MemoryDataBase(); 
@@ -132,8 +132,8 @@ public class ControllerTest
 
         Client client = new Client(_name, _email, _password);
         
-        Reservation reservation1 = new Reservation(deposit, client, stay);
-        Reservation reservation2 = new Reservation(deposit, client, stay);
+        Reservation reservation1 = new Reservation(_deposit, client, _stay);
+        Reservation reservation2 = new Reservation(_deposit, client, _stay);
         
         controller.AddReservation(reservation1);
         controller.AddReservation(reservation2);
@@ -153,13 +153,14 @@ public class ControllerTest
         
         promotion.SetDiscountRate(0.5);
         promotion.SetLabel("Promotion 1");
-        promotion.SetValidityDate(stay);
+        promotion.SetValidityDate(_stay);
 
         controller.AddPromotion(promotion); 
         
         CollectionAssert.Contains(memoryDataBase.GetPromotions(), promotion);
     }
     
+    [TestMethod]
     public void TestSearchForAPromotionById()
     {
         MemoryDataBase memoryDataBase = new MemoryDataBase(); 

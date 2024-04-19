@@ -88,7 +88,7 @@
             reservation.SetSate(-1);
             _navigationManager.NavigateTo("/GestionOfReservsAdmin");
         }
-        catch (ExceptionReservationNotFound exceptionReservationNotFound)
+        catch (ReservationNotFoundException exceptionReservationNotFound)
         {
             _showAlertReservationNotFound = true;
 

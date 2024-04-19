@@ -4,11 +4,10 @@ namespace DepoQuick.Domain;
 
 public class Rating
 {
-    private const int _DEFAULT_MAX_CHARACTERS = 500;
+    private const int DefaultMaxCharacters = 500;
     
     private int _stars;
     private String _comment;
-    
     
     public Rating(int stars, String comment)
     {
@@ -66,7 +65,7 @@ public class Rating
     
     private bool CommentHasMoreThan500Characters(String comment)
     {
-        return comment.Length > _DEFAULT_MAX_CHARACTERS; 
+        return comment.Length > DefaultMaxCharacters; 
     }
     
 }

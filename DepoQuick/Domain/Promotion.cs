@@ -3,12 +3,14 @@
 namespace DepoQuick.Domain;
 public class Promotion
 {
+    private static int s_lastId = 0;
+    
+    private int _id;
+    
     private String _label;
     private Double _discountRate;
     private DateRange _validityDate;
-    private static int s_lastId = 0;
-    private int _id;
-
+    
     public Promotion()
     {
         _id = s_lastId++;

@@ -22,7 +22,7 @@ public class Controller
         Deposit deposit = SearchDeposit(id); 
         if (deposit == null)
         {
-            throw new ExceptionDepositNotFound("Deposito no encontrado"); 
+            throw new DepositNotFoundException("Deposito no encontrado"); 
         }
         else
         {
@@ -41,7 +41,7 @@ public class Controller
         Reservation reservation = SearchReservation(id); 
         if (reservation == null)
         {
-            throw new ExceptionReservationNotFound("Reservacion no encontrada"); 
+            throw new ReservationNotFoundException("Reservacion no encontrada"); 
         }
         else
         {
