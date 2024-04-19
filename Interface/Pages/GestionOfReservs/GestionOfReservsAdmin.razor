@@ -4,7 +4,9 @@
 @using BusinessLogic
 @using DepoQuick.Domain
 @using DepoQuick.Domain.Exceptions.ControllerExceptions
-@using DepoQuick.Domain.Exceptions.ReservationExceptions
+
+
+<h3>Gestion de reservas</h3>
 
 @if (_showAlertReservationNotFound)
 {
@@ -15,23 +17,6 @@
     <br>
 }
 
-@if (_showAlertInvalidComment)
-  {
-    <br>
-     <div class="alert alert-danger" role="alert">
-       ¡Comentario invalido, debe tener menos de 300 caractres!
-     </div>
-    <br>
-  }
-
-@if (_showAlertEmptyComment)
-  {
-    <br>
-     <div class="alert alert-danger" role="alert">
-       ¡Comentario invalido, no debe estar vacio!
-     </div>
-    <br>
-  }
 
 <table class="table">
         <thead>
@@ -56,26 +41,9 @@
                     {
                         <td>
                             <button @onclick="() => ApproveReservation(reservation.GetId())" class="btn btn-success btn-sm">Aprobar</button>
-                            <button @onclick="() => WantToRejectReservation()" class="btn btn-danger btn-sm">Rechazar</button>
-                            @if (_showTextArea)
-                            {
-                                <form>
-                                    <div class="form-group">
-                                        <br>
-                                        <label for="reservationText">Por favor, especifique el motivo del rechazo de la reserva</label>
-                                        <br> 
-                                        <textarea @bind="_comment" class="form-control" id="reservationText" name="reservationText" rows="4" cols="50"></textarea>
-                                        <br>
-                                    </div>
-
-                                    <div class="form-group">
-                                        <button @onclick="() => RejectReservation(reservation.GetId())" class="btn btn-danger btn-sm">Rechazar</button>
-                                        <button @onclick="() => HideTextArea()" class="btn btn-primary btn-sm">Cancelar</button>
-                                    </div>
-                                </form>
-                            }
+                            <a href="/Reject/@reservation.GetId()" class="btn btn-danger btn-sm">Rechazar</a>
                         </td>
-                        
+                        <td>-</td>
                     }
                     else
                     {
@@ -84,6 +52,7 @@
                             <td>
                                 <button class="btn btn-primary btn-sm">Aprobada</button>
                             </td>
+                            <td>-</td>
                             
                         }
                         else
@@ -93,10 +62,10 @@
                                 <td>
                                     <button class="btn btn-secondary btn-sm">Rechazada</button>
                                 </td>
+                                <td>@reservation.GetMessage()</td>
                             }
                         }
                     }
-                    <td>@reservation.GetMessage()</td>
                 </tr>
                 
                 
@@ -109,9 +78,7 @@
     private List<Reservation> _listOfReservations;
 
     private bool _showAlertReservationNotFound; 
-    private bool _showTextArea;
-    private bool _showAlertInvalidComment;
-    private bool _showAlertEmptyComment; 
+    private bool _showTextArea = true;
 
     private String _comment; 
     
@@ -119,15 +86,21 @@
     {
         _controller = new Controller(MemoryDataBase);
         _listOfReservations = MemoryDataBase.GetReservations();
-        _showTextArea = false;
         HideAllAlerts(); 
+    }
+    
+    private String Comment
+    {
+        get => _comment;
+        set {
+            _comment = value; 
+
+        }
     }
 
     private void HideAllAlerts()
     {
         _showAlertReservationNotFound = false;
-        _showAlertInvalidComment = false;
-        _showAlertEmptyComment = false;
 
     }
 
@@ -145,41 +118,5 @@
         
     }
     
-    private void RejectReservation(int id)
-    {
-        try
-        {
-            Reservation reservation = _controller.GetReservation(id);
-            reservation.SetMessage(_comment);
-            reservation.SetSate(-1);
-        }
-        catch (ExceptionReservationNotFound exceptionReservationNotFound)
-        {
-            _showAlertReservationNotFound = true;
-
-        }
-        catch (ReservationMessageHasMoreThan300CharactersException reservationMessageHasMoreThan300CharactersException)
-        {
-            _showAlertInvalidComment = true;
-        }
-        catch (ReservationWithEmptyMessageException reservationWithEmptyMessageException)
-        {
-            _showAlertEmptyComment = true; 
-        }
-        
-    }
-    
-    private void WantToRejectReservation()
-    {
-        _showTextArea = true; 
-
-    }
-    
-    
-
-    private void HideTextArea()
-    {
-        _showTextArea = false;
-    }
     
 }

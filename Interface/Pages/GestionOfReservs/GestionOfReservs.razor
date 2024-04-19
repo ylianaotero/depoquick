@@ -1,0 +1,23 @@
+﻿@page "/GestionOfReservs"
+@inject MemoryDataBase MemoryDataBase
+@inject NavigationManager NavigationManager
+@using BusinessLogic
+
+@code {
+    
+    private NavigationManager _navigationManager;
+    
+    protected override void OnInitialized()
+    {
+        _navigationManager = NavigationManager; 
+        if (MemoryDataBase.GetUser().IsAdministrator())
+        {
+            _navigationManager.NavigateTo("/GestionOfReservsAdmin");
+        }
+        else
+        {
+            _navigationManager.NavigateTo("/GestionOfReservsClient");
+        }
+    }
+    
+}

@@ -11,4 +11,14 @@
       <ProjectReference Include="..\DepoQuick\DepoQuick.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+      <PackageReference Include="Blazorise" Version="1.5.1" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <AdditionalFiles Include="Pages\GestionOfReservs\DepositReserve.razor" />
+      <AdditionalFiles Include="Pages\GestionOfReservs\GestionOfReservsAdmin.razor" />
+      <AdditionalFiles Include="Pages\GestionOfReservs\RejectReservation.razor" />
+    </ItemGroup>
+
 </Project>
