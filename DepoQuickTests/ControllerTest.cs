@@ -160,6 +160,24 @@ public class ControllerTest
         CollectionAssert.Contains(memoryDataBase.GetPromotions(), promotion);
     }
     
+    public void TestSearchForAPromotionById()
+    {
+        MemoryDataBase memoryDataBase = new MemoryDataBase(); 
+        
+        Controller controller = new Controller(memoryDataBase);
+
+        Promotion promotion1 = new Promotion();
+        Promotion promotion2 = new Promotion();
+
+        int id = promotion1.GetId(); 
+        
+        controller.AddPromotion(promotion1);
+        controller.AddPromotion(promotion2);
+
+        Assert.AreEqual(promotion1, controller.GetPromotion(id));
+        
+    }
+    
     
     
 
