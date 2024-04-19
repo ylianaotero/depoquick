@@ -142,5 +142,26 @@ public class ControllerTest
 
     }
 
+    [TestMethod]
+    public void TestAddNewPromotion()
+    {
+        MemoryDataBase memoryDataBase = new MemoryDataBase(); 
+        
+        Controller controller = new Controller(memoryDataBase);
+
+        Promotion promotion = new Promotion();
+        
+        promotion.SetDiscountRate(0.5);
+        promotion.SetLabel("Promotion 1");
+        promotion.SetValidityDate(stay);
+
+        controller.AddPromotion(promotion); 
+        
+        CollectionAssert.Contains(memoryDataBase.GetPromotions(), promotion);
+    }
+    
+    
+    
+
 
 }
