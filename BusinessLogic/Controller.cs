@@ -66,14 +66,16 @@ public class Controller
 
     public Promotion GetPromotion(int id)
     {
-        if (id < 0)
+        Promotion promotion = SearchPromotion(id);
+        if (promotion == null)
         {
-            throw new PromotionNotFoundException("Promocion no encontrada");
+            throw new PromotionNotFoundException("Promoción no encontrada.");
         }
-        else
-        {
-            return _memoryDataBase.GetPromotions().Find(p => p.GetId() == id);
-        }
+        return promotion;
     }
-    
+
+    private Promotion SearchPromotion(int id)
+    {
+        return _memoryDataBase.GetPromotions().Find(p => p.GetId() == id);
+    }
 }
