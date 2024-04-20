@@ -22,7 +22,7 @@
     </ItemGroup>
 
     <ItemGroup>
-      <Folder Include="Pages\Promotions\" />
+      <_ContentIncludedByDefault Remove="Pages\Promotions\Promotions.cshtml" />
     </ItemGroup>
 
 </Project>
