@@ -78,4 +78,9 @@ public class Controller
     {
         return _memoryDataBase.GetPromotions().Find(p => p.GetId() == id);
     }
+
+    public void DeletePromotion(int id)
+    {
+        _memoryDataBase.GetPromotions().Remove(SearchPromotion(id));
+    }
 }

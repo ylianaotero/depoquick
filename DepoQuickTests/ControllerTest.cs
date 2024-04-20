@@ -211,6 +211,8 @@ public class ControllerTest
         int id = promotion.GetId();
 
         controller.DeletePromotion(id);
+        
+        controller.GetPromotion(id);
     }
     
     
