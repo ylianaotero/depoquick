@@ -1,0 +1,58 @@
+@page "/Promotions"
+@using BusinessLogic
+@using DepoQuick.Domain
+@inject MemoryDataBase MemoryDataBase
+
+<html lang="es">
+  <head>
+      <meta charset="utf-8"/>
+      <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+  </head>
+
+    <body>
+
+        <h3>¡Hola, @_client.GetName()! Aquí puedes encontrar nuestras promociones actuales.</h3>
+
+        <table class="table">
+                <thead>
+                    <tr>
+                        <th>Promoción</th>
+                        <th>Desde</th>
+                        <th>Hasta</th>
+                        <th>Descuento</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (Promotion promotion in _listOfPromotions)
+                    {
+                        <tr>
+                            <td>@promotion.GetLabel()</td>
+                            <td>@promotion.GetValidityDate().GetInitialDate().ToString("dd/MM/yyyy")</td>
+                            <td>@promotion.GetValidityDate().GetFinalDate().ToString("dd/MM/yyyy")</td>
+                            <td>@promotion.GetDiscountRate()</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+    </body>
+</html>
+
+
+
+
+@code {
+    private Controller _controller;
+    private List<Promotion> _listOfPromotions;
+    private Client _client; 
+    
+        
+    protected override void OnInitialized()
+    {
+        _controller = new Controller(MemoryDataBase);
+        
+        _client = (Client)MemoryDataBase.GetUser();
+
+        _listOfPromotions = (List<Promotion>)MemoryDataBase.GetPromotions();
+        _listOfPromotions.RemoveAll(promotion => promotion.GetValidityDate().GetFinalDate() < DateTime.Now);
+    }
+}

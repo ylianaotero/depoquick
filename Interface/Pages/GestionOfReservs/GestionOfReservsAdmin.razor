@@ -109,7 +109,7 @@
             Reservation reservation = _controller.GetReservation(id);
             reservation.SetSate(1);
         }
-        catch (ExceptionReservationNotFound exceptionReservationNotFound)
+        catch (ReservationNotFoundException exceptionReservationNotFound)
         {
             _showAlertReservationNotFound = true;
         }

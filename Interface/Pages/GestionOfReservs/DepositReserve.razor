@@ -214,7 +214,7 @@
     {
       _deposit = _controller.GetDeposit(id);
     }
-    catch (ExceptionDepositNotFound exceptionDepositNotFound)
+    catch (DepositNotFoundException exceptionDepositNotFound)
     {
       _showAlertInvalidDeposit = true; 
     }

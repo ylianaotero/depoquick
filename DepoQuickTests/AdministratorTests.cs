@@ -6,7 +6,7 @@ namespace DepoQuickTests;
 public class AdministratorTests
 {
     private Administrator _admin;
-    private Client? _client;
+    private Client _client;
     private Deposit _deposit;
     private Reservation _reservation;
     
@@ -62,5 +62,11 @@ public class AdministratorTests
         _admin.RejectReservation(_reservation, reason);
 
         Assert.IsTrue(_reservation.GetSate() == -1 && _reservation.GetMessage() == reason);
+    }
+
+    [TestMethod]
+    public void TestAdministratorUserIsAdministrator()
+    {
+        Assert.IsTrue(_admin.IsAdministrator());
     }
 }

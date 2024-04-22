@@ -6,10 +6,10 @@ namespace BusinessLogic;
 
 public class MemoryDataBase
 {
-    
-    private List<Deposit> _listOfDeposits;
     private User _user;
+    private List<Deposit> _listOfDeposits;
     private List<Reservation> _listOfReservations; 
+    private List<Promotion> _listOfPromotions;
 
     public MemoryDataBase()
     {
@@ -39,7 +39,10 @@ public class MemoryDataBase
                  new Deposit('B', "Mediano", true, false),
                  new Deposit('A', "Mediano", false, false)
              }
-            ; 
+            ;
+
+
+        _listOfPromotions = new List<Promotion>();
     }
     
     public User GetUser()
@@ -60,6 +63,11 @@ public class MemoryDataBase
     public List<Reservation> GetReservations()
     {
         return _listOfReservations;
+    }
+
+    public List<Promotion> GetPromotions()
+    {
+        return _listOfPromotions;
     }
     
 }

@@ -21,4 +21,8 @@
       <AdditionalFiles Include="Pages\GestionOfReservs\RejectReservation.razor" />
     </ItemGroup>
 
+    <ItemGroup>
+      <_ContentIncludedByDefault Remove="Pages\Promotions\Promotions.cshtml" />
+    </ItemGroup>
+
 </Project>

@@ -11,13 +11,16 @@ public class User
     private static int s_lastId = 0;
     
     private int _id;
+    
+    private bool _isAdministrator; 
+    
     private string _name;
     private string _email;
     private string _password;
     private List<(string, DateTime)> _logs;
-    private bool _isAdministrator; 
     
-public User(string name, string email, string password)
+    
+    public User(string name, string email, string password)
     {
         ValidateName(name);
         ValidateEmail(email);

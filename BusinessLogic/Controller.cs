@@ -22,7 +22,7 @@ public class Controller
         Deposit deposit = SearchDeposit(id); 
         if (deposit == null)
         {
-            throw new ExceptionDepositNotFound("Deposito no encontrado"); 
+            throw new DepositNotFoundException("Deposito no encontrado"); 
         }
         else
         {
@@ -41,7 +41,7 @@ public class Controller
         Reservation reservation = SearchReservation(id); 
         if (reservation == null)
         {
-            throw new ExceptionReservationNotFound("Reservacion no encontrada"); 
+            throw new ReservationNotFoundException("Reservacion no encontrada"); 
         }
         else
         {
@@ -58,5 +58,29 @@ public class Controller
     {
         _memoryDataBase.GetReservations().Add(reservation);
     }
-    
+
+    public void AddPromotion(Promotion promotion)
+    {
+        _memoryDataBase.GetPromotions().Add(promotion);
+    }
+
+    public Promotion GetPromotion(int id)
+    {
+        Promotion promotion = SearchPromotion(id);
+        if (promotion == null)
+        {
+            throw new PromotionNotFoundException("Promoción no encontrada.");
+        }
+        return promotion;
+    }
+
+    private Promotion SearchPromotion(int id)
+    {
+        return _memoryDataBase.GetPromotions().Find(p => p.GetId() == id);
+    }
+
+    public void DeletePromotion(int id)
+    {
+        _memoryDataBase.GetPromotions().Remove(SearchPromotion(id));
+    }
 }

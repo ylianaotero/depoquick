@@ -31,13 +31,20 @@ public class ClientTests
     [TestMethod]
     public void TestAddAReservationToTheClient()
     {
-        Client? client = new Client(_name, _email, _password);
+        Client client = new Client(_name, _email, _password);
         
         Reservation reservation = new Reservation(deposit, client, stay);
 
         client.AddReservation(reservation); 
         
         CollectionAssert.Contains(client.GetReservations(), reservation);
+    }
+
+    [TestMethod]
+    public void TestClientUserIsNotAdministrator()
+    {
+        Client client = new Client(_name, _email, _password);
+        Assert.IsFalse(client.IsAdministrator());
     }
     
     

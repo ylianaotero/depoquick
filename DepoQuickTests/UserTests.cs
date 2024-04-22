@@ -177,16 +177,6 @@ public class UserTests
         user.LogAction(action, timestamp);
     }
     
-    [TestMethod]
-    public void TestAddIfIsAnAdministrator()
-    {
-        Administrator user = new Administrator(_name, _email, _password);
-        user.SetIsAdministrator(true);
-        Assert.IsTrue(user.IsAdministrator());
-    }
-
-    
-    
 private bool ThrowsException(Action functionCall)
     {
         try

@@ -3,9 +3,18 @@
 namespace DepoQuick.Domain;
 public class Promotion
 {
+    private static int s_lastId = 0;
+    
+    private int _id;
+    
     private String _label;
     private Double _discountRate;
     private DateRange _validityDate;
+    
+    public Promotion()
+    {
+        _id = s_lastId++;
+    }
 
     public void SetLabel(String label)
     {
@@ -88,4 +97,8 @@ public class Promotion
         return _validityDate; 
     }
     
+    public int GetId()
+    {
+        return _id;
+    }
 }
