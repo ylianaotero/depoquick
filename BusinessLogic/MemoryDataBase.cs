@@ -1,12 +1,16 @@
-﻿using DepoQuick.Domain;
+﻿using System.Collections;
+using DepoQuick.Domain;
 using DepoQuick.Domain.Exceptions.ControllerExceptions;
+using DepoQuick.Domain.Exceptions.MemoryDataBaseExceptions;
 
 namespace BusinessLogic;
 
 
 public class MemoryDataBase
 {
-    private User _user;
+    private User _userActive;
+    private Administrator _administrator;
+    private List<User> _listOfUsers;
     private List<Deposit> _listOfDeposits;
     private List<Reservation> _listOfReservations; 
     private List<Promotion> _listOfPromotions;
@@ -21,17 +25,17 @@ public class MemoryDataBase
         Reservation reservation = new Reservation(deposit, client, stay);
         
         //agrego usuario para probar pq todavia no esta listo
-        _user = new Client("Juan Perez", "nombre@dominio.es", "Contrasena#1"); 
+        _userActive = new Client("Juan Perez", "nombre@dominio.es", "Contrasena#1"); 
         //_user = new Administrator("Juan Perez", "nombre@dominio.es", "Contrasena#1");
         //_user.SetIsAdministrator(true);
-        Reservation reservation2 = new Reservation(deposit, (Client)_user, stay);
+        Reservation reservation2 = new Reservation(deposit, (Client)_userActive, stay);
         reservation2.SetSate(-1);
         //le estoy poniendo depositos de ejemplo para probar mientras 
         _listOfReservations = new List<Reservation>()
         {
             reservation,reservation2
         };
-        Client user = (Client)_user; 
+        Client user = (Client)_userActive; 
         user.AddReservation(reservation2);
         _listOfDeposits = new List<Deposit>()
              {
@@ -43,16 +47,12 @@ public class MemoryDataBase
 
 
         _listOfPromotions = new List<Promotion>();
+        _listOfUsers = new List<User>();
     }
     
-    public User GetUser()
+    public User GetActiveUser()
     {
-        return _user; 
-    }
-    
-    public void LoginUser(User user)
-    {
-        _user = user;
+        return _userActive; 
     }
     
     public List<Deposit> GetListOfDeposits()
@@ -69,5 +69,15 @@ public class MemoryDataBase
     {
         return _listOfPromotions;
     }
-    
+
+    public List<User> GetListOfUsers()
+    {
+        return _listOfUsers;
+    }
+
+
+    public void setActiveUser(User user)
+    {
+        _userActive = user;
+    }
 }

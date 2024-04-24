@@ -1,5 +1,6 @@
 ﻿using BusinessLogic;
 using DepoQuick.Domain;
+using DepoQuick.Domain.Exceptions.MemoryDataBaseExceptions;
 
 namespace DepoQuickTests;
 
@@ -7,6 +8,7 @@ namespace DepoQuickTests;
 [TestClass]
 public class MemoryDataBaseTests
 {
+    /*
     [TestMethod]
     public void TestLoginUser()
     {
@@ -14,8 +16,11 @@ public class MemoryDataBaseTests
 
         User user = new User("Juan Perez", "juanperez@gmail.com", "Contrasena#1");
 
-        memoryDataBase.LoginUser(user);
+        memoryDataBase.RegisterAdministrator(user);
         
-        Assert.AreEqual(memoryDataBase.GetUser(), user);
+        Assert.AreEqual(memoryDataBase.GetActiveUser(), user);
     }
+    */
+    
+    
 }

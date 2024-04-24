@@ -1,5 +1,6 @@
 ﻿using DepoQuick.Domain;
 using DepoQuick.Domain.Exceptions.ControllerExceptions;
+using DepoQuick.Domain.Exceptions.MemoryDataBaseExceptions;
 
 namespace BusinessLogic;
 
@@ -82,5 +83,78 @@ public class Controller
     public void DeletePromotion(int id)
     {
         _memoryDataBase.GetPromotions().Remove(SearchPromotion(id));
+    }
+
+    public void RegisterAdministrator(string name, string email, string password, String validation)
+    {
+        User.ValidatePasswordConfirmation(password,validation);
+        Administrator newAdministrator = new Administrator(name, email, password);
+        if (_memoryDataBase.GetListOfUsers().Count == 0)
+        {
+            _memoryDataBase.GetListOfUsers().Add(newAdministrator);
+        }
+        else
+        {
+            throw new AdministratorAlreadyExistsException("El administrador ya fue registrado");
+        }
+    }
+
+    public void LoginUser(string email, string password)
+    {
+        bool userExists = false;
+        foreach (User us in _memoryDataBase.GetListOfUsers())
+        {
+            if (us.GetEmail() == email && us.GetPassword() == password)
+            {
+                _memoryDataBase.setActiveUser(us);
+                userExists = true;
+            }
+        }
+        if(!userExists){
+            throw new UserDoesNotExistException("No existe un usuario con los datos proporcionados");
+        }
+    }
+
+    public Administrator GetAdministrator()
+    {
+        if (_memoryDataBase.GetListOfUsers().Count == 0)
+        {
+            throw new EmptyUserListException("No hay usuarios registrados");
+        }
+        else
+        {
+            Administrator administrator = null;
+            foreach (Administrator user in _memoryDataBase.GetListOfUsers())
+            {
+                if (user.IsAdministrator())
+                {
+                    administrator = user;
+                }
+            }
+
+            return administrator;
+        }
+    }
+
+    public void RegisterClient(string name, string email, string password, string validation)
+    {
+        if (_memoryDataBase.GetListOfUsers().Count == 0)
+        {
+            throw new CannotCreateClientBeforeAdminException("Debe registrarse como administrador");
+        }
+        else
+        {
+            User.ValidatePasswordConfirmation(password, validation);
+            foreach (User user in _memoryDataBase.GetListOfUsers())
+            {
+                if (user.GetEmail() == email)
+                {
+                    throw new UserAlreadyExistsException("Un usuario ya fue registrado con ese mail");
+                }
+            }
+
+            Client client = new Client(name, email, password);
+            _memoryDataBase.GetListOfUsers().Add(client);
+        }
     }
 }

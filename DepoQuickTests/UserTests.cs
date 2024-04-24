@@ -10,7 +10,7 @@ public class UserTests
     private string _name = "Juan Perez";
     private string _email = "nombre@dominio.es";
     private string _password = "Contrasena#1";
-
+    
     [TestMethod]
     public void TestValidUserIsCreated()
     {
