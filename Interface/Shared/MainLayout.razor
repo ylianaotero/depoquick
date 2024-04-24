@@ -1,4 +1,9 @@
 ﻿@inherits LayoutComponentBase
+@using BusinessLogic
+@using DepoQuick.Domain
+@inject MemoryDataBase MemoryDataBase
+@inject NavigationManager NavigationManager
+
 
 <PageTitle>Interface</PageTitle>
 
@@ -13,7 +18,48 @@
         </div>
 
         <article class="content px-4">
-            @Body
+            @if (_userAction)
+            {
+                @Body     
+            }
+            else
+            {
+                <h2>¡Bienvenido!</h2>
+                <h3>Desea ingresar o registrarse</h3>
+                <div class="form-btn" style="margin-top:10px">
+                    <button type="button" class="btn btn-primary" @onclick="Login">Ingresar al sistema</button>
+                </div>
+                <div class="form-btn" style="margin-top:10px">
+                    <button type="button" class="btn btn-primary" @onclick="Register">Registrarse</button>
+                </div>
+            }
         </article>
     </main>
 </div>
+
+@if (_buttonPressed)
+     {
+         <NavMenu ShowNavbar=@_buttonPressed />
+     }
+
+@code
+{
+    bool _userAction = false;
+    bool _buttonPressed = false;
+    
+    public void Login()
+    {
+        _buttonPressed = true;
+        _userAction = true;
+        
+        NavigationManager.NavigateTo("/Login");
+    }
+    
+    public void Register()
+    {
+        _buttonPressed = true;
+        _userAction = true;
+        
+        NavigationManager.NavigateTo("/Register");
+    }
+}
