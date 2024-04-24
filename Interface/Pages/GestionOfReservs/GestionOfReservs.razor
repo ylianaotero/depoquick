@@ -22,7 +22,7 @@
 
     private bool UserIsAdministrator()
     {
-        return MemoryDataBase.GetUser().IsAdministrator(); 
+        return MemoryDataBase.GetActiveUser().IsAdministrator(); 
     }
 
     private void GoToGestionOfReservsForAdmins()

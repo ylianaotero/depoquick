@@ -50,7 +50,7 @@
     {
         _controller = new Controller(MemoryDataBase);
         
-        _client = (Client)MemoryDataBase.GetUser();
+        _client = (Client)MemoryDataBase.GetActiveUser();
 
         _listOfPromotions = (List<Promotion>)MemoryDataBase.GetPromotions();
         _listOfPromotions.RemoveAll(promotion => promotion.GetValidityDate().GetFinalDate() < DateTime.Now);

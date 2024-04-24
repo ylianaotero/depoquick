@@ -115,7 +115,7 @@
   
   protected override void OnInitialized()
   {
-    _controller = new Controller(MemoryDataBase); 
+    _controller = new Controller(MemoryDataBase);
     _listOfDeposits = MemoryDataBase.GetListOfDeposits(); 
     HideAllAlerts();
     
@@ -157,7 +157,7 @@
 
   private bool IsAClient()
   {
-    return !MemoryDataBase.GetUser().IsAdministrator(); 
+    return !MemoryDataBase.GetActiveUser().IsAdministrator(); 
     
   }
 
@@ -227,7 +227,7 @@
 
   private void AddReservation()
   {
-      _client = (Client)MemoryDataBase.GetUser();
+      _client = (Client)MemoryDataBase.GetActiveUser();
       Reservation newReservation = new Reservation(_deposit,  _client , _date); 
       
       _client.AddReservation(newReservation);

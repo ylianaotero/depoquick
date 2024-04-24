@@ -77,7 +77,7 @@
     {
         _controller = new Controller(MemoryDataBase);
         
-        _client = (Client)MemoryDataBase.GetUser();
+        _client = (Client)MemoryDataBase.GetActiveUser();
 
         _listOfReservations = _client.GetReservations(); 
     }
