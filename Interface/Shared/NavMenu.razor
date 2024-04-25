@@ -1,4 +1,8 @@
-﻿<div class="top-row ps-3 navbar navbar-dark">
+﻿@using BusinessLogic
+@using DepoQuick.Domain
+@inject MemoryDataBase MemoryDataBase
+
+<div class="top-row ps-3 navbar navbar-dark">
     <div class="container-fluid">
         <a class="navbar-brand" href="">Interface</a>
         <button title="Navigation menu" class="navbar-toggler" @onclick="ToggleNavMenu">
@@ -11,35 +15,38 @@
     <nav class="flex-column">
         <div class="nav-item px-3">
             <NavLink class="nav-link" href="index" Match="NavLinkMatch.All">
-                <span class="oi oi-home" aria-hidden="true"></span> Home
+               <span class="oi oi-home" aria-hidden="true"></span> Home
             </NavLink>
         </div>
         <div class="nav-item px-3">
             <NavLink class="nav-link" href="Promotions">
                 <span class="oi oi-list-rich" aria-hidden="true"></span> Promociones
             </NavLink>
-            </div>
+        </div>
         <div class="nav-item px-3">
             <NavLink class="nav-link" href="GestionOfReservs">
                 <span class="oi oi-list-rich" aria-hidden="true"></span> Gestión de reservas
             </NavLink>
         </div>
         <div class="nav-item px-3">
-            <NavLink class="nav-link" href="DepositReserve">
-                <span class="oi oi-plus" aria-hidden="true"></span> Reservar
-            </NavLink>
+             <NavLink class="nav-link" href="DepositReserve">
+                 <span class="oi oi-plus" aria-hidden="true"></span> Reservar
+             </NavLink>
         </div>
     </nav>
 </div>
 
 @code {
     private bool collapseNavMenu = true;
-
+    private Controller _controller;
     private string? NavMenuCssClass => collapseNavMenu ? "collapse" : null;
-
+    
+    
     private void ToggleNavMenu()
     {
         collapseNavMenu = !collapseNavMenu;
     }
-
+    
+    [Parameter]
+    public bool ShowNavbar { get; set; }
 }
