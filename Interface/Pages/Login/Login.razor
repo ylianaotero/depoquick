@@ -37,6 +37,7 @@
 
 @code {
     bool logged = false;
+    private bool _showAlertUserDoesNotExist;
     private Controller _controller;
     private String _email;
     private String _password;
@@ -53,9 +54,35 @@
     {
         _controller = new Controller(MemoryDataBase);
         _controller.LoginUser(_email,_password);
-        //MemoryDataBase.setActiveUser(_loggedUser);
+        MemoryDataBase.setActiveUser(_loggedUser);
         //TODO: Ver si queremos analizar de alguna forma en especifico que el usuario se haya ingresado correctamente
         logged = true;
+    }
+    
+    private void ShowAlert()
+    {
+        HideAllAlerts();
+        if (UserExists())
+        {
+            LoginUser();
+        }
+        else
+        {
+            _showAlertUserDoesNotExist = true;
+        }
+        
+    }
+    
+    private void HideAllAlerts()
+    {
+        _showAlertUserDoesNotExist = false;
+    }
+
+    private bool UserExists()
+    {
+        return true;
+        //if(MemoryDataBase.GetListOfUsers().Contains())
+        //TODO: No hay metodos para verificar esto
     }
     
 }
