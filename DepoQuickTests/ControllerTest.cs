@@ -319,4 +319,21 @@ public class ControllerTest
         controller.LoginUser(email,password);
         CollectionAssert.Contains(memoryDataBase.GetListOfUsers(), memoryDataBase.GetActiveUser());
     }
+    
+    /*
+     [TestMethod]
+    public void TestGetActiveUser()
+    {
+        MemoryDataBase memoryDataBase = new MemoryDataBase();
+        Controller controller = new Controller(memoryDataBase);
+
+        String nombre = "Maria";
+        String email = "maria@gmail.com";
+        String password = "mAria1..123";
+        String validation = "mAria1..123";
+        controller.RegisterAdministrator(nombre, email, password, validation);
+        controller.LoginUser(email, password);
+        Assert.AreEqual(controller.GetAdministrator(), controller.GetActiveUser());
+    }
+     */
 }

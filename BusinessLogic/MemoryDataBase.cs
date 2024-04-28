@@ -23,18 +23,20 @@ public class MemoryDataBase
         DateTime dayOut = new DateTime(2024, 04, 08);
         DateRange stay = new DateRange(dayIn, dayOut);
         Reservation reservation = new Reservation(deposit, client, stay);
-        
+        _listOfReservations = new List<Reservation>();
+        _listOfDeposits = new List<Deposit>();
         //agrego usuario para probar pq todavia no esta listo
-        _userActive = new Client("Juan Perez", "nombre@dominio.es", "Contrasena#1"); 
-        //_user = new Administrator("Juan Perez", "nombre@dominio.es", "Contrasena#1");
-        //_user.SetIsAdministrator(true);
-        Reservation reservation2 = new Reservation(deposit, (Client)_userActive, stay);
-        reservation2.SetSate(-1);
+        //_userActive = new Client("Juan Perez", "nombre@dominio.es", "Contrasena#1"); 
+        // _userActive = new Administrator("Juan Perez", "nombre@dominio.es", "Contrasena#1");
+       // _userActive.SetIsAdministrator(true);
+        //Reservation reservation2 = new Reservation(deposit, (Client)_userActive, stay);
+        //reservation2.SetSate(-1);
         //le estoy poniendo depositos de ejemplo para probar mientras 
-        _listOfReservations = new List<Reservation>()
+        /*_listOfReservations = new List<Reservation>()
         {
             reservation,reservation2
         };
+
         Client user = (Client)_userActive; 
         user.AddReservation(reservation2);
         _listOfDeposits = new List<Deposit>()
@@ -44,10 +46,11 @@ public class MemoryDataBase
                  new Deposit('A', "Mediano", false, false)
              }
             ;
-
+        */
 
         _listOfPromotions = new List<Promotion>();
         _listOfUsers = new List<User>();
+        //_listOfUsers.Add(_userActive);
     }
     
     public User GetActiveUser()

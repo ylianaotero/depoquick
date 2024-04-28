@@ -157,4 +157,9 @@ public class Controller
             _memoryDataBase.GetListOfUsers().Add(client);
         }
     }
+
+    public User GetActiveUser()
+    {
+        return _memoryDataBase.GetActiveUser();
+    }
 }
