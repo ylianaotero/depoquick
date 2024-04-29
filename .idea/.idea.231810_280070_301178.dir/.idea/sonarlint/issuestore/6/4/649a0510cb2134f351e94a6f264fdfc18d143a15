@@ -1,17 +1,0 @@
-
-}csharpsquid:S6562"5Provide the "DateTimeKind" when creating this object.(£ÛøûÿÿÿÿJ$10afd055-e6c0-429f-a4bf-1535d2032526
-}csharpsquid:S6562"5Provide the "DateTimeKind" when creating this object.(£ÛøûÿÿÿÿJ$1fc84d9f-f67e-4c59-9d76-27867a6f8886
-`csharpsquid:S2933"Make '_area' 'readonly'.(¡…³ÊÿÿÿÿÿJ$6e91e6bd-4fae-4180-9abd-acb0ea3bed12
-[csharpsquid:S2933"Make '_size' 'readonly'.(°ÓíúJ$93351b1e-b529-4e56-a89e-a37eb28bf652
-kcsharpsquid:S2933"#Make '_airConditioning' 'readonly'.(ñŸ¶şÿÿÿÿJ$81750094-662a-42c3-bacc-9257ba513a13
-_csharpsquid:S2933"Make '_reserved' 'readonly'.(Õ´ü¼J$34415ab7-74ab-42a7-9a0c-61016c48647e
-\csharpsquid:S2933"Make '_area2' 'readonly'.(ø¡ó¬J$30e06da1-55f7-4194-aa2c-9fee4f09b8f1
-\csharpsquid:S2933"Make '_size2' 'readonly'.(ƒßè¸J$4f1c4c29-9648-4a7a-8b12-b35eb133bed4
-lcsharpsquid:S2933"$Make '_airConditioning2' 'readonly'.( éèÊúÿÿÿÿJ$45c98d67-1da0-47f3-a40e-26560a772f8f
-`csharpsquid:S2933"Make '_reserved2' 'readonly'.(¦•ıÚJ$a2cdc580-90a9-48e9-b05c-55a87615685b
-[csharpsquid:S2933"Make '_name' 'readonly'.(Ì¯šJ$a0f3ae33-a2ba-41ce-bac2-c5493b8bbd89
-acsharpsquid:S2933"Make '_email' 'readonly'.(•‹“úÿÿÿÿJ$d8bce837-4943-497d-ad3c-28521df2d921
-_csharpsquid:S2933"Make '_password' 'readonly'.(şµìàJ$5b82f76a-bcb4-4b25-b7ec-b3a88f5e4b0b
-ccsharpsquid:S2933"Make '_deposit' 'readonly'.(ô¬¶ßÿÿÿÿÿJ$ee51599c-8275-41ba-bf1d-080540850242
-`csharpsquid:S2933"Make '_stay' 'readonly'.(£ÛøûÿÿÿÿJ$fab0878c-28a9-4c9d-8b17-95220e1494a4
-gcsharpsquid:S125Ç"Remove this commented out code.(ÒÌâ–øÿÿÿÿJ$aa6ee030-c628-40a1-9ca6-a2f2be3028f4
