@@ -169,4 +169,4 @@ public class PromotionTest
         CollectionAssert.Contains(newPromotion.GetDeposits(), bigDeposit);
     }
     
-}
+} 
