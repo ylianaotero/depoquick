@@ -2,6 +2,7 @@
 @using BusinessLogic
 @using DepoQuick.Domain
 @inject MemoryDataBase MemoryDataBase
+@inject NavigationManager NavigationManager
 
 <html lang="es">
   <head>
@@ -11,48 +12,71 @@
 
     <body>
 
-        <h3>¡Hola, @_client.GetName()! Aquí puedes encontrar nuestras promociones actuales.</h3>
+        <h3>¡Hola, @_loggedInUser.GetName()! Aquí puedes encontrar nuestras promociones actuales.</h3>
 
-        <table class="table">
-                <thead>
-                    <tr>
-                        <th>Promoción</th>
-                        <th>Desde</th>
-                        <th>Hasta</th>
-                        <th>Descuento</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach (Promotion promotion in _listOfPromotions)
+    <table class="table">
+        <thead>
+        <tr>
+            <th>Promoción</th>
+            <th>Desde</th>
+            <th>Hasta</th>
+            <th>Descuento</th>
+        </tr>
+        </thead>
+        <tbody>
+        @foreach (Promotion promotion in _listOfPromotions)
+        {
+            <tr>
+                <td>@promotion.GetLabel()</td>
+                <td>@promotion.GetValidityDate().GetInitialDate().ToString("dd/MM/yyyy")</td>
+                <td>@promotion.GetValidityDate().GetFinalDate().ToString("dd/MM/yyyy")</td>
+                <td>@(promotion.GetDiscountRate()*PercentageMultiplier)%</td>
+                @if (_loggedInUser.IsAdministrator())
                     {
-                        <tr>
-                            <td>@promotion.GetLabel()</td>
-                            <td>@promotion.GetValidityDate().GetInitialDate().ToString("dd/MM/yyyy")</td>
-                            <td>@promotion.GetValidityDate().GetFinalDate().ToString("dd/MM/yyyy")</td>
-                            <td>@promotion.GetDiscountRate()</td>
-                        </tr>
+                        <td>
+                            <button class="btn btn-danger" @onclick="(() => DeletePromotion(promotion))">Eliminar</button>
+                        </td>
                     }
-                </tbody>
-            </table>
+            </tr>
+        }
+        </tbody>
+    </table>
+    @if (_loggedInUser.IsAdministrator())
+{
+    <button class="btn btn-primary" @onclick="GoToAddPromotionPage">Crear promoción</button>
+}
     </body>
 </html>
 
-
-
-
 @code {
+    private const double PercentageMultiplier = 100.0;
     private Controller _controller;
     private List<Promotion> _listOfPromotions;
-    private Client _client; 
+    private User _loggedInUser;
     
-        
     protected override void OnInitialized()
     {
         _controller = new Controller(MemoryDataBase);
+        _loggedInUser = _controller.GetActiveUser();
         
-        _client = (Client)MemoryDataBase.GetActiveUser();
+        FilterCurrentPromotions();
+    }
 
-        _listOfPromotions = (List<Promotion>)MemoryDataBase.GetPromotions();
+    private void FilterCurrentPromotions()
+    {
+        _listOfPromotions = _controller.GetPromotions();
         _listOfPromotions.RemoveAll(promotion => promotion.GetValidityDate().GetFinalDate() < DateTime.Now);
     }
+    
+    private void GoToAddPromotionPage()
+    {
+        NavigationManager.NavigateTo("/AddPromotion");
+    }
+
+    private void DeletePromotion(Promotion promotion)
+    {
+        int id = promotion.GetId();
+        _controller.DeletePromotion(id);
+    }
+
 }

@@ -159,8 +159,9 @@ public class ControllerTest
 
         controller.AddPromotion(promotion);
 
-        CollectionAssert.Contains(memoryDataBase.GetPromotions(), promotion);
+        CollectionAssert.Contains(controller.GetPromotions(), promotion);
     }
+    
 
     [TestMethod]
     public void TestSearchForAPromotionById()
@@ -229,7 +230,7 @@ public class ControllerTest
         String validation = "mAria1..123";
         controller.RegisterAdministrator(nombre, email, password, validation);
         controller.LoginUser(email, password);
-        Assert.AreEqual(controller.GetAdministrator(), memoryDataBase.GetActiveUser());
+        Assert.AreEqual(controller.GetAdministrator(), controller.GetActiveUser());
     }
     
     [TestMethod]
@@ -317,7 +318,7 @@ public class ControllerTest
         controller.RegisterAdministrator(name, emailAdmin, password, validation);
         controller.RegisterClient(name, email,password, validation);
         controller.LoginUser(email,password);
-        CollectionAssert.Contains(memoryDataBase.GetListOfUsers(), memoryDataBase.GetActiveUser());
+        CollectionAssert.Contains(memoryDataBase.GetListOfUsers(), controller.GetActiveUser());
     }
     
     /*
