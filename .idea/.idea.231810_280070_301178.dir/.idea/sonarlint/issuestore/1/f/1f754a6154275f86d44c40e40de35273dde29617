@@ -1,0 +1,5 @@
+
+pcsharpsquid:S6602%"N"Find" method should be used instead of the "FirstOrDefault" extension method.(íàš·ýÿÿÿÿ
+pcsharpsquid:S66027"N"Find" method should be used instead of the "FirstOrDefault" extension method.(áß•‚ýÿÿÿÿ
+ˆcsharpsquid:S3217"fEither change the type of 'user' to 'User' or iterate on a generic collection of type 'Administrator'.(¬ÍÚ–ûÿÿÿÿ
+Zcsharpsquid:S3267"8Loops should be simplified using the "Where" LINQ method(¬ÍÚ–ûÿÿÿÿ
