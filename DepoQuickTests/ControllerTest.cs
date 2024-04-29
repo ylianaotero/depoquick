@@ -235,6 +235,27 @@ public class ControllerTest
 
         controller.GetPromotion(id);
     }
+    
+    [TestMethod]
+    public void TestDeletePromotionRemovesPromotionFromRelatedDeposits()
+    {
+        MemoryDataBase memoryDataBase = new MemoryDataBase();
+
+        Controller controller = new Controller(memoryDataBase);
+
+        Promotion promotion = new Promotion();
+
+        List<Deposit> depositsToAddPromotion = new List<Deposit>();
+        depositsToAddPromotion.Add(_deposit);
+        
+        controller.AddPromotion(promotion, depositsToAddPromotion);
+
+        int id = promotion.GetId();
+
+        controller.DeletePromotion(id);
+
+        CollectionAssert.DoesNotContain(_deposit.GetPromotions(), promotion);
+    }
 
     [TestMethod]
     public void TestLoginValidAdministrator()

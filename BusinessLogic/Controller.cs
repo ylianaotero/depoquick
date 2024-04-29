@@ -92,7 +92,17 @@ public class Controller
 
     public void DeletePromotion(int id)
     {
-        _memoryDataBase.GetPromotions().Remove(SearchPromotion(id));
+        List<Promotion> promotions = _memoryDataBase.GetPromotions();
+        Promotion promotionToDelete = SearchPromotion(id);
+        
+        List<Deposit> relatedDeposits = promotionToDelete.GetDeposits();
+        
+        foreach (Deposit deposit in relatedDeposits)
+        {
+            deposit.GetPromotions().Remove(promotionToDelete);
+        }
+       
+        promotions.Remove(promotionToDelete);
     }
 
     public void RegisterAdministrator(string name, string email, string password, String validation)
