@@ -31,13 +31,19 @@
                 <td>@promotion.GetValidityDate().GetInitialDate().ToString("dd/MM/yyyy")</td>
                 <td>@promotion.GetValidityDate().GetFinalDate().ToString("dd/MM/yyyy")</td>
                 <td>@(promotion.GetDiscountRate()*100)%</td>
+                @if (_user.IsAdministrator())
+                    {
+                        <td>
+                            <button class="btn btn-danger" @onclick="(() => DeletePromotion(promotion))">Eliminar</button>
+                        </td>
+                    }
             </tr>
         }
         </tbody>
     </table>
     @if (_user.IsAdministrator())
 {
-    <button class="btn btn-primary" @onclick="NavigateToAddPromotion">Add New Promotion</button>
+    <button class="btn btn-primary" @onclick="NavigateToAddPromotion">Crear promoción</button>
 }
     </body>
 </html>
@@ -48,23 +54,30 @@
 @code {
     private Controller _controller;
     private List<Promotion> _listOfPromotions;
-    private User _user; 
-    
-        
+    private User _user;
+
+
     protected override void OnInitialized()
     {
         _controller = new Controller(MemoryDataBase);
-        
+
         _user = MemoryDataBase.GetActiveUser();
 
         _listOfPromotions = (List<Promotion>)MemoryDataBase.GetPromotions();
         _listOfPromotions.RemoveAll(promotion => promotion.GetValidityDate().GetFinalDate() < DateTime.Now);
     }
-    
-    
 
-private void NavigateToAddPromotion()
-{
-    NavigationManager.NavigateTo("/AddPromotion");
-}
+
+
+    private void NavigateToAddPromotion()
+    {
+        NavigationManager.NavigateTo("/AddPromotion");
+    }
+
+    private void DeletePromotion(Promotion promotion)
+    {
+        int id = promotion.GetId();
+        _controller.DeletePromotion(id);
+    }
+
 }
