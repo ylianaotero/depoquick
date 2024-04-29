@@ -48,9 +48,6 @@
     </body>
 </html>
 
-
-
-
 @code {
     private Controller _controller;
     private List<Promotion> _listOfPromotions;
@@ -58,19 +55,15 @@
     
     protected override void OnInitialized()
     {
-        GetActiveUser();
-        FilterPromotions();
-    }
-    
-    private void GetActiveUser()
-    {
         _controller = new Controller(MemoryDataBase);
-        _controller.GetActiveUser();
+        _activeUser = _controller.GetActiveUser();
+        
+        FilterCurrentPromotions();
     }
 
-    private void FilterPromotions()
+    private void FilterCurrentPromotions()
     {
-        _listOfPromotions = (List<Promotion>)MemoryDataBase.GetPromotions();
+        _listOfPromotions = _controller.GetPromotions();
         _listOfPromotions.RemoveAll(promotion => promotion.GetValidityDate().GetFinalDate() < DateTime.Now);
     }
     

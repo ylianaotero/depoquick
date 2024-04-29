@@ -159,8 +159,9 @@ public class ControllerTest
 
         controller.AddPromotion(promotion);
 
-        CollectionAssert.Contains(memoryDataBase.GetPromotions(), promotion);
+        CollectionAssert.Contains(controller.GetPromotions(), promotion);
     }
+    
 
     [TestMethod]
     public void TestSearchForAPromotionById()
