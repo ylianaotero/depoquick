@@ -172,4 +172,9 @@ public class Controller
     {
         return _memoryDataBase.GetListOfDeposits();
     }
+    
+    public void DeleteDeposit(int id)
+    {
+        _memoryDataBase.GetListOfDeposits().Clear();
+    }
 }
