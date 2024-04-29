@@ -2,6 +2,7 @@
 @using BusinessLogic
 @using DepoQuick.Domain
 @inject MemoryDataBase MemoryDataBase
+@inject NavigationManager NavigationManager
 
 <html lang="es">
   <head>
@@ -11,29 +12,33 @@
 
     <body>
 
-        <h3>¡Hola, @_client.GetName()! Aquí puedes encontrar nuestras promociones actuales.</h3>
+        <h3>¡Hola, @_user.GetName()! Aquí puedes encontrar nuestras promociones actuales.</h3>
 
-        <table class="table">
-                <thead>
-                    <tr>
-                        <th>Promoción</th>
-                        <th>Desde</th>
-                        <th>Hasta</th>
-                        <th>Descuento</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach (Promotion promotion in _listOfPromotions)
-                    {
-                        <tr>
-                            <td>@promotion.GetLabel()</td>
-                            <td>@promotion.GetValidityDate().GetInitialDate().ToString("dd/MM/yyyy")</td>
-                            <td>@promotion.GetValidityDate().GetFinalDate().ToString("dd/MM/yyyy")</td>
-                            <td>@promotion.GetDiscountRate()</td>
-                        </tr>
-                    }
-                </tbody>
-            </table>
+    <table class="table">
+        <thead>
+        <tr>
+            <th>Promoción</th>
+            <th>Desde</th>
+            <th>Hasta</th>
+            <th>Descuento</th>
+        </tr>
+        </thead>
+        <tbody>
+        @foreach (Promotion promotion in _listOfPromotions)
+        {
+            <tr>
+                <td>@promotion.GetLabel()</td>
+                <td>@promotion.GetValidityDate().GetInitialDate().ToString("dd/MM/yyyy")</td>
+                <td>@promotion.GetValidityDate().GetFinalDate().ToString("dd/MM/yyyy")</td>
+                <td>@(promotion.GetDiscountRate()*100)%</td>
+            </tr>
+        }
+        </tbody>
+    </table>
+    @if (_user.IsAdministrator())
+{
+    <button class="btn btn-primary" @onclick="NavigateToAddPromotion">Add New Promotion</button>
+}
     </body>
 </html>
 
@@ -43,16 +48,23 @@
 @code {
     private Controller _controller;
     private List<Promotion> _listOfPromotions;
-    private Client _client; 
+    private User _user; 
     
         
     protected override void OnInitialized()
     {
         _controller = new Controller(MemoryDataBase);
         
-        _client = (Client)MemoryDataBase.GetActiveUser();
+        _user = MemoryDataBase.GetActiveUser();
 
         _listOfPromotions = (List<Promotion>)MemoryDataBase.GetPromotions();
         _listOfPromotions.RemoveAll(promotion => promotion.GetValidityDate().GetFinalDate() < DateTime.Now);
     }
+    
+    
+
+private void NavigateToAddPromotion()
+{
+    NavigationManager.NavigateTo("/AddPromotion");
+}
 }
