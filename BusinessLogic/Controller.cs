@@ -175,6 +175,6 @@ public class Controller
     
     public void DeleteDeposit(int id)
     {
-        _memoryDataBase.GetListOfDeposits().Clear();
+        _memoryDataBase.GetListOfDeposits().Remove(SearchDeposit(id));
     }
 }
