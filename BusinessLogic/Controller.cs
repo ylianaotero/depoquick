@@ -60,9 +60,14 @@ public class Controller
         _memoryDataBase.GetReservations().Add(reservation);
     }
 
-    public void AddPromotion(Promotion promotion)
+    public void AddPromotion(Promotion promotion, List<Deposit> deposits)
     {
         _memoryDataBase.GetPromotions().Add(promotion);
+        foreach (Deposit deposit in deposits)
+        {
+            promotion.AddDeposit(deposit);
+            deposit.AddPromotion(promotion);
+        }
     }
 
     public Promotion GetPromotion(int id)
