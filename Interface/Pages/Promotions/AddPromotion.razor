@@ -54,12 +54,13 @@
         <input type="date" class="form-control" id="finalDate" name="finalDate" @bind="_finalDate">
     </div>
 
-    <input @onclick="AddNewPromotion" id="addNewPromotion" class="btn btn-primary" value="Crear promoción">
+    <input @onclick="AttemptToAddNewPromotion" id="addNewPromotion" class="btn btn-primary" value="Crear promoción">
 </form>
   </body>
 </html>
 
 @code {
+    private const double PercentageDivider = 100.0;
     private Controller _controller;
     private string _label;
     private double _discountRate;
@@ -79,46 +80,43 @@
         HideAllAlerts();
     }
 
-    private void AddNewPromotion()
+    private void AttemptToAddNewPromotion()
     {
         HideAllAlerts();
-        
         ShowAlerts();
         
-        if (_showAlertLabel || _showAlertDiscountRate || _showAlertDate)
+        if (WrongPromotionData())
         {
             return;
         }
         
+        AddNewPromotion();
+        GoToPromotionsPage();
+    }
+    
+    private void AddNewPromotion()
+    {
         _date = new DateRange(_startDate, _finalDate); 
+        
         Promotion newPromotion = new Promotion();
         
         newPromotion.SetLabel(_label);
-        newPromotion.SetDiscountRate(_discountRate/100);
+        newPromotion.SetDiscountRate(_discountRate/PercentageDivider);
         newPromotion.SetValidityDate(_date);
         
         _controller.AddPromotion(newPromotion);
-        
+    }
+    
+    private void GoToPromotionsPage()
+    {
         NavigationManager.NavigateTo("/Promotions");
     }
     
-    private bool IsAValidDate()
+    private bool WrongPromotionData()
     {
-        try
-        {
-            _date = new DateRange(_startDate, _finalDate);
-            return true;
-        }
-        catch (InvalidDateRangeException invalidDateRangeException)
-        {
-            return false;
-        }
-        catch (EmptyDateRangeException emptyDateRangeException)
-        {
-            return false;
-        }
+        return _showAlertLabel || _showAlertDiscountRate || _showAlertDate;
     }
-
+    
     private void ShowAlerts()
     {
         HideAllAlerts();
@@ -141,6 +139,24 @@
         _showAlertDiscountRate = false;
         _showAlertDate = false;
     }
+    
+    private bool IsAValidDate()
+    {
+        try
+        {
+            _date = new DateRange(_startDate, _finalDate);
+            return true;
+        }
+        catch (InvalidDateRangeException invalidDateRangeException)
+        {
+            return false;
+        }
+        catch (EmptyDateRangeException emptyDateRangeException)
+        {
+            return false;
+        }
+    }
+    
     
     private bool IsAValidLabel()
     {
