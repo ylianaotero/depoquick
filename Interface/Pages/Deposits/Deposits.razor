@@ -33,8 +33,11 @@
                 <td>@deposit.GetSize()</td>
                 <td>@AirconditioningToString(deposit.GetAirConditioning())</td>
                 <td>
-                                    <PromotionDropdown Promotions="@deposit.GetPromotions()" />
-                                </td>
+                    @foreach (var promotion in deposit.GetPromotions())
+                    {
+                        <p>@promotion.GetLabel() - @promotion.GetDiscountRate()</p>
+                    }
+                </td>
             </tr>
         }
         </tbody>

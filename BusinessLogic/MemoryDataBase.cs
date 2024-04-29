@@ -41,6 +41,18 @@ public class MemoryDataBase
             reservation,reservation2,reservation
         };
 
+        Deposit d = new Deposit('a', "Mediano", true, false);
+        Promotion p = new Promotion();
+        p.SetLabel("Promo1");
+        p.SetDiscountRate(0.1);
+        d.AddPromotion(p);
+        
+        Promotion p2 = new Promotion();
+        p2.SetLabel("Promo2");
+        p2.SetDiscountRate(0.2);
+        d.AddPromotion(p2);
+        
+
        /* Client user = (Client)_userActive; 
         user.AddReservation(reservation2);*/
         _listOfDeposits = new List<Deposit>()
@@ -48,7 +60,8 @@ public class MemoryDataBase
                  new Deposit('a', "Mediano", true, false),
                  new Deposit('B', "Mediano", true, false),
                  new Deposit('A', "Mediano", false, false),
-                 new Deposit('E', "Mediano", false, false)
+                 new Deposit('E', "Mediano", false, false),
+                 d
              }
             ;
         
