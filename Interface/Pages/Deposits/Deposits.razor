@@ -32,7 +32,9 @@
                 <td>@deposit.GetArea()</td>
                 <td>@deposit.GetSize()</td>
                 <td>@AirconditioningToString(deposit.GetAirConditioning())</td>
-                <td>@deposit.GetSize()</td>
+                <td>
+                                    <PromotionDropdown Promotions="@deposit.GetPromotions()" />
+                                </td>
             </tr>
         }
         </tbody>
