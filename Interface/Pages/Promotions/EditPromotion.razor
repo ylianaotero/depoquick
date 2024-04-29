@@ -1,0 +1,195 @@
+@page "/EditPromotion/{Id:int}" 
+@using BusinessLogic
+@using DepoQuick.Domain
+@using DepoQuick.Domain.Exceptions.DateRangeExceptions
+@using DepoQuick.Domain.Exceptions.PromotionExceptions
+@inject MemoryDataBase MemoryDataBase
+@inject NavigationManager NavigationManager
+<html lang="es">
+  <head>
+      <meta charset="utf-8"/>
+      <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+  </head>
+<body>
+
+<h3>Editar promoción</h3>
+
+@if (_showAlertLabel)
+{
+    <div class="alert alert-danger" role="alert">
+        La etiqueta debe tener entre 1 y 20 caracteres. Por favor intentalo de nuevo.
+    </div>
+}
+
+@if (_showAlertDiscountRate)
+{
+    <div class="alert alert-danger" role="alert">
+        El porcentaje de descuento debe estar entre 5 y 75. Por favor intentalo de nuevo.
+    </div>
+}
+
+@if (_showAlertDate)
+{
+    <div class="alert alert-danger" role="alert">
+        La fecha de inicio debe ser menor a la fecha de finalización. Por favor intentalo de nuevo.
+    </div>
+}  
+
+<form action="#" method="POST">
+    <div class="mb-3">
+        <label for="label" class="form-label">Etiqueta:</label>
+        <input type="text" class="form-control" id="label" name="label" @bind="_label">
+    </div>
+    <div class="mb-3">
+        <label for="discountRate" class="form-label">Porcentaje de descuento:</label>
+        <input type="number" class="form-control" id="discountRate" name="discountRate" @bind="_discountRate">
+    </div>
+    <div class="mb-3">
+        <label for="startDate" class="form-label">Desde:</label>
+        <input type="date" class="form-control" id="startDate" name="startDate" @bind="_startDate">
+    </div>
+    <div class="mb-3">
+        <label for="finalDate" class="form-label">Hasta:</label>
+        <input type="date" class="form-control" id="finalDate" name="finalDate" @bind="_finalDate">
+    </div>
+
+    <input @onclick="AttemptToEditPromotion" id="addNewPromotion" class="btn btn-primary" value="Crear promoción">
+</form>
+  </body>
+</html>
+
+@code {
+    [Parameter] 
+    public int Id { get; set; }
+    
+    private const double PercentageDivider = 100.0;
+    private Controller _controller;
+    private string _label;
+    private double _discountRate;
+    private DateTime _startDate;
+    private DateTime _finalDate;
+    private DateRange _date;
+    
+    private Promotion _promotionToEdit;
+    
+    private bool _showAlertLabel;
+    private bool _showAlertDiscountRate;
+    private bool _showAlertDate;
+
+    protected override void OnInitialized()
+    {
+        _controller = new Controller(MemoryDataBase);
+        _startDate = _promotionToEdit.GetValidityDate().GetInitialDate();
+        _finalDate = _promotionToEdit.GetValidityDate().GetFinalDate();
+        HideAllAlerts();
+    }
+
+    private void AttemptToEditPromotion()
+    {
+        HideAllAlerts();
+        ShowAlerts();
+        
+        if (WrongPromotionData())
+        {
+            return;
+        }
+        
+        UpdatePromotion();
+        GoToPromotionsPage();
+    }
+    
+    private void UpdatePromotion()
+    {
+        _date = new DateRange(_startDate, _finalDate); 
+        
+        _promotionToEdit.SetLabel(_label);
+        _promotionToEdit.SetDiscountRate(_discountRate/PercentageDivider);
+        _promotionToEdit.SetValidityDate(_date);
+    }
+    
+    private void GoToPromotionsPage()
+    {
+        NavigationManager.NavigateTo("/Promotions");
+    }
+    
+    private bool WrongPromotionData()
+    {
+        return _showAlertLabel || _showAlertDiscountRate || _showAlertDate;
+    }
+    
+    private void ShowAlerts()
+    {
+        HideAllAlerts();
+        
+        if (!IsAValidLabel())
+        {
+            _showAlertLabel = true;
+        } else if (!IsAValidDiscountRate())
+        {
+            _showAlertDiscountRate = true;
+        } else if (!IsAValidDate())
+        {
+            _showAlertDate = true;
+        }
+    }
+    
+    private void HideAllAlerts()
+    {
+        _showAlertLabel = false;
+        _showAlertDiscountRate = false;
+        _showAlertDate = false;
+    }
+    
+    private bool IsAValidDate()
+    {
+        try
+        {
+            _date = new DateRange(_startDate, _finalDate);
+            return true;
+        }
+        catch (InvalidDateRangeException invalidDateRangeException)
+        {
+            return false;
+        }
+        catch (EmptyDateRangeException emptyDateRangeException)
+        {
+            return false;
+        }
+    }
+    
+    
+    private bool IsAValidLabel()
+    {
+        try
+        {
+            Promotion promotion = new Promotion();
+            promotion.SetLabel(_label);
+            
+            return true;
+            
+        } catch (PromotionWithEmptyLabelException emptyLabelException)
+        {
+            return false;
+        } 
+        catch (PromotionLabelHasMoreThan20CharactersException labelHasMoreThan20CharactersException)
+        {
+            return false;
+        }
+    }
+    
+    private bool IsAValidDiscountRate()
+    {
+        try
+        {
+            Promotion promotion = new Promotion();
+            promotion.SetDiscountRate(_discountRate/100);
+
+            return true;
+
+        }
+        catch (InvalidPercentageForPromotionException invalidPercentageForPromotionException)
+        {
+            return false;
+        }
+    }
+}
