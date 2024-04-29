@@ -74,6 +74,11 @@ public class Controller
         }
         return promotion;
     }
+    
+    public List<Promotion> GetPromotions()
+    {
+        return _memoryDataBase.GetPromotions();
+    }
 
     private Promotion SearchPromotion(int id)
     {
