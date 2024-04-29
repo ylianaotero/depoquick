@@ -321,6 +321,26 @@ public class ControllerTest
         CollectionAssert.Contains(memoryDataBase.GetListOfUsers(), controller.GetActiveUser());
     }
     
+    [TestMethod]
+    [ExpectedException(typeof(DepositNotFoundException))]
+    public void TestDeleteDeposit()
+    {
+        MemoryDataBase memoryDataBase = new MemoryDataBase();
+
+        Controller controller = new Controller(memoryDataBase);
+
+        Deposit deposit = new Deposit('A', "Pequeño", true, false);
+
+        controller.AddDeposit(deposit);
+
+        int id = deposit.GetId();
+
+        controller.DeleteDeposit(id);
+
+        controller.GetDeposit(id);
+    }
+    
+    
     /*
      [TestMethod]
     public void TestGetActiveUser()
