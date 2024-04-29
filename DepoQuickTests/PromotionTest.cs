@@ -165,6 +165,9 @@ public class PromotionTest
         smallDeposit.AddPromotion(newPromotion);
         bigDeposit.AddPromotion(newPromotion);
         
+        newPromotion.AddDeposit(smallDeposit);
+        newPromotion.AddDeposit(bigDeposit);
+        
         CollectionAssert.Contains(newPromotion.GetDeposits(), smallDeposit);
         CollectionAssert.Contains(newPromotion.GetDeposits(), bigDeposit);
     }

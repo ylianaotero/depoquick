@@ -11,9 +11,12 @@ public class Promotion
     private Double _discountRate;
     private DateRange _validityDate;
     
+    private List<Deposit> _deposits;
+    
     public Promotion()
     {
         _id = s_lastId++;
+        _deposits = new List<Deposit>();
     }
 
     public void SetLabel(String label)
@@ -100,5 +103,15 @@ public class Promotion
     public int GetId()
     {
         return _id;
+    }
+    
+    public void AddDeposit(Deposit deposit)
+    {
+        _deposits.Add(deposit);
+    }
+    
+    public List<Deposit> GetDeposits()
+    {
+        return _deposits; 
     }
 }
