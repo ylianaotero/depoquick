@@ -22,6 +22,7 @@
             <th>Tamaño</th>
             <th>Climatización</th>
             <th>Promociones</th>
+            <th>Reservado</th>
         </tr>
         </thead>
         <tbody>
@@ -31,20 +32,25 @@
                 <td>@deposit.GetId()</td>
                 <td>@deposit.GetArea()</td>
                 <td>@deposit.GetSize()</td>
-                <td>@AirconditioningToString(deposit.GetAirConditioning())</td>
+                <td>@BoolToString(deposit.GetAirConditioning())</td>
                 <td>
+                    @{
+                        FilterCurrentPromotions(deposit);
+                    };
                     @foreach (var promotion in deposit.GetPromotions())
                     {
-                        <p>@promotion.GetLabel() - @promotion.GetDiscountRate()</p>
+                        <p>@promotion.GetLabel() - @(promotion.GetDiscountRate() * PercentageMultiplier)</p>
                     }
                 </td>
+                <td>@BoolToString(deposit.IsReserved())</td>
+
             </tr>
         }
         </tbody>
     </table>
     @if (_loggedInUser.IsAdministrator())
 {
-    <button class="btn btn-primary" @onclick="GoToAddPromotionPage">Crear deposito</button>
+    <button class="btn btn-primary" @onclick="GoToAddDepositPage">Crear deposito</button>
 }
     </body>
 </html>
@@ -63,27 +69,33 @@
         _listOfDeposits = _controller.GetDeposits();
     }
     
-    private string AirconditioningToString(bool airConditioning)
+    private string BoolToString(bool value)
     {
-        return airConditioning ? "Si" : "No";
+        return value ? "Si" : "No";
     }
     
     
-    private void GoToAddPromotionPage()
+    private void GoToAddDepositPage()
     {
         NavigationManager.NavigateTo("/AddPromotion");
     }
 
-    private void DeletePromotion(Promotion promotion)
+    private void DeleteDeposit(Deposit deposit)
     {
-        int id = promotion.GetId();
-        _controller.DeletePromotion(id);
+        int id = deposit.GetId();
+        _controller.DeleteDeposit(id);
     }
 
-    private void GoToEditPromotionPage(Promotion promotion)
+    private void GoToEditDepositPage(Deposit deposit)
     {
-        int promotionId = promotion.GetId();
-        NavigationManager.NavigateTo($"/EditPromotion/{promotionId}");
+        int depositId = deposit.GetId();
+        NavigationManager.NavigateTo($"/EditDeposit/{depositId}");
+    }
+    
+    private void FilterCurrentPromotions(Deposit deposit)
+    {
+        List<Promotion> listOfPromotions = deposit.GetPromotions();
+        listOfPromotions.RemoveAll(promotion => promotion.GetValidityDate().GetFinalDate() < DateTime.Now);
     }
 
 }
