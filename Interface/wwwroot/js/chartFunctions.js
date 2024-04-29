@@ -34,7 +34,14 @@
             datasets: datasets
         },
         options: {
-            legend: { display: false },
+            scales: {
+                yAxes: [{
+                    ticks: {
+                        beginAtZero: true
+                    }
+                }]
+            },
+            maintainAspectRatio: false
         }
     });
 };

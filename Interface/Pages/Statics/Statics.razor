@@ -10,79 +10,82 @@
       <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
   </head>
 
-    <body>
+<body>
+<div style="margin-left: 1rem;">
     <h3>Estadísticas</h3>
+</div>
+
+
+<div class="my-3 p-3 bg-white rounded box-shadow">
     
-        @if (_showAlertInvalidDate)
-        {
-          <br>
-           <div class="alert alert-danger" role="alert">
-             ¡Fecha inválida, la fecha inicial debe ser anterior a la fecha final!
-           </div>
-          <br>
-        }
-        <div class="my-3 p-3 bg-white rounded box-shadow">
-               <div class="alert alert-primary" role="alert">
-                <h4 class="alert-heading">Gráfica de alquileres</h4>
-                <p>Explore el monto total generado en alquileres mediante nuestra herramienta 
-                    de cálculo de ingresos. Ingrese un rango de fechas y obtenga el dinero generado al instante.</p>
-                </div>
-               
-               <form action="#" method="POST">
-                   
-                   <div class="mb-3">
-                       <label for="initialDate" class="form-label">Desde:</label>
-                       <input type="date" class="form-control" id="initialDate" name="initialDate" @bind="_initialDate">
-                   </div>
-                   
-                   <div class="mb-3">
-                       <label for="finalDate" class="form-label">Hasta:</label>
-                       <input type="date" class="form-control"  id="finalDate" name="finalDate" @bind="_finalDate">
-                   </div>
-                         
-                   <input @onclick="showStatics"  id="wantToMakeTheReservation" class="btn btn-primary" value="Ver estadísticas">
-               </form>
-               
-               @if (_showMoneyStatics)
-               {
-                   <br> 
-                   <table class="table table-bordered">
-                       <thead>
-                       <tr>
-                           <th>Área</th>
-                           <th>Dinero generado</th>
-                       </tr>
-                       </thead>
-                       <tbody>
-                       @for(int i = 0; i < _moneyEarnedByAreaOnSelectedDate.Count ; i++)
-                       {
-                           <tr>
-                               <td>@_labels[i]</td>
-                               <td>$ @_moneyEarnedByAreaOnSelectedDate[i]</td>
-                           </tr>
-                       }
-                       </tbody>
-                   </table>
-               } 
-        </div>   
-    
-    
-        <br>
-        
-        <div class="my-3 p-3 bg-white rounded box-shadow">
-                <div class="alert alert-primary" role="alert">
-                <h4 class="alert-heading">Gráfica de alquileres</h4>
-                <p>A continuación, encontrarás una gráfica que muestra la cantidad de alquileres 
-                    realizados en cada área. Sumérgete en los datos y descubre las tendencias de alquiler en tu zona.</p>
-                </div>
-            <br>
-            
-            <div>
-                <canvas id="barChartCanvas" width="100" height="100"></canvas>
-            </div>
-    
+    @if (_showAlertInvalidDate)
+    {
+        <div class="alert alert-danger" role="alert">
+            ¡Fecha inválida, la fecha inicial debe ser anterior a la fecha final!
         </div>
-    </body>
+    }
+    
+    
+    <div class="alert alert-primary" role="alert">
+        <h4 class="alert-heading">Gráfica de alquileres</h4>
+        <p>Explore el monto total generado en alquileres mediante nuestra herramienta
+            de cálculo de ingresos. Ingrese un rango de fechas y obtenga el dinero generado al instante.</p>
+    </div>
+
+    <form action="#" method="POST">
+
+        <div class="mb-3">
+            <label for="initialDate" class="form-label">Desde:</label>
+            <input type="date" class="form-control" id="initialDate" name="initialDate" @bind="_initialDate">
+        </div>
+
+        <div class="mb-3">
+            <label for="finalDate" class="form-label">Hasta:</label>
+            <input type="date" class="form-control" id="finalDate" name="finalDate" @bind="_finalDate">
+        </div>
+
+        <input @onclick="showStatics" id="wantToMakeTheReservation" class="btn btn-primary" value="Ver estadísticas">
+    </form>
+
+    @if (_showMoneyStatics)
+    {
+        <br>
+        <table class="table table-bordered">
+            <thead>
+            <tr>
+                <th>Área</th>
+                <th>Dinero generado</th>
+            </tr>
+            </thead>
+            <tbody>
+            @for (int i = 0; i < _moneyEarnedByAreaOnSelectedDate.Count; i++)
+            {
+                <tr>
+                    <td>@_labels[i]</td>
+                    <td>$ @_moneyEarnedByAreaOnSelectedDate[i]</td>
+                </tr>
+            }
+            </tbody>
+        </table>
+    }
+</div>
+
+
+<br>
+
+<div class="my-3 p-3 bg-white rounded box-shadow">
+    <div class="alert alert-primary" role="alert">
+        <h4 class="alert-heading">Gráfica de alquileres</h4>
+        <p>A continuación, encontrarás una gráfica que muestra la cantidad de alquileres
+            realizados en cada área. Sumérgete en los datos y descubre las tendencias de alquiler en tu zona.</p>
+    </div>
+    <br>
+
+    <div style="display: flex; justify-content: center; align-items: center; height: 400px;">
+        <canvas id="barChartCanvas" style="max-width: 85%; max-height: 100%;"></canvas>
+    </div>
+</div>
+</body>
 </html>
 
 
