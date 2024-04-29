@@ -181,11 +181,14 @@ public class ControllerTest
 
         Promotion promotion1 = new Promotion();
         Promotion promotion2 = new Promotion();
+        
+        List<Deposit> depositsToAddPromotion = new List<Deposit>();
+        depositsToAddPromotion.Add(_deposit);
 
         int id = promotion1.GetId();
 
-        controller.AddPromotion(promotion1);
-        controller.AddPromotion(promotion2);
+        controller.AddPromotion(promotion1, depositsToAddPromotion);
+        controller.AddPromotion(promotion2, depositsToAddPromotion);
 
         Assert.AreEqual(promotion1, controller.GetPromotion(id));
 
@@ -201,9 +204,12 @@ public class ControllerTest
 
         Promotion promotion1 = new Promotion();
         Promotion promotion2 = new Promotion();
+        
+        List<Deposit> depositsToAddPromotion = new List<Deposit>();
+        depositsToAddPromotion.Add(_deposit);
 
-        controller.AddPromotion(promotion1);
-        controller.AddPromotion(promotion2);
+        controller.AddPromotion(promotion1, depositsToAddPromotion);
+        controller.AddPromotion(promotion2, depositsToAddPromotion);
 
         controller.GetPromotion(-4);
     }
@@ -218,7 +224,10 @@ public class ControllerTest
 
         Promotion promotion = new Promotion();
 
-        controller.AddPromotion(promotion);
+        List<Deposit> depositsToAddPromotion = new List<Deposit>();
+        depositsToAddPromotion.Add(_deposit);
+        
+        controller.AddPromotion(promotion, depositsToAddPromotion);
 
         int id = promotion.GetId();
 
