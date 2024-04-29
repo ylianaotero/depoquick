@@ -152,15 +152,24 @@ public class ControllerTest
         Controller controller = new Controller(memoryDataBase);
 
         Promotion promotion = new Promotion();
+        
+        List<Deposit> depositsToAddPromotion = new List<Deposit>();
+        
+        depositsToAddPromotion.Add(_deposit);
 
         promotion.SetDiscountRate(0.5);
         promotion.SetLabel("Promotion 1");
         promotion.SetValidityDate(_stay);
+        
 
-        controller.AddPromotion(promotion);
+        controller.AddPromotion(promotion, depositsToAddPromotion);
 
         CollectionAssert.Contains(controller.GetPromotions(), promotion);
+        CollectionAssert.Contains(controller.GetPromotions()[0].GetDeposits(), _deposit);
+        CollectionAssert.Contains(_deposit.GetPromotions(), promotion);
     }
+    
+    
     
 
     [TestMethod]
