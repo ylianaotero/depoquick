@@ -14,7 +14,7 @@
 
         <h3>¡Hola, @_loggedInUser.GetName()! Aquí puedes encontrar nuestras promociones actuales.</h3>
 
-    <table class="table">
+    <table class="table table-striped table-hover">
         <thead>
         <tr>
             <th>Promoción</th>
@@ -34,11 +34,15 @@
                 @if (_loggedInUser.IsAdministrator())
                     {
                         <td>
-                            <button class="btn btn-danger" @onclick="(() => DeletePromotion(promotion))">Eliminar</button>
-                        </td>
-                        <td>
-                            <button class="btn btn-danger" @onclick="(() => GoToEditPromotionPage(promotion))">Edit</button>
-                        </td>
+                                <div class="btn-group">
+                                    <button class="btn btn-danger" @onclick="(() => DeletePromotion(promotion))">Eliminar
+                                        <i class="fa fa-trash"></i>
+                                    </button>
+                                    <button class="btn btn-info" @onclick="(() => GoToEditPromotionPage(promotion))">Editar 
+                                        <i class="fa fa-pencil"></i>
+                                    </button>
+                                </div>
+                            </td>
                     }
             </tr>
         }
