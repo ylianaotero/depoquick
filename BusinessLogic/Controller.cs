@@ -167,4 +167,9 @@ public class Controller
     {
         return _memoryDataBase.GetActiveUser();
     }
+
+    public List<Deposit> GetDeposits()
+    {
+        return _memoryDataBase.GetListOfDeposits();
+    }
 }

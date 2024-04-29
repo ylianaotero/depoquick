@@ -1,0 +1,84 @@
+@page "/Deposits"
+@using BusinessLogic
+@using DepoQuick.Domain
+@inject MemoryDataBase MemoryDataBase
+@inject NavigationManager NavigationManager
+
+<html lang="es">
+  <head>
+      <meta charset="utf-8"/>
+      <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+  </head>
+
+    <body>
+
+        <h3>¡Hola, @_loggedInUser.GetName()! Aquí puedes encontrar nuestros depositos.</h3>
+
+    <table class="table table-striped table-hover">
+        <thead>
+        <tr>
+            <th>Deposito</th>
+            <th>Area</th>
+            <th>Tamaño</th>
+            <th>Climatización</th>
+            <th>Promociones</th>
+        </tr>
+        </thead>
+        <tbody>
+        @foreach (Deposit deposit in _listOfDeposits)
+        {
+            <tr>
+                <td>@deposit.GetId()</td>
+                <td>@deposit.GetArea()</td>
+                <td>@deposit.GetSize()</td>
+                <td>@AirconditioningToString(deposit.GetAirConditioning())</td>
+                <td>@deposit.GetSize()</td>
+            </tr>
+        }
+        </tbody>
+    </table>
+    @if (_loggedInUser.IsAdministrator())
+{
+    <button class="btn btn-primary" @onclick="GoToAddPromotionPage">Crear deposito</button>
+}
+    </body>
+</html>
+
+@code {
+    private const double PercentageMultiplier = 100.0;
+    private Controller _controller;
+    private List<Deposit> _listOfDeposits;
+    private User _loggedInUser;
+    
+    protected override void OnInitialized()
+    {
+        _controller = new Controller(MemoryDataBase);
+        _loggedInUser = _controller.GetActiveUser();
+
+        _listOfDeposits = _controller.GetDeposits();
+    }
+    
+    private string AirconditioningToString(bool airConditioning)
+    {
+        return airConditioning ? "Si" : "No";
+    }
+    
+    
+    private void GoToAddPromotionPage()
+    {
+        NavigationManager.NavigateTo("/AddPromotion");
+    }
+
+    private void DeletePromotion(Promotion promotion)
+    {
+        int id = promotion.GetId();
+        _controller.DeletePromotion(id);
+    }
+
+    private void GoToEditPromotionPage(Promotion promotion)
+    {
+        int promotionId = promotion.GetId();
+        NavigationManager.NavigateTo($"/EditPromotion/{promotionId}");
+    }
+
+}

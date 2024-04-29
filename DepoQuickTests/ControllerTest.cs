@@ -38,7 +38,7 @@ public class ControllerTest
 
         controller.AddDeposit(newDeposit);
 
-        CollectionAssert.Contains(memoryDataBase.GetListOfDeposits(), newDeposit);
+        CollectionAssert.Contains(controller.GetDeposits(), newDeposit);
 
     }
 
