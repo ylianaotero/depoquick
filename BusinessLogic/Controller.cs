@@ -195,17 +195,25 @@ public class Controller
     
     public void DeleteAllExpiredPromotions()
     {
-        List<Promotion> promotions = new List<Promotion>();
-        foreach (Promotion promotion in _memoryDataBase.GetPromotions())
+        List<Promotion> promotions = _memoryDataBase.GetPromotions();
+        List<Promotion> promotionsToDelete = new List<Promotion>();
+        
+        foreach (Promotion promotion in promotions)
         {
-            if (promotion.GetValidityDate().GetFinalDate() < DateTime.Now)
+            if (PromotionIsExpired(promotion))
             {
-                promotions.Add(promotion);
+                promotionsToDelete.Add(promotion);
             }
         }
-        foreach (Promotion promotion in promotions)
+        
+        foreach (Promotion promotion in promotionsToDelete)
         {
             DeletePromotion(promotion.GetId());
         }
+    }
+    
+    private bool PromotionIsExpired(Promotion promotion)
+    {
+        return promotion.GetValidityDate().GetFinalDate() < DateTime.Now;
     }
 }
