@@ -190,7 +190,17 @@ public class Controller
     
     public void DeleteDeposit(int id)
     {
-        _memoryDataBase.GetListOfDeposits().Remove(SearchDeposit(id));
+        List<Deposit> deposits = _memoryDataBase.GetListOfDeposits();
+        Deposit depositToDelete = SearchDeposit(id);
+        
+        List<Promotion> relatedPromotions = depositToDelete.GetPromotions();
+        
+        foreach (Promotion promotion in relatedPromotions)
+        {
+            promotion.GetDeposits().Remove(depositToDelete);
+        }
+       
+        deposits.Remove(depositToDelete);
     }
     
     public void DeleteAllExpiredPromotions()
