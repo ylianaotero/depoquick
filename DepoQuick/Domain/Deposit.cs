@@ -136,22 +136,25 @@ public class Deposit
     public int CalculatePrice(int numberOfDays)
     {
         int basePrice = Multiply(PriceAccordingToSize(), numberOfDays);
-        int priceWithDiscountForNumberOfDays = ApplyDiscount(basePrice, DiscountAccordingToNumberOfDays(numberOfDays));
+        
         int priceWithIncreaseForAirConditioning =
-            ApplyIncreaseForAirConditioning(priceWithDiscountForNumberOfDays, numberOfDays);
+            ApplyIncreaseForAirConditioning(basePrice, numberOfDays);
+
         int finalPrice = priceWithIncreaseForAirConditioning; 
-        if (IsThereAnySpecialDiscount())
-        {
-            finalPrice = ApplyDiscount(priceWithIncreaseForAirConditioning, GetAvailableDiscount()); 
-        }
+
+        double discount = DiscountAccordingToNumberOfDays(numberOfDays);
+
+        finalPrice = ApplyDiscount(finalPrice,
+            AddTheDiscountAccordingToNumberOfDaysToPromotions(discount)); 
+        
         return finalPrice; 
     }
-    
+
     private int Multiply(int numberOne, int numberTwo)
     {
         return numberOne * numberTwo; 
     }
-    
+
     private int PriceAccordingToSize()
     {
         switch (_size)
@@ -165,12 +168,12 @@ public class Deposit
         }
         
     }
-    
+
     private int ApplyDiscount(int price, double discount)
     {
         return (int) (price * (1 - discount));
     }
-    
+
     private double DiscountAccordingToNumberOfDays(int numberOfDays)
     {
         double discount = DefaultDiscount; 
@@ -184,7 +187,7 @@ public class Deposit
         }
         return discount; 
     }
-    
+
     private int ApplyIncreaseForAirConditioning(int price, int numberOfDays)
     {
         if (_airConditioning)
@@ -194,22 +197,7 @@ public class Deposit
 
         return price; 
     }
-    
-    private bool IsThereAnySpecialDiscount()
-    {
-        List<Promotion> listOfPromotion = GetPromotions();
-        foreach (Promotion promotion in listOfPromotion)
-        {
-            DateRange dateRange = promotion.GetValidityDate();
-            if (DateRangeIsWithinToday(dateRange))
-            {
-                return true; 
-            }
-            
-        }
-        return false; 
-    }
-    
+
     private bool DateRangeIsWithinToday(DateRange dateRange)
     {
         return dateRange.GetInitialDate() <= Today() && dateRange.GetFinalDate() >= Today(); 
@@ -220,16 +208,16 @@ public class Deposit
         return DateTime.Now.Date; 
     }
 
-    private double GetAvailableDiscount()
+    private double AddTheDiscountAccordingToNumberOfDaysToPromotions(double discountAccordingToNumberOfDays)
     {
         List<Promotion> listOfPromotion = GetPromotions();
-        double discount = 0; 
+        double discount = discountAccordingToNumberOfDays; 
         foreach (Promotion promotion in listOfPromotion)
         {
             DateRange dateRange = promotion.GetValidityDate();
-            if (DateRangeIsWithinToday(dateRange) && Issmaller(discount, promotion.GetDiscountRate()))
+            if (DateRangeIsWithinToday(dateRange) && TheSumOfTheDiscountsIsLessThan100(discount, promotion.GetDiscountRate()))
             {
-                discount =  promotion.GetDiscountRate(); 
+                discount +=  promotion.GetDiscountRate(); 
             }
             
         }
@@ -237,12 +225,9 @@ public class Deposit
         return discount; 
     }
 
-    private bool Issmaller(double numberOne, double numberTwo)
+    private bool TheSumOfTheDiscountsIsLessThan100(double discountOne, double discountTwo)
     {
-        return numberOne < numberTwo; 
+        return (discountOne+discountTwo) <= 1; 
     }
-    
-
-
     
 }
