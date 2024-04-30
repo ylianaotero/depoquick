@@ -3,6 +3,7 @@ using BusinessLogic;
 using DepoQuick.Domain;
 using DepoQuick.Domain.Exceptions.ControllerExceptions;
 using DepoQuick.Domain.Exceptions.MemoryDataBaseExceptions;
+using DepoQuick.Domain.Exceptions.UserExceptions;
 using DateTime = System.DateTime;
 
 namespace DepoQuickTests;
@@ -438,7 +439,87 @@ public class ControllerTest
         CollectionAssert.Contains(controller.GetPromotions(), promotion1);
         CollectionAssert.DoesNotContain(controller.GetPromotions(), promotion2);
     }
+
+    [TestMethod]
+    public void TestApproveReservation()
+    {
+        MemoryDataBase memoryDataBase = new MemoryDataBase();
+
+        Controller controller = new Controller(memoryDataBase);
+        
+        Client client = new Client(_name, _email, _password);
+
+        string email = "juan@gmail.com";
+        
+        controller.RegisterAdministrator(_name, email, _password, _password);
+        controller.RegisterClient(_name, _email, _password, _password);
+        
+        controller.LoginUser(_email, _password);
+        Reservation reservation = new Reservation(_deposit, client, _stay);
+        
+        controller.AddReservation(reservation);
+        
+        controller.LoginUser(email, _password);
+        
+        controller.ApproveReservation(reservation);
+        
+        Assert.AreEqual(1, reservation.GetState());
+        Assert.AreEqual(true, reservation.GetDeposit().IsReserved());
+    }
     
+    [TestMethod]
+    public void TestRejectReservation()
+    {
+        MemoryDataBase memoryDataBase = new MemoryDataBase();
+
+        Controller controller = new Controller(memoryDataBase);
+        
+        Client client = new Client(_name, _email, _password);
+
+        string email = "juan@gmail.com";
+        
+        controller.RegisterAdministrator(_name, email, _password, _password);
+        controller.RegisterClient(_name, _email, _password, _password);
+        
+        controller.LoginUser(_email, _password);
+        Reservation reservation = new Reservation(_deposit, client, _stay);
+        
+        controller.AddReservation(reservation);
+        
+        controller.LoginUser(email, _password);
+        
+        controller.RejectReservation(reservation, "No hay disponibilidad");
+        
+        Assert.AreEqual(-1, reservation.GetState());
+        Assert.AreEqual("No hay disponibilidad", reservation.GetMessage());
+        Assert.AreEqual(false, _deposit.IsReserved());
+    }
+    
+    [TestMethod]
+    public void TestCancelRejectionOfReservation()
+    {
+        MemoryDataBase memoryDataBase = new MemoryDataBase();
+
+        Controller controller = new Controller(memoryDataBase);
+        
+        Client client = new Client(_name, _email, _password);
+
+        string email = "juan@gmail.com";
+        
+        controller.RegisterAdministrator(_name, email, _password, _password);
+        controller.RegisterClient(_name, _email, _password, _password);
+        
+        controller.LoginUser(_email, _password);
+        Reservation reservation = new Reservation(_deposit, client, _stay);
+        
+        controller.AddReservation(reservation);
+
+        controller.CancelRejectionOfReservation(reservation);
+        
+        Assert.AreEqual(0, reservation.GetState());
+        Assert.AreEqual("", reservation.GetMessage());
+        Assert.AreEqual(false, _deposit.IsReserved());
+    }
     
     
     
