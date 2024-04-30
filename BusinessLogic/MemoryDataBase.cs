@@ -22,8 +22,8 @@ public class MemoryDataBase
         Reservation reservation = new Reservation(deposit, client, stay);
         Reservation reservation2 = new Reservation(deposit2, client, stay);
         
-        reservation.SetSate(1);
-        reservation2.SetSate(1);
+        reservation.SetState(1);
+        reservation2.SetState(1);
         
         _listOfReservations = new List<Reservation>()
         {
