@@ -227,7 +227,7 @@ public class Deposit
         foreach (Promotion promotion in listOfPromotion)
         {
             DateRange dateRange = promotion.GetValidityDate();
-            if (DateRangeIsWithinToday(dateRange) && Issmaller(discount, promotion.GetDiscountRate()))
+            if (DateRangeIsWithinToday(dateRange) && IsSmaller(discount, promotion.GetDiscountRate()))
             {
                 discount =  promotion.GetDiscountRate(); 
             }
@@ -237,9 +237,14 @@ public class Deposit
         return discount; 
     }
 
-    private bool Issmaller(double numberOne, double numberTwo)
+    private bool IsSmaller(double numberOne, double numberTwo)
     {
         return numberOne < numberTwo; 
+    }
+    
+    public void SetReserved(bool reserved)
+    {
+        _reserved = reserved; 
     }
     
 
