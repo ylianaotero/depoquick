@@ -259,6 +259,30 @@ public class ControllerTest
     }
 
     [TestMethod]
+    public void TestDeleteDepositRemovesDepositFromRelatedPromotions()
+    {
+        MemoryDataBase memoryDataBase = new MemoryDataBase();
+
+        Controller controller = new Controller(memoryDataBase);
+
+        Promotion promotion = new Promotion();
+
+        Deposit deposit = new Deposit(_area, _size, _airConditioning, _reserved);
+
+        List<Deposit> depositsToAddPromotion = new List<Deposit>();
+        depositsToAddPromotion.Add(deposit);
+        
+        controller.AddDeposit(deposit);
+        controller.AddPromotion(promotion, depositsToAddPromotion);
+
+        int id = deposit.GetId();
+        
+        controller.DeleteDeposit(id);
+        
+        CollectionAssert.DoesNotContain(promotion.GetDeposits(), deposit);
+    }
+
+    [TestMethod]
     public void TestLoginValidAdministrator()
     {
         MemoryDataBase memoryDataBase = new MemoryDataBase();
@@ -414,6 +438,8 @@ public class ControllerTest
         CollectionAssert.Contains(controller.GetPromotions(), promotion1);
         CollectionAssert.DoesNotContain(controller.GetPromotions(), promotion2);
     }
+    
+    
     
     
     /*
