@@ -1,9 +1,11 @@
 ﻿@page "/Register"
 @using BusinessLogic
 @using DepoQuick.Domain
+@using DepoQuick.Domain.Exceptions.UserExceptions
+@using Microsoft.AspNetCore.Mvc.Infrastructure
 @inject MemoryDataBase MemoryDataBase
 @inject IJSRuntime JSRuntime
-
+@inject NavigationManager NavigationManager
 
 <html lang="es" xmlns="http://www.w3.org/1999/html">
   <head>
@@ -12,8 +14,47 @@
   </head>
 
     <body>
-
     <h3>¡Bienvenido!</h3>
+    
+    @if (_showAlertNewClient)
+    {
+      <br>
+       <div class="alert alert-danger" role="alert">
+        <h4 class="alert-heading">¿Estás seguro?</h4>
+        <p>Estas a punto de registrar al nuevo cliente @_user.GetName() con el mail @_user.GetEmail()</p>
+        <hr>
+        <input @onclick="RegisterClient" type="submit" class="btn btn-primary" value="Aceptar">
+      </div>
+      <br>
+    }
+    
+    @if (_showAlertInvalidUserPassword)
+    {
+      <br>
+       <div class="alert alert-danger" role="alert">
+        <h4 class="alert-heading">La contraseña no es válida</h4>
+      </div>
+      <br>
+    }
+    
+    @if (_showAlertInvalidUserEmail)
+    {
+      <br>
+       <div class="alert alert-danger" role="alert">
+        <h4 class="alert-heading">El email ingresado no es válido</h4>
+      </div>
+      <br>
+    }
+    
+    @if (_showAlertInvalidUserName)
+        {
+          <br>
+           <div class="alert alert-danger" role="alert">
+            <h4 class="alert-heading">El nombre ingresado no es válido</h4>
+          </div>
+          <br>
+        }
+    
     <form>
         <div class="form-group">
             <label for="name">Nombre:</label>
@@ -32,7 +73,7 @@
                     <input type="password" class="form-control" id="passwordValidation"@bind-value="_passwordValidation" required />
                 </div>
         <br><br/>
-        <button type="submit" class="btn btn-primary" @onclick="RegisterUser">Registrarse</button>
+        <button type="submit" class="btn btn-primary" @onclick="ShowAlert">Registrarse</button>
         @if (registred) {
             <div class="alert alert-success" role="alert">
                 El usuario ingresó correctamente
@@ -44,27 +85,132 @@
 
 @code {
     bool registred = false;
+    private User _user;
+    private bool _showAlertInvalidUserPassword;
+    private bool _showAlertInvalidUserName;
+    private bool _showAlertInvalidUserEmail;
+    private bool _showAlertNewAdmin;
+    private bool _showAlertNewClient;
     private Controller _controller;
     private String _name;
     private String _email;
     private String _password;
     private String _passwordValidation;
     
-        
-    public void RegisterUser()
+    private void ShowAlert()
     {
-        _controller = new Controller(MemoryDataBase);
-        if (_controller.GetAdministrator() != null)
+        HideAllAlerts();
+        if (IsAValidName())
         {
-            _controller.RegisterAdministrator(_name,_email,_password,_passwordValidation);
+            if (IsAValidEmail())
+            {
+                if (IsValidPassword())
+                {
+                    //User.ValidatePasswordConfirmation(_password,_passwordValidation);
+                    if (MemoryDataBase.GetListOfUsers().Count == 0) //Es admin
+                    {
+                        RegisterAdmin();
+                    }
+                    else
+                    {
+                        RegisterClient();
+                    }
+                }
+                else
+                {
+                    _showAlertInvalidUserPassword = true;
+                }
+            }
+            else
+            {
+                _showAlertInvalidUserEmail = true;
+            }
         }
         else
         {
-            _controller.RegisterClient(_name,_email,_password,_passwordValidation);
+            _showAlertInvalidUserName = true;
         }
-        
-        //TODO: Ver si queremos analizar de alguna forma en especifico que el usuario se haya ingresado correctamente
-        registred = true;
+
+    }
+
+    private void HideAllAlerts()
+    {
+        _showAlertNewAdmin = false;
+        _showAlertNewClient = false;
+        _showAlertInvalidUserPassword = false;
+        _showAlertInvalidUserName = false;
+        _showAlertInvalidUserEmail = false;
+    }
+
+    private bool IsAValidName()
+    {
+        try
+        {
+            _user = new User(_name, _email, _password);
+            return true;
+        }
+        catch (EmptyUserNameException emptyUserNameException)
+        {
+            return false;
+        }
+        catch (InvalidUserNameException invalidUserNameException)
+        {
+            return false;
+        }
+        catch (UserNameTooLongException userNameTooLongException)
+        {
+            return false;
+        }
+    }
+
+    private bool IsAValidEmail()
+    {
+        try
+        {
+            _user = new User(_name, _email, _password);
+            return true;
+        }
+        catch (EmptyUserEmailException emptyUserEmailException)
+        {
+            return false;
+        }
+        catch (InvalidUserEmailException invalidUserEmailException)
+        {
+            return false;
+        }
+    }
+
+    private bool IsValidPassword()
+    {
+        try
+        {
+            _user = new User(_name, _email, _password);
+            return true;
+        }
+        catch (EmptyUserPasswordException emptyUserPasswordException)
+        {
+            return false;
+        }
+        catch (InvalidUserPasswordException invalidUserPasswordException)
+        {
+            return false;
+        }
+        catch (PasswordTooShortException passwordTooShortException)
+        {
+            return false;
+        }
+    }
+
+    private void RegisterAdmin()
+    {
+        _controller.RegisterAdministrator(_name,_email,_password,_passwordValidation);
+        NavigationManager.NavigateTo("/Home");
+    }
+
+    private void RegisterClient()
+    {
+        _controller.RegisterClient(_name,_email,_password,_passwordValidation);
+        NavigationManager.NavigateTo("/Home");
     }
     
 }

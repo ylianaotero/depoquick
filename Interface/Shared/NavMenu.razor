@@ -17,35 +17,47 @@
         @if (_isUser)
         {
             <div class="nav-item px-3">
-                        <NavLink class="nav-link" href="index" Match="NavLinkMatch.All">
-                            <span class="oi oi-home" aria-hidden="true"></span> Home
-                        </NavLink>
-                    </div>
-                    <div class="nav-item px-3">
-                        <NavLink class="nav-link" href="/Promotions/Promotions">
-                            <span class="oi oi-list-rich" aria-hidden="true"></span> Promociones
-                        </NavLink>
-                    </div>
-                    <div class="nav-item px-3">
-                        <NavLink class="nav-link" href="GestionOfReservs">
-                            <span class="oi oi-list-rich" aria-hidden="true"></span> Gestión de reservas
-                        </NavLink>
-                    </div>
-                    <div class="nav-item px-3">
-                        <NavLink class="nav-link" href="DepositReserve">
-                            <span class="oi oi-plus" aria-hidden="true"></span> Reservar
-                        </NavLink>
-                    </div>
-                    <div class="nav-item px-3">
-                        <NavLink class="nav-link" href="Register">
-                            <span class="oi oi-plus" aria-hidden="true"></span> Registro
-                        </NavLink>
-                    </div>
-                    <div class="nav-item px-3">
-                        <NavLink class="nav-link" href="Home">
-                            <span class="oi oi-plus" aria-hidden="true"></span> Accion
-                        </NavLink>
-                    </div>
+                <NavLink class="nav-link" href="index" Match="NavLinkMatch.All">
+                    <span class="oi oi-home" aria-hidden="true"></span> Home
+                </NavLink>
+            </div>
+            <div class="nav-item px-3">
+                <NavLink class="nav-link" href="/Promotions/Promotions">
+                    <span class="oi oi-list-rich" aria-hidden="true"></span> Promociones
+                </NavLink>
+            </div>
+            <div class="nav-item px-3">
+                <NavLink class="nav-link" href="GestionOfReservs">
+                    <span class="oi oi-list-rich" aria-hidden="true"></span> Gestión de reservas
+                </NavLink>
+            </div>
+            <div class="nav-item px-3">
+                <NavLink class="nav-link" href="DepositReserve">
+                    <span class="oi oi-plus" aria-hidden="true"></span> Reservar
+                </NavLink>
+            </div>
+            <div class="nav-item px-3">
+                <NavLink class="nav-link" href="Register">
+                    <span class="oi oi-plus" aria-hidden="true"></span> Registro
+                </NavLink>
+            </div>
+            /*
+             <div class="nav-item px-3">
+                <NavLink class="nav-link" href="Home">
+                    <span class="oi oi-plus" aria-hidden="true"></span> Accion
+                </NavLink>
+            </div>
+             */
+           /*
+             @if (UserLoggedIn())
+            {
+                <div class="nav-item px-3">
+                    <NavLink class="nav-link">
+                        <span class="oi oi-account-login" aria-hidden="true" @onclick="Logout"></span> Logout
+                    </NavLink>
+                </div>
+            }
+            */
         }
     </nav>
 </div>
@@ -65,4 +77,16 @@
     { 
         _isUser = MemoryDataBase.GetListOfUsers().Count > 0;
     }
+
+    private bool UserLoggedIn()
+    {
+        return _controller.GetActiveUser() != null;
+    }
+
+    /*
+     private void Logout()
+    {
+        MemoryDataBase.setActiveUser(null);
+    }
+     */
 }
