@@ -53,6 +53,18 @@
         <label for="finalDate" class="form-label">Hasta:</label>
         <input type="date" class="form-control" id="finalDate" name="finalDate" @bind="_finalDate">
     </div>
+    <div class="mb-3">
+    <label for="cars">Depositos: </label>
+    @foreach (var deposit in _deposits)
+    {
+        <label>
+            <input type="checkbox" @onclick="() => ToggleDepositSelection(deposit)" checked="@IsSelected(deposit)" />
+            @deposit.GetId() - Area @deposit.GetArea() 
+        </label>
+    }
+
+    
+</div>
 
     <input @onclick="AttemptToAddNewPromotion" id="addNewPromotion" class="btn btn-primary" value="Crear promoción">
 </form>
@@ -67,6 +79,8 @@
     private DateTime _startDate;
     private DateTime _finalDate;
     private DateRange _date;
+    private List<Deposit> _deposits;
+    private List<Deposit> _selectedDeposits;
     
     private bool _showAlertLabel;
     private bool _showAlertDiscountRate;
@@ -77,8 +91,28 @@
         _controller = new Controller(MemoryDataBase);
         _startDate = DateTime.Now;
         _finalDate = DateTime.Now;
+        _deposits = _controller.GetDeposits();
+        _selectedDeposits = new List<Deposit>();
         HideAllAlerts();
     }
+    
+    void ToggleDepositSelection(Deposit deposit)
+    {
+        if (_selectedDeposits.Contains(deposit))
+        {
+            _selectedDeposits.Remove(deposit);
+        }
+        else
+        {
+            _selectedDeposits.Add(deposit);
+        }
+    }
+
+    bool IsSelected(Deposit deposit)
+    {
+        return _selectedDeposits.Contains(deposit);
+    }
+
 
     private void AttemptToAddNewPromotion()
     {
@@ -103,10 +137,9 @@
         newPromotion.SetLabel(_label);
         newPromotion.SetDiscountRate(_discountRate/PercentageDivider);
         newPromotion.SetValidityDate(_date);
-
-        List<Deposit> deposits = new List<Deposit>();
         
-        _controller.AddPromotion(newPromotion, deposits);
+        
+        _controller.AddPromotion(newPromotion, _selectedDeposits);
     }
     
     private void GoToPromotionsPage()
