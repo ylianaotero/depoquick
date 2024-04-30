@@ -21,6 +21,7 @@
             <th>Desde</th>
             <th>Hasta</th>
             <th>Descuento</th>
+            <th>Depósitos a los que aplica</th>
         </tr>
         </thead>
         <tbody>
@@ -31,6 +32,12 @@
                 <td>@promotion.GetValidityDate().GetInitialDate().ToString("dd/MM/yyyy")</td>
                 <td>@promotion.GetValidityDate().GetFinalDate().ToString("dd/MM/yyyy")</td>
                 <td>@(promotion.GetDiscountRate()*PercentageMultiplier)%</td>
+                <td>
+                    @foreach (var deposit in promotion.GetDeposits())
+                    {
+                        <p>@deposit.GetId() - Area @deposit.GetArea()</p>
+                    }
+                </td>
                 @if (_loggedInUser.IsAdministrator())
                     {
                         <td>

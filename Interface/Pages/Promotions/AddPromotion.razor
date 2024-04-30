@@ -53,18 +53,27 @@
         <label for="finalDate" class="form-label">Hasta:</label>
         <input type="date" class="form-control" id="finalDate" name="finalDate" @bind="_finalDate">
     </div>
-    <div class="mb-3">
-    <label for="cars">Depositos: </label>
-    @foreach (var deposit in _deposits)
-    {
-        <label>
-            <input type="checkbox" @onclick="() => ToggleDepositSelection(deposit)" checked="@IsSelected(deposit)" />
-            @deposit.GetId() - Area @deposit.GetArea() 
+     <label for="deposits" class="form-label">Depositos: </label>
+    <div class="form-check">
+        <input class="form-check-input" type="checkbox" id="select-all" @onclick="() => SelectAllDeposits()" />
+        <label class="form-check-label" for="select-all">
+            Selecccionar todo
         </label>
-    }
+        </div>
+        
+        @foreach (var deposit in _deposits)
+        {
+            <div class="form-check">
+
+                <input class="form-check-input" type="checkbox" id="@deposit.GetId()" @onclick="() => ToggleDepositSelection(deposit)" checked="@IsSelected(deposit)"/>
+                <label class="form-check-label" for="@deposit.GetId()">
+                    @deposit.GetId() - Area @deposit.GetArea()
+                </label>
+            </div>
+        }
+
 
     
-</div>
 
     <input @onclick="AttemptToAddNewPromotion" id="addNewPromotion" class="btn btn-primary" value="Crear promoción">
 </form>
@@ -85,6 +94,8 @@
     private bool _showAlertLabel;
     private bool _showAlertDiscountRate;
     private bool _showAlertDate;
+    
+    private bool _selectAllDeposits;
 
     protected override void OnInitialized()
     {
@@ -93,6 +104,7 @@
         _finalDate = DateTime.Now;
         _deposits = _controller.GetDeposits();
         _selectedDeposits = new List<Deposit>();
+        _selectAllDeposits = false;
         HideAllAlerts();
     }
     
@@ -107,12 +119,26 @@
             _selectedDeposits.Add(deposit);
         }
     }
+    
+
 
     bool IsSelected(Deposit deposit)
     {
         return _selectedDeposits.Contains(deposit);
     }
 
+    void SelectAllDeposits()
+    {
+        _selectAllDeposits = !_selectAllDeposits;
+        if (_selectAllDeposits)
+        {
+            _selectedDeposits = new List<Deposit>(_deposits);
+        }
+        else
+        {
+            _selectedDeposits.Clear();
+        }
+    }   
 
     private void AttemptToAddNewPromotion()
     {
