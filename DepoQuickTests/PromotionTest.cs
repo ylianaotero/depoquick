@@ -153,5 +153,23 @@ public class PromotionTest
         new DateRange(dateFrom, dateTo );
         
     }
+
+    [TestMethod]
+    public void TestGetDepositsWithPromotion()
+    {
+        Promotion newPromotion = new Promotion();
+        
+        Deposit smallDeposit = new Deposit('A', "pequeño", false, false);
+        Deposit bigDeposit = new Deposit('B', "grande", true, false);
+        
+        smallDeposit.AddPromotion(newPromotion);
+        bigDeposit.AddPromotion(newPromotion);
+        
+        newPromotion.AddDeposit(smallDeposit);
+        newPromotion.AddDeposit(bigDeposit);
+        
+        CollectionAssert.Contains(newPromotion.GetDeposits(), smallDeposit);
+        CollectionAssert.Contains(newPromotion.GetDeposits(), bigDeposit);
+    }
     
-}
+} 

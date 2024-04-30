@@ -5,58 +5,73 @@
 @using DepoQuick.Domain.Exceptions.PromotionExceptions
 @inject MemoryDataBase MemoryDataBase
 @inject NavigationManager NavigationManager
+
 <html lang="es">
-  <head>
-      <meta charset="utf-8"/>
-      <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
-  </head>
+    <head>
+        <meta charset="utf-8"/>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+    </head>
 
-<body>
+    <body>
+        <h3>Agregar promoción</h3>
 
-<h3>Agregar promoción</h3>
+        @if (_showAlertLabel)
+        {
+            <div class="alert alert-danger" role="alert">
+                La etiqueta debe tener entre 1 y 20 caracteres. Por favor inténtalo de nuevo.
+            </div>
+        }
+        @if (_showAlertDiscountRate)
+        {
+            <div class="alert alert-danger" role="alert">
+                El porcentaje de descuento debe estar entre 5 y 75. Por favor inténtalo de nuevo.
+            </div>
+        }
+        @if (_showAlertDate)
+        {
+            <div class="alert alert-danger" role="alert">
+                La fecha de inicio debe ser menor a la fecha de finalización. Por favor inténtalo de nuevo.
+            </div>
+        }  
 
-@if (_showAlertLabel)
-{
-    <div class="alert alert-danger" role="alert">
-        La etiqueta debe tener entre 1 y 20 caracteres. Por favor intentalo de nuevo.
-    </div>
-}
+        <form action="#" method="POST">
+            <div class="mb-3">
+                <label for="label" class="form-label">Etiqueta:</label>
+                <input type="text" class="form-control" id="label" name="label" @bind="_label">
+            </div>
+            <div class="mb-3">
+                <label for="discountRate" class="form-label">Porcentaje de descuento:</label>
+                <input type="number" class="form-control" id="discountRate" name="discountRate" @bind="_discountRate">
+            </div>
+            <div class="mb-3">
+                <label for="startDate" class="form-label">Desde:</label>
+                <input type="date" class="form-control" id="startDate" name="startDate" @bind="_startDate">
+            </div>
+            <div class="mb-3">
+                <label for="finalDate" class="form-label">Hasta:</label>
+                <input type="date" class="form-control" id="finalDate" name="finalDate" @bind="_finalDate">
+            </div>
+            
+            <label for="deposits" class="form-label">Depósitos: </label>
+            <div class="form-check">
+                <input class="form-check-input" type="checkbox" id="select-all" @onclick="() => SelectAllDeposits()" />
+                <label class="form-check-label" for="select-all">
+                    Selecccionar todo
+                </label>
+            </div>
+            @foreach (var deposit in _deposits)
+            {
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" id="@deposit.GetId()" @onclick="() => ToggleDepositSelection(deposit)" checked="@IsSelected(deposit)"/>
+                    <label class="form-check-label" for="@deposit.GetId()">
+                        Depósito @deposit.GetId() - Area @deposit.GetArea()
+                    </label>
+                </div>
+            }
 
-@if (_showAlertDiscountRate)
-{
-    <div class="alert alert-danger" role="alert">
-        El porcentaje de descuento debe estar entre 5 y 75. Por favor intentalo de nuevo.
-    </div>
-}
-
-@if (_showAlertDate)
-{
-    <div class="alert alert-danger" role="alert">
-        La fecha de inicio debe ser menor a la fecha de finalización. Por favor intentalo de nuevo.
-    </div>
-}  
-
-<form action="#" method="POST">
-    <div class="mb-3">
-        <label for="label" class="form-label">Etiqueta:</label>
-        <input type="text" class="form-control" id="label" name="label" @bind="_label">
-    </div>
-    <div class="mb-3">
-        <label for="discountRate" class="form-label">Porcentaje de descuento:</label>
-        <input type="number" class="form-control" id="discountRate" name="discountRate" @bind="_discountRate">
-    </div>
-    <div class="mb-3">
-        <label for="startDate" class="form-label">Desde:</label>
-        <input type="date" class="form-control" id="startDate" name="startDate" @bind="_startDate">
-    </div>
-    <div class="mb-3">
-        <label for="finalDate" class="form-label">Hasta:</label>
-        <input type="date" class="form-control" id="finalDate" name="finalDate" @bind="_finalDate">
-    </div>
-
-    <input @onclick="AttemptToAddNewPromotion" id="addNewPromotion" class="btn btn-primary" value="Crear promoción">
-</form>
-  </body>
+            <input @onclick="AttemptToAddNewPromotion" id="addNewPromotion" class="btn btn-primary" value="Crear promoción">
+        </form>
+    </body>
 </html>
 
 @code {
@@ -67,18 +82,56 @@
     private DateTime _startDate;
     private DateTime _finalDate;
     private DateRange _date;
+    private List<Deposit> _deposits;
+    private List<Deposit> _selectedDeposits;
     
     private bool _showAlertLabel;
     private bool _showAlertDiscountRate;
     private bool _showAlertDate;
+    
+    private bool _selectAllDeposits;
 
     protected override void OnInitialized()
     {
         _controller = new Controller(MemoryDataBase);
         _startDate = DateTime.Now;
         _finalDate = DateTime.Now;
+        _deposits = _controller.GetDeposits();
+        _selectedDeposits = new List<Deposit>();
+        _selectAllDeposits = false;
         HideAllAlerts();
     }
+    
+    void ToggleDepositSelection(Deposit deposit)
+    {
+        if (_selectedDeposits.Contains(deposit))
+        {
+            _selectedDeposits.Remove(deposit);
+        }
+        else
+        {
+            _selectedDeposits.Add(deposit);
+        }
+    }
+    
+
+    bool IsSelected(Deposit deposit)
+    {
+        return _selectedDeposits.Contains(deposit);
+    }
+
+    void SelectAllDeposits()
+    {
+        _selectAllDeposits = !_selectAllDeposits;
+        if (_selectAllDeposits)
+        {
+            _selectedDeposits = new List<Deposit>(_deposits);
+        }
+        else
+        {
+            _selectedDeposits.Clear();
+        }
+    }   
 
     private void AttemptToAddNewPromotion()
     {
@@ -104,7 +157,8 @@
         newPromotion.SetDiscountRate(_discountRate/PercentageDivider);
         newPromotion.SetValidityDate(_date);
         
-        _controller.AddPromotion(newPromotion);
+        
+        _controller.AddPromotion(newPromotion, _selectedDeposits);
     }
     
     private void GoToPromotionsPage()

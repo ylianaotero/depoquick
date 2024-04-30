@@ -3,6 +3,7 @@ using BusinessLogic;
 using DepoQuick.Domain;
 using DepoQuick.Domain.Exceptions.ControllerExceptions;
 using DepoQuick.Domain.Exceptions.MemoryDataBaseExceptions;
+using DateTime = System.DateTime;
 
 namespace DepoQuickTests;
 
@@ -38,7 +39,7 @@ public class ControllerTest
 
         controller.AddDeposit(newDeposit);
 
-        CollectionAssert.Contains(memoryDataBase.GetListOfDeposits(), newDeposit);
+        CollectionAssert.Contains(controller.GetDeposits(), newDeposit);
 
     }
 
@@ -152,15 +153,24 @@ public class ControllerTest
         Controller controller = new Controller(memoryDataBase);
 
         Promotion promotion = new Promotion();
+        
+        List<Deposit> depositsToAddPromotion = new List<Deposit>();
+        
+        depositsToAddPromotion.Add(_deposit);
 
         promotion.SetDiscountRate(0.5);
         promotion.SetLabel("Promotion 1");
         promotion.SetValidityDate(_stay);
+        
 
-        controller.AddPromotion(promotion);
+        controller.AddPromotion(promotion, depositsToAddPromotion);
 
         CollectionAssert.Contains(controller.GetPromotions(), promotion);
+        CollectionAssert.Contains(controller.GetPromotions()[0].GetDeposits(), _deposit);
+        CollectionAssert.Contains(_deposit.GetPromotions(), promotion);
     }
+    
+    
     
 
     [TestMethod]
@@ -172,11 +182,14 @@ public class ControllerTest
 
         Promotion promotion1 = new Promotion();
         Promotion promotion2 = new Promotion();
+        
+        List<Deposit> depositsToAddPromotion = new List<Deposit>();
+        depositsToAddPromotion.Add(_deposit);
 
         int id = promotion1.GetId();
 
-        controller.AddPromotion(promotion1);
-        controller.AddPromotion(promotion2);
+        controller.AddPromotion(promotion1, depositsToAddPromotion);
+        controller.AddPromotion(promotion2, depositsToAddPromotion);
 
         Assert.AreEqual(promotion1, controller.GetPromotion(id));
 
@@ -192,9 +205,12 @@ public class ControllerTest
 
         Promotion promotion1 = new Promotion();
         Promotion promotion2 = new Promotion();
+        
+        List<Deposit> depositsToAddPromotion = new List<Deposit>();
+        depositsToAddPromotion.Add(_deposit);
 
-        controller.AddPromotion(promotion1);
-        controller.AddPromotion(promotion2);
+        controller.AddPromotion(promotion1, depositsToAddPromotion);
+        controller.AddPromotion(promotion2, depositsToAddPromotion);
 
         controller.GetPromotion(-4);
     }
@@ -209,13 +225,61 @@ public class ControllerTest
 
         Promotion promotion = new Promotion();
 
-        controller.AddPromotion(promotion);
+        List<Deposit> depositsToAddPromotion = new List<Deposit>();
+        depositsToAddPromotion.Add(_deposit);
+        
+        controller.AddPromotion(promotion, depositsToAddPromotion);
 
         int id = promotion.GetId();
 
         controller.DeletePromotion(id);
 
         controller.GetPromotion(id);
+    }
+    
+    [TestMethod]
+    public void TestDeletePromotionRemovesPromotionFromRelatedDeposits()
+    {
+        MemoryDataBase memoryDataBase = new MemoryDataBase();
+
+        Controller controller = new Controller(memoryDataBase);
+
+        Promotion promotion = new Promotion();
+
+        List<Deposit> depositsToAddPromotion = new List<Deposit>();
+        depositsToAddPromotion.Add(_deposit);
+        
+        controller.AddPromotion(promotion, depositsToAddPromotion);
+
+        int id = promotion.GetId();
+
+        controller.DeletePromotion(id);
+
+        CollectionAssert.DoesNotContain(_deposit.GetPromotions(), promotion);
+    }
+
+    [TestMethod]
+    public void TestDeleteDepositRemovesDepositFromRelatedPromotions()
+    {
+        MemoryDataBase memoryDataBase = new MemoryDataBase();
+
+        Controller controller = new Controller(memoryDataBase);
+
+        Promotion promotion = new Promotion();
+
+        Deposit deposit = new Deposit(_area, _size, _airConditioning, _reserved);
+
+        List<Deposit> depositsToAddPromotion = new List<Deposit>();
+        depositsToAddPromotion.Add(deposit);
+        
+        controller.AddDeposit(deposit);
+        controller.AddPromotion(promotion, depositsToAddPromotion);
+
+        int id = deposit.GetId();
+        
+        controller.DeleteDeposit(id);
+        
+        CollectionAssert.DoesNotContain(promotion.GetDeposits(), deposit);
     }
 
     [TestMethod]
@@ -318,8 +382,66 @@ public class ControllerTest
         controller.RegisterAdministrator(name, emailAdmin, password, validation);
         controller.RegisterClient(name, email,password, validation);
         controller.LoginUser(email,password);
-        CollectionAssert.Contains(memoryDataBase.GetListOfUsers(), controller.GetActiveUser());
+        CollectionAssert.Contains(controller.GetUsers(), controller.GetActiveUser());
     }
+    
+    [TestMethod]
+    [ExpectedException(typeof(DepositNotFoundException))]
+    public void TestDeleteDeposit()
+    {
+        MemoryDataBase memoryDataBase = new MemoryDataBase();
+
+        Controller controller = new Controller(memoryDataBase);
+
+        Deposit deposit = new Deposit('A', "Pequeño", true, false);
+
+        controller.AddDeposit(deposit);
+
+        int id = deposit.GetId();
+
+        controller.DeleteDeposit(id);
+
+        controller.GetDeposit(id);
+    }
+    
+    [TestMethod]
+    public void TestDeleteAllExpiredPromotions()
+    {
+        MemoryDataBase memoryDataBase = new MemoryDataBase();
+
+        Controller controller = new Controller(memoryDataBase);
+
+        Promotion promotion1 = new Promotion();
+        DateTime startDate = DateTime.Now;
+        DateTime endDate = startDate.AddDays(10);
+        DateRange dateRange = new DateRange(startDate, endDate);
+        
+        promotion1.SetValidityDate(dateRange);
+        
+        Promotion promotion2 = new Promotion();
+
+        DateTime expiredStartDate = DateTime.Now.AddDays(-10);
+        DateTime expiredEndDate = DateTime.Now.AddDays(-5);
+        DateRange expiredDateRange = new DateRange(expiredStartDate, expiredEndDate);
+        
+        promotion2.SetValidityDate(expiredDateRange);
+            
+        
+        List<Deposit> depositsToAddPromotion = new List<Deposit>();
+        depositsToAddPromotion.Add(_deposit);
+
+        controller.AddPromotion(promotion1, depositsToAddPromotion);
+        controller.AddPromotion(promotion2, depositsToAddPromotion);
+
+        controller.DeleteAllExpiredPromotions();
+
+        CollectionAssert.Contains(controller.GetPromotions(), promotion1);
+        CollectionAssert.DoesNotContain(controller.GetPromotions(), promotion2);
+    }
+    
+    
+    
+    
     
     /*
      [TestMethod]
