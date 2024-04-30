@@ -5,26 +5,26 @@
 @inject NavigationManager NavigationManager
 
 <html lang="es">
-  <head>
-      <meta charset="utf-8"/>
-      <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
-  </head>
+    <head>
+        <meta charset="utf-8"/>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+    </head>
 
     <body>
-
-        <h3>¡Hola, @_loggedInUser.GetName()! Aquí puedes encontrar nuestros depositos.</h3>
+        <h3>¡Hola, @_loggedInUser.GetName()! Aquí puedes encontrar nuestros depósitos.</h3>
 
     <table class="table table-striped table-hover">
         <thead>
         <tr>
-            <th>Deposito</th>
-            <th>Area</th>
+            <th>Depósito</th>
+            <th>Área</th>
             <th>Tamaño</th>
             <th>Climatización</th>
-            <th>Promociones</th>
+            <th>Promociones actuales</th>
             <th>Reservado</th>
         </tr>
         </thead>
+        
         <tbody>
         @foreach (Deposit deposit in _listOfDeposits)
         {
@@ -34,7 +34,6 @@
                 <td>@deposit.GetSize()</td>
                 <td>@BoolToString(deposit.GetAirConditioning())</td>
                 <td>
-                    
                     @foreach (var promotion in deposit.GetPromotions())
                     {
                         <p>@promotion.GetLabel() - @(promotion.GetDiscountRate() * PercentageMultiplier)%</p>
@@ -44,22 +43,23 @@
                 @if (_loggedInUser.IsAdministrator())
                 {
                     <td>
-                            <div class="btn-group">
-                                <button class="btn btn-danger" @onclick="(() => DeleteDeposit(deposit))">Eliminar
-                                    <i class="fa fa-trash"></i>
-                                </button>
-                            </div>
-                        </td>
+                        <div class="btn-group">
+                            <button class="btn btn-danger" @onclick="(() => DeleteDeposit(deposit))">Eliminar
+                                <i class="fa fa-trash"></i>
+                            </button>
+                        </div>
+                    </td>
                 }
-
             </tr>
         }
         </tbody>
+        
     </table>
+    
     @if (_loggedInUser.IsAdministrator())
-{
-    <button class="btn btn-primary" @onclick="GoToAddDepositPage">Crear deposito</button>
-}
+    {
+        <button class="btn btn-primary" @onclick="GoToAddDepositPage">Crear depósito</button>
+    }
     </body>
 </html>
 
@@ -84,7 +84,6 @@
         return value ? "Si" : "No";
     }
     
-    
     private void GoToAddDepositPage()
     {
         NavigationManager.NavigateTo("/AddDeposit");
@@ -95,6 +94,4 @@
         int id = deposit.GetId();
         _controller.DeleteDeposit(id);
     }
-    
-
 }
