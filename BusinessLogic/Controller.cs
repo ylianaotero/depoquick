@@ -15,7 +15,7 @@ public class Controller
     
     public void AddDeposit(Deposit deposit)
     {
-        _memoryDataBase.GetListOfDeposits().Add(deposit);
+        _memoryDataBase.GetDeposits().Add(deposit);
     }
     
     public Deposit GetDeposit(int id)
@@ -34,7 +34,7 @@ public class Controller
 
     public Deposit SearchDeposit(int id)
     {
-        return _memoryDataBase.GetListOfDeposits().FirstOrDefault(deposit => deposit.GetId() == id);
+        return _memoryDataBase.GetDeposits().FirstOrDefault(deposit => deposit.GetId() == id);
     }
     
     public Reservation GetReservation(int id)
@@ -109,9 +109,9 @@ public class Controller
     {
         User.ValidatePasswordConfirmation(password,validation);
         Administrator newAdministrator = new Administrator(name, email, password);
-        if (_memoryDataBase.GetListOfUsers().Count == 0)
+        if (_memoryDataBase.GetUsers().Count == 0)
         {
-            _memoryDataBase.GetListOfUsers().Add(newAdministrator);
+            _memoryDataBase.GetUsers().Add(newAdministrator);
         }
         else
         {
@@ -122,11 +122,11 @@ public class Controller
     public void LoginUser(string email, string password)
     {
         bool userExists = false;
-        foreach (User us in _memoryDataBase.GetListOfUsers())
+        foreach (User us in _memoryDataBase.GetUsers())
         {
             if (us.GetEmail() == email && us.GetPassword() == password)
             {
-                _memoryDataBase.setActiveUser(us);
+                _memoryDataBase.SetActiveUser(us);
                 userExists = true;
             }
         }
@@ -137,14 +137,14 @@ public class Controller
 
     public Administrator GetAdministrator()
     {
-        if (_memoryDataBase.GetListOfUsers().Count == 0)
+        if (_memoryDataBase.GetUsers().Count == 0)
         {
             throw new EmptyUserListException("No hay usuarios registrados");
         }
         else
         {
             Administrator administrator = null;
-            foreach (Administrator user in _memoryDataBase.GetListOfUsers())
+            foreach (Administrator user in _memoryDataBase.GetUsers())
             {
                 if (user.IsAdministrator())
                 {
@@ -158,14 +158,14 @@ public class Controller
 
     public void RegisterClient(string name, string email, string password, string validation)
     {
-        if (_memoryDataBase.GetListOfUsers().Count == 0)
+        if (_memoryDataBase.GetUsers().Count == 0)
         {
             throw new CannotCreateClientBeforeAdminException("Debe registrarse como administrador");
         }
         else
         {
             User.ValidatePasswordConfirmation(password, validation);
-            foreach (User user in _memoryDataBase.GetListOfUsers())
+            foreach (User user in _memoryDataBase.GetUsers())
             {
                 if (user.GetEmail() == email)
                 {
@@ -174,7 +174,7 @@ public class Controller
             }
 
             Client client = new Client(name, email, password);
-            _memoryDataBase.GetListOfUsers().Add(client);
+            _memoryDataBase.GetUsers().Add(client);
         }
     }
 
@@ -183,14 +183,20 @@ public class Controller
         return _memoryDataBase.GetActiveUser();
     }
 
+    public List<User> GetUsers()
+    {
+        return _memoryDataBase.GetUsers();
+    }
+
+
     public List<Deposit> GetDeposits()
     {
-        return _memoryDataBase.GetListOfDeposits();
+        return _memoryDataBase.GetDeposits();
     }
     
     public void DeleteDeposit(int id)
     {
-        List<Deposit> deposits = _memoryDataBase.GetListOfDeposits();
+        List<Deposit> deposits = _memoryDataBase.GetDeposits();
         Deposit depositToDelete = SearchDeposit(id);
         
         List<Promotion> relatedPromotions = depositToDelete.GetPromotions();

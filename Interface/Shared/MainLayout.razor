@@ -87,7 +87,8 @@
     
     protected override void OnInitialized()
     {
-        _click = MemoryDataBase.GetListOfUsers().Count > 0;
+        _controller = new Controller(MemoryDataBase);
+        _click = _controller.GetUsers().Count > 0;
     }
 
     
@@ -130,7 +131,7 @@
 
     private bool UserCanLogin()
     {
-        if (MemoryDataBase.GetListOfUsers().Count == 0)
+        if (_controller.GetUsers().Count == 0)
         {
             return false;
         }

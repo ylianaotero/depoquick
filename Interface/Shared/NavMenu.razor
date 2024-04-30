@@ -66,13 +66,13 @@
     private Controller _controller;
     private string? NavMenuCssClass => collapseNavMenu ? "collapse" : null;
     
-    
     private void ToggleNavMenu()
     {
         collapseNavMenu = !collapseNavMenu;
     }
     protected override void OnInitialized()
     { 
-        _isUser = MemoryDataBase.GetListOfUsers().Count > 0;
+        _controller = new Controller(MemoryDataBase);
+        _isUser = _controller.GetUsers().Count > 0;
     }
 }

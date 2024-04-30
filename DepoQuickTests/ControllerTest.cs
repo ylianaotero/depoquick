@@ -382,7 +382,7 @@ public class ControllerTest
         controller.RegisterAdministrator(name, emailAdmin, password, validation);
         controller.RegisterClient(name, email,password, validation);
         controller.LoginUser(email,password);
-        CollectionAssert.Contains(memoryDataBase.GetListOfUsers(), controller.GetActiveUser());
+        CollectionAssert.Contains(controller.GetUsers(), controller.GetActiveUser());
     }
     
     [TestMethod]
@@ -438,6 +438,7 @@ public class ControllerTest
         CollectionAssert.Contains(controller.GetPromotions(), promotion1);
         CollectionAssert.DoesNotContain(controller.GetPromotions(), promotion2);
     }
+    
     
     
     
