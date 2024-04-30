@@ -232,4 +232,24 @@ public class Controller
     {
         return promotion.GetValidityDate().GetFinalDate() < DateTime.Now;
     }
+    
+    public void ApproveReservation(Reservation reservation)
+    {
+        Administrator admin = (Administrator)_memoryDataBase.GetActiveUser();
+        
+        admin.ApproveReservation(reservation);
+    }
+    
+    public void RejectReservation(Reservation reservation, string reason)
+    {
+        Administrator admin = (Administrator)_memoryDataBase.GetActiveUser();
+        
+        admin.RejectReservation(reservation, reason);
+    }
+    
+    public void CancelRejectionOfReservation(Reservation reservation)
+    {
+        reservation.SetState(0);
+        reservation.GetDeposit().SetReserved(false);
+    }
 }
