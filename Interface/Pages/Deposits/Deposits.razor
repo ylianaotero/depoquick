@@ -34,15 +34,23 @@
                 <td>@deposit.GetSize()</td>
                 <td>@BoolToString(deposit.GetAirConditioning())</td>
                 <td>
-                    @{
-                        FilterCurrentPromotions(deposit);
-                    };
+                    
                     @foreach (var promotion in deposit.GetPromotions())
                     {
                         <p>@promotion.GetLabel() - @(promotion.GetDiscountRate() * PercentageMultiplier)</p>
                     }
                 </td>
                 <td>@BoolToString(deposit.IsReserved())</td>
+                @if (_loggedInUser.IsAdministrator())
+                {
+                    <td>
+                            <div class="btn-group">
+                                <button class="btn btn-danger" @onclick="(() => DeleteDeposit(deposit))">Eliminar
+                                    <i class="fa fa-trash"></i>
+                                </button>
+                            </div>
+                        </td>
+                }
 
             </tr>
         }
@@ -84,12 +92,6 @@
     {
         int id = deposit.GetId();
         _controller.DeleteDeposit(id);
-    }
-
-    private void GoToEditDepositPage(Deposit deposit)
-    {
-        int depositId = deposit.GetId();
-        NavigationManager.NavigateTo($"/EditDeposit/{depositId}");
     }
     
     private void FilterCurrentPromotions(Deposit deposit)

@@ -103,8 +103,10 @@
         newPromotion.SetLabel(_label);
         newPromotion.SetDiscountRate(_discountRate/PercentageDivider);
         newPromotion.SetValidityDate(_date);
+
+        List<Deposit> deposits = new List<Deposit>();
         
-        _controller.AddPromotion(newPromotion);
+        _controller.AddPromotion(newPromotion, deposits);
     }
     
     private void GoToPromotionsPage()

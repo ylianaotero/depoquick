@@ -3,6 +3,7 @@ using BusinessLogic;
 using DepoQuick.Domain;
 using DepoQuick.Domain.Exceptions.ControllerExceptions;
 using DepoQuick.Domain.Exceptions.MemoryDataBaseExceptions;
+using DateTime = System.DateTime;
 
 namespace DepoQuickTests;
 
@@ -377,6 +378,41 @@ public class ControllerTest
         controller.DeleteDeposit(id);
 
         controller.GetDeposit(id);
+    }
+    
+    [TestMethod]
+    public void TestDeleteAllExpiredPromotions()
+    {
+        MemoryDataBase memoryDataBase = new MemoryDataBase();
+
+        Controller controller = new Controller(memoryDataBase);
+
+        Promotion promotion1 = new Promotion();
+        DateTime startDate = DateTime.Now;
+        DateTime endDate = startDate.AddDays(10);
+        DateRange dateRange = new DateRange(startDate, endDate);
+        
+        promotion1.SetValidityDate(dateRange);
+        
+        Promotion promotion2 = new Promotion();
+
+        DateTime expiredStartDate = DateTime.Now.AddDays(-10);
+        DateTime expiredEndDate = DateTime.Now.AddDays(-5);
+        DateRange expiredDateRange = new DateRange(expiredStartDate, expiredEndDate);
+        
+        promotion2.SetValidityDate(expiredDateRange);
+            
+        
+        List<Deposit> depositsToAddPromotion = new List<Deposit>();
+        depositsToAddPromotion.Add(_deposit);
+
+        controller.AddPromotion(promotion1, depositsToAddPromotion);
+        controller.AddPromotion(promotion2, depositsToAddPromotion);
+
+        controller.DeleteAllExpiredPromotions();
+
+        CollectionAssert.Contains(controller.GetPromotions(), promotion1);
+        CollectionAssert.DoesNotContain(controller.GetPromotions(), promotion2);
     }
     
     
