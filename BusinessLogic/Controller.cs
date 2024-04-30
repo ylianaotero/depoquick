@@ -192,4 +192,20 @@ public class Controller
     {
         _memoryDataBase.GetListOfDeposits().Remove(SearchDeposit(id));
     }
+    
+    public void DeleteAllExpiredPromotions()
+    {
+        List<Promotion> promotions = new List<Promotion>();
+        foreach (Promotion promotion in _memoryDataBase.GetPromotions())
+        {
+            if (promotion.GetValidityDate().GetFinalDate() < DateTime.Now)
+            {
+                promotions.Add(promotion);
+            }
+        }
+        foreach (Promotion promotion in promotions)
+        {
+            DeletePromotion(promotion.GetId());
+        }
+    }
 }
