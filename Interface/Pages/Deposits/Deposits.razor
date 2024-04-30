@@ -37,7 +37,7 @@
                     
                     @foreach (var promotion in deposit.GetPromotions())
                     {
-                        <p>@promotion.GetLabel() - @(promotion.GetDiscountRate() * PercentageMultiplier)</p>
+                        <p>@promotion.GetLabel() - @(promotion.GetDiscountRate() * PercentageMultiplier)%</p>
                     }
                 </td>
                 <td>@BoolToString(deposit.IsReserved())</td>
@@ -75,6 +75,8 @@
         _loggedInUser = _controller.GetActiveUser();
 
         _listOfDeposits = _controller.GetDeposits();
+        
+        _controller.DeleteAllExpiredPromotions();
     }
     
     private string BoolToString(bool value)
@@ -94,10 +96,5 @@
         _controller.DeleteDeposit(id);
     }
     
-    private void FilterCurrentPromotions(Deposit deposit)
-    {
-        List<Promotion> listOfPromotions = deposit.GetPromotions();
-        listOfPromotions.RemoveAll(promotion => promotion.GetValidityDate().GetFinalDate() < DateTime.Now);
-    }
 
 }

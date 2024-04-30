@@ -66,14 +66,10 @@
         _controller = new Controller(MemoryDataBase);
         _loggedInUser = _controller.GetActiveUser();
         
-        FilterCurrentPromotions();
-    }
-
-    private void FilterCurrentPromotions()
-    {
+        _controller.DeleteAllExpiredPromotions();
         _listOfPromotions = _controller.GetPromotions();
-        _listOfPromotions.RemoveAll(promotion => promotion.GetValidityDate().GetFinalDate() < DateTime.Now);
     }
+    
     
     private void GoToAddPromotionPage()
     {
