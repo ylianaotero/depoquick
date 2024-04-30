@@ -54,7 +54,7 @@ public class ReservationTest
     }
 
     [TestMethod]
-    public void TestValidSate()
+    public void TestValidState()
     {
         Client client = new Client("Maria Perez","maria@gmail.com","Maria1..");
         Deposit deposit = new Deposit('A', "Pequeño", true, false);
@@ -64,8 +64,8 @@ public class ReservationTest
         Reservation reservation = new Reservation(deposit,client,stay);
 
         int expectedState = 1;
-        reservation.SetSate(expectedState);
-        int actualState = reservation.GetSate();
+        reservation.SetState(expectedState);
+        int actualState = reservation.GetState();
         
         Assert.AreEqual(expectedState,actualState);
     }

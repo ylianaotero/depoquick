@@ -95,12 +95,12 @@ public class Reservation
         return _message;
     }
 
-    public void SetSate(int expectedState)
+    public void SetState(int expectedState)
     {
         _state = expectedState;
     }
 
-    public int GetSate()
+    public int GetState()
     {
         return _state;
     }
