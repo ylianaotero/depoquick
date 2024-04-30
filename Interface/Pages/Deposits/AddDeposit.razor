@@ -1,0 +1,77 @@
+@page "/AddDeposit"
+@using BusinessLogic
+@using DepoQuick.Domain
+@inject MemoryDataBase MemoryDataBase
+@inject NavigationManager NavigationManager
+
+<html lang="es">
+    <head>
+      <meta charset="utf-8"/>
+      <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+    </head>
+
+    <body>
+        <h3>Agregar depósito</h3>
+
+    <form action="#" method="POST">
+        <div class="mb-3">
+            <label for="area" class="form-label">Seleccione un area:</label>
+            <br/>
+            <select @bind="_area">
+                <option value="A">Area A</option>
+                <option value="B">Area B</option>
+                <option value="C">Area C</option>
+                <option value="D">Area D</option>
+                <option value="E">Area E</option>
+            </select>
+        </div>
+        <div class="mb-3">
+            <label for="size" class="form-label">Seleccione un tamaño:</label>
+            <br/>
+            <select @bind="_size">
+                <option value="PEQUEÑO">Pequeño</option>
+                <option value="MEDIANO">Mediano</option>
+                <option value="GRANDE">Grande</option>
+            </select>
+        </div>
+        <div class="mb-3">
+            <label for="airConditioning" class="form-label">Climatización:</label>
+            <input type="checkbox" @bind="_airConditioning"/>
+        </div>
+
+        <input @onclick="AddNewDeposit" id="addNewDeposit" class="btn btn-primary" value="Crear depósito">
+    </form>
+      </body>
+</html> 
+
+@code {
+    private Controller _controller;
+    private char _area;
+    private string _size;
+    private bool _airConditioning;
+    private bool _reserved;
+    
+    protected override void OnInitialized()
+    {
+        _controller = new Controller(MemoryDataBase);
+        
+        _area = 'A';
+        _size = "PEQUEÑO";
+        _airConditioning = false;
+        _reserved = false;
+    }
+    
+    private void AddNewDeposit()
+    {
+        Deposit newDeposit = new Deposit(_area, _size, _airConditioning, _reserved);
+        
+        _controller.AddDeposit(newDeposit);
+
+        GoToDepositsPage();
+    }
+    
+    private void GoToDepositsPage()
+    {
+        NavigationManager.NavigateTo("/Deposits");
+    }
+}

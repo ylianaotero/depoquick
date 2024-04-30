@@ -116,7 +116,7 @@
   protected override void OnInitialized()
   {
     _controller = new Controller(MemoryDataBase);
-    _listOfDeposits = MemoryDataBase.GetListOfDeposits(); 
+    _listOfDeposits = _controller.GetDeposits(); 
     HideAllAlerts();
     
     _deposit = null; 

@@ -2,11 +2,6 @@
 @using BusinessLogic
 @inject MemoryDataBase MemoryDataBase
 @inject NavigationManager NavigationManager
-@using DepoQuick.Domain
-@using DepoQuick.Domain.Exceptions.ControllerExceptions
-@using DepoQuick.Domain.Exceptions.DateRangeExceptions
-@using DepoQuick.Domain.Exceptions.UserExceptions
-@using Interface.Pages.Home
 
 
 <PageTitle>Home</PageTitle>
@@ -36,7 +31,7 @@
             }
             else
             {
-                <h2>@if (MemoryDataBase.GetListOfUsers().Count == 0) { <text>¡Bienvenido a DEPOQUICK!</text> }else { <text></text> }</h2>
+                <h2>@if (_controller.GetUsers().Count == 0) { <text>¡Bienvenido a DEPOQUICK!</text> }else { <text></text> }</h2>
                 <h3>Desea ingresar al sistema o registrarse</h3>
                 <div class="form-btn" style="margin-top:10px">
                     <button type="button" class="btn btn-primary" @onclick="ShowAlertLogin">Ingresar al sistema</button>
@@ -55,6 +50,19 @@
     private bool _showAlertEmptyUsersList;
     bool _userAction = false;
     bool _buttonPressed = false;
+    private bool _click;
+    private bool _btnLogin = true;
+    private Controller _controller;
+    private String _name;
+    private String _email;
+    private String _password;
+    private String _passwordValidation;
+    
+    protected override void OnInitialized()
+    {
+        _controller = new Controller(MemoryDataBase);
+        _click = _controller.GetUsers().Count > 0;
+    }
 
     private void ShowAlertLogin()
     {
@@ -85,7 +93,14 @@
 
     private bool UserCanLogin()
     {
-        return MemoryDataBase.GetListOfUsers().Count > 0;
+        if (_controller.GetUsers().Count == 0)
+        {
+            return false;
+        }
+        else
+        {
+            return true;
+        }
     }
 
     public void Register()

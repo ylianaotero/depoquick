@@ -65,7 +65,6 @@
     {
         _controller = new Controller(MemoryDataBase);
         _controller.LoginUser(_email,_password);
-        MemoryDataBase.setActiveUser(_loggedUser);
         //TODO: Ver si queremos analizar de alguna forma en especifico que el usuario se haya ingresado correctamente
         logged = true;
     }

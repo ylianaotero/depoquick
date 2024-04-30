@@ -1,0 +1,260 @@
+﻿@page "/Statics"
+@using BusinessLogic
+@using DepoQuick.Domain
+@using DepoQuick.Domain.Exceptions.DateRangeExceptions
+@inject MemoryDataBase MemoryDataBase
+
+<html lang="es">
+  <head>
+      <meta charset="utf-8"/>
+      <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+  </head>
+
+<body>
+<div style="margin-left: 1rem;">
+    <h3>Estadísticas</h3>
+</div>
+
+
+<div class="my-3 p-3 bg-white rounded box-shadow">
+    
+    @if (_showAlertInvalidDate)
+    {
+        <div class="alert alert-danger" role="alert">
+            ¡Fecha inválida, la fecha inicial debe ser anterior a la fecha final!
+        </div>
+    }
+    
+    
+    <div class="alert alert-primary" role="alert">
+        <h4 class="alert-heading">Gráfica de alquileres</h4>
+        <p>Explore el monto total generado en alquileres mediante nuestra herramienta
+            de cálculo de ingresos. Ingrese un rango de fechas y obtenga el dinero generado al instante.</p>
+    </div>
+
+    <form action="#" method="POST">
+
+        <div class="mb-3">
+            <label for="initialDate" class="form-label">Desde:</label>
+            <input type="date" class="form-control" id="initialDate" name="initialDate" @bind="_initialDate">
+        </div>
+
+        <div class="mb-3">
+            <label for="finalDate" class="form-label">Hasta:</label>
+            <input type="date" class="form-control" id="finalDate" name="finalDate" @bind="_finalDate">
+        </div>
+
+        <input @onclick="showStatics" id="wantToMakeTheReservation" class="btn btn-primary" value="Ver estadísticas">
+    </form>
+
+    @if (_showMoneyStatics)
+    {
+        <br>
+        <table class="table table-bordered">
+            <thead>
+            <tr>
+                <th>Área</th>
+                <th>Dinero generado</th>
+            </tr>
+            </thead>
+            <tbody>
+            @for (int i = 0; i < _moneyEarnedByAreaOnSelectedDate.Count; i++)
+            {
+                <tr>
+                    <td>@_labels[i]</td>
+                    <td>$ @_moneyEarnedByAreaOnSelectedDate[i]</td>
+                </tr>
+            }
+            </tbody>
+        </table>
+    }
+</div>
+
+
+<br>
+
+<div class="my-3 p-3 bg-white rounded box-shadow">
+    <div class="alert alert-primary" role="alert">
+        <h4 class="alert-heading">Gráfica de alquileres</h4>
+        <p>A continuación, encontrarás una gráfica que muestra la cantidad de alquileres
+            realizados en cada área. Sumérgete en los datos y descubre las tendencias de alquiler en tu zona.</p>
+    </div>
+    <br>
+
+    <div style="display: flex; justify-content: center; align-items: center; height: 400px;">
+        <canvas id="barChartCanvas" style="max-width: 85%; max-height: 100%;"></canvas>
+    </div>
+</div>
+</body>
+</html>
+
+
+
+
+@code {
+    private Controller _controller;
+    private List<Reservation> _listOfReservations;
+    
+    [Inject]
+    public IJSRuntime JSRuntime { get; set; }
+    
+    private List<char> _labels;
+    private List<int> _data;
+    private List<int> _moneyEarnedByAreaOnSelectedDate; 
+    
+    private DateRange _date;
+    
+    private bool _showAlertInvalidDate;
+    private bool _showMoneyStatics;
+
+    private DateTime _initialDate = DateTime.Today.Date;
+    private DateTime _finalDate = DateTime.Today.Date;
+
+    protected override void OnInitialized()
+    {
+        _controller = new Controller(MemoryDataBase);
+        _listOfReservations = MemoryDataBase.GetReservations(); 
+        _labels =  new List<char> { 'A', 'B', 'C', 'D', 'E' };
+        HideAllAlerts();
+        InitializeData(); 
+        _moneyEarnedByAreaOnSelectedDate = InitializeListWithZeros(_labels.Count);
+    }
+
+    private void InitializeData()
+    {
+        _data = InitializeListWithZeros(_labels.Count);
+        int index = -1; 
+
+        foreach (char area in _labels)
+        {
+            index++;
+            
+            if (IsIndexValid(_data,index))
+            {
+                foreach (Reservation reservation in _listOfReservations)
+                {
+                    if (IsDepositAreaEqualInReservation(reservation,area) && ReservationIsAcepted(reservation))
+                    {
+                        IncrementElement(_data, index);
+                    }
+                }
+                
+            }
+
+        }
+    }
+
+    private bool ReservationIsAcepted(Reservation reservation)
+    {
+        return reservation.GetSate() == 1; 
+    }
+    
+    private void IncrementElement(List<int> list, int index)
+    {
+            list[index]++;
+    }
+    
+    private bool IsDepositAreaEqualInReservation(Reservation reservation, char area)
+    {
+        return reservation.GetDeposit().GetArea() == area;
+    }
+    
+    private bool IsIndexValid(List<int> list, int index)
+    {
+        return index >= 0 && index < list.Count;
+    }
+
+    private List<int> InitializeListWithZeros(int count)
+    {
+        List<int> list = new List<int>();
+        for (int i = 0; i < count; i++)
+        {
+            list.Add(0); 
+        }
+        return list;
+    }
+    
+    private void HideAllAlerts()
+    {
+        _showAlertInvalidDate = false;
+        _showMoneyStatics = false; 
+    }
+
+    private void showStatics()
+    {
+        HideAllAlerts(); 
+        if (IsAValidDate())
+        {
+            InitializeMoneyData(); 
+            _showMoneyStatics = true;
+        }
+        else
+        {
+            _showAlertInvalidDate = true; 
+        }
+    }
+    
+    private void InitializeMoneyData()
+    {
+        _moneyEarnedByAreaOnSelectedDate = InitializeListWithZeros(_labels.Count);
+        int index = -1; 
+
+        foreach (char area in _labels)
+        {
+            index++;
+            
+            if (IsIndexValid(_data,index))
+            {
+                foreach (Reservation reservation in _listOfReservations)
+                {
+                    DateRange dateRange = reservation.GetDateRange();
+                    if (IsDepositAreaEqualInReservation(reservation,area) && ReservationIsAcepted(reservation) && DateIsWithinTheSelectedDateRange(dateRange))
+                    {
+                        int numberOfDays = dateRange.NumberOfDays(); 
+                        IncrementValue(_moneyEarnedByAreaOnSelectedDate, index,reservation.GetDeposit().CalculatePrice(numberOfDays));
+                    }
+                }
+                
+            }
+
+        }
+    }
+
+    private void IncrementValue(List<int> list, int index, int value)
+    {
+        list[index] += value; 
+    }
+
+    private bool DateIsWithinTheSelectedDateRange(DateRange dateRange)
+    {
+        return dateRange.GetInitialDate() >= _initialDate && dateRange.GetFinalDate() <= _finalDate; 
+    }
+    
+    private bool IsAValidDate()
+    {
+        try
+        {
+            _date = new DateRange(_initialDate, _finalDate);
+            return true;
+        }
+        catch (InvalidDateRangeException invalidDateRangeException)
+        {
+            return false;
+        }
+        catch (EmptyDateRangeException emptyDateRangeException)
+        {
+            return false;
+        }
+    }
+    
+    
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await JSRuntime.InvokeVoidAsync("createBarChart", _labels, _data);
+        }
+    }
+
+}
+
