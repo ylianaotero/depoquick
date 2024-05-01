@@ -1,17 +1,6 @@
 ﻿@inherits LayoutComponentBase
-@using BusinessLogic
-@inject MemoryDataBase MemoryDataBase
-@inject NavigationManager NavigationManager
 
-
-<PageTitle>Inicio</PageTitle>
-
-@if (_showAlertEmptyUsersList)
-    {
-        <div class="alert alert-danger" role="alert">
-            <h4 class="alert-heading">No hay usuarios regitrados</h4>
-        </div>
-    }
+<PageTitle>BlazorApp1</PageTitle>
 
 <div class="page">
     <div class="sidebar">
@@ -20,94 +9,11 @@
 
     <main>
         <div class="top-row px-4">
-            @*<a href="https://docs.microsoft.com/aspnet/" target="_blank">About</a>*@
-            @*<button id="btn-login" class="btn btn-outline-dark">@if (_btnLogin) { <text>Login</text> }else { <text>Logeado</text> }</button>*@
-            <button id="btn-login" class="btn btn-outline-dark">@if (MemoryDataBase.GetActiveUser()!=null) { <text>Hola @MemoryDataBase.GetActiveUser().GetName()!</text> }else { <text>Sin ingresar al sistema</text> }</button>
+            <a href="https://docs.microsoft.com/aspnet/" target="_blank">About</a>
         </div>
+
         <article class="content px-4">
-            @if (_userAction)
-            {
-                @Body     
-            }
-            else
-            {
-                <h2>@if (_controller.GetUsers().Count == 0) { <text>¡Bienvenido a DEPOQUICK!</text> }else { <text></text> }</h2>
-                <h3>Desea ingresar al sistema o registrarse</h3>
-                <div class="form-btn" style="margin-top:10px">
-                    <button type="button" class="btn btn-primary" @onclick="ShowAlertLogin">Ingresar al sistema</button>
-                </div>
-                <div class="form-btn" style="margin-top:10px">
-                    <button type="button" class="btn btn-primary" @onclick="Register">Registrarse</button>
-                </div>
-            }
+            @Body
         </article>
     </main>
 </div>
-
-@code
-{
-    private bool _showAlertUserLogin;
-    private bool _showAlertEmptyUsersList;
-    bool _userAction = false;
-    bool _buttonPressed = false;
-    private bool _click;
-    private bool _btnLogin = true;
-    private Controller _controller;
-    private String _name;
-    private String _email;
-    private String _password;
-    private String _passwordValidation;
-    
-    protected override void OnInitialized()
-    {
-        _controller = new Controller(MemoryDataBase);
-        _click = _controller.GetUsers().Count > 0;
-    }
-
-    private void ShowAlertLogin()
-    {
-        HideAllAlertsLogin();
-        if (UserCanLogin())
-        {
-            Login();
-        }
-        else
-        {
-            _showAlertEmptyUsersList = true;
-        }
-    }
-
-    private void HideAllAlertsLogin()
-    {
-        _showAlertEmptyUsersList = false;
-        _showAlertUserLogin = false;
-    }
-    
-    public void Login()
-    {
-        _buttonPressed = true;
-        _userAction = true;
-
-        NavigationManager.NavigateTo("/Login");
-    }
-
-    private bool UserCanLogin()
-    {
-        if (_controller.GetUsers().Count == 0)
-        {
-            return false;
-        }
-        else
-        {
-            return true;
-        }
-    }
-
-    public void Register()
-    {
-        _buttonPressed = true;
-        _userAction = true;
-
-        NavigationManager.NavigateTo("/Register");
-    }
-}

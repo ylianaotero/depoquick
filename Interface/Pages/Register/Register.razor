@@ -1,6 +1,7 @@
 ﻿@page "/Register"
 @using BusinessLogic
 @using DepoQuick.Domain
+@using DepoQuick.Domain.Exceptions.MemoryDataBaseExceptions
 @using DepoQuick.Domain.Exceptions.UserExceptions
 @using Microsoft.AspNetCore.Mvc.Infrastructure
 @inject MemoryDataBase MemoryDataBase
@@ -87,21 +88,21 @@
 
     private void AttemptToRegister()
     {
-        HideAllAlerts();
-        ShowAlert();
+       // HideAllAlerts();
+        //ShowAlert();
 
-        if (IsWrongUserData())
+       /* if (IsWrongUserData())  //cambiar esto!! cuando hay errores no anda como lo esperado 
         {
             return;
-        }
+        }*/
 
-        AddNewUser();
-        GoToHomePage();
+       AddNewUser();
+
     }
 
     private void AddNewUser()
     {
-        if (_controller.GetUsers().Count > 0)
+        if (_controller.GetUsers().Count > 0) //fijarte si tiene administrador
         {
             RegisterClient();
         }
@@ -204,19 +205,26 @@
 
     private void RegisterAdmin()
     {
-        User.ValidatePasswordConfirmation(_password,_passwordValidation);
-        _controller.RegisterAdministrator(_name,_email,_password,_passwordValidation);
+        try
+        {
+            NavigationManager.NavigateTo("/", forceLoad: true);
+            _controller.RegisterAdministrator(_name, _email, _password, _passwordValidation); //ver porque parece que tiene error
+            
+        }
+        catch (AdministratorAlreadyExistsException alreadyExistsException)
+        {
+            _showAlertNewAdmin = false; //estoy poniendo cualquier error
+        }
+        catch (UserPasswordsDoNotMatchException userPasswordsDoNotMatchException)
+        {
+            _showAlertNewAdmin = false; //estoy poniendo cualquier error
+        }
     }
 
     private void RegisterClient()
     {
-        User.ValidatePasswordConfirmation(_password,_passwordValidation);
         _controller.RegisterClient(_name,_email,_password,_passwordValidation);
-    }
-
-    private void GoToHomePage()
-    {
-        NavigationManager.NavigateTo("/Home",forceLoad:true);
+        NavigationManager.NavigateTo("/",forceLoad:true);
     }
     
     protected override void OnInitialized()

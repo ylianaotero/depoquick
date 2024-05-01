@@ -1,41 +1,9 @@
 ﻿@page "/Home"
-@using BusinessLogic
-@using DepoQuick.Domain
-@inject MemoryDataBase MemoryDataBase
-@inject IJSRuntime JSRuntime
-@inject NavigationManager NavigationManager
+<h3>Home</h3>
 
-
-<html lang="es" xmlns="http://www.w3.org/1999/html">
-  <head>
-      <meta charset="utf-8"/>
-      <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
-  </head>
-
-    <body>
-
-    <h3>¡Bienvenido!</h3>
-    <h2>Usted ha registrado un administrador. Desea entrar al sistema o registrarse como cliente</h2>
-    <form>
-        <button type="submit" class="btn btn-primary" @onclick="RegisterUser">Registrarse</button>
-        <br/>
-        <br/>
-        <button type="submit" class="btn btn-primary" @onclick="LoginUser">Entrar al sistema</button>
-    </form>
-    </body>
-</html>
-
+<h1>
+    BIENVENIDO 
+</h1>
 @code {
-
-
-    private void RegisterUser()
-    {
-        NavigationManager.NavigateTo("/Register",forceLoad: true);
-    }
-
-    private void LoginUser()
-    {
-        NavigationManager.NavigateTo("/Login",forceLoad: true);
-    }
     
 }

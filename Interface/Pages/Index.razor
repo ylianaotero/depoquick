@@ -1,11 +1,54 @@
 ﻿@page "/"
 @using BusinessLogic
+@inject NavigationManager NavigationManager
+@inject MemoryDataBase MemoryDataBase
 
-<PageTitle>Index</PageTitle>
 
-<h1>Hello, world!</h1>
+<html lang="es" xmlns="http://www.w3.org/1999/html">
+  <head>
+      <meta charset="utf-8"/>
+      <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+  </head>
 
-Welcome to your new app.
+    <body>
 
-<SurveyPrompt Title="How is Blazor working for you?"/>
+    <h3>¡Bienvenido!</h3>
+    @if (_controller.GetUsers().Count == 0) //lo estoy haciendo rapido, en realidad tendrias que hacer un get de admin alla abajo y si es null eso
+    {
+        <h2>Se debe registrar primero un administrador para proseguir (cambiar este texto)</h2>
+        <button type="submit" class="btn btn-primary" @onclick="RegisterUser">Registrar administrador</button>
+    }
+    else
+    {
+        <h2>Usted ha registrado un administrador. Desea entrar al sistema o registrarse como cliente</h2>
+        <form>
+            <button type="submit" class="btn btn-primary" @onclick="RegisterUser">Registrarse</button>
+            <br/>
+            <br/>
+            <button type="submit" class="btn btn-primary" @onclick="LoginUser">Entrar al sistema</button>
+        </form>
+    }
 
+    </body>
+</html>
+
+@code {
+
+    private Controller _controller; 
+    
+    protected override void OnInitialized()
+    {
+        _controller = new Controller(MemoryDataBase);
+    }
+    
+    private void RegisterUser()
+    {
+        NavigationManager.NavigateTo("/Register",forceLoad: true);
+    }
+
+    private void LoginUser()
+    {
+        NavigationManager.NavigateTo("/Login",forceLoad: true);
+    }
+    
+}

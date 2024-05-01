@@ -23,6 +23,7 @@
 
     <ItemGroup>
       <_ContentIncludedByDefault Remove="Pages\Promotions\Promotions.cshtml" />
+      <_ContentIncludedByDefault Remove="Pages\Home\Home.razor" />
     </ItemGroup>
 
 </Project>

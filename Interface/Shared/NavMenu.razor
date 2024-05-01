@@ -80,7 +80,7 @@
     protected override void OnInitialized()
     { 
         _controller = new Controller(MemoryDataBase);
-        _isUser = _controller.GetUsers().Count > 0;
+        _isUser = _controller.GetActiveUser() != null; // metodo 
     }
 
     private bool UserLoggedIn()

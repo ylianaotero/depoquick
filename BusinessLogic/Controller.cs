@@ -108,10 +108,11 @@ public class Controller
     public void RegisterAdministrator(string name, string email, string password, String validation)
     {
         User.ValidatePasswordConfirmation(password,validation);
-        Administrator newAdministrator = new Administrator(name, email, password);
         if (_memoryDataBase.GetUsers().Count == 0)
         {
+            Administrator newAdministrator = new Administrator(name, email, password);
             _memoryDataBase.GetUsers().Add(newAdministrator);
+            _memoryDataBase.SetAdministrator(newAdministrator);
         }
         else
         {
@@ -121,8 +122,10 @@ public class Controller
 
     public void LoginUser(string email, string password)
     {
-        bool userExists = false;
-        foreach (User us in _memoryDataBase.GetUsers())
+        //hacer metodo que te devuelve bool, por si existe user (publico asi lo llamas en login.razor)
+        //hacer metodo que te devuelva el user 
+        bool userExists = false; //metodo para user exists
+        foreach (User us in _memoryDataBase.GetUsers()) // separar en otro metodo que busque un usario y te lo devuelva
         {
             if (us.GetEmail() == email && us.GetPassword() == password)
             {
@@ -143,16 +146,7 @@ public class Controller
         }
         else
         {
-            Administrator administrator = null;
-            foreach (Administrator user in _memoryDataBase.GetUsers())
-            {
-                if (user.IsAdministrator())
-                {
-                    administrator = user;
-                }
-            }
-
-            return administrator;
+            return _memoryDataBase.GetAdministrator();
         }
     }
 
@@ -174,7 +168,7 @@ public class Controller
             }
 
             Client client = new Client(name, email, password);
-            _memoryDataBase.GetUsers().Add(client);
+            _memoryDataBase.GetUsers().Add(client); //metodo add user 
         }
     }
 
