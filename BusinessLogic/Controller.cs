@@ -232,4 +232,9 @@ public class Controller
     {
         return promotion.GetValidityDate().GetFinalDate() < DateTime.Now;
     }
+
+    public void LogoutUser()
+    {
+        _memoryDataBase.SetActiveUser(null);
+    }
 }

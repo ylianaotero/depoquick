@@ -439,9 +439,21 @@ public class ControllerTest
         CollectionAssert.DoesNotContain(controller.GetPromotions(), promotion2);
     }
     
-    
-    
-    
+    [TestMethod]
+    public void TestLogoutUser()
+    {
+        MemoryDataBase memoryDataBase = new MemoryDataBase();
+        Controller controller = new Controller(memoryDataBase);
+
+        String nombre = "Maria";
+        String email = "maria@gmail.com";
+        String password = "mAria1..123";
+        String validation = "mAria1..123";
+        controller.RegisterAdministrator(nombre, email, password, validation);
+        controller.LoginUser(email, password);
+        controller.LogoutUser();
+        Assert.AreEqual(null, controller.GetActiveUser());
+    }
     
     /*
      [TestMethod]

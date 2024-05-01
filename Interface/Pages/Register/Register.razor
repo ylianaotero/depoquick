@@ -16,18 +16,6 @@
     <body>
     <h3>¡Bienvenido!</h3>
     
-    @if (_showAlertNewClient)
-    {
-      <br>
-       <div class="alert alert-danger" role="alert">
-        <h4 class="alert-heading">¿Estás seguro?</h4>
-        <p>Estas a punto de registrar al nuevo cliente @_user.GetName() con el mail @_user.GetEmail()</p>
-        <hr>
-        <input @onclick="RegisterClient" type="submit" class="btn btn-primary" value="Aceptar">
-      </div>
-      <br>
-    }
-    
     @if (_showAlertInvalidUserPassword)
     {
       <br>
@@ -73,7 +61,7 @@
                     <input type="password" class="form-control" id="passwordValidation"@bind-value="_passwordValidation" required />
                 </div>
         <br><br/>
-        <button type="submit" class="btn btn-primary" @onclick="ShowAlert">Registrarse</button>
+        <button type="submit" class="btn btn-primary" @onclick="AttemptToRegister">Registrarse</button>
         @if (registred) {
             <div class="alert alert-success" role="alert">
                 El usuario ingresó correctamente
@@ -96,39 +84,52 @@
     private String _email;
     private String _password;
     private String _passwordValidation;
-    
-    private void ShowAlert()
+
+    private void AttemptToRegister()
     {
         HideAllAlerts();
-        if (IsAValidName())
+        ShowAlert();
+
+        if (IsWrongUserData())
         {
-            if (IsAValidEmail())
-            {
-                if (IsValidPassword())
-                {
-                    //User.ValidatePasswordConfirmation(_password,_passwordValidation);
-                    if (MemoryDataBase.GetListOfUsers().Count == 0) //Es admin
-                    {
-                        RegisterAdmin();
-                    }
-                    else
-                    {
-                        RegisterClient();
-                    }
-                }
-                else
-                {
-                    _showAlertInvalidUserPassword = true;
-                }
-            }
-            else
-            {
-                _showAlertInvalidUserEmail = true;
-            }
+            return;
+        }
+
+        AddNewUser();
+        GoToHomePage();
+    }
+
+    private void AddNewUser()
+    {
+        if (_controller.GetUsers().Count > 0)
+        {
+            RegisterClient();
         }
         else
         {
-            _showAlertInvalidUserName = true;
+            RegisterAdmin();
+        }
+    }
+
+    private bool IsWrongUserData()
+    {
+        return _showAlertInvalidUserEmail | _showAlertInvalidUserName | _showAlertInvalidUserPassword;
+    }
+    
+    private void ShowAlert()
+    {
+        if (!IsAValidName())
+        {
+            _showAlertInvalidUserEmail = true;
+        }
+        if (!IsAValidEmail())
+        {
+            _showAlertInvalidUserEmail = true;
+        }
+
+        if (!IsValidPassword())
+        {
+            _showAlertInvalidUserPassword = true;
         }
 
     }
@@ -203,14 +204,24 @@
 
     private void RegisterAdmin()
     {
+        User.ValidatePasswordConfirmation(_password,_passwordValidation);
         _controller.RegisterAdministrator(_name,_email,_password,_passwordValidation);
-        NavigationManager.NavigateTo("/Home");
     }
 
     private void RegisterClient()
     {
+        User.ValidatePasswordConfirmation(_password,_passwordValidation);
         _controller.RegisterClient(_name,_email,_password,_passwordValidation);
-        NavigationManager.NavigateTo("/Home");
+    }
+
+    private void GoToHomePage()
+    {
+        NavigationManager.NavigateTo("/Home",forceLoad:true);
     }
     
+    protected override void OnInitialized()
+    {
+        _controller = new Controller(MemoryDataBase);
+        HideAllAlerts();
+    }
 }
