@@ -12,15 +12,15 @@
 
     <body>
 
-    <h3>¡Bienvenido!</h3>
-    @if (_controller.GetUsers().Count == 0) //lo estoy haciendo rapido, en realidad tendrias que hacer un get de admin alla abajo y si es null eso
+    <h3>@if (UserRegistred()) { <text></text> }else { <text>¡Bienvenido!</text> }</h3>
+    @if (!UserRegistred()) //lo estoy haciendo rapido, en realidad tendrias que hacer un get de admin alla abajo y si es null eso
     {
-        <h2>Se debe registrar primero un administrador para proseguir (cambiar este texto)</h2>
+        <h4>@if (UserRegistred()) { <text>Puede ingresar un cliente</text> }else { <text>No hay usuarios registrados. Usted está a punto de registrar un administrador</text> }</h4>
         <button type="submit" class="btn btn-primary" @onclick="RegisterUser">Registrar administrador</button>
     }
     else
     {
-        <h2>Usted ha registrado un administrador. Desea entrar al sistema o registrarse como cliente</h2>
+        <h4>Usted ha registrado un administrador. Desea entrar al sistema o registrarse como cliente</h4>
         <form>
             <button type="submit" class="btn btn-primary" @onclick="RegisterUser">Registrarse</button>
             <br/>
@@ -49,6 +49,11 @@
     private void LoginUser()
     {
         NavigationManager.NavigateTo("/Login",forceLoad: true);
+    }
+
+    private bool UserRegistred()
+    {
+        return _controller.GetUsers().Count > 0;
     }
     
 }

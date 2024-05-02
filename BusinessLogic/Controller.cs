@@ -1,6 +1,7 @@
 ﻿using DepoQuick.Domain;
 using DepoQuick.Domain.Exceptions.ControllerExceptions;
 using DepoQuick.Domain.Exceptions.MemoryDataBaseExceptions;
+using DepoQuick.Domain.Exceptions.UserExceptions;
 
 namespace BusinessLogic;
 
@@ -111,7 +112,7 @@ public class Controller
         if (_memoryDataBase.GetUsers().Count == 0)
         {
             Administrator newAdministrator = new Administrator(name, email, password);
-            _memoryDataBase.GetUsers().Add(newAdministrator);
+            AddUser(newAdministrator);
             _memoryDataBase.SetAdministrator(newAdministrator);
         }
         else
@@ -122,18 +123,21 @@ public class Controller
 
     public void LoginUser(string email, string password)
     {
-        //hacer metodo que te devuelve bool, por si existe user (publico asi lo llamas en login.razor)
-        //hacer metodo que te devuelva el user 
-        bool userExists = false; //metodo para user exists
-        foreach (User us in _memoryDataBase.GetUsers()) // separar en otro metodo que busque un usario y te lo devuelva
+        if (UserExists(email))
         {
-            if (us.GetEmail() == email && us.GetPassword() == password)
+            User u = GetUserFromUsersList(email);
+            if (u.GetPassword().Equals(password))
             {
-                _memoryDataBase.SetActiveUser(us);
-                userExists = true;
+                _memoryDataBase.SetActiveUser(u);
             }
+            else
+            {
+                throw new UserPasswordIsInvalidException("La contraseña ingresada no es correcta");
+            }
+            
         }
-        if(!userExists){
+        else
+        {
             throw new UserDoesNotExistException("No existe un usuario con los datos proporcionados");
         }
     }
@@ -159,16 +163,12 @@ public class Controller
         else
         {
             User.ValidatePasswordConfirmation(password, validation);
-            foreach (User user in _memoryDataBase.GetUsers())
+            if (UserExists(email))
             {
-                if (user.GetEmail() == email)
-                {
-                    throw new UserAlreadyExistsException("Un usuario ya fue registrado con ese mail");
-                }
+                throw new UserAlreadyExistsException("Un usuario ya fue registrado con ese mail");
             }
-
             Client client = new Client(name, email, password);
-            _memoryDataBase.GetUsers().Add(client); //metodo add user 
+            AddUser(client);
         }
     }
 
@@ -230,5 +230,40 @@ public class Controller
     public void LogoutUser()
     {
         _memoryDataBase.SetActiveUser(null);
+    }
+
+    public bool UserExists(string email)
+    {
+        bool exists = false;
+        foreach (User user in _memoryDataBase.GetUsers())
+        {
+            if (user.GetEmail() == email)
+            {
+                exists = true;
+            }
+        }
+
+        return exists;
+    }
+
+    private User GetUserFromUsersList(String email)
+    {
+        User user = SearchUser(email);
+        return user;
+    }
+    
+    private User SearchUser(String email)
+    {
+        return _memoryDataBase.GetUsers().Find(u => u.GetEmail() == email);
+    }
+
+    private void AddUser(User newUser)
+    {
+        _memoryDataBase.GetUsers().Add(newUser);
+    }
+
+    public bool UserLoggedIn()
+    {
+        return _memoryDataBase.GetActiveUser() != null;
     }
 }

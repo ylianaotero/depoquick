@@ -2,6 +2,7 @@
 @using BusinessLogic
 @using DepoQuick.Domain
 @using Blazorise
+@using DepoQuick.Domain.Exceptions.ControllerExceptions
 @using DepoQuick.Domain.Exceptions.MemoryDataBaseExceptions
 @inject MemoryDataBase MemoryDataBase
 @inject IJSRuntime JSRuntime
@@ -25,6 +26,15 @@
   <br>
 }
 
+@if (_showAlertInvalidPassword)
+{
+  <br>
+   <div class="alert alert-danger" role="alert">
+    <h4 class="alert-heading">La contraseña ingresada no es válida</h4>
+  </div>
+  <br>
+}
+
 <h3>¡Bienvenido!</h3>
 <form>
     <div class="form-group">
@@ -36,7 +46,7 @@
         <input type="password" class="form-control" id="password" @bind-value="_password"required/>
     </div>
     <br><br/>
-    <button type="submit" class="btn btn-primary" @onclick="ShowAlert">Login</button>
+    <button type="button" class="btn btn-primary" @onclick="ShowAlert">Login</button>
 </form>
 </body>
 </html>
@@ -44,6 +54,7 @@
 @code {
     bool logged = false;
     private bool _showAlertUserDoesNotExist;
+    private bool _showAlertInvalidPassword;
     private Controller _controller;
     private String _email;
     private String _password;
@@ -58,8 +69,7 @@
         
     public void LoginUser()
     {
-        _controller.LoginUser(_email,_password); //controlar excepciones
-        //TODO: Ver si queremos analizar de alguna forma en especifico que el usuario se haya ingresado correctamente
+        _controller.LoginUser(_email,_password);
         logged = true;
         NavigationManager.NavigateTo("/Home",forceLoad: true);
     }
@@ -67,13 +77,18 @@
     private void ShowAlert()
     {
         HideAllAlerts();
-        if (UserExists())
+        try
         {
+            _controller.LoginUser(_email, _password); //estas logeandote aca, logearse una sola vez
             LoginUser();
         }
-        else
+        catch (UserDoesNotExistException userDoesNotExistException)
         {
             _showAlertUserDoesNotExist = true;
+        }
+        catch (UserPasswordIsInvalidException userPasswordIsInvalidException)
+        {
+            _showAlertInvalidPassword = true;
         }
         
     }
@@ -81,19 +96,7 @@
     private void HideAllAlerts()
     {
         _showAlertUserDoesNotExist = false;
-    }
-
-    private bool UserExists()
-    {
-        try
-        {
-            _controller.LoginUser(_email,_password); //estas logeandote aca, logearse una sola vez
-            return true;
-        }
-        catch (UserDoesNotExistException userDoesNotExistException)
-        {
-            return false;
-        }
+        _showAlertInvalidPassword = false;
     }
     
 }
