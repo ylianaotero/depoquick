@@ -261,7 +261,7 @@ public class Controller
 
     private void AddUser(User newUser)
     {
-        _memoryDataBase.GetUsers().Add(newUser);
+        _memoryDataBase.GetUsers().Add(newUser); //agregar metodo en memoryDataBase
     }
 
     public bool UserLoggedIn()
