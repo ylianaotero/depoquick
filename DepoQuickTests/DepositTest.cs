@@ -117,7 +117,7 @@ public class DepositTest
         Assert.AreEqual(reserved, newDeposit.IsReserved());
         CollectionAssert.Contains(newDeposit.GetPromotions(), newPromotion);
     }
-    
+        
     [TestMethod]
     public void TestClculateSmallDepositPriceWithoutPromotionLessThan7DaysAndWithoutAirConditioning()
     {
@@ -137,7 +137,7 @@ public class DepositTest
         Assert.AreEqual(expectedDepositPrice, newDeposit.CalculatePrice(numberOfDays));
 
     }
-    
+
     [TestMethod]
     public void TestClculateMediumDepositPriceWithoutPromotionLessThan7DaysAndWithoutAirConditioning()
     {
@@ -157,7 +157,7 @@ public class DepositTest
         Assert.AreEqual(expectedDepositPrice, newDeposit.CalculatePrice(numberOfDays));
 
     }
-    
+
     [TestMethod]
     public void TestClculateBigDepositPriceWithoutPromotionLessThan7DaysAndWithoutAirConditioning()
     {
@@ -177,7 +177,7 @@ public class DepositTest
         Assert.AreEqual(expectedDepositPrice, newDeposit.CalculatePrice(numberOfDays));
 
     }
-    
+
     [TestMethod]
     public void TestClculateBigDepositPriceWithoutPromotionFor7DaysAndWithoutAirConditioning()
     {
@@ -200,7 +200,7 @@ public class DepositTest
         Assert.AreEqual(expectedDepositPrice, newDeposit.CalculatePrice(numberOfDays));
 
     }
-    
+
     [TestMethod]
     public void TestClculateBigDepositPriceWithoutPromotionFor14DaysAndWithoutAirConditioning()
     {
@@ -223,7 +223,7 @@ public class DepositTest
         Assert.AreEqual(expectedDepositPrice, newDeposit.CalculatePrice(numberOfDays));
 
     }
-    
+
     [TestMethod]
     public void TestClculateBigDepositPriceWithoutPromotionForMoreThan14DaysAndWithoutAirConditioning()
     {
@@ -246,7 +246,7 @@ public class DepositTest
         Assert.AreEqual(expectedDepositPrice, newDeposit.CalculatePrice(numberOfDays));
 
     }
-    
+
     [TestMethod]
     public void TestClculateBigDepositPriceWithoutPromotionForMoreThan14DaysAndWithAirConditioning()
     {
@@ -259,22 +259,22 @@ public class DepositTest
 
         int numberOfDays = 15;
 
-        int basePrice = 100;
+        int basePrice = 100*15;
 
         double discountForNumberOfDays = 0.1; 
 
-        int expectedDepositPrice = (int)(numberOfDays * basePrice * (1.0 - discountForNumberOfDays));
-
         if (airConditioning)
         {
-            expectedDepositPrice += (numberOfDays * 20); 
+            basePrice += (numberOfDays * 20); 
         }
+        
+        basePrice = (int)(basePrice * (1.0 - discountForNumberOfDays));
 
         
-        Assert.AreEqual(expectedDepositPrice, newDeposit.CalculatePrice(numberOfDays));
+        Assert.AreEqual(basePrice, newDeposit.CalculatePrice(numberOfDays));
 
     }
-    
+
     [TestMethod]
     public void TestClculateBigDepositPriceWithoutValidPromotionForMoreThan14DaysAndWithAirConditioning()
     {
@@ -301,23 +301,23 @@ public class DepositTest
 
         int numberOfDays = 15;
 
-        int basePrice = 100;
+        int basePrice = 100*15;
 
         double discountForNumberOfDays = 0.1; 
 
-        int expectedDepositPrice = (int)(numberOfDays * basePrice * (1.0 - discountForNumberOfDays));
-
         if (airConditioning)
         {
-            expectedDepositPrice += (numberOfDays * 20); 
+            basePrice += (numberOfDays * 20); 
         }
+        
+        basePrice = (int)(basePrice * (1.0 - discountForNumberOfDays));
 
         
-        Assert.AreEqual(expectedDepositPrice, newDeposit.CalculatePrice(numberOfDays));
+        Assert.AreEqual(basePrice, newDeposit.CalculatePrice(numberOfDays));
         CollectionAssert.Contains(newDeposit.GetPromotions(), newPromotion);
 
     }
-    
+
     [TestMethod]
     public void TestClculateBigDepositPriceWithValidPromotionForMoreThan14DaysAndWithAirConditioning()
     {
@@ -344,26 +344,113 @@ public class DepositTest
 
         int numberOfDays = 15;
 
-        int basePrice = 100;
+        int basePrice = 100*15;
 
-        double discountForNumberOfDays = 0.1; 
-
-        int expectedDepositPrice = (int)(numberOfDays * basePrice * (1.0 - discountForNumberOfDays));
+        double discount = 0.1; 
 
         if (airConditioning)
         {
-            expectedDepositPrice += (numberOfDays * 20); 
+            basePrice += (numberOfDays * 20); 
         }
-
+        
         if (dateFrom <= DateTime.Now.Date && dateTo >= DateTime.Now.Date)
         {
-            expectedDepositPrice = (int)(expectedDepositPrice * (1.0 - discountRate));
+            discount += discountRate; 
         }
+        
+        basePrice = (int)(basePrice * (1.0 - discount));
 
         
-        Assert.AreEqual(expectedDepositPrice, newDeposit.CalculatePrice(numberOfDays));
+        Assert.AreEqual(basePrice, newDeposit.CalculatePrice(numberOfDays));
 
     }
+
+    [TestMethod]
+    public void TestClculateBigDepositPriceWithTwoPromotionsOfForMoreThan14DaysAndWithAirConditioning()
+    {
+        double discountRate = 0.5;
+        String label = "Ejemplo"; 
+        DateTime dateFrom = new DateTime(2020, 4, 8).Date;
+        DateTime dateTo  = new DateTime(2030, 4, 10).Date;
+        DateRange dateRange = new DateRange(dateFrom, dateTo);
+        
+        Promotion newPromotion = new Promotion();
+        Promotion newPromotion2 = new Promotion();
+        
+        newPromotion.SetDiscountRate(discountRate); 
+        newPromotion.SetValidityDate(dateRange);
+        newPromotion.SetLabel(label);
+        
+        newPromotion2.SetDiscountRate(discountRate); 
+        newPromotion2.SetValidityDate(dateRange);
+        newPromotion2.SetLabel(label);
+        
+        char area = 'A';
+        String size = "Grande";
+        bool airConditioning = true;
+        bool reserved = false;
+        
+        Deposit newDeposit = new Deposit(area, size, airConditioning, reserved);
+        
+        newDeposit.AddPromotion(newPromotion);
+        newDeposit.AddPromotion(newPromotion2);
+
+        int numberOfDays = 15;
+
+        int basePrice = 100*15;
+
+        double discount = 0.1 + 0.5; 
+
+        if (airConditioning)
+        {
+            basePrice += (numberOfDays * 20); 
+        }
+        
+        basePrice = (int)(basePrice * (1.0 - discount));
+
+        
+        Assert.AreEqual(basePrice, newDeposit.CalculatePrice(numberOfDays));
+
+    }
+
+
+    [TestMethod]
+    public void TestClculateBigDepositPriceWithTwoPromotionsOfForMoreThan14DaysAndWithAirConditioningWithADiscountOf100()
+    {
+        double discountRate = 0.45;
+        String label = "Ejemplo"; 
+        DateTime dateFrom = new DateTime(2020, 4, 8).Date;
+        DateTime dateTo  = new DateTime(2030, 4, 10).Date;
+        DateRange dateRange = new DateRange(dateFrom, dateTo);
+        
+        Promotion newPromotion = new Promotion();
+        Promotion newPromotion2 = new Promotion();
+        
+        newPromotion.SetDiscountRate(discountRate); 
+        newPromotion.SetValidityDate(dateRange);
+        newPromotion.SetLabel(label);
+        
+        newPromotion2.SetDiscountRate(discountRate); 
+        newPromotion2.SetValidityDate(dateRange);
+        newPromotion2.SetLabel(label);
+        
+        char area = 'A';
+        String size = "Grande";
+        bool airConditioning = true;
+        bool reserved = false;
+        
+        Deposit newDeposit = new Deposit(area, size, airConditioning, reserved);
+        
+        newDeposit.AddPromotion(newPromotion);
+        newDeposit.AddPromotion(newPromotion2);
+
+        int numberOfDays = 15;
+
+        
+        Assert.AreEqual(0, newDeposit.CalculatePrice(numberOfDays));
+
+    }
+
     
     [TestMethod]
     public void TestAddIdToAValidDeposit()
@@ -409,9 +496,5 @@ public class DepositTest
 
         Assert.IsTrue(newDeposit1.GetId() < newDeposit2.GetId());
     }
-
-
     
-    
-
 }
