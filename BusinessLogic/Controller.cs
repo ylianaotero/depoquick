@@ -1,4 +1,5 @@
 ﻿using DepoQuick.Domain;
+using DepoQuick.Domain.Exceptions.AdministratorExceptions;
 using DepoQuick.Domain.Exceptions.ControllerExceptions;
 using DepoQuick.Domain.Exceptions.MemoryDataBaseExceptions;
 using DepoQuick.Domain.Exceptions.UserExceptions;
@@ -144,13 +145,14 @@ public class Controller
 
     public Administrator GetAdministrator()
     {
-        if (_memoryDataBase.GetUsers().Count == 0)
+        Administrator administrator = _memoryDataBase.GetAdministrator(); 
+        if (administrator  == null)  
         {
-            throw new EmptyUserListException("No hay usuarios registrados");
+            throw new EmptyAdministratorException("No hay administrador registrado");
         }
         else
         {
-            return _memoryDataBase.GetAdministrator();
+            return administrator;
         }
     }
 

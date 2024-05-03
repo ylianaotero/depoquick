@@ -1,6 +1,7 @@
 ﻿using System.Reflection.PortableExecutable;
 using BusinessLogic;
 using DepoQuick.Domain;
+using DepoQuick.Domain.Exceptions.AdministratorExceptions;
 using DepoQuick.Domain.Exceptions.ControllerExceptions;
 using DepoQuick.Domain.Exceptions.MemoryDataBaseExceptions;
 using DateTime = System.DateTime;
@@ -376,7 +377,7 @@ public class ControllerTest
     }
 
     [TestMethod]
-    [ExpectedException(typeof(EmptyUserListException))]
+    [ExpectedException(typeof(EmptyAdministratorException))]
     public void TestEmptyUserList()
     {
         MemoryDataBase memoryDataBase = new MemoryDataBase();

@@ -15,18 +15,8 @@
 
 <div class="@NavMenuCssClass" @onclick="ToggleNavMenu">
     <nav class="flex-column">
-        @if (_isUser)
+        @if (_userIsLogged)
         {
-            <div class="nav-item px-3">
-                <NavLink class="nav-link" href="index" Match="NavLinkMatch.All">
-                    <span class="oi oi-home" aria-hidden="true"></span> Home
-                </NavLink>
-            </div>
-            <div class="nav-item px-3">
-                <NavLink class="nav-link" href="DepositReserve">
-                    <span class="oi oi-plus" aria-hidden="true"></span> Reservar
-                </NavLink>
-            </div>
             @if (IsAdministrator())
             {
                 <div class="nav-item px-3">
@@ -35,35 +25,44 @@
                     </NavLink>
                 </div>
                 <div class="nav-item px-3">
-                    <NavLink class="nav-link" href="GestionOfReservs">
-                        <span class="oi oi-list-rich" aria-hidden="true"></span> Gestión de reservas
-                    </NavLink>
-                </div>
-                <div class="nav-item px-3">
                     <NavLink class="nav-link" href="/Promotions">
                         <span class="oi oi-list-rich" aria-hidden="true"></span> Promociones
                     </NavLink>
                 </div>
             }
+            else
+            {
+                <div class="nav-item px-3">
+                    <NavLink class="nav-link" href="DepositReserve">
+                        <span class="oi oi-plus" aria-hidden="true"></span> Reservar
+                    </NavLink>
+                </div>
+            }
+            
+            <div class="nav-item px-3">
+                <NavLink class="nav-link" href="GestionOfReservs">
+                    <span class="oi oi-list-rich" aria-hidden="true"></span> Gestión de reservas
+                </NavLink>
+            </div>
+            
             <div class="nav-item px-3">
                 <NavLink class="nav-link" href="Statics">
                     <span class="oi oi-bar-chart" aria-hidden="true"></span> Estadisticas
                 </NavLink>
             </div>
-            @if (UserLoggedIn())
-            {
-                <div class="nav-item px-3">
-                    <NavLink class="nav-link">
-                        <span class="oi oi-account-login" aria-hidden="true" @onclick="Logout"></span> Logout
-                    </NavLink>
-                </div>
-            }
+            
+            <div class="nav-item px-3">
+                <NavLink class="nav-link">
+                    <span class="oi oi-account-login" aria-hidden="true" @onclick="Logout"></span> Logout
+                </NavLink>
+            </div>
+            
         }
     </nav>
 </div>
 
 @code {
-    private bool _isUser = true;
+    private bool _userIsLogged;
     private bool collapseNavMenu = false;
     private Controller _controller;
     private string? NavMenuCssClass => collapseNavMenu ? "collapse" : null;
@@ -75,7 +74,7 @@
     protected override void OnInitialized()
     { 
         _controller = new Controller(MemoryDataBase);
-        _isUser = _controller.UserLoggedIn();
+        _userIsLogged = UserLoggedIn();
     }
 
     private bool UserLoggedIn()

@@ -1,5 +1,6 @@
 ﻿@page "/"
 @using BusinessLogic
+@using DepoQuick.Domain.Exceptions.AdministratorExceptions
 @inject NavigationManager NavigationManager
 @inject MemoryDataBase MemoryDataBase
 
@@ -12,21 +13,54 @@
 
     <body>
 
-    <h3>@if (UserRegistred()) { <text></text> }else { <text>¡Bienvenido!</text> }</h3>
-    @if (!UserRegistred()) //lo estoy haciendo rapido, en realidad tendrias que hacer un get de admin alla abajo y si es null eso
+    <div class="container-fluid mt-4">
+        <div class="row">
+            <div class="col">
+                <h1 class="text-center" style="color: #0a53be"><strong>¡Bienvenido!</strong></h1>
+                <p class="lead text-center">DepoQuick es una empresa especializada en el alquiler de depósitos para satisfacer tus necesidades de almacenamiento. Ofrecemos soluciones flexibles y seguras para tus bienes.</p>
+            </div>
+        </div>
+    </div>
+
+    
+    @if (!AdminIsRegistred()) 
     {
-        <h4>@if (UserRegistred()) { <text>Puede ingresar un cliente</text> }else { <text>No hay usuarios registrados. Usted está a punto de registrar un administrador</text> }</h4>
-        <button type="submit" class="btn btn-primary" @onclick="RegisterUser">Registrar administrador</button>
+        <div class="container">
+            <div class="row">
+                <div class="col">
+                    <div class="card">
+                        <div class="card-body">
+                            <h4 class="card-title">No hay un administrador registrado</h4>
+                            <p class="card-text">Parece que no hay ningún administrador registrado en el sistema. ¿Deseas registrar uno ahora?</p>
+                            <button type="submit" class="btn btn-primary" @onclick="RegisterUser">Registrar Administrador</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
     }
     else
     {
-        <h4>Usted ha registrado un administrador. Desea entrar al sistema o registrarse como cliente</h4>
-        <form>
-            <button type="submit" class="btn btn-primary" @onclick="RegisterUser">Registrarse</button>
-            <br/>
-            <br/>
-            <button type="submit" class="btn btn-primary" @onclick="LoginUser">Entrar al sistema</button>
-        </form>
+        <div class="container">
+            <div class="row">
+                <div class="col">
+                    <div class="card">
+                        <div class="card-body">
+                            <h4 class="card-title">¡Administrador registrado!</h4>
+                            <p class="card-text">¡Genial! Ya has registrado un administrador en el sistema. ¿Qué te gustaría hacer a continuación?</p>
+                            <form>
+                                <button type="submit" class="btn btn-primary btn-block mb-2" @onclick="RegisterUser">Registrarse como cliente</button>
+                                <button type="submit" class="btn btn-primary btn-block mb-2" @onclick="LoginUser">Ingresar al sistema</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+
     }
 
     </body>
@@ -51,9 +85,17 @@
         NavigationManager.NavigateTo("/Login",forceLoad: true);
     }
 
-    private bool UserRegistred()
+    private bool AdminIsRegistred()
     {
-        return _controller.GetUsers().Count > 0;
+        try
+        {
+            _controller.GetAdministrator();
+            return true; 
+        }
+        catch (EmptyAdministratorException emptyAdministratorException)
+        {
+            return false; 
+        }
     }
     
 }
