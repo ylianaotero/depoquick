@@ -108,6 +108,7 @@ public class ControllerTest
         controller.AddReservation(reservation);
 
         CollectionAssert.Contains(controller.GetReservations(), reservation);
+        CollectionAssert.Contains(client.GetReservations(), reservation);
     }
 
     [TestMethod]
