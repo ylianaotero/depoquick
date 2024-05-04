@@ -22,5 +22,19 @@ public class MemoryDataBaseTests
     }
     */
     
+    [TestMethod]
+    public void TestGetAndSetAdministrator()
+    {
+        MemoryDataBase memoryDataBase = new MemoryDataBase(); 
+
+        Administrator userAdministrator = new Administrator("Juan Perez", "juanperez@gmail.com", "Contrasena#1");
+
+        memoryDataBase.SetAdministrator(userAdministrator);
+        
+        Assert.AreEqual(memoryDataBase.GetAdministrator(), userAdministrator);
+    }
+    
+    
+    
     
 }

@@ -1,6 +1,7 @@
 ﻿@using BusinessLogic
 @using DepoQuick.Domain
 @inject MemoryDataBase MemoryDataBase
+@inject NavigationManager NavigationManager
 
 
 <div class="top-row ps-3 navbar navbar-dark">
@@ -14,54 +15,66 @@
 
 <div class="@NavMenuCssClass" @onclick="ToggleNavMenu">
     <nav class="flex-column">
-        @if (_isUser)
+        @if (UserLoggedIn())
         {
             <div class="nav-item px-3">
-                        <NavLink class="nav-link" href="index" Match="NavLinkMatch.All">
-                            <span class="oi oi-home" aria-hidden="true"></span> Home
-                        </NavLink>
-                    </div>
-            <div class="nav-item px-3">
-                <NavLink class="nav-link" href="Promotions">
-                    <span class="oi oi-list-rich" aria-hidden="true"></span> Promociones
+                <NavLink class="nav-link" href="Home">
+                    <span class="oi oi-home" aria-hidden="true"></span> Inicio
                 </NavLink>
             </div>
+            
+            @if (UserLoggedIn() && IsAdministrator())
+            {
+                <div class="nav-item px-3">
+                    <NavLink class="nav-link" href="Register">
+                        <span class="oi oi-plus" aria-hidden="true"></span> Registro
+                    </NavLink>
+                </div>
+                
+                <div class="nav-item px-3">
+                    <NavLink class="nav-link" href="/Promotions">
+                        <span class="oi oi-list-rich" aria-hidden="true"></span> Promociones
+                    </NavLink>
+                </div>
+                
+                <div class="nav-item px-3">
+                    <NavLink class="nav-link" href="Statics">
+                        <span class="oi oi-bar-chart" aria-hidden="true"></span> Estadisticas
+                    </NavLink>
+                </div>
+            }
+            else
+            {
+                <div class="nav-item px-3">
+                    <NavLink class="nav-link" href="DepositReserve">
+                        <span class="oi oi-plus" aria-hidden="true"></span> Reservar
+                    </NavLink>
+                </div>
+            }
+            
+            <div class="nav-item px-3">
+                <NavLink class="nav-link" href="GestionOfReservs">
+                    <span class="oi oi-list-rich" aria-hidden="true"></span> Gestión de reservas
+                </NavLink>
+            </div>
+            
             <div class="nav-item px-3">
                 <NavLink class="nav-link" href="Deposits">
-                    <span class="oi oi-list-rich" aria-hidden="true"></span> Depositos
+                    <span class="oi oi-bar-chart" aria-hidden="true"></span> Depósitos
                 </NavLink>
             </div>
-                    <div class="nav-item px-3">
-                        <NavLink class="nav-link" href="GestionOfReservs">
-                            <span class="oi oi-list-rich" aria-hidden="true"></span> Gestión de reservas
-                        </NavLink>
-                    </div>
-                    <div class="nav-item px-3">
-                        <NavLink class="nav-link" href="DepositReserve">
-                            <span class="oi oi-plus" aria-hidden="true"></span> Reservar
-                        </NavLink>
-                    </div>
-                    <div class="nav-item px-3">
-                        <NavLink class="nav-link" href="Register">
-                            <span class="oi oi-plus" aria-hidden="true"></span> Registro
-                        </NavLink>
-                    </div>
-                    <div class="nav-item px-3">
-                        <NavLink class="nav-link" href="Home">
-                            <span class="oi oi-plus" aria-hidden="true"></span> Accion
-                        </NavLink>
-                    </div>
-                    <div class="nav-item px-3">
-                        <NavLink class="nav-link" href="Statics">
-                            <span class="oi oi-bar-chart" aria-hidden="true"></span> Estadisticas
-                        </NavLink>
-                    </div>
+            
+            <div class="nav-item px-3">
+                <NavLink class="nav-link" @onclick="Logout">
+                    <span class="oi oi-account-login" aria-hidden="true"></span> Logout
+                </NavLink>
+            </div>
+            
         }
     </nav>
 </div>
 
 @code {
-    private bool _isUser = true;
     private bool collapseNavMenu = false;
     private Controller _controller;
     private string? NavMenuCssClass => collapseNavMenu ? "collapse" : null;
@@ -73,6 +86,23 @@
     protected override void OnInitialized()
     { 
         _controller = new Controller(MemoryDataBase);
-        _isUser = _controller.GetUsers().Count > 0;
+    }
+
+    private bool UserLoggedIn()
+    {
+        return _controller.UserLoggedIn();
+    }
+
+    private void Logout()
+    {
+        
+        _controller.LogoutUser();
+        
+        NavigationManager.NavigateTo("/",forceLoad:true);
+    }
+
+    private bool IsAdministrator()
+    {
+        return _controller.GetActiveUser().IsAdministrator();
     }
 }

@@ -89,7 +89,7 @@ public class User
     
     public static void ValidatePasswordConfirmation(string password, string passwordConfirmation)
     {
-        if (password != passwordConfirmation)
+        if (string.Compare(password,passwordConfirmation) != 0)
         {
             throw new UserPasswordsDoNotMatchException("Las contraseñas no coinciden.");
         }
