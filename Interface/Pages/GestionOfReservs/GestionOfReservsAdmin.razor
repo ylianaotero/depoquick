@@ -3,7 +3,6 @@
 @inject MemoryDataBase MemoryDataBase
 @using BusinessLogic
 @using DepoQuick.Domain
-@using DepoQuick.Domain.Exceptions.ControllerExceptions
 
 
 <html lang="es">
@@ -45,17 +44,17 @@
                     <td>Depósito @reservation.GetDeposit().GetId()</td>
                     <td>@reservation.GetDateRange().GetInitialDate().ToString("dd/MM/yyyy")</td>
                     <td>@reservation.GetDateRange().GetFinalDate().ToString("dd/MM/yyyy")</td>
-                    @if (reservation.GetSate() == 0)
+                    @if (reservation.GetState() == 0)
                     {
                         <td>
-                            <button @onclick="() => ApproveReservation(reservation.GetId())" class="btn btn-success btn-sm">Aprobar</button>
+                            <button @onclick="() => ApproveReservation(reservation)" class="btn btn-success btn-sm">Aprobar</button>
                             <a href="/Reject/@reservation.GetId()" class="btn btn-danger btn-sm">Rechazar</a>
                         </td>
                         <td>-</td>
                     }
                     else
                     {
-                        @if (reservation.GetSate() == 1)
+                        @if (reservation.GetState() == 1)
                         {
                             <td>
                                 <button class="btn btn-primary btn-sm">Aprobada</button>
@@ -65,7 +64,7 @@
                         }
                         else
                         {
-                            @if (reservation.GetSate() == -1)
+                            @if (reservation.GetState() == -1)
                             {
                                 <td>
                                     <button class="btn btn-secondary btn-sm">Rechazada</button>
@@ -92,7 +91,7 @@
     protected override void OnInitialized()
     {
         _controller = new Controller(MemoryDataBase);
-        _listOfReservations = MemoryDataBase.GetReservations();
+        _listOfReservations = _controller.GetReservations();
         HideAllAlerts(); 
     }
 
@@ -102,17 +101,8 @@
 
     }
 
-    private void ApproveReservation(int id)
+    private void ApproveReservation(Reservation reservation)
     {
-        try
-        {
-            Reservation reservation = _controller.GetReservation(id);
-            reservation.SetSate(1);
-        }
-        catch (ReservationNotFoundException exceptionReservationNotFound)
-        {
-            _showAlertReservationNotFound = true;
-        }
-        
+        _controller.ApproveReservation(reservation);
     }
 }
