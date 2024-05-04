@@ -94,6 +94,42 @@ public class Controller
         }
         return promotion;
     }
+
+    public void UpdatePromotionData(Promotion promotion, string label, double discountRate, DateRange validityDate)
+    {
+        promotion.SetLabel(label);
+        promotion.SetDiscountRate(discountRate);
+        promotion.SetValidityDate(validityDate);
+    }
+    
+    public void UpdatePromotionDeposits(Promotion promotion, List<Deposit> deposits)
+    {
+        List<Deposit> oldDeposits = promotion.GetDeposits();
+        List<Deposit> depositsToRemove = new List<Deposit>();
+        
+        foreach (var oldDeposit in oldDeposits)
+        {
+            if (!deposits.Contains(oldDeposit))
+            {
+                oldDeposit.RemovePromotion(promotion);
+                depositsToRemove.Add(oldDeposit);
+            }
+        }
+        
+        foreach (var deposit in depositsToRemove)
+        {
+            promotion.RemoveDeposit(deposit);
+        }
+        
+        foreach (var deposit in deposits)
+        {
+            if (!oldDeposits.Contains(deposit))
+            {
+                deposit.AddPromotion(promotion);
+                promotion.AddDeposit(deposit);
+            }
+        }
+    }
     
     public List<Promotion> GetPromotions()
     {
