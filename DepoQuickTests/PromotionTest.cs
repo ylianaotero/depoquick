@@ -172,4 +172,18 @@ public class PromotionTest
         CollectionAssert.Contains(newPromotion.GetDeposits(), bigDeposit);
     }
     
+    [TestMethod]
+    public void TestRemoveDepositFromPromotion()
+    {
+        Promotion newPromotion = new Promotion();
+        
+        Deposit smallDeposit = new Deposit('A', "pequeño", false, false);
+        
+        newPromotion.AddDeposit(smallDeposit);
+        
+        newPromotion.RemoveDeposit(smallDeposit);
+        
+        CollectionAssert.DoesNotContain(newPromotion.GetDeposits(), smallDeposit);
+    }
+    
 } 
