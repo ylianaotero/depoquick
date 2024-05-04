@@ -65,6 +65,9 @@ public class Controller
     public void AddReservation(Reservation reservation)
     {
         _memoryDataBase.GetReservations().Add(reservation);
+        Client client = reservation.GetClient();
+        client.AddReservation(reservation);
+
     }
     
     public List<Reservation> GetReservations()
