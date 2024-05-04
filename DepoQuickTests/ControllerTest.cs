@@ -204,8 +204,8 @@ public class ControllerTest
         double newDiscountRate = 0.5;
         DateRange newDateRange = new DateRange(new DateTime(2026, 04, 07), new DateTime(2026, 04, 08));
 
-        controller.UpdatePromotionData(promotion1.GetId(), "new label", newDiscountRate, newDateRange);
-        controller.UpdatePromotionDeposits(promotion1.GetId(), newDepositsToAddPromotion);
+        controller.UpdatePromotionData(promotion1, "new label", newDiscountRate, newDateRange);
+        controller.UpdatePromotionDeposits(promotion1, newDepositsToAddPromotion);
         
         CollectionAssert.Contains(controller.GetPromotions(), promotion1);
         CollectionAssert.DoesNotContain(promotion1.GetDeposits(), _deposit);
