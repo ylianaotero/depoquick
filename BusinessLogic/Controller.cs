@@ -150,7 +150,7 @@ public class Controller
         
         foreach (Deposit deposit in relatedDeposits)
         {
-            deposit.GetPromotions().Remove(promotionToDelete);
+            deposit.RemovePromotion(promotionToDelete);
         }
        
         promotions.Remove(promotionToDelete);
@@ -248,7 +248,7 @@ public class Controller
         
         foreach (Promotion promotion in relatedPromotions)
         {
-            promotion.GetDeposits().Remove(depositToDelete);
+            promotion.RemoveDeposit(depositToDelete);
         }
        
         deposits.Remove(depositToDelete);
