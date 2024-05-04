@@ -123,7 +123,7 @@
 
     _initialDate = DateTime.Today.Date;
     _finalDate = DateTime.Today.Date;
-    
+    _client = (Client)_controller.GetActiveUser();
   }
 
   private void ShowAlert()
@@ -157,8 +157,7 @@
 
   private bool IsAClient()
   {
-    return !MemoryDataBase.GetActiveUser().IsAdministrator(); 
-    
+    return !_controller.GetActiveUser().IsAdministrator(); 
   }
 
   private bool IsAValidDeposit()
@@ -227,10 +226,8 @@
 
   private void AddReservation()
   {
-      _client = (Client)MemoryDataBase.GetActiveUser();
       Reservation newReservation = new Reservation(_deposit,  _client , _date); 
       
-      _client.AddReservation(newReservation);
       _controller.AddReservation(newReservation);
       
       HideAllAlerts(); 

@@ -113,7 +113,7 @@
     protected override void OnInitialized()
     {
         _controller = new Controller(MemoryDataBase);
-        _listOfReservations = MemoryDataBase.GetReservations(); 
+        _listOfReservations = _controller.GetReservations(); 
         _labels =  new List<char> { 'A', 'B', 'C', 'D', 'E' };
         HideAllAlerts();
         InitializeData(); 
@@ -146,7 +146,7 @@
 
     private bool ReservationIsAcepted(Reservation reservation)
     {
-        return reservation.GetSate() == 1; 
+        return reservation.GetState() == 1; 
     }
     
     private void IncrementElement(List<int> list, int index)

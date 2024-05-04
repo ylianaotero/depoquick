@@ -51,8 +51,8 @@
                 <br>
             </div>
         </form>
-        <button @onclick="() => RejectTheReservation(_currentReservation.GetId())" class="btn btn-danger btn-sm">Rechazar</button>
-        <a href="/GestionOfReservsAdmin" class="btn btn-primary btn-sm">Cancelar</a>
+        <button @onclick="() => RejectTheReservation()" class="btn btn-danger btn-sm">Rechazar</button>
+        <button @onclick="() => CancelRejection()" class="btn btn-primary btn-sm">Cancelar</button>
     </body>
 </html>
 
@@ -79,13 +79,11 @@
         _navigationManager = NavigationManager; 
     }
     
-    private void RejectTheReservation(int id)
+    private void RejectTheReservation()
     {
         try
         {
-            Reservation reservation = _controller.GetReservation(id);
-            reservation.SetMessage(_comment);
-            reservation.SetSate(-1);
+            _controller.RejectReservation(_currentReservation, _comment);
             _navigationManager.NavigateTo("/GestionOfReservsAdmin");
         }
         catch (ReservationNotFoundException exceptionReservationNotFound)
@@ -102,6 +100,12 @@
             _showAlertEmptyComment = true;
         }
 
+    }
+    
+    private void CancelRejection()
+    {
+        _controller.CancelRejectionOfReservation(_currentReservation);
+        _navigationManager.NavigateTo("/GestionOfReservsAdmin");
     }
     
 }

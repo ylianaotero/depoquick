@@ -224,10 +224,17 @@ public class Deposit
 
         return discount; 
     }
-
+    
     private bool TheSumOfTheDiscountsIsLessThan100(double discountOne, double discountTwo)
+
     {
         return (discountOne+discountTwo) <= 1; 
+    }
+    
+
+    public void SetReserved(bool reserved)
+    {
+        _reserved = reserved; 
     }
     
 }

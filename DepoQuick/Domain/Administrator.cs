@@ -9,12 +9,13 @@ public class Administrator : User
     
     public void ApproveReservation(Reservation reservation)
     {
-        reservation.SetSate(1);
+        reservation.SetState(1);
+        reservation.GetDeposit().SetReserved(true);
     }
     
     public void RejectReservation(Reservation reservation, string reason)
     {
-        reservation.SetSate(-1);
+        reservation.SetState(-1);
         reservation.SetMessage(reason);
     }
 }

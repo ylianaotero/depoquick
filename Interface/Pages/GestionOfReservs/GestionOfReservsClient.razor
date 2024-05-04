@@ -30,7 +30,7 @@
                             <td>Depósito @reservation.GetDeposit().GetId()</td>
                             <td>@reservation.GetDateRange().GetInitialDate().ToString("dd/MM/yyyy")</td>
                             <td>@reservation.GetDateRange().GetFinalDate().ToString("dd/MM/yyyy")</td>
-                            @if (reservation.GetSate() == 0)
+                            @if (reservation.GetState() == 0)
                             {
                                 <td>
                                     <button class="btn btn-secondary btn-sm">En espera</button>
@@ -39,7 +39,7 @@
                             }
                             else
                             {
-                                @if (reservation.GetSate() == 1)
+                                @if (reservation.GetState() == 1)
                                 {
                                     <td>
                                         <button class="btn btn-success btn-sm">Aprobada</button>
@@ -48,7 +48,7 @@
                                 }
                                 else
                                 {
-                                    @if (reservation.GetSate() == -1)
+                                    @if (reservation.GetState() == -1)
                                     {
                                         <td>
                                             <button class="btn btn-danger btn-sm">Rechazada</button>
@@ -77,7 +77,7 @@
     {
         _controller = new Controller(MemoryDataBase);
         
-        _client = (Client)MemoryDataBase.GetActiveUser();
+        _client = (Client)_controller.GetActiveUser();
 
         _listOfReservations = _client.GetReservations(); 
     }

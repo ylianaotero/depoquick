@@ -15,9 +15,14 @@ public class Controller
         _memoryDataBase = memoryDatabase;
     }
     
-    public void AddDeposit(Deposit deposit)
+    public void AddDeposit(Deposit deposit, List<Promotion> promotions)
     {
         _memoryDataBase.GetDeposits().Add(deposit);
+        foreach (Promotion promotion in promotions)
+        {
+            deposit.AddPromotion(promotion);
+            promotion.AddDeposit(deposit);
+        }
     }
     
     public Deposit GetDeposit(int id)
@@ -60,6 +65,14 @@ public class Controller
     public void AddReservation(Reservation reservation)
     {
         _memoryDataBase.GetReservations().Add(reservation);
+        Client client = reservation.GetClient();
+        client.AddReservation(reservation);
+
+    }
+    
+    public List<Reservation> GetReservations()
+    {
+        return _memoryDataBase.GetReservations();
     }
 
     public void AddPromotion(Promotion promotion, List<Deposit> deposits)
@@ -227,6 +240,26 @@ public class Controller
     private bool PromotionIsExpired(Promotion promotion)
     {
         return promotion.GetValidityDate().GetFinalDate() < DateTime.Now;
+    }
+    
+    public void ApproveReservation(Reservation reservation)
+    {
+        Administrator admin = (Administrator)_memoryDataBase.GetActiveUser();
+        
+        admin.ApproveReservation(reservation);
+    }
+    
+    public void RejectReservation(Reservation reservation, string reason)
+    {
+        Administrator admin = (Administrator)_memoryDataBase.GetActiveUser();
+        
+        admin.RejectReservation(reservation, reason);
+    }
+
+    public void CancelRejectionOfReservation(Reservation reservation)
+    {
+        reservation.SetState(0);
+        reservation.GetDeposit().SetReserved(false);
     }
 
     public void LogoutUser()

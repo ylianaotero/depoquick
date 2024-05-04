@@ -13,6 +13,27 @@
     <body>
         <h3>¡Hola, @_loggedInUser.GetName()! Aquí puedes encontrar nuestros depósitos.</h3>
 
+    @if (_showAlertDepositDeletedSuccessfully)
+    {
+        <div class="alert alert-success" role="alert">
+            El depósito ha sido eliminado correctamente.
+        </div>
+    }
+    @if (_showAlertDepositDeletedUnsuccessfully)
+    {
+        <div class="alert alert-danger" role="alert">
+            El depósito no pudo ser eliminado porque está reservado.
+        </div>
+    }
+    @if (_showAlertAboutToDeleteDeposit)
+    {
+        <div class="alert alert-warning" role="alert">
+            ¿Estás seguro de que quieres eliminar este depósito?
+            <button class="btn btn-danger" @onclick="(() => DeleteDeposit())">Sí</button>
+            <button class="btn btn-secondary" @onclick="HideAllAlerts">No</button>
+        </div>
+    }
+        
     <table class="table table-striped table-hover">
         <thead>
         <tr>
@@ -44,7 +65,7 @@
                 {
                     <td>
                         <div class="btn-group">
-                            <button class="btn btn-danger" @onclick="(() => DeleteDeposit(deposit))">Eliminar
+                            <button class="btn btn-danger" @onclick="(() => AttemptToDeleteDeposit(deposit))">Eliminar
                                 <i class="fa fa-trash"></i>
                             </button>
                         </div>
@@ -68,6 +89,12 @@
     private Controller _controller;
     private List<Deposit> _listOfDeposits;
     private User _loggedInUser;
+
+    private bool _showAlertDepositDeletedUnsuccessfully;
+    private bool _showAlertDepositDeletedSuccessfully;
+    private bool _showAlertAboutToDeleteDeposit;
+    
+    private Deposit _depositToDelete;
     
     protected override void OnInitialized()
     {
@@ -77,21 +104,50 @@
         _listOfDeposits = _controller.GetDeposits();
         
         _controller.DeleteAllExpiredPromotions();
+
+        _depositToDelete = null;
+        
+        HideAllAlerts();
     }
     
     private string BoolToString(bool value)
     {
         return value ? "Si" : "No";
     }
-    
+
     private void GoToAddDepositPage()
     {
         NavigationManager.NavigateTo("/AddDeposit");
     }
-
-    private void DeleteDeposit(Deposit deposit)
+    
+    private void AttemptToDeleteDeposit(Deposit deposit)
     {
-        int id = deposit.GetId();
+        HideAllAlerts();
+        
+        _depositToDelete = deposit;
+        
+        if (_depositToDelete.IsReserved())
+        {
+            _showAlertDepositDeletedUnsuccessfully = true;
+        }
+        else
+        {
+            _showAlertAboutToDeleteDeposit = true;
+        }
+    }
+    
+    public void HideAllAlerts()
+    {
+        _showAlertDepositDeletedUnsuccessfully = false;
+        _showAlertDepositDeletedSuccessfully = false;
+        _showAlertAboutToDeleteDeposit = false;
+    }
+
+    private void DeleteDeposit()
+    {
+        HideAllAlerts();
+        int id = _depositToDelete.GetId();
         _controller.DeleteDeposit(id);
+        _showAlertDepositDeletedSuccessfully = true;
     }
 }
