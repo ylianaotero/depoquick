@@ -172,4 +172,28 @@ public class PromotionTest
         CollectionAssert.Contains(newPromotion.GetDeposits(), bigDeposit);
     }
     
+    [TestMethod]
+    public void TestRemoveDepositFromPromotion()
+    {
+        Promotion newPromotion = new Promotion();
+        
+        Deposit smallDeposit = new Deposit('A', "pequeño", false, false);
+        
+        newPromotion.AddDeposit(smallDeposit);
+        
+        newPromotion.RemoveDeposit(smallDeposit);
+        
+        CollectionAssert.DoesNotContain(newPromotion.GetDeposits(), smallDeposit);
+    }
+
+    [TestMethod]
+    public void TestPromotionIsCurrentlyAvailable()
+    {
+        Promotion newPromotion = new Promotion();
+        DateRange dateRange = new DateRange(new DateTime(2024, 3, 8).Date, new DateTime(2024, 3, 10).Date);
+        newPromotion.SetValidityDate(dateRange);
+        
+        Assert.IsFalse(newPromotion.IsCurrentlyAvailable());
+    }
+    
 } 

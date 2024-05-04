@@ -110,8 +110,18 @@ public class Promotion
         _deposits.Add(deposit);
     }
     
+    public void RemoveDeposit(Deposit deposit)
+    {
+        _deposits.Remove(deposit);
+    }
+    
     public List<Deposit> GetDeposits()
     {
         return _deposits; 
+    }
+    
+    public bool IsCurrentlyAvailable()
+    {
+        return _validityDate.GetInitialDate() <= DateTime.Now.AddDays(1) && _validityDate.GetFinalDate() >= DateTime.Now.AddDays(-1);
     }
 }

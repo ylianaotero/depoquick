@@ -182,6 +182,40 @@ public class ControllerTest
     }
 
 
+    [TestMethod]
+    public void TestUpdatePromotion()
+    {
+        MemoryDataBase memoryDataBase = new MemoryDataBase();
+
+        Controller controller = new Controller(memoryDataBase);
+
+        Promotion promotion1 = new Promotion();
+        
+        List<Deposit> depositsToAddPromotion = new List<Deposit>();
+        depositsToAddPromotion.Add(_deposit);
+        
+        controller.AddPromotion(promotion1, depositsToAddPromotion);
+        
+        Deposit newDeposit = new Deposit('B', "Grande", true, false);
+        List<Deposit> newDepositsToAddPromotion = new List<Deposit>();
+        newDepositsToAddPromotion.Add(newDeposit);
+        
+        String newLabel = "new label";
+        double newDiscountRate = 0.5;
+        DateRange newDateRange = new DateRange(new DateTime(2026, 04, 07), new DateTime(2026, 04, 08));
+
+        controller.UpdatePromotionData(promotion1, "new label", newDiscountRate, newDateRange);
+        controller.UpdatePromotionDeposits(promotion1, newDepositsToAddPromotion);
+        
+        CollectionAssert.Contains(controller.GetPromotions(), promotion1);
+        CollectionAssert.DoesNotContain(promotion1.GetDeposits(), _deposit);
+        CollectionAssert.Contains(promotion1.GetDeposits(), newDeposit);
+        CollectionAssert.Contains(newDeposit.GetPromotions(), promotion1);
+        CollectionAssert.DoesNotContain(_deposit.GetPromotions(), promotion1);
+        Assert.AreEqual(newLabel, promotion1.GetLabel());
+        Assert.AreEqual(newDiscountRate, promotion1.GetDiscountRate());
+        Assert.AreEqual(newDateRange, promotion1.GetValidityDate());
+    }
 
 
     [TestMethod]
@@ -595,4 +629,6 @@ public class ControllerTest
         controller.LoginUser(email,password);
         Assert.AreEqual(true, controller.UserLoggedIn());
     }
+    
+    
 }

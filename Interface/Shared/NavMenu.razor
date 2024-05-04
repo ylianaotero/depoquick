@@ -32,12 +32,6 @@
                 </div>
                 
                 <div class="nav-item px-3">
-                    <NavLink class="nav-link" href="/Promotions">
-                        <span class="oi oi-list-rich" aria-hidden="true"></span> Promociones
-                    </NavLink>
-                </div>
-                
-                <div class="nav-item px-3">
                     <NavLink class="nav-link" href="Statics">
                         <span class="oi oi-bar-chart" aria-hidden="true"></span> Estadisticas
                     </NavLink>
@@ -65,6 +59,12 @@
             </div>
             
             <div class="nav-item px-3">
+                <NavLink class="nav-link" href="/Promotions">
+                    <span class="oi oi-list-rich" aria-hidden="true"></span> Promociones
+                </NavLink>
+            </div>
+            
+            <div class="nav-item px-3">
                 <NavLink class="nav-link" @onclick="Logout">
                     <span class="oi oi-account-login" aria-hidden="true"></span> Logout
                 </NavLink>
@@ -75,7 +75,7 @@
 </div>
 
 @code {
-    private bool collapseNavMenu = false;
+    private bool collapseNavMenu;
     private Controller _controller;
     private string? NavMenuCssClass => collapseNavMenu ? "collapse" : null;
     
@@ -83,9 +83,11 @@
     {
         collapseNavMenu = !collapseNavMenu;
     }
+    
     protected override void OnInitialized()
     { 
         _controller = new Controller(MemoryDataBase);
+        collapseNavMenu = false;
     }
 
     private bool UserLoggedIn()

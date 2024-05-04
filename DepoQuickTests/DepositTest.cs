@@ -496,5 +496,25 @@ public class DepositTest
 
         Assert.IsTrue(newDeposit1.GetId() < newDeposit2.GetId());
     }
-    
+
+    [TestMethod]
+    public void TestRemovePromotionFromDeposit()
+    {
+        char area = 'a';
+        String size = "Mediano";
+        bool airConditioning = true;
+        bool reserved = false;
+        
+        Deposit newDeposit1 = new Deposit(area, size, airConditioning, reserved);
+        
+        Promotion newPromotion = new Promotion();
+        List<Promotion> promotionsLinkedToDeposit = new List<Promotion>();
+        promotionsLinkedToDeposit.Add(newPromotion);
+        
+        newDeposit1.AddPromotion(newPromotion);
+        
+        newDeposit1.RemovePromotion(newPromotion);
+        
+        CollectionAssert.DoesNotContain(newDeposit1.GetPromotions(), newPromotion);
+    }
 }

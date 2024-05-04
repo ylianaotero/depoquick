@@ -98,6 +98,11 @@ public class Deposit
         _promotions.Add(promotion);
     }
     
+    public void RemovePromotion(Promotion promotion)
+    {
+        _promotions.Remove(promotion);
+    }
+    
     public List<Promotion> GetPromotions()
     {
         return _promotions; 
@@ -198,28 +203,16 @@ public class Deposit
         return price; 
     }
 
-    private bool DateRangeIsWithinToday(DateRange dateRange)
-    {
-        return dateRange.GetInitialDate() <= Today() && dateRange.GetFinalDate() >= Today(); 
-    }
-
-    private DateTime Today()
-    {
-        return DateTime.Now.Date; 
-    }
-
     private double AddTheDiscountAccordingToNumberOfDaysToPromotions(double discountAccordingToNumberOfDays)
     {
         List<Promotion> listOfPromotion = GetPromotions();
         double discount = discountAccordingToNumberOfDays; 
         foreach (Promotion promotion in listOfPromotion)
         {
-            DateRange dateRange = promotion.GetValidityDate();
-            if (DateRangeIsWithinToday(dateRange) && TheSumOfTheDiscountsIsLessThan100(discount, promotion.GetDiscountRate()))
+            if (promotion.IsCurrentlyAvailable() && TheSumOfTheDiscountsIsLessThan100(discount, promotion.GetDiscountRate()))
             {
                 discount +=  promotion.GetDiscountRate(); 
             }
-            
         }
 
         return discount; 
@@ -236,5 +229,6 @@ public class Deposit
     {
         _reserved = reserved; 
     }
+    
     
 }

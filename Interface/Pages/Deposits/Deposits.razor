@@ -27,10 +27,20 @@
     }
     @if (_showAlertAboutToDeleteDeposit)
     {
+        <br/>
         <div class="alert alert-warning" role="alert">
-            ¿Estás seguro de que quieres eliminar este depósito?
-            <button class="btn btn-danger" @onclick="(() => DeleteDeposit())">Sí</button>
-            <button class="btn btn-secondary" @onclick="HideAllAlerts">No</button>
+            <h4 class="alert-heading">¿Estás seguro?</h4>
+            <p>Estás a punto de eliminar este depósito. Esta acción es irreversible.</p>
+            <hr>
+            <button class="btn btn-danger" @onclick="(() => DeleteDeposit())">Aceptar</button>
+            <button class="btn btn-primary" @onclick="HideAllAlerts">Cancelar</button>
+        </div>
+        <br/>
+    }
+    @if (_showAlertSomethingWentWrong)
+    {
+        <div class="alert alert-danger" role="alert">
+            El depósito no pudo ser eliminado.
         </div>
     }
         
@@ -57,7 +67,10 @@
                 <td>
                     @foreach (var promotion in deposit.GetPromotions())
                     {
-                        <p>@promotion.GetLabel() - @(promotion.GetDiscountRate() * PercentageMultiplier)%</p>
+                        if (promotion.IsCurrentlyAvailable())
+                        {
+                            <p>@promotion.GetLabel() - @(promotion.GetDiscountRate() * PercentageMultiplier)%</p>
+                        }
                     }
                 </td>
                 <td>@BoolToString(deposit.IsReserved())</td>
@@ -93,6 +106,7 @@
     private bool _showAlertDepositDeletedUnsuccessfully;
     private bool _showAlertDepositDeletedSuccessfully;
     private bool _showAlertAboutToDeleteDeposit;
+    private bool _showAlertSomethingWentWrong;
     
     private Deposit _depositToDelete;
     
@@ -141,13 +155,21 @@
         _showAlertDepositDeletedUnsuccessfully = false;
         _showAlertDepositDeletedSuccessfully = false;
         _showAlertAboutToDeleteDeposit = false;
+        _showAlertSomethingWentWrong = false;
     }
 
     private void DeleteDeposit()
     {
         HideAllAlerts();
-        int id = _depositToDelete.GetId();
-        _controller.DeleteDeposit(id);
-        _showAlertDepositDeletedSuccessfully = true;
+        try
+        {
+            int id = _depositToDelete.GetId();
+            _controller.DeleteDeposit(id);
+            _showAlertDepositDeletedSuccessfully = true;
+        }
+        catch (Exception)
+        {
+            _showAlertSomethingWentWrong = true;
+        }
     }
 }

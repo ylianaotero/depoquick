@@ -15,15 +15,39 @@
 
     @if (_showAlertPromotionDeletedSuccessfully)
     {
+        <br/>
         <div class="alert alert-success" role="alert">
             La promoción ha sido eliminada correctamente.
         </div>
+        <br/>
     }
     @if (_showAlertPromotionDeletedUnsuccessfully)
     {
+        <br/>
         <div class="alert alert-danger" role="alert">
             La promoción no pudo ser eliminada porque está atada a un depósito reservado.
         </div>
+        <br/>
+    }
+    @if (_showAlertAboutToDeletePromotion)
+    {
+        <br/>
+        <div class="alert alert-warning" role="alert">
+            <h4 class="alert-heading">¿Estás seguro?</h4>
+            <p>Estás a punto de eliminar esta promoción. Esta acción es irreversible.</p>
+            <hr>
+            <button class="btn btn-danger" @onclick="(() => DeletePromotion())">Aceptar</button>
+            <button class="btn btn-primary" @onclick="HideAllAlerts">Cancelar</button>
+        </div>
+        <br/>
+    }
+    @if (_showAlertSomethingWentWrong)
+    {
+        <br/>
+        <div class="alert alert-danger" role="alert">
+            La promoción no pudo ser eliminada.
+        </div>
+        <br/>
     }
     
     <table class="table table-striped table-hover">
@@ -34,6 +58,7 @@
             <th>Hasta</th>
             <th>Descuento</th>
             <th>Depósitos a los que aplica</th>
+            <th>Activa actualmente</th>
         </tr>
         </thead>
         
@@ -51,6 +76,7 @@
                         <p>@deposit.GetId() - Area @deposit.GetArea()</p>
                     }
                 </td>
+                <td>@BoolToString(promotion.IsCurrentlyAvailable())</td>
                 @if (_loggedInUser.IsAdministrator())
                 {
                     <td>
@@ -82,17 +108,28 @@
     private List<Promotion> _listOfPromotions;
     private User _loggedInUser;
     
-    private bool _showAlertPromotionDeletedSuccessfully = false;
-    private bool _showAlertPromotionDeletedUnsuccessfully = false;
+    Promotion _promotionToDelete;
+    
+    private bool _showAlertPromotionDeletedSuccessfully;
+    private bool _showAlertPromotionDeletedUnsuccessfully;
+    private bool _showAlertAboutToDeletePromotion;
+    private bool _showAlertSomethingWentWrong;
     
     protected override void OnInitialized()
     {
         _controller = new Controller(MemoryDataBase);
         _loggedInUser = _controller.GetActiveUser();
         
+        _promotionToDelete = null;
+        
         _controller.DeleteAllExpiredPromotions();
         _listOfPromotions = _controller.GetPromotions();
         HideAllAlerts();
+    }
+    
+    private string BoolToString(bool value)
+    {
+        return value ? "Si" : "No";
     }
     
     private void GoToAddPromotionPage()
@@ -109,21 +146,33 @@
             _showAlertPromotionDeletedUnsuccessfully = true;
         } else
         {
-            DeletePromotion(promotion);
-            _showAlertPromotionDeletedSuccessfully = true;
+            _showAlertAboutToDeletePromotion = true;
+            _promotionToDelete = promotion;
         }
     }
     
-    private void DeletePromotion(Promotion promotion)
+    private void DeletePromotion()
     {
-        int id = promotion.GetId();
-        _controller.DeletePromotion(id);
+        HideAllAlerts();
+        
+        try
+        {
+            int id = _promotionToDelete.GetId();
+            _controller.DeletePromotion(id);
+            _showAlertPromotionDeletedSuccessfully = true;
+        }
+        catch (Exception e)
+        {
+            _showAlertSomethingWentWrong = true;
+        }
     }
     
     private void HideAllAlerts()
     {
         _showAlertPromotionDeletedUnsuccessfully = false;
         _showAlertPromotionDeletedSuccessfully = false;
+        _showAlertAboutToDeletePromotion = false;
+        _showAlertSomethingWentWrong = false;
     }
     
     private bool PromotionIsTiedToReservedDeposit(int id)
@@ -140,7 +189,6 @@
         return false;
     }
     
-
     private void GoToEditPromotionPage(Promotion promotion)
     {
         int promotionId = promotion.GetId();
