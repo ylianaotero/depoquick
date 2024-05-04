@@ -1,6 +1,7 @@
 ﻿using System.Reflection.PortableExecutable;
 using BusinessLogic;
 using DepoQuick.Domain;
+using DepoQuick.Domain.Exceptions.AdministratorExceptions;
 using DepoQuick.Domain.Exceptions.ControllerExceptions;
 using DepoQuick.Domain.Exceptions.MemoryDataBaseExceptions;
 using DateTime = System.DateTime;
@@ -153,15 +154,15 @@ public class ControllerTest
         Controller controller = new Controller(memoryDataBase);
 
         Promotion promotion = new Promotion();
-        
+
         List<Deposit> depositsToAddPromotion = new List<Deposit>();
-        
+
         depositsToAddPromotion.Add(_deposit);
 
         promotion.SetDiscountRate(0.5);
         promotion.SetLabel("Promotion 1");
         promotion.SetValidityDate(_stay);
-        
+
 
         controller.AddPromotion(promotion, depositsToAddPromotion);
 
@@ -169,9 +170,9 @@ public class ControllerTest
         CollectionAssert.Contains(controller.GetPromotions()[0].GetDeposits(), _deposit);
         CollectionAssert.Contains(_deposit.GetPromotions(), promotion);
     }
-    
-    
-    
+
+
+
 
     [TestMethod]
     public void TestSearchForAPromotionById()
@@ -182,7 +183,7 @@ public class ControllerTest
 
         Promotion promotion1 = new Promotion();
         Promotion promotion2 = new Promotion();
-        
+
         List<Deposit> depositsToAddPromotion = new List<Deposit>();
         depositsToAddPromotion.Add(_deposit);
 
@@ -205,7 +206,7 @@ public class ControllerTest
 
         Promotion promotion1 = new Promotion();
         Promotion promotion2 = new Promotion();
-        
+
         List<Deposit> depositsToAddPromotion = new List<Deposit>();
         depositsToAddPromotion.Add(_deposit);
 
@@ -227,7 +228,7 @@ public class ControllerTest
 
         List<Deposit> depositsToAddPromotion = new List<Deposit>();
         depositsToAddPromotion.Add(_deposit);
-        
+
         controller.AddPromotion(promotion, depositsToAddPromotion);
 
         int id = promotion.GetId();
@@ -236,7 +237,7 @@ public class ControllerTest
 
         controller.GetPromotion(id);
     }
-    
+
     [TestMethod]
     public void TestDeletePromotionRemovesPromotionFromRelatedDeposits()
     {
@@ -248,7 +249,7 @@ public class ControllerTest
 
         List<Deposit> depositsToAddPromotion = new List<Deposit>();
         depositsToAddPromotion.Add(_deposit);
-        
+
         controller.AddPromotion(promotion, depositsToAddPromotion);
 
         int id = promotion.GetId();
@@ -271,14 +272,14 @@ public class ControllerTest
 
         List<Deposit> depositsToAddPromotion = new List<Deposit>();
         depositsToAddPromotion.Add(deposit);
-        
+
         controller.AddDeposit(deposit);
         controller.AddPromotion(promotion, depositsToAddPromotion);
 
         int id = deposit.GetId();
-        
+
         controller.DeleteDeposit(id);
-        
+
         CollectionAssert.DoesNotContain(promotion.GetDeposits(), deposit);
     }
 
@@ -296,7 +297,7 @@ public class ControllerTest
         controller.LoginUser(email, password);
         Assert.AreEqual(controller.GetAdministrator(), controller.GetActiveUser());
     }
-    
+
     [TestMethod]
     [ExpectedException(typeof(AdministratorAlreadyExistsException))]
     public void TestAdministratorAlreadyExistsException()
@@ -310,7 +311,7 @@ public class ControllerTest
         String password = "mAria1..123";
         String validation = "mAria1..123";
         controller.RegisterAdministrator(nombre, email, password, validation);
-        controller.RegisterAdministrator(nombre,email2,password,validation);
+        controller.RegisterAdministrator(nombre, email2, password, validation);
         controller.LoginUser(email, password);
     }
 
@@ -328,6 +329,22 @@ public class ControllerTest
         String email2 = "mariaR@gmail.com";
         controller.RegisterAdministrator(nombre, email, password, validation);
         controller.LoginUser(email2, password);
+    }
+    
+    [TestMethod]
+    [ExpectedException(typeof(UserPasswordIsInvalidException))]
+    public void TestInvalidLoginBecauseOfWrongPassword()
+    {
+        MemoryDataBase memoryDataBase = new MemoryDataBase();
+        Controller controller = new Controller(memoryDataBase);
+
+        String nombre = "Maria";
+        String email = "maria@gmail.com";
+        String password = "mAria1..123";
+        String validation = "mAria1..123";
+        String password2 = "Maria123..";
+        controller.RegisterAdministrator(nombre, email, password, validation);
+        controller.LoginUser(email, password2);
     }
 
     [TestMethod]
@@ -358,9 +375,9 @@ public class ControllerTest
         String name2 = "Maria";
         controller.RegisterClient(name2, email, password, validation);
     }
-    
+
     [TestMethod]
-    [ExpectedException(typeof(EmptyUserListException))]
+    [ExpectedException(typeof(EmptyAdministratorException))]
     public void TestEmptyUserList()
     {
         MemoryDataBase memoryDataBase = new MemoryDataBase();
@@ -380,11 +397,11 @@ public class ControllerTest
         String validation = "mAria1..123";
         String emailAdmin = "mario@gmail.com";
         controller.RegisterAdministrator(name, emailAdmin, password, validation);
-        controller.RegisterClient(name, email,password, validation);
-        controller.LoginUser(email,password);
+        controller.RegisterClient(name, email, password, validation);
+        controller.LoginUser(email, password);
         CollectionAssert.Contains(controller.GetUsers(), controller.GetActiveUser());
     }
-    
+
     [TestMethod]
     [ExpectedException(typeof(DepositNotFoundException))]
     public void TestDeleteDeposit()
@@ -403,7 +420,7 @@ public class ControllerTest
 
         controller.GetDeposit(id);
     }
-    
+
     [TestMethod]
     public void TestDeleteAllExpiredPromotions()
     {
@@ -415,18 +432,18 @@ public class ControllerTest
         DateTime startDate = DateTime.Now;
         DateTime endDate = startDate.AddDays(10);
         DateRange dateRange = new DateRange(startDate, endDate);
-        
+
         promotion1.SetValidityDate(dateRange);
-        
+
         Promotion promotion2 = new Promotion();
 
         DateTime expiredStartDate = DateTime.Now.AddDays(-10);
         DateTime expiredEndDate = DateTime.Now.AddDays(-5);
         DateRange expiredDateRange = new DateRange(expiredStartDate, expiredEndDate);
-        
+
         promotion2.SetValidityDate(expiredDateRange);
-            
-        
+
+
         List<Deposit> depositsToAddPromotion = new List<Deposit>();
         depositsToAddPromotion.Add(_deposit);
 
@@ -438,25 +455,47 @@ public class ControllerTest
         CollectionAssert.Contains(controller.GetPromotions(), promotion1);
         CollectionAssert.DoesNotContain(controller.GetPromotions(), promotion2);
     }
-    
-    
-    
-    
-    
-    /*
-     [TestMethod]
-    public void TestGetActiveUser()
+
+    [TestMethod]
+    public void TestLogoutUser()
     {
         MemoryDataBase memoryDataBase = new MemoryDataBase();
         Controller controller = new Controller(memoryDataBase);
 
-        String nombre = "Maria";
+        String name = "Maria";
         String email = "maria@gmail.com";
         String password = "mAria1..123";
         String validation = "mAria1..123";
-        controller.RegisterAdministrator(nombre, email, password, validation);
+        controller.RegisterAdministrator(name, email, password, validation);
         controller.LoginUser(email, password);
-        Assert.AreEqual(controller.GetAdministrator(), controller.GetActiveUser());
+        controller.LogoutUser();
+        Assert.AreEqual(null, controller.GetActiveUser());
     }
-     */
+
+    [TestMethod]
+    public void TestUserExistsInListOfUsers()
+    {
+        MemoryDataBase memoryDataBase = new MemoryDataBase();
+        Controller controller = new Controller(memoryDataBase);
+        String name = "Maria";
+        String email = "maria@gmail.com";
+        String password = "mAria1..123";
+        String validation = "mAria1..123";
+        controller.RegisterAdministrator(name, email, password, validation);
+        Assert.AreEqual(true, controller.UserExists(email));
+    }
+
+    [TestMethod]
+    public void TestUserLoggedIn()
+    {
+        MemoryDataBase memoryDataBase = new MemoryDataBase();
+        Controller controller = new Controller(memoryDataBase);
+        String name = "Maria";
+        String email = "maria@gmail.com";
+        String password = "mAria1..123";
+        String validation = "mAria1..123";
+        controller.RegisterAdministrator(name, email, password, validation);
+        controller.LoginUser(email,password);
+        Assert.AreEqual(true, controller.UserLoggedIn());
+    }
 }

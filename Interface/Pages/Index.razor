@@ -1,11 +1,101 @@
 ﻿@page "/"
 @using BusinessLogic
+@using DepoQuick.Domain.Exceptions.AdministratorExceptions
+@inject NavigationManager NavigationManager
+@inject MemoryDataBase MemoryDataBase
 
-<PageTitle>Index</PageTitle>
 
-<h1>Hello, world!</h1>
+<html lang="es" xmlns="http://www.w3.org/1999/html">
+  <head>
+      <meta charset="utf-8"/>
+      <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+  </head>
 
-Welcome to your new app.
+    <body>
 
-<SurveyPrompt Title="How is Blazor working for you?"/>
+    <div class="container-fluid mt-4">
+        <div class="row">
+            <div class="col">
+                <h1 class="text-center" style="color: #0a53be"><strong>¡Bienvenido!</strong></h1>
+                <p class="lead text-center">DepoQuick es una empresa especializada en el alquiler de depósitos para satisfacer tus necesidades de almacenamiento. Ofrecemos soluciones flexibles y seguras para tus bienes.</p>
+            </div>
+        </div>
+    </div>
 
+    
+    @if (!AdminIsRegistred()) 
+    {
+        <div class="container">
+            <div class="row">
+                <div class="col">
+                    <div class="card">
+                        <div class="card-body">
+                            <h4 class="card-title">No hay un administrador registrado</h4>
+                            <p class="card-text">Parece que no hay ningún administrador registrado en el sistema. ¿Deseas registrar uno ahora?</p>
+                            <button type="submit" class="btn btn-primary" @onclick="RegisterUser">Registrar Administrador</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    }
+    else
+    {
+        <div class="container">
+            <div class="row">
+                <div class="col">
+                    <div class="card">
+                        <div class="card-body">
+                            <h4 class="card-title">¡Administrador registrado!</h4>
+                            <p class="card-text">¡Genial! Ya has registrado un administrador en el sistema. ¿Qué te gustaría hacer a continuación?</p>
+                            <form>
+                                <button type="submit" class="btn btn-primary btn-block mb-2" @onclick="RegisterUser">Registrarse como cliente</button>
+                                <button type="submit" class="btn btn-primary btn-block mb-2" @onclick="LoginUser">Ingresar al sistema</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+
+    }
+
+    </body>
+</html>
+
+@code {
+
+    private Controller _controller; 
+    
+    protected override void OnInitialized()
+    {
+        _controller = new Controller(MemoryDataBase);
+    }
+    
+    private void RegisterUser()
+    {
+        NavigationManager.NavigateTo("/Register",forceLoad: true);
+    }
+
+    private void LoginUser()
+    {
+        NavigationManager.NavigateTo("/Login",forceLoad: true);
+    }
+
+    private bool AdminIsRegistred()
+    {
+        try
+        {
+            _controller.GetAdministrator();
+            return true; 
+        }
+        catch (EmptyAdministratorException emptyAdministratorException)
+        {
+            return false; 
+        }
+    }
+    
+}

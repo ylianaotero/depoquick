@@ -1,6 +1,8 @@
 ﻿using DepoQuick.Domain;
+using DepoQuick.Domain.Exceptions.AdministratorExceptions;
 using DepoQuick.Domain.Exceptions.ControllerExceptions;
 using DepoQuick.Domain.Exceptions.MemoryDataBaseExceptions;
+using DepoQuick.Domain.Exceptions.UserExceptions;
 
 namespace BusinessLogic;
 
@@ -108,10 +110,11 @@ public class Controller
     public void RegisterAdministrator(string name, string email, string password, String validation)
     {
         User.ValidatePasswordConfirmation(password,validation);
-        Administrator newAdministrator = new Administrator(name, email, password);
         if (_memoryDataBase.GetUsers().Count == 0)
         {
-            _memoryDataBase.GetUsers().Add(newAdministrator);
+            Administrator newAdministrator = new Administrator(name, email, password);
+            AddUser(newAdministrator);
+            _memoryDataBase.SetAdministrator(newAdministrator);
         }
         else
         {
@@ -121,37 +124,34 @@ public class Controller
 
     public void LoginUser(string email, string password)
     {
-        bool userExists = false;
-        foreach (User us in _memoryDataBase.GetUsers())
+        if (UserExists(email))
         {
-            if (us.GetEmail() == email && us.GetPassword() == password)
+            User u = GetUserFromUsersList(email);
+            if (u.GetPassword().Equals(password))
             {
-                _memoryDataBase.SetActiveUser(us);
-                userExists = true;
+                _memoryDataBase.SetActiveUser(u);
             }
+            else
+            {
+                throw new UserPasswordIsInvalidException("La contraseña ingresada no es correcta");
+            }
+            
         }
-        if(!userExists){
+        else
+        {
             throw new UserDoesNotExistException("No existe un usuario con los datos proporcionados");
         }
     }
 
     public Administrator GetAdministrator()
     {
-        if (_memoryDataBase.GetUsers().Count == 0)
+        Administrator administrator = _memoryDataBase.GetAdministrator(); 
+        if (administrator  == null)  
         {
-            throw new EmptyUserListException("No hay usuarios registrados");
+            throw new EmptyAdministratorException("No hay administrador registrado");
         }
         else
         {
-            Administrator administrator = null;
-            foreach (Administrator user in _memoryDataBase.GetUsers())
-            {
-                if (user.IsAdministrator())
-                {
-                    administrator = user;
-                }
-            }
-
             return administrator;
         }
     }
@@ -165,16 +165,12 @@ public class Controller
         else
         {
             User.ValidatePasswordConfirmation(password, validation);
-            foreach (User user in _memoryDataBase.GetUsers())
+            if (UserExists(email))
             {
-                if (user.GetEmail() == email)
-                {
-                    throw new UserAlreadyExistsException("Un usuario ya fue registrado con ese mail");
-                }
+                throw new UserAlreadyExistsException("Un usuario ya fue registrado con ese mail");
             }
-
             Client client = new Client(name, email, password);
-            _memoryDataBase.GetUsers().Add(client);
+            AddUser(client);
         }
     }
 
@@ -231,5 +227,45 @@ public class Controller
     private bool PromotionIsExpired(Promotion promotion)
     {
         return promotion.GetValidityDate().GetFinalDate() < DateTime.Now;
+    }
+
+    public void LogoutUser()
+    {
+        _memoryDataBase.SetActiveUser(null);
+    }
+
+    public bool UserExists(string email)
+    {
+        bool exists = false;
+        foreach (User user in _memoryDataBase.GetUsers())
+        {
+            if (user.GetEmail() == email)
+            {
+                exists = true;
+            }
+        }
+
+        return exists;
+    }
+
+    private User GetUserFromUsersList(String email)
+    {
+        User user = SearchUser(email);
+        return user;
+    }
+    
+    private User SearchUser(String email)
+    {
+        return _memoryDataBase.GetUsers().Find(u => u.GetEmail() == email);
+    }
+
+    private void AddUser(User newUser)
+    {
+        _memoryDataBase.GetUsers().Add(newUser); //agregar metodo en memoryDataBase
+    }
+
+    public bool UserLoggedIn()
+    {
+        return _memoryDataBase.GetActiveUser() != null;
     }
 }
