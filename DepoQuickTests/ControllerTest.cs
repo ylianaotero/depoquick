@@ -38,10 +38,14 @@ public class ControllerTest
 
         Deposit newDeposit = new Deposit(_area, _size, _airConditioning, _reserved);
 
-        controller.AddDeposit(newDeposit);
+        Promotion promotion = new Promotion();
+        List<Promotion> promotionsToAddToDeposit = new List<Promotion>();
+        promotionsToAddToDeposit.Add(promotion);
+        
+        controller.AddDeposit(newDeposit, promotionsToAddToDeposit);
 
         CollectionAssert.Contains(controller.GetDeposits(), newDeposit);
-
+        CollectionAssert.Contains(controller.GetDeposits()[0].GetPromotions(), promotion);
     }
 
     [TestMethod]
