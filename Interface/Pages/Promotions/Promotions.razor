@@ -58,6 +58,7 @@
             <th>Hasta</th>
             <th>Descuento</th>
             <th>Depósitos a los que aplica</th>
+            <th>Activa actualmente</th>
         </tr>
         </thead>
         
@@ -75,6 +76,7 @@
                         <p>@deposit.GetId() - Area @deposit.GetArea()</p>
                     }
                 </td>
+                <td>@BoolToString(promotion.IsCurrentlyAvailable())</td>
                 @if (_loggedInUser.IsAdministrator())
                 {
                     <td>
@@ -123,6 +125,11 @@
         _controller.DeleteAllExpiredPromotions();
         _listOfPromotions = _controller.GetPromotions();
         HideAllAlerts();
+    }
+    
+    private string BoolToString(bool value)
+    {
+        return value ? "Si" : "No";
     }
     
     private void GoToAddPromotionPage()

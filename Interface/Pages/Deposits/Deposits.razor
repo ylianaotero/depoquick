@@ -67,7 +67,10 @@
                 <td>
                     @foreach (var promotion in deposit.GetPromotions())
                     {
-                        <p>@promotion.GetLabel() - @(promotion.GetDiscountRate() * PercentageMultiplier)%</p>
+                        if (promotion.IsCurrentlyAvailable())
+                        {
+                            <p>@promotion.GetLabel() - @(promotion.GetDiscountRate() * PercentageMultiplier)%</p>
+                        }
                     }
                 </td>
                 <td>@BoolToString(deposit.IsReserved())</td>

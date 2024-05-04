@@ -122,6 +122,6 @@ public class Promotion
     
     public bool IsCurrentlyAvailable()
     {
-        return _validityDate.GetInitialDate() <= DateTime.Today && _validityDate.GetFinalDate() >= DateTime.Today;
+        return _validityDate.GetInitialDate() <= DateTime.Now.AddDays(1) && _validityDate.GetFinalDate() >= DateTime.Now.AddDays(-1);
     }
 }
