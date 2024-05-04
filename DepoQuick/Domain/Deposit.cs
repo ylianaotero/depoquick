@@ -98,6 +98,11 @@ public class Deposit
         _promotions.Add(promotion);
     }
     
+    public void RemovePromotion(Promotion promotion)
+    {
+        _promotions.Remove(promotion);
+    }
+    
     public List<Promotion> GetPromotions()
     {
         return _promotions; 
@@ -236,5 +241,6 @@ public class Deposit
     {
         _reserved = reserved; 
     }
+    
     
 }
