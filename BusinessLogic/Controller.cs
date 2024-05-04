@@ -64,6 +64,11 @@ public class Controller
     {
         _memoryDataBase.GetReservations().Add(reservation);
     }
+    
+    public List<Reservation> GetReservations()
+    {
+        return _memoryDataBase.GetReservations();
+    }
 
     public void AddPromotion(Promotion promotion, List<Deposit> deposits)
     {
