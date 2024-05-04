@@ -187,13 +187,13 @@ public class PromotionTest
     }
 
     [TestMethod]
-    public void TestPromotionIsCurrent()
+    public void TestPromotionIsCurrentlyAvailable()
     {
         Promotion newPromotion = new Promotion();
         DateRange dateRange = new DateRange(new DateTime(2024, 3, 8).Date, new DateTime(2024, 3, 10).Date);
         newPromotion.SetValidityDate(dateRange);
         
-        Assert.IsFalse(newPromotion.IsCurrent());
+        Assert.IsFalse(newPromotion.IsCurrentlyAvailable());
     }
     
 } 

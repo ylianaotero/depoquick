@@ -120,7 +120,7 @@ public class Promotion
         return _deposits; 
     }
     
-    public bool IsCurrent()
+    public bool IsCurrentlyAvailable()
     {
         return _validityDate.GetInitialDate() <= DateTime.Today && _validityDate.GetFinalDate() >= DateTime.Today;
     }
