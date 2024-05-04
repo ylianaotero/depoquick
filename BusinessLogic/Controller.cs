@@ -13,9 +13,14 @@ public class Controller
         _memoryDataBase = memoryDatabase;
     }
     
-    public void AddDeposit(Deposit deposit)
+    public void AddDeposit(Deposit deposit, List<Promotion> promotions)
     {
         _memoryDataBase.GetDeposits().Add(deposit);
+        foreach (Promotion promotion in promotions)
+        {
+            deposit.AddPromotion(promotion);
+            promotion.AddDeposit(deposit);
+        }
     }
     
     public Deposit GetDeposit(int id)
