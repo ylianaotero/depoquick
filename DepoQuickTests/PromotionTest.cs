@@ -185,5 +185,15 @@ public class PromotionTest
         
         CollectionAssert.DoesNotContain(newPromotion.GetDeposits(), smallDeposit);
     }
+
+    [TestMethod]
+    public void TestPromotionIsCurrent()
+    {
+        Promotion newPromotion = new Promotion();
+        DateRange dateRange = new DateRange(new DateTime(2024, 3, 8).Date, new DateTime(2024, 3, 10).Date);
+        newPromotion.SetValidityDate(dateRange);
+        
+        Assert.IsFalse(newPromotion.IsCurrent());
+    }
     
 } 

@@ -27,11 +27,15 @@
     }
     @if (_showAlertAboutToDeleteDeposit)
     {
+        <br/>
         <div class="alert alert-warning" role="alert">
-            ¿Estás seguro de que quieres eliminar este depósito?
-            <button class="btn btn-danger" @onclick="(() => DeleteDeposit())">Sí</button>
-            <button class="btn btn-secondary" @onclick="HideAllAlerts">No</button>
+            <h4 class="alert-heading">¿Estás seguro?</h4>
+            <p>Estás a punto de eliminar este depósito. Esta acción es irreversible.</p>
+            <hr>
+            <button class="btn btn-danger" @onclick="(() => DeleteDeposit())">Aceptar</button>
+            <button class="btn btn-primary" @onclick="HideAllAlerts">Cancelar</button>
         </div>
+        <br/>
     }
     @if (_showAlertSomethingWentWrong)
     {
