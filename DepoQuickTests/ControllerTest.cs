@@ -60,8 +60,10 @@ public class ControllerTest
 
         int id = newDeposit1.GetId();
 
-        controller.AddDeposit(newDeposit0);
-        controller.AddDeposit(newDeposit1);
+        List<Promotion> promotions = new List<Promotion>();
+
+        controller.AddDeposit(newDeposit0, promotions);
+        controller.AddDeposit(newDeposit1, promotions);
 
         Assert.AreEqual(char.ToUpper(_area2), controller.GetDeposit(id).GetArea());
         Assert.AreEqual(_size2.ToUpper(), controller.GetDeposit(id).GetSize());
@@ -82,8 +84,10 @@ public class ControllerTest
         Deposit newDeposit0 = new Deposit(_area, _size, _airConditioning, _reserved);
         Deposit newDeposit1 = new Deposit(_area2, _size2, _airConditioning2, _reserved2);
 
-        controller.AddDeposit(newDeposit0);
-        controller.AddDeposit(newDeposit1);
+        List<Promotion> promotions = new List<Promotion>();
+        
+        controller.AddDeposit(newDeposit0, promotions);
+        controller.AddDeposit(newDeposit1, promotions);
 
         controller.GetDeposit(-34);
 
@@ -275,9 +279,12 @@ public class ControllerTest
         Deposit deposit = new Deposit(_area, _size, _airConditioning, _reserved);
 
         List<Deposit> depositsToAddPromotion = new List<Deposit>();
+        List<Promotion> promotions = new List<Promotion>();
+        promotions.Add(promotion);
+        
         depositsToAddPromotion.Add(deposit);
         
-        controller.AddDeposit(deposit);
+        controller.AddDeposit(deposit, promotions);
         controller.AddPromotion(promotion, depositsToAddPromotion);
 
         int id = deposit.GetId();
@@ -400,7 +407,9 @@ public class ControllerTest
 
         Deposit deposit = new Deposit('A', "Pequeño", true, false);
 
-        controller.AddDeposit(deposit);
+        List<Promotion> promotions = new List<Promotion>();
+        
+        controller.AddDeposit(deposit, promotions);
 
         int id = deposit.GetId();
 
