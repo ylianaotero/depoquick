@@ -69,7 +69,9 @@
                 </div>
             }
 
+            <br/>
             <input @onclick="AttemptToAddNewPromotion" id="addNewPromotion" class="btn btn-primary" value="Crear promoción">
+            <input @onclick="GoToPromotionsPage" id="cancelAddingPromotion" class="btn btn-primary" value="Cancelar">
         </form>
     </body>
 </html>
@@ -246,4 +248,5 @@
             return false;
         }
     }
+
 }
