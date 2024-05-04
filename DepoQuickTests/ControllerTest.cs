@@ -106,7 +106,7 @@ public class ControllerTest
 
         controller.AddReservation(reservation);
 
-        CollectionAssert.Contains(memoryDataBase.GetReservations(), reservation);
+        CollectionAssert.Contains(controller.GetReservations(), reservation);
     }
 
     [TestMethod]
@@ -533,6 +533,7 @@ public class ControllerTest
         Assert.AreEqual("", reservation.GetMessage());
         Assert.AreEqual(false, _deposit.IsReserved());
     }
+    
     
     
     
