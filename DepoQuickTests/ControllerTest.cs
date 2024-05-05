@@ -27,7 +27,7 @@ public class ControllerTest
     private string _password = "Contrasena#1";
 
     private Deposit _deposit = new Deposit('A', "Pequeño", true);
-    private DateRange _stay = new DateRange(new DateTime(2024, 04, 07), new DateTime(2024, 04, 08));
+    private DateRange _stay = new DateRange(DateTime.Now, DateTime.Now.AddDays(5));
 
 
     [TestMethod]
