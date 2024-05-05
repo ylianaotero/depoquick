@@ -13,7 +13,7 @@ public class ReservationTest
     public void TestInvalidDateReservation()
     {
         Client client = new Client("Maria Perez","maria@gmail.com","Maria1..");
-        Deposit deposit = new Deposit('A', "Pequeño", true, false);
+        Deposit deposit = new Deposit('A', "Pequeño", true);
         DateTime dayIn = new DateTime(2025, 04, 09);
         DateTime dayOut = new DateTime(2024, 04, 08);
         DateRange stay = new DateRange(dayIn, dayOut);
@@ -23,7 +23,7 @@ public class ReservationTest
     public void TestValidClient()
     {
         Client client = new Client("Maria Perez","maria@gmail.com","Maria1..");
-        Deposit deposit = new Deposit('A', "Pequeño", true, false);
+        Deposit deposit = new Deposit('A', "Pequeño", true);
         DateTime dayIn = new DateTime(2024, 04, 07);
         DateTime dayOut = new DateTime(2024, 04, 08);
         DateRange stay = new DateRange(dayIn, dayOut);
@@ -40,13 +40,13 @@ public class ReservationTest
     public void TestValidDeposit()
     {
         Client client = new Client("Maria Perez","maria@gmail.com","Maria1..");
-        Deposit deposit = new Deposit('A', "Pequeño", true, false);
+        Deposit deposit = new Deposit('A', "Pequeño", true);
         DateTime dayIn = new DateTime(2024, 04, 07);
         DateTime dayOut = new DateTime(2024, 04, 08);
         DateRange stay = new DateRange(dayIn, dayOut);
         Reservation reservation = new Reservation(deposit,client,stay);
 
-        Deposit expectedDeposit = new Deposit('A', "Grande", false, true);
+        Deposit expectedDeposit = new Deposit('A', "Grande", false);
         reservation.SetDeposit(expectedDeposit);
         Deposit actualDeposit = reservation.GetDeposit();
         
@@ -57,7 +57,7 @@ public class ReservationTest
     public void TestValidState()
     {
         Client client = new Client("Maria Perez","maria@gmail.com","Maria1..");
-        Deposit deposit = new Deposit('A', "Pequeño", true, false);
+        Deposit deposit = new Deposit('A', "Pequeño", true);
         DateTime dayIn = new DateTime(2024, 04, 07);
         DateTime dayOut = new DateTime(2024, 04, 08);
         DateRange stay = new DateRange(dayIn, dayOut);
@@ -74,7 +74,7 @@ public class ReservationTest
     public void TestValidDateRange()
     {
         Client client = new Client("Maria Perez","maria@gmail.com","Maria1..");
-        Deposit deposit = new Deposit('A', "Pequeño", true, false);
+        Deposit deposit = new Deposit('A', "Pequeño", true);
         DateTime dayIn = new DateTime(2024, 04, 07);
         DateTime dayOut = new DateTime(2024, 04, 08);
         DateRange stay = new DateRange(dayIn, dayOut);
@@ -95,7 +95,7 @@ public class ReservationTest
     public void TestValidMessage()
     {
         Client client = new Client("Maria Perez","maria@gmail.com","Maria1..");
-        Deposit deposit = new Deposit('A', "Pequeño", true, false);
+        Deposit deposit = new Deposit('A', "Pequeño", true);
         DateTime dayIn = new DateTime(2024, 04, 07);
         DateTime dayOut = new DateTime(2024, 04, 08);
         DateRange stay = new DateRange(dayIn, dayOut);
@@ -113,7 +113,7 @@ public class ReservationTest
     public void TestMessageWithMoreThan300Characters()
     {
         Client client = new Client("Maria Perez","maria@gmail.com","Maria1..");
-        Deposit deposit = new Deposit('A', "Pequeño", true, false);
+        Deposit deposit = new Deposit('A', "Pequeño", true);
         DateTime dayIn = new DateTime(2024, 04, 07);
         DateTime dayOut = new DateTime(2024, 04, 08);
         DateRange stay = new DateRange(dayIn, dayOut);
@@ -128,7 +128,7 @@ public class ReservationTest
     public void TestEmptyMessage()
     {
         Client client = new Client("Maria Perez","maria@gmail.com","Maria1..");
-        Deposit deposit = new Deposit('A', "Pequeño", true, false);
+        Deposit deposit = new Deposit('A', "Pequeño", true);
         DateTime dayIn = new DateTime(2024, 04, 07);
         DateTime dayOut = new DateTime(2024, 04, 08);
         DateRange stay = new DateRange(dayIn, dayOut);
@@ -142,7 +142,7 @@ public class ReservationTest
     public void TestValidReservation()
     {
         Client client = new Client("Maria Perez","maria@gmail.com","Maria1..");
-        Deposit deposit = new Deposit('A', "Pequeño", true, false);
+        Deposit deposit = new Deposit('A', "Pequeño", true);
         DateTime dayIn = new DateTime(2024, 04, 07);
         DateTime dayOut = new DateTime(2024, 04, 08);
         DateRange stay = new DateRange(dayIn, dayOut);
@@ -156,7 +156,7 @@ public class ReservationTest
     public void TestAddIdToAValidDeposit()
     {
         Client client = new Client("Maria Perez","maria@gmail.com","Maria1..");
-        Deposit deposit = new Deposit('A', "Pequeño", true, false);
+        Deposit deposit = new Deposit('A', "Pequeño", true);
         DateTime dayIn = new DateTime(2024, 04, 07);
         DateTime dayOut = new DateTime(2024, 04, 08);
         DateRange stay = new DateRange(dayIn, dayOut);
@@ -174,7 +174,7 @@ public class ReservationTest
     public void TestTwoDepositsHaveDifferentIDs()
     {
         Client client = new Client("Maria Perez","maria@gmail.com","Maria1..");
-        Deposit deposit = new Deposit('A', "Pequeño", true, false);
+        Deposit deposit = new Deposit('A', "Pequeño", true);
         DateTime dayIn = new DateTime(2024, 04, 07);
         DateTime dayOut = new DateTime(2024, 04, 08);
         DateRange stay = new DateRange(dayIn, dayOut);
@@ -189,7 +189,7 @@ public class ReservationTest
     public void TestIDIsIncremental()
     {
         Client client = new Client("Maria Perez","maria@gmail.com","Maria1..");
-        Deposit deposit = new Deposit('A', "Pequeño", true, false);
+        Deposit deposit = new Deposit('A', "Pequeño", true);
         DateTime dayIn = new DateTime(2024, 04, 07);
         DateTime dayOut = new DateTime(2024, 04, 08);
         DateRange stay = new DateRange(dayIn, dayOut);

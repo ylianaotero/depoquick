@@ -17,6 +17,7 @@ public class Client : User
     public void AddReservation(Reservation reservation)
     {
         _reservations.Add(reservation);
+        reservation.GetDeposit().AddReservation(reservation);
     }
 }
 

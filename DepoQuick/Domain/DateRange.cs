@@ -112,4 +112,23 @@ public class DateRange
         }
     }
     
+    public bool DateRangeIsOverlapping(DateRange dateRange)
+    {
+        if (IsDateInRange(dateRange.GetInitialDate()) || IsDateInRange(dateRange.GetFinalDate()))
+        {
+            return true; 
+        }
+        return false; 
+    }
+    
+    public bool IsDateInRange(DateTime date)
+    {
+        if (date >= _initialDate && date <= _finalDate)
+        {
+            return true; 
+        }
+        return false; 
+    }
+    
+    
 }

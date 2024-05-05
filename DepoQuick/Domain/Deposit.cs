@@ -28,23 +28,23 @@ public class Deposit
     private Char _area;
     private String _size;
     private bool _airConditioning;
-    private bool _reserved;
     private List<Promotion> _promotions; 
     private List<Rating> _ratings;
+    private List<Reservation> _reservations;
     
     
-    public Deposit(Char area, String size, bool airConditioning, bool reserved)
+    public Deposit(Char area, String size, bool airConditioning)
     {
         if (DepositIsValid(area, size))
         {
             _id = s_nextId; 
             s_nextId++; 
             _area = char.ToUpper(area);
-            _reserved = reserved;
             _airConditioning = airConditioning;
             _size = size.ToUpper();
             _ratings = new List<Rating>();
             _promotions = new List<Promotion>(); 
+            _reservations = new List<Reservation>();
         }
     }
     
@@ -120,7 +120,46 @@ public class Deposit
 
     public bool IsReserved()
     {
-        return _reserved; 
+        foreach (var reservation in _reservations)
+        {
+            bool isAccepted = reservation.GetState() == 1;
+            DateRange dateRange = reservation.GetDateRange();
+            if (isAccepted && dateRange.IsDateInRange(DateTime.Now))
+            {
+                return true; 
+            }
+        }
+        return false;
+    }
+    
+    public bool IsReserved(DateRange dateRange)
+    {
+        foreach (var reservation in _reservations)
+        {
+            bool isAccepted = reservation.GetState() == 1;
+            DateRange reservationDateRange = reservation.GetDateRange();
+            
+            if (isAccepted && reservationDateRange.DateRangeIsOverlapping(dateRange))
+            {
+                return true; 
+            }
+        }
+        return false;
+    }
+
+    public bool HasUpcomingReservations()
+    {
+        foreach (var reservation in _reservations)
+        {
+            bool isAcceptedOrPending = reservation.GetState() != -1;
+            DateTime reservationInitialDate = reservation.GetDateRange().GetInitialDate();
+            
+            if (isAcceptedOrPending && reservationInitialDate > DateTime.Now)
+            {
+                return true; 
+            }
+        }
+        return false;
     }
 
     public String GetSize()
@@ -224,11 +263,18 @@ public class Deposit
         return (discountOne+discountTwo) <= 1; 
     }
     
-
-    public void SetReserved(bool reserved)
+    public void AddReservation(Reservation reservation)
     {
-        _reserved = reserved; 
+        _reservations.Add(reservation);
     }
     
+    public void RemoveReservation(Reservation reservation)
+    {
+        _reservations.Remove(reservation);
+    }
     
+    public List<Reservation> GetReservations()
+    {
+        return _reservations;
+    }
 }
