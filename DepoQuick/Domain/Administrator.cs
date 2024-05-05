@@ -10,7 +10,7 @@ public class Administrator : User
     public void ApproveReservation(Reservation reservation)
     {
         reservation.SetState(1);
-        reservation.GetDeposit().SetReserved(true);
+        reservation.GetDeposit().AddReservation(reservation);
     }
     
     public void RejectReservation(Reservation reservation, string reason)
