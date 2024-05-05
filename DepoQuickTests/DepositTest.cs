@@ -569,6 +569,8 @@ public class DepositTest
 
         Deposit newDeposit = new Deposit(area, size, airConditioning);
 
+        Administrator admin = new Administrator("Juan Perez", "juanperez@gmail.com", "Contrasena1#");
+
         Client client = new Client("Maria Perez", "mariaperez@gmail.com", "Contrasena1#");
 
         DateTime expiredDayIn = new DateTime(2024, 04, 07);
@@ -588,6 +590,8 @@ public class DepositTest
         Reservation reservation = new Reservation(newDeposit, client, stay);
         
         newDeposit.AddReservation(reservation);
+        
+        admin.ApproveReservation(reservation);
         
         Assert.IsTrue(newDeposit.IsReserved());
     }
@@ -611,6 +615,9 @@ public class DepositTest
 
         newDeposit.AddReservation(reservation);
 
+        Administrator admin = new Administrator("Juan Perez", "juanperez@gmail.com", "Contrasena1#");
+
+        admin.ApproveReservation(reservation);
         Assert.IsFalse(newDeposit.IsReserved());
         Assert.IsTrue(newDeposit.IsReserved(stay));
     }
@@ -635,6 +642,9 @@ public class DepositTest
         Reservation reservation = new Reservation(newDeposit, client, stay);
 
         newDeposit.AddReservation(reservation);
+        
+        Administrator admin = new Administrator("Juan Perez", "juanperez@gmail.com", "Contrasena1#");
+        admin.ApproveReservation(reservation);
 
         Assert.IsFalse(newDeposit.IsReserved(otherStay));
     }

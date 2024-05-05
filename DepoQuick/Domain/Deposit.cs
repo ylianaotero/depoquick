@@ -122,9 +122,9 @@ public class Deposit
     {
         foreach (var reservation in _reservations)
         {
-            bool isAcceptedOrPending = reservation.GetState() != -1;
+            bool isAccepted = reservation.GetState() == 1;
             DateRange dateRange = reservation.GetDateRange();
-            if (isAcceptedOrPending && dateRange.IsDateInRange(DateTime.Now))
+            if (isAccepted && dateRange.IsDateInRange(DateTime.Now))
             {
                 return true; 
             }
@@ -136,10 +136,10 @@ public class Deposit
     {
         foreach (var reservation in _reservations)
         {
-            bool isAcceptedOrPending = reservation.GetState() != -1;
+            bool isAccepted = reservation.GetState() == 1;
             DateRange reservationDateRange = reservation.GetDateRange();
             
-            if (isAcceptedOrPending && reservationDateRange.DateRangeIsOverlapping(dateRange))
+            if (isAccepted && reservationDateRange.DateRangeIsOverlapping(dateRange))
             {
                 return true; 
             }

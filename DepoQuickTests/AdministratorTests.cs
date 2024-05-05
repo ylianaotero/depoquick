@@ -31,6 +31,8 @@ public class AdministratorTests
         DateRange dateRange = new DateRange(DateTime.Now, DateTime.Now.AddDays(5));
 
         _reservation = new Reservation(_deposit, _client, dateRange);
+        
+        _client.AddReservation(_reservation);
 
     }
     

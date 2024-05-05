@@ -56,11 +56,19 @@
       <br>
     }
 
-    @if (_showAlertInvalidAlert)
+    @if (_showAlertInvalidDate)
     {
       <br>
        <div class="alert alert-danger" role="alert">
          ¡Fecha inválida, la fecha inicial debe ser anterior a la fecha final!
+       </div>
+      <br>
+    }
+    @if (_showAlertUnavailableDeposit)
+    {
+      <br>
+       <div class="alert alert-danger" role="alert">
+          ¡El depósito seleccionado no está disponible en el rango de fechas seleccionado!
        </div>
       <br>
     }
@@ -101,9 +109,10 @@
 
   private bool _showAlertPrice;
   private bool _showAlertInvalidDeposit; 
-  private bool _showAlertInvalidAlert;
+  private bool _showAlertInvalidDate;
   private bool _showAlertAnAdministratorCantMakeAReservation;
-  private bool _showAlertReservationMade; 
+  private bool _showAlertReservationMade;
+  private bool _showAlertUnavailableDeposit;
   
   private Deposit _deposit; 
   private Client _client;
@@ -136,7 +145,14 @@
       {
         if (IsAClient())
         {
-          _showAlertPrice = true;
+          if (DepositIsAvailableInDateRange())
+          {
+            _showAlertPrice = true;
+          }
+          else
+          {
+            _showAlertUnavailableDeposit = true;
+          }
         }
         else
         {
@@ -150,7 +166,7 @@
     }
     else
     {
-      _showAlertInvalidAlert = true;
+      _showAlertInvalidDate = true;
     }
 
   }
@@ -182,11 +198,16 @@
     }
   }
 
+  private bool DepositIsAvailableInDateRange()
+  {
+    return !_deposit.IsReserved(_date);
+  }
+
   private void HideAllAlerts()
   {
     _showAlertPrice = false;
     _showAlertInvalidDeposit = false; 
-    _showAlertInvalidAlert = false;
+    _showAlertInvalidDate = false;
     _showAlertAnAdministratorCantMakeAReservation = false; 
     _showAlertReservationMade = false; 
   }

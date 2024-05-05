@@ -294,6 +294,7 @@ public class Controller
     public void CancelRejectionOfReservation(Reservation reservation)
     {
         reservation.SetState(0);
+        reservation.GetDeposit().AddReservation(reservation);
     }
 
     public void LogoutUser()

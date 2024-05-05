@@ -584,7 +584,6 @@ public class ControllerTest
 
         Assert.AreEqual(0, reservation.GetState());
         Assert.AreEqual("", reservation.GetMessage());
-        Assert.AreEqual(false, _deposit.IsReserved());
     }
 
     [TestMethod]

@@ -22,7 +22,7 @@
     @if (_showAlertDepositDeletedUnsuccessfully)
     {
         <div class="alert alert-danger" role="alert">
-            El depósito no pudo ser eliminado porque está reservado.
+            El depósito no pudo ser eliminado porque está reservado o tiene reservas próximas.
         </div>
     }
     @if (_showAlertAboutToDeleteDeposit)
@@ -53,6 +53,10 @@
             <th>Climatización</th>
             <th>Promociones actuales</th>
             <th>Reservado</th>
+            @if (_loggedInUser.IsAdministrator())
+            {
+                <th>Con reservas próximas</th>
+            }
         </tr>
         </thead>
         
@@ -74,6 +78,10 @@
                     }
                 </td>
                 <td>@BoolToString(deposit.IsReserved())</td>
+                @if (_loggedInUser.IsAdministrator())
+                {
+                    <td>@BoolToString(deposit.HasUpcomingReservations())</td>
+                }
                 @if (_loggedInUser.IsAdministrator())
                 {
                     <td>
@@ -140,7 +148,7 @@
         
         _depositToDelete = deposit;
         
-        if (_depositToDelete.IsReserved())
+        if (_depositToDelete.IsReserved() || _depositToDelete.HasUpcomingReservations())
         {
             _showAlertDepositDeletedUnsuccessfully = true;
         }
