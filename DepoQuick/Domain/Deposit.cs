@@ -146,7 +146,21 @@ public class Deposit
         }
         return false;
     }
-    
+
+    public bool HasUpcomingReservations()
+    {
+        foreach (var reservation in _reservations)
+        {
+            bool isAcceptedOrPending = reservation.GetState() != -1;
+            DateTime reservationInitialDate = reservation.GetDateRange().GetInitialDate();
+            
+            if (isAcceptedOrPending && reservationInitialDate > DateTime.Now)
+            {
+                return true; 
+            }
+        }
+        return false;
+    }
 
     public String GetSize()
     {
