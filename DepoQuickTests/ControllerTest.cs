@@ -629,5 +629,42 @@ public class ControllerTest
         Assert.AreEqual(true, controller.UserLoggedIn());
     }
     
+    [TestMethod]
+    public void TestValidUserLogInLogin()
+    {
+        MemoryDataBase memoryDataBase = new MemoryDataBase();
+        Controller controller = new Controller(memoryDataBase);
+
+        string nombre = "Maria";
+        string email = "maria@gmail.com";
+        string password = "mAria1..123";
+        string validation = "mAria1..123";
+        controller.RegisterAdministrator(nombre, email, password, validation);
+        controller.LoginUser(email, password);
+        DateTime now = DateTime.Now.AddSeconds(-DateTime.Now.Second);
+        var logs = controller.GetActiveUser().GetLogs();
+        string expectedMessage = "Ingresó al sistema";
+        Assert.IsTrue(logs.Any(log => log.Item1 == expectedMessage));
+        Assert.IsTrue(logs.Any(log => now.Date == log.Item2.Date && now.Hour == log.Item2.Hour && now.Minute == log.Item2.Minute));
+    }
     
+    [TestMethod]
+    public void TestValidLogInLogout()
+    {
+        MemoryDataBase memoryDataBase = new MemoryDataBase();
+        Controller controller = new Controller(memoryDataBase);
+
+        string nombre = "Maria";
+        string email = "maria@gmail.com";
+        string password = "mAria1..123";
+        string validation = "mAria1..123";
+        controller.RegisterAdministrator(nombre, email, password, validation);
+        controller.LoginUser(email, password);
+        DateTime now = DateTime.Now.AddSeconds(-DateTime.Now.Second);
+        var logs = controller.GetActiveUser().GetLogs();
+        controller.LogoutUser();
+        string expectedMessage = "Cerró sesión";
+        Assert.IsTrue(logs.Any(log => log.Item1 == expectedMessage));
+        Assert.IsTrue(logs.Any(log => now.Date == log.Item2.Date && now.Hour == log.Item2.Hour && now.Minute == log.Item2.Minute));
+    }
 }

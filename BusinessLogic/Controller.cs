@@ -177,6 +177,7 @@ public class Controller
             User u = GetUserFromUsersList(email);
             if (u.GetPassword().Equals(password))
             {
+                u.LogAction("Ingresó al sistema",DateTime.Now);
                 _memoryDataBase.SetActiveUser(u);
             }
             else
@@ -299,6 +300,8 @@ public class Controller
 
     public void LogoutUser()
     {
+        User u = GetActiveUser();
+        u.LogAction("Cerró sesión",DateTime.Now);
         _memoryDataBase.SetActiveUser(null);
     }
 
