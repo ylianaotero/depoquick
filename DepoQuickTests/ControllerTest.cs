@@ -26,7 +26,7 @@ public class ControllerTest
     private string _email = "nombre@dominio.es";
     private string _password = "Contrasena#1";
 
-    private Deposit _deposit = new Deposit('A', "Pequeño", true, false);
+    private Deposit _deposit = new Deposit('A', "Pequeño", true);
     private DateRange _stay = new DateRange(new DateTime(2024, 04, 07), new DateTime(2024, 04, 08));
 
 
@@ -37,7 +37,7 @@ public class ControllerTest
 
         Controller controller = new Controller(memoryDataBase);
 
-        Deposit newDeposit = new Deposit(_area, _size, _airConditioning, _reserved);
+        Deposit newDeposit = new Deposit(_area, _size, _airConditioning);
 
         Promotion promotion = new Promotion();
         List<Promotion> promotionsToAddToDeposit = new List<Promotion>();
@@ -56,8 +56,8 @@ public class ControllerTest
 
         Controller controller = new Controller(memoryDataBase);
 
-        Deposit newDeposit0 = new Deposit(_area, _size, _airConditioning, _reserved);
-        Deposit newDeposit1 = new Deposit(_area2, _size2, _airConditioning2, _reserved2);
+        Deposit newDeposit0 = new Deposit(_area, _size, _airConditioning);
+        Deposit newDeposit1 = new Deposit(_area2, _size2, _airConditioning2);
 
         int id = newDeposit1.GetId();
 
@@ -82,8 +82,8 @@ public class ControllerTest
 
         Controller controller = new Controller(memoryDataBase);
 
-        Deposit newDeposit0 = new Deposit(_area, _size, _airConditioning, _reserved);
-        Deposit newDeposit1 = new Deposit(_area2, _size2, _airConditioning2, _reserved2);
+        Deposit newDeposit0 = new Deposit(_area, _size, _airConditioning);
+        Deposit newDeposit1 = new Deposit(_area2, _size2, _airConditioning2);
 
         List<Promotion> promotions = new List<Promotion>();
 
@@ -196,7 +196,7 @@ public class ControllerTest
         
         controller.AddPromotion(promotion1, depositsToAddPromotion);
         
-        Deposit newDeposit = new Deposit('B', "Grande", true, false);
+        Deposit newDeposit = new Deposit('B', "Grande", true);
         List<Deposit> newDepositsToAddPromotion = new List<Deposit>();
         newDepositsToAddPromotion.Add(newDeposit);
         
@@ -312,7 +312,7 @@ public class ControllerTest
 
         Promotion promotion = new Promotion();
 
-        Deposit deposit = new Deposit(_area, _size, _airConditioning, _reserved);
+        Deposit deposit = new Deposit(_area, _size, _airConditioning);
 
         List<Deposit> depositsToAddPromotion = new List<Deposit>();
         List<Promotion> promotions = new List<Promotion>();
@@ -458,7 +458,7 @@ public class ControllerTest
 
         Controller controller = new Controller(memoryDataBase);
 
-        Deposit deposit = new Deposit('A', "Pequeño", true, false);
+        Deposit deposit = new Deposit('A', "Pequeño", true);
 
         List<Promotion> promotions = new List<Promotion>();
 

@@ -9,7 +9,7 @@ public class ClientTests
     private string _email = "nombre@dominio.es";
     private string _password = "Contrasena#1";
     
-    private Deposit deposit = new Deposit('A', "Pequeño", true, false);
+    private Deposit deposit = new Deposit('A', "Pequeño", true);
     private DateRange stay = new DateRange(new DateTime(2024, 04, 07), new DateTime(2024, 04, 08));
     
     [TestMethod]

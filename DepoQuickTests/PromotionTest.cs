@@ -159,8 +159,8 @@ public class PromotionTest
     {
         Promotion newPromotion = new Promotion();
         
-        Deposit smallDeposit = new Deposit('A', "pequeño", false, false);
-        Deposit bigDeposit = new Deposit('B', "grande", true, false);
+        Deposit smallDeposit = new Deposit('A', "pequeño", false);
+        Deposit bigDeposit = new Deposit('B', "grande", true);
         
         smallDeposit.AddPromotion(newPromotion);
         bigDeposit.AddPromotion(newPromotion);
@@ -177,7 +177,7 @@ public class PromotionTest
     {
         Promotion newPromotion = new Promotion();
         
-        Deposit smallDeposit = new Deposit('A', "pequeño", false, false);
+        Deposit smallDeposit = new Deposit('A', "pequeño", false);
         
         newPromotion.AddDeposit(smallDeposit);
         

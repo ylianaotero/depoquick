@@ -25,9 +25,10 @@ public class AdministratorTests
         _admin = new Administrator(_adminName, _adminEmail, _adminPassword);
         _client = new Client(_clientName, _clientEmail, _clientPassword);
         
-        _deposit = new Deposit('A', "Mediano", true, false);
+        _deposit = new Deposit('A', "Mediano", true);
         
-        DateRange dateRange = new DateRange(DateTime.Now.AddDays(2), DateTime.Now.AddDays(5));
+        
+        DateRange dateRange = new DateRange(DateTime.Now, DateTime.Now.AddDays(5));
 
         _reservation = new Reservation(_deposit, _client, dateRange);
 
