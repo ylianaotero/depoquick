@@ -517,4 +517,27 @@ public class DepositTest
         
         CollectionAssert.DoesNotContain(newDeposit1.GetPromotions(), newPromotion);
     }
+
+    [TestMethod]
+    public void TestGetReservations()
+    {
+        char area = 'a';
+        String size = "Mediano";
+        bool airConditioning = true;
+        bool reserved = false;
+        
+        Deposit newDeposit = new Deposit(area, size, airConditioning, reserved);
+
+        Client client = new Client("Maria Perez", "mariaperez@gmail.com", "Contrasena1#");
+        
+        DateTime dayIn = new DateTime(2024, 04, 07);
+        DateTime dayOut = new DateTime(2024, 04, 08);
+        DateRange stay = new DateRange(dayIn, dayOut);
+        
+        Reservation reservation = new Reservation(newDeposit, client, stay);
+        
+        newDeposit.AddReservation(reservation);
+        
+        CollectionAssert.Contains(newDeposit.GetReservations(), reservation);
+    }
 }
