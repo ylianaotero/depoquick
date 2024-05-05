@@ -13,9 +13,9 @@ public class DepositTest
         char area = 'R';
         String size = "Grande"; 
         bool airConditioning = true;
-        bool reserved = false;
+        
 
-        new Deposit(area, size, airConditioning, reserved);
+        new Deposit(area, size, airConditioning);
     }
     
     [TestMethod]
@@ -25,9 +25,9 @@ public class DepositTest
         char area = 'l';
         String size = "Enorme";
         bool airConditioning = true;
-        bool reserved = false;
         
-        new Deposit(area, size, airConditioning, reserved);
+        
+        new Deposit(area, size, airConditioning);
     }
     
     [TestMethod]
@@ -36,15 +36,13 @@ public class DepositTest
         char area = 'a';
         String size = "Mediano";
         bool airConditioning = true;
-        bool reserved = false;
         
-        Deposit newDeposit = new Deposit(area, size, airConditioning, reserved); 
+        Deposit newDeposit = new Deposit(area, size, airConditioning); 
         
         Assert.IsNotNull(newDeposit);
         Assert.AreEqual(char.ToUpper(area), newDeposit.GetArea());
         Assert.AreEqual(size.ToUpper(), newDeposit.GetSize());
         Assert.AreEqual(airConditioning, newDeposit.GetAirConditioning());
-        Assert.AreEqual(reserved, newDeposit.IsReserved());
     }
     
     [TestMethod]
@@ -54,9 +52,9 @@ public class DepositTest
         char area = 'A';
         String size = "Minusculo";
         bool airConditioning = true;
-        bool reserved = false;
         
-        new Deposit(area, size, airConditioning, reserved);
+        
+        new Deposit(area, size, airConditioning);
     }
     
 
@@ -72,9 +70,9 @@ public class DepositTest
         char area = 'A';
         String size = "Pequeño";
         bool airConditioning = true;
-        bool reserved = false;
         
-        Deposit newDeposit = new Deposit(area, size, airConditioning, reserved); 
+        
+        Deposit newDeposit = new Deposit(area, size, airConditioning); 
         
         newDeposit.AddRating(newRating);
         
@@ -82,7 +80,6 @@ public class DepositTest
         Assert.AreEqual(char.ToUpper(area), newDeposit.GetArea());
         Assert.AreEqual(size.ToUpper(), newDeposit.GetSize());
         Assert.AreEqual(airConditioning, newDeposit.GetAirConditioning());
-        Assert.AreEqual(reserved, newDeposit.IsReserved());
         CollectionAssert.Contains(newDeposit.GetRatings(), newRating);
     }
     
@@ -104,9 +101,8 @@ public class DepositTest
         char area = 'A';
         String size = "Pequeño";
         bool airConditioning = true;
-        bool reserved = false;
         
-        Deposit newDeposit = new Deposit(area, size, airConditioning, reserved); 
+        Deposit newDeposit = new Deposit(area, size, airConditioning); 
         
         newDeposit.AddPromotion(newPromotion);
         
@@ -114,7 +110,6 @@ public class DepositTest
         Assert.AreEqual(char.ToUpper(area), newDeposit.GetArea());
         Assert.AreEqual(size.ToUpper(), newDeposit.GetSize());
         Assert.AreEqual(airConditioning, newDeposit.GetAirConditioning());
-        Assert.AreEqual(reserved, newDeposit.IsReserved());
         CollectionAssert.Contains(newDeposit.GetPromotions(), newPromotion);
     }
         
@@ -124,9 +119,8 @@ public class DepositTest
         char area = 'A';
         String size = "Pequeño";
         bool airConditioning = false;
-        bool reserved = false;
         
-        Deposit newDeposit = new Deposit(area, size, airConditioning, reserved);
+        Deposit newDeposit = new Deposit(area, size, airConditioning);
 
         int numberOfDays = 6;
 
@@ -144,9 +138,8 @@ public class DepositTest
         char area = 'A';
         String size = "Mediano";
         bool airConditioning = false;
-        bool reserved = false;
         
-        Deposit newDeposit = new Deposit(area, size, airConditioning, reserved);
+        Deposit newDeposit = new Deposit(area, size, airConditioning);
 
         int numberOfDays = 6;
 
@@ -164,9 +157,8 @@ public class DepositTest
         char area = 'A';
         String size = "Grande";
         bool airConditioning = false;
-        bool reserved = false;
         
-        Deposit newDeposit = new Deposit(area, size, airConditioning, reserved);
+        Deposit newDeposit = new Deposit(area, size, airConditioning);
 
         int numberOfDays = 6;
 
@@ -184,9 +176,9 @@ public class DepositTest
         char area = 'A';
         String size = "Grande";
         bool airConditioning = false;
-        bool reserved = false;
         
-        Deposit newDeposit = new Deposit(area, size, airConditioning, reserved);
+        
+        Deposit newDeposit = new Deposit(area, size, airConditioning);
 
         int numberOfDays = 7;
 
@@ -207,9 +199,9 @@ public class DepositTest
         char area = 'A';
         String size = "Grande";
         bool airConditioning = false;
-        bool reserved = false;
         
-        Deposit newDeposit = new Deposit(area, size, airConditioning, reserved);
+        
+        Deposit newDeposit = new Deposit(area, size, airConditioning);
 
         int numberOfDays = 14;
 
@@ -230,9 +222,9 @@ public class DepositTest
         char area = 'A';
         String size = "Grande";
         bool airConditioning = false;
-        bool reserved = false;
         
-        Deposit newDeposit = new Deposit(area, size, airConditioning, reserved);
+        
+        Deposit newDeposit = new Deposit(area, size, airConditioning);
 
         int numberOfDays = 15;
 
@@ -253,9 +245,9 @@ public class DepositTest
         char area = 'A';
         String size = "Grande";
         bool airConditioning = true;
-        bool reserved = false;
         
-        Deposit newDeposit = new Deposit(area, size, airConditioning, reserved);
+        
+        Deposit newDeposit = new Deposit(area, size, airConditioning);
 
         int numberOfDays = 15;
 
@@ -293,9 +285,9 @@ public class DepositTest
         char area = 'A';
         String size = "Grande";
         bool airConditioning = true;
-        bool reserved = false;
         
-        Deposit newDeposit = new Deposit(area, size, airConditioning, reserved);
+        
+        Deposit newDeposit = new Deposit(area, size, airConditioning);
         
         newDeposit.AddPromotion(newPromotion);
 
@@ -336,9 +328,9 @@ public class DepositTest
         char area = 'A';
         String size = "Grande";
         bool airConditioning = true;
-        bool reserved = false;
         
-        Deposit newDeposit = new Deposit(area, size, airConditioning, reserved);
+        
+        Deposit newDeposit = new Deposit(area, size, airConditioning);
         
         newDeposit.AddPromotion(newPromotion);
 
@@ -388,9 +380,9 @@ public class DepositTest
         char area = 'A';
         String size = "Grande";
         bool airConditioning = true;
-        bool reserved = false;
         
-        Deposit newDeposit = new Deposit(area, size, airConditioning, reserved);
+        
+        Deposit newDeposit = new Deposit(area, size, airConditioning);
         
         newDeposit.AddPromotion(newPromotion);
         newDeposit.AddPromotion(newPromotion2);
@@ -437,9 +429,9 @@ public class DepositTest
         char area = 'A';
         String size = "Grande";
         bool airConditioning = true;
-        bool reserved = false;
         
-        Deposit newDeposit = new Deposit(area, size, airConditioning, reserved);
+        
+        Deposit newDeposit = new Deposit(area, size, airConditioning);
         
         newDeposit.AddPromotion(newPromotion);
         newDeposit.AddPromotion(newPromotion2);
@@ -458,9 +450,9 @@ public class DepositTest
         char area = 'a';
         String size = "Mediano";
         bool airConditioning = true;
-        bool reserved = false;
         
-        Deposit newDeposit = new Deposit(area, size, airConditioning, reserved);
+        
+        Deposit newDeposit = new Deposit(area, size, airConditioning);
 
         int id = 2; 
 
@@ -475,10 +467,10 @@ public class DepositTest
         char area = 'a';
         String size = "Mediano";
         bool airConditioning = true;
-        bool reserved = false;
         
-        Deposit newDeposit1 = new Deposit(area, size, airConditioning, reserved);
-        Deposit newDeposit2 = new Deposit(area, size, airConditioning, reserved); 
+        
+        Deposit newDeposit1 = new Deposit(area, size, airConditioning);
+        Deposit newDeposit2 = new Deposit(area, size, airConditioning); 
 
         Assert.AreNotEqual(newDeposit1.GetId(), newDeposit2.GetId());
     }
@@ -489,10 +481,10 @@ public class DepositTest
         char area = 'a';
         String size = "Mediano";
         bool airConditioning = true;
-        bool reserved = false;
         
-        Deposit newDeposit1 = new Deposit(area, size, airConditioning, reserved);
-        Deposit newDeposit2 = new Deposit(area, size, airConditioning, reserved);
+        
+        Deposit newDeposit1 = new Deposit(area, size, airConditioning);
+        Deposit newDeposit2 = new Deposit(area, size, airConditioning);
 
         Assert.IsTrue(newDeposit1.GetId() < newDeposit2.GetId());
     }
@@ -503,9 +495,9 @@ public class DepositTest
         char area = 'a';
         String size = "Mediano";
         bool airConditioning = true;
-        bool reserved = false;
         
-        Deposit newDeposit1 = new Deposit(area, size, airConditioning, reserved);
+        
+        Deposit newDeposit1 = new Deposit(area, size, airConditioning);
         
         Promotion newPromotion = new Promotion();
         List<Promotion> promotionsLinkedToDeposit = new List<Promotion>();
@@ -524,9 +516,9 @@ public class DepositTest
         char area = 'a';
         String size = "Mediano";
         bool airConditioning = true;
-        bool reserved = false;
         
-        Deposit newDeposit = new Deposit(area, size, airConditioning, reserved);
+        
+        Deposit newDeposit = new Deposit(area, size, airConditioning);
 
         Client client = new Client("Maria Perez", "mariaperez@gmail.com", "Contrasena1#");
         
@@ -548,9 +540,9 @@ public class DepositTest
         char area = 'a';
         String size = "Mediano";
         bool airConditioning = true;
-        bool reserved = false;
+        
 
-        Deposit newDeposit = new Deposit(area, size, airConditioning, reserved);
+        Deposit newDeposit = new Deposit(area, size, airConditioning);
 
         Client client = new Client("Maria Perez", "mariaperez@gmail.com", "Contrasena1#");
 
@@ -565,5 +557,38 @@ public class DepositTest
         newDeposit.RemoveReservation(reservation);
 
         CollectionAssert.DoesNotContain(newDeposit.GetReservations(), reservation);
+    }
+
+    [TestMethod]
+    public void TestDepositIsReserved()
+    {
+        char area = 'a';
+        String size = "Mediano";
+        bool airConditioning = true;
+        
+
+        Deposit newDeposit = new Deposit(area, size, airConditioning);
+
+        Client client = new Client("Maria Perez", "mariaperez@gmail.com", "Contrasena1#");
+
+        DateTime expiredDayIn = new DateTime(2024, 04, 07);
+        DateTime expiredDayOut = new DateTime(2024, 04, 08);
+        DateRange expiredStay = new DateRange(expiredDayIn, expiredDayOut);
+
+        Reservation expiredReservation = new Reservation(newDeposit, client, expiredStay);
+
+        newDeposit.AddReservation(expiredReservation);
+        
+        Assert.IsFalse(newDeposit.IsReserved());
+        
+        DateTime dayIn = DateTime.Now;
+        DateTime dayOut = DateTime.Now.AddDays(10);
+        DateRange stay = new DateRange(dayIn, dayOut);
+        
+        Reservation reservation = new Reservation(newDeposit, client, stay);
+        
+        newDeposit.AddReservation(reservation);
+        
+        Assert.IsTrue(newDeposit.IsReserved());
     }
 }
