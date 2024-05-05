@@ -659,4 +659,26 @@ public class DepositTest
         Assert.IsTrue(newDeposit.HasUpcomingReservations());
     }
 
+    [TestMethod]
+    public void TestDepositDoesNotHaveUpcomingReservations()
+    {
+        char area = 'a';
+        String size = "Mediano";
+        bool airConditioning = true;
+
+        Deposit newDeposit = new Deposit(area, size, airConditioning);
+
+        Client client = new Client("Maria Perez", "mariaperez@gmail.com", "Contrasena1#");
+
+        DateTime expiredDayIn = new DateTime(2024, 04, 07);
+        DateTime expiredDayOut = new DateTime(2024, 04, 08);
+        DateRange expiredStay = new DateRange(expiredDayIn, expiredDayOut);
+
+        Reservation expiredReservation = new Reservation(newDeposit, client, expiredStay);
+
+        newDeposit.AddReservation(expiredReservation);
+
+        Assert.IsFalse(newDeposit.HasUpcomingReservations());
+    }
+
 }
