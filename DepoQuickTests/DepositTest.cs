@@ -591,4 +591,29 @@ public class DepositTest
         
         Assert.IsTrue(newDeposit.IsReserved());
     }
+
+    [TestMethod]
+    public void TestDepositIsReservedInDateRange()
+    {
+        char area = 'a';
+        String size = "Mediano";
+        bool airConditioning = true;
+
+
+        Deposit newDeposit = new Deposit(area, size, airConditioning);
+
+        Client client = new Client("Maria Perez", "mariaperez@gmail.com", "Contrasena1#");
+
+        DateTime dayIn = DateTime.Now.AddDays(10);
+        DateTime dayOut = DateTime.Now.AddDays(20);
+        DateRange stay = new DateRange(dayIn, dayOut);
+
+        Reservation reservation = new Reservation(newDeposit, client, stay);
+
+        newDeposit.AddReservation(reservation);
+
+        Assert.IsFalse(newDeposit.IsReserved());
+        Assert.IsTrue(newDeposit.IsReserved(stay));
+    }
+
 }
