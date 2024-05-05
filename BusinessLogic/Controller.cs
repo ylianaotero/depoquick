@@ -341,6 +341,7 @@ public class Controller
     {
         Deposit deposit = reservation.GetDeposit();
         deposit.AddRating(rating); 
+        reservation.SetRating(rating);
         _memoryDataBase.GetRatings().Add(rating);
     }
     
