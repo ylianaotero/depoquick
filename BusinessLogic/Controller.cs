@@ -2,7 +2,6 @@
 using DepoQuick.Domain.Exceptions.AdministratorExceptions;
 using DepoQuick.Domain.Exceptions.ControllerExceptions;
 using DepoQuick.Domain.Exceptions.MemoryDataBaseExceptions;
-using DepoQuick.Domain.Exceptions.UserExceptions;
 
 namespace BusinessLogic;
 
@@ -295,7 +294,6 @@ public class Controller
     public void CancelRejectionOfReservation(Reservation reservation)
     {
         reservation.SetState(0);
-        reservation.GetDeposit().SetReserved(false);
     }
 
     public void LogoutUser()
@@ -330,7 +328,7 @@ public class Controller
 
     private void AddUser(User newUser)
     {
-        _memoryDataBase.GetUsers().Add(newUser); //agregar metodo en memoryDataBase
+        _memoryDataBase.GetUsers().Add(newUser); 
     }
 
     public bool UserLoggedIn()

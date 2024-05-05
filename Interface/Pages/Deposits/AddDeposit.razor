@@ -68,7 +68,6 @@
     private char _area;
     private string _size;
     private bool _airConditioning;
-    private bool _reserved;
     private List<Promotion> _promotions;
     private List<Promotion> _selectedPromotions;
     private bool _selectAllPromotions;
@@ -81,7 +80,6 @@
         _area = 'A';
         _size = "PEQUEÑO";
         _airConditioning = false;
-        _reserved = false;
         _selectedPromotions = new List<Promotion>();
         _promotions = _controller.GetPromotions();
         _selectAllPromotions = false;
@@ -89,7 +87,7 @@
     
     private void AddNewDeposit()
     {
-        Deposit newDeposit = new Deposit(_area, _size, _airConditioning, _reserved);
+        Deposit newDeposit = new Deposit(_area, _size, _airConditioning);
         
         _controller.AddDeposit(newDeposit, _selectedPromotions);
 
