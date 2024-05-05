@@ -31,6 +31,7 @@ public class Deposit
     private bool _reserved;
     private List<Promotion> _promotions; 
     private List<Rating> _ratings;
+    private List<Reservation> _reservations;
     
     
     public Deposit(Char area, String size, bool airConditioning, bool reserved)
@@ -45,6 +46,7 @@ public class Deposit
             _size = size.ToUpper();
             _ratings = new List<Rating>();
             _promotions = new List<Promotion>(); 
+            _reservations = new List<Reservation>();
         }
     }
     
@@ -228,6 +230,16 @@ public class Deposit
     public void SetReserved(bool reserved)
     {
         _reserved = reserved; 
+    }
+    
+    public void AddReservation(Reservation reservation)
+    {
+        _reservations.Add(reservation);
+    }
+    
+    public List<Reservation> GetReservations()
+    {
+        return _reservations;
     }
     
     
