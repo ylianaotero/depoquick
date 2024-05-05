@@ -237,10 +237,13 @@ public class Deposit
         _reservations.Add(reservation);
     }
     
+    public void RemoveReservation(Reservation reservation)
+    {
+        _reservations.Remove(reservation);
+    }
+    
     public List<Reservation> GetReservations()
     {
         return _reservations;
     }
-    
-    
 }
