@@ -647,6 +647,7 @@ public class ControllerTest
 
         CollectionAssert.Contains(_deposit.GetRatings(), rating);
         CollectionAssert.Contains(controller.GetRatings(), rating);
+        Assert.AreEqual(reservation.GetRating(), rating);
     }
     
     
