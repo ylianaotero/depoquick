@@ -1,4 +1,4 @@
-﻿@page "/Statics"
+﻿@page "/Statistics"
 @using BusinessLogic
 @using DepoQuick.Domain
 @using DepoQuick.Domain.Exceptions.DateRangeExceptions
@@ -44,10 +44,10 @@
             <input type="date" class="form-control" id="finalDate" name="finalDate" @bind="_finalDate">
         </div>
 
-        <input @onclick="showStatics" id="wantToMakeTheReservation" class="btn btn-primary" value="Ver estadísticas">
+        <input @onclick="showStatistics" id="wantToMakeTheReservation" class="btn btn-primary" value="Ver estadísticas">
     </form>
 
-    @if (_showMoneyStatics)
+    @if (_showMoneyStatistics)
     {
         <br>
         <table class="table table-bordered">
@@ -105,7 +105,7 @@
     private DateRange _date;
     
     private bool _showAlertInvalidDate;
-    private bool _showMoneyStatics;
+    private bool _showMoneyStatistics;
 
     private DateTime _initialDate = DateTime.Today.Date;
     private DateTime _finalDate = DateTime.Today.Date;
@@ -177,16 +177,16 @@
     private void HideAllAlerts()
     {
         _showAlertInvalidDate = false;
-        _showMoneyStatics = false; 
+        _showMoneyStatistics = false; 
     }
 
-    private void showStatics()
+    private void showStatistics()
     {
         HideAllAlerts(); 
         if (IsAValidDate())
         {
             InitializeMoneyData(); 
-            _showMoneyStatics = true;
+            _showMoneyStatistics = true;
         }
         else
         {

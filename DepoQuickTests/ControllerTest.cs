@@ -628,6 +628,27 @@ public class ControllerTest
         controller.LoginUser(email,password);
         Assert.AreEqual(true, controller.UserLoggedIn());
     }
+
+    [TestMethod]
+    public void TestRateReservation()
+    {
+        MemoryDataBase memoryDataBase = new MemoryDataBase();
+        Controller controller = new Controller(memoryDataBase);
+
+        Client client = new Client(_name, _email, _password);
+
+        Reservation reservation = new Reservation(_deposit, client, _stay);
+
+        controller.AddReservation(reservation);
+        
+        Rating rating = new Rating(5, "Excelente");
+
+        controller.RateReservation(reservation, rating);
+
+        CollectionAssert.Contains(_deposit.GetRatings(), rating);
+        CollectionAssert.Contains(controller.GetRatings(), rating);
+        Assert.AreEqual(reservation.GetRating(), rating);
+    }
     
     [TestMethod]
     public void TestValidUserLogInLogin()

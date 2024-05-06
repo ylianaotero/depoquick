@@ -691,4 +691,42 @@ public class DepositTest
         Assert.IsFalse(newDeposit.HasUpcomingReservations());
     }
 
+    [TestMethod]
+    public void TestGetAverageRating()
+    {
+        char area = 'a';
+        String size = "Mediano";
+        bool airConditioning = true;
+
+        Deposit newDeposit = new Deposit(area, size, airConditioning);
+        
+        Rating rating1 = new Rating(5, "Excelente");
+        Rating rating2 = new Rating(3, "Regular");
+        Rating rating3 = new Rating(1, "Malo");
+        Rating rating4 = new Rating(4, "Bueno");
+        Rating rating5 = new Rating(2, "Malo");
+        
+        newDeposit.AddRating(rating1);
+        newDeposit.AddRating(rating2);
+        newDeposit.AddRating(rating3);
+        newDeposit.AddRating(rating4);
+        newDeposit.AddRating(rating5);
+        
+        double expectedAverageRating = (5 + 3 + 1 + 4 + 2) / 5.0;
+        
+        Assert.AreEqual(expectedAverageRating, newDeposit.GetAverageRating());
+    }
+    
+    [TestMethod]
+    public void TestGetAverageRatingWithNoRatings()
+    {
+        char area = 'a';
+        String size = "Mediano";
+        bool airConditioning = true;
+
+        Deposit newDeposit = new Deposit(area, size, airConditioning);
+        
+        Assert.AreEqual(0, newDeposit.GetAverageRating());
+    }
+
 }

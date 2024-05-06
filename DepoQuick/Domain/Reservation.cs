@@ -13,11 +13,7 @@ public class Reservation
     private DateRange _date;
     private string _message;
     private int _state;
-    
-    public void SetId(int id)
-    {
-        _id = id; 
-    }
+    private Rating _rating;
 
     public int GetId()
     {
@@ -113,5 +109,15 @@ public class Reservation
     public DateRange GetDateRange()
     {
         return _date;
+    }
+    
+    public void SetRating(Rating rating)
+    {
+        _rating = rating;
+    }
+    
+    public Rating GetRating()
+    {
+        return _rating;
     }
 }

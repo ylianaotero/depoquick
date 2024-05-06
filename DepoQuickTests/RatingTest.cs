@@ -77,4 +77,69 @@ public class RatingTest
         Assert.AreEqual(stars, newRating.GetStars());
         Assert.AreEqual(comment, newRating.GetComment());
     }
+    
+    [TestMethod]
+    public void TestUpdateRating()
+    {
+        int stars = 1;
+        String comment = " "; 
+        
+        Rating newRating = new Rating(stars, comment); 
+        
+        Assert.IsNotNull(newRating);
+        Assert.AreEqual(stars, newRating.GetStars());
+        Assert.AreEqual(comment, newRating.GetComment());
+        
+        int newStars = 5;
+        String newComment = "new comment"; 
+        
+        newRating.UpdateRating(newStars, newComment);
+        
+        Assert.AreEqual(newStars, newRating.GetStars());
+        Assert.AreEqual(newComment, newRating.GetComment());
+    }
+    
+    [TestMethod]
+    [ExpectedException(typeof(InvalidStarsForRatingException))]
+    public void TestUpdateRatingWithInvalidStars()
+    {
+        int stars = 1;
+        String comment = " "; 
+        
+        Rating newRating = new Rating(stars, comment); 
+        
+        Assert.IsNotNull(newRating);
+        Assert.AreEqual(stars, newRating.GetStars());
+        Assert.AreEqual(comment, newRating.GetComment());
+        
+        int newStars = 6;
+        String newComment = "new comment"; 
+        
+        newRating.UpdateRating(newStars, newComment);
+    }
+    
+    [TestMethod]
+    [ExpectedException(typeof(InvalidCommentForRatingException))]
+    public void TestUpdateRatingWithInvalidComment()
+    {
+        int stars = 1;
+        String comment = " "; 
+        
+        Rating newRating = new Rating(stars, comment); 
+        
+        Assert.IsNotNull(newRating);
+        Assert.AreEqual(stars, newRating.GetStars());
+        Assert.AreEqual(comment, newRating.GetComment());
+        
+        int newStars = 5;
+        String newComment = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam vel sem ligula. Vivamus nec " +
+                         "arcu non velit tempus euismod. Mauris suscipit arcu non ex ultrices vehicula. Integer vehicula nulla " +
+                         "a suscipit venenatis. Fusce vel felis vel enim vehicula scelerisque. Aliquam quis massa eget magna semper " +
+                         "blandit. Ut a quam quis felis vulputate hendrerit. Aenean sagittis felis ac mauris mattis, sit amet luctus " +
+                         "eros gravida. Nunc quis leo quis purus consectetur efficitur id at libero. Pellentesque dapibut";
+        
+        Assert.AreEqual(501, newComment.Length);
+        
+        newRating.UpdateRating(newStars, newComment);
+    }
 }

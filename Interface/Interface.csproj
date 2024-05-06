@@ -16,9 +16,9 @@
     </ItemGroup>
 
     <ItemGroup>
-      <AdditionalFiles Include="Pages\GestionOfReservs\DepositReserve.razor" />
-      <AdditionalFiles Include="Pages\GestionOfReservs\GestionOfReservsAdmin.razor" />
-      <AdditionalFiles Include="Pages\GestionOfReservs\RejectReservation.razor" />
+      <AdditionalFiles Include="Pages\Reservations\DepositReserve.razor" />
+      <AdditionalFiles Include="Pages\Reservations\GestionOfReservsAdmin.razor" />
+      <AdditionalFiles Include="Pages\Reservations\RejectReservation.razor" />
     </ItemGroup>
 
     <ItemGroup>

@@ -1,0 +1,57 @@
+@page "/DepositRatings/{Id:int}" 
+@using BusinessLogic
+@using DepoQuick.Domain
+@inject MemoryDataBase MemoryDataBase
+
+<html lang="es">
+<head>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+</head>
+<body>
+<h3>Valoraciones del depósito @_deposit.GetId().</h3>
+<h4>Puntuación promedio: @_deposit.GetAverageRating()</h4>
+    
+    <table class="table table-striped table-hover">
+        <thead>
+        <tr>
+            <th>Cliente</th>
+            <th>Inicio de reserva</th>
+            <th>Fin de reserva</th>
+            <th>Estrellas</th>
+            <th>Comentario</th>
+        </tr>
+        </thead>
+        
+        <tbody>
+        @foreach (Reservation reservation in _deposit.GetReservations())
+        {
+            if (reservation.GetRating() != null)
+            {
+                <tr>
+                    <td>@reservation.GetClient().GetName()</td>
+                    <td>@reservation.GetDateRange().GetInitialDate().ToString("dd/MM/yyyy")</td>
+                    <td>@reservation.GetDateRange().GetFinalDate().ToString("dd/MM/yyyy")</td>
+                    <td>@reservation.GetRating().GetStars()</td>
+                    <td>@reservation.GetRating().GetComment()</td>
+                </tr>
+            }
+        }
+        </tbody>
+    </table>
+    </body>
+</html>
+
+@code {
+    [Parameter] public int Id { get; set; }
+
+    private Controller _controller;
+    private Deposit _deposit;
+    
+    
+    protected override void OnParametersSet()
+    {
+        _controller = new Controller(MemoryDataBase);
+        _deposit = _controller.GetDeposit(Id);
+    }
+}

@@ -10,7 +10,7 @@ public class MemoryDataBase
     private List<Deposit> _listOfDeposits;
     private List<Reservation> _listOfReservations; 
     private List<Promotion> _listOfPromotions;
-
+    private List<Rating> _listOfRatings;
 
 
     public MemoryDataBase()
@@ -36,6 +36,7 @@ public class MemoryDataBase
         _listOfDeposits = new List<Deposit>();
         _listOfPromotions = new List<Promotion>();
         _listOfUsers = new List<User>();
+        _listOfRatings = new List<Rating>();
     }
     
     public Administrator GetAdministrator() 
@@ -61,6 +62,11 @@ public class MemoryDataBase
     public List<Reservation> GetReservations()
     {
         return _listOfReservations;
+    }
+    
+    public List<Rating> GetRatings()
+    {
+        return _listOfRatings;
     }
 
     public List<Promotion> GetPromotions()
