@@ -2,6 +2,7 @@
 @using BusinessLogic
 @using DepoQuick.Domain
 @inject MemoryDataBase MemoryDataBase
+@inject NavigationManager NavigationManager
 
 <html lang="es">
   <head>
@@ -37,26 +38,32 @@
                                 </td>
                                 <td>-</td>
                             }
-                            else
+                            else if (reservation.GetState() == 1)
                             {
-                                @if (reservation.GetState() == 1)
+                                <td>
+                                    <button class="btn btn-success btn-sm">Aprobada</button>
+                                </td>
+                                <td>-</td>
+                            } else {
                                 {
                                     <td>
-                                        <button class="btn btn-success btn-sm">Aprobada</button>
+                                        <button class="btn btn-danger btn-sm">Rechazada</button>
                                     </td>
-                                    <td>-</td>
-                                }
-                                else
-                                {
-                                    @if (reservation.GetState() == -1)
-                                    {
-                                        <td>
-                                            <button class="btn btn-danger btn-sm">Rechazada</button>
-                                        </td>
-                                        <td>@reservation.GetMessage()</td>
-                                    }
+                                    <td>@reservation.GetMessage()</td>
                                 }
                             }
+                            @if (ReservationIsOver(reservation))
+                            {
+                                
+                                <td>
+                                    <div class="btn-group">
+                                        <button class="btn btn-primary btn-sm" @onclick="(() => GoToAddRatingPage(reservation))">Añadir valoración
+                                            <i class="fa fa-star"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                            }
+                            
                         </tr>
                     }
                 </tbody>
@@ -72,7 +79,6 @@
     private List<Reservation> _listOfReservations;
     private Client _client; 
     
-        
     protected override void OnInitialized()
     {
         _controller = new Controller(MemoryDataBase);
@@ -80,5 +86,16 @@
         _client = (Client)_controller.GetActiveUser();
 
         _listOfReservations = _client.GetReservations(); 
+    }
+    
+    private bool ReservationIsOver(Reservation reservation)
+    {
+        return reservation.GetState() == 1 && reservation.GetDateRange().GetFinalDate() < DateTime.Now;
+    }
+    
+    private void GoToAddRatingPage(Reservation reservation)
+    {
+        int reservationId = reservation.GetId();
+        NavigationManager.NavigateTo($"../RateReservation/{reservationId}");
     }
 }

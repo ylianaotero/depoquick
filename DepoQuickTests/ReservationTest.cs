@@ -152,7 +152,7 @@ public class ReservationTest
         Assert.AreEqual(stay,reservation.GetDateRange());
     }
     
-    [TestMethod]
+    /*[TestMethod]
     public void TestAddIdToAValidDeposit()
     {
         Client client = new Client("Maria Perez","maria@gmail.com","Maria1..");
@@ -168,7 +168,7 @@ public class ReservationTest
         reservation.SetId(id); 
         
         Assert.AreEqual(id, reservation.GetId());
-    }
+    }*/
     
     [TestMethod]
     public void TestTwoDepositsHaveDifferentIDs()

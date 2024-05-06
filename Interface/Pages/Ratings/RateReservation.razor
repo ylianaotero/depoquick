@@ -26,6 +26,19 @@
                 <input type="text" class="form-control" id="comment" name="comment" @bind="_comment">
             </div>
 
+           <div class="mb-3">
+               <label for="rating" class="form-label">Estrellas:</label>
+               <div style="display: flex; justify-content: flex-start;">
+                   <div class="rating">
+                       @for (int i = 1; i <= 5; i++)
+                       {
+                           <input type="radio" id="@($"star{i}")" name="rating" value="@i" class="rating__input" @onchange="((e) => UpdateStars(e.Value.ToString()))">
+                           <label for="@($"star{i}")" class="rating__label"><i class="fa fa-star"></i></label>
+                       }
+                   </div>
+               </div>
+           </div>
+
             <br/>
             <input @onclick="AttemptToRate" id="addNewRating" class="btn btn-primary" value="Guardar valoración">
             <input @onclick="GoToMyReservationsPage" id="cancelRating" class="btn btn-primary" value="Cancelar">
@@ -51,6 +64,11 @@
         
         HideAllAlerts();
     }
+    
+    private void UpdateStars(string value)
+    {
+        _stars = int.Parse(value);
+    }
 
     private void AttemptToRate()
     {
@@ -58,11 +76,11 @@
         
         if (IsAValidComment())
         {
-            RateReservation();
+            AddRating();
         } 
     }
     
-    private void RateReservation()
+    private void AddRating()
     {
         Rating rating = new Rating(_stars, _comment);
         _controller.RateReservation(_reservationToRate, rating);

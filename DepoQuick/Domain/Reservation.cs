@@ -14,11 +14,6 @@ public class Reservation
     private string _message;
     private int _state;
     private Rating _rating;
-    
-    public void SetId(int id)
-    {
-        _id = id; 
-    }
 
     public int GetId()
     {

@@ -26,11 +26,25 @@
     </style>
     
     <style>
-        .table td {
-            padding: 15px;
-            font-size: 16px;
-            color: #333;
-        }
+    .rating {
+        direction: rtl; 
+    }
+    
+    .rating__input {
+        display: none;
+    }
+    
+    .rating__label {
+        color: gray; 
+        font-size: 2em;
+        margin: 0 .5em; 
+        cursor: pointer;
+    }
+    
+    .rating__input:checked ~ .rating__label {
+        color: gold; 
+    }
+   
     </style>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="js/chartFunctions.js"></script>
