@@ -28,6 +28,12 @@ public class Rating
         return _comment; 
     }
 
+    public void UpdateRating(int newStars, string newComment)
+    {
+        _stars = newStars;
+        _comment = newComment;
+    }
+
     private bool RatingIsValid(int stars, String comment)
     {
         return StarsAreValid(stars) && CommentIsValid(comment); 
