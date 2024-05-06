@@ -1,0 +1,53 @@
+﻿@page "/Logs"
+@using BusinessLogic
+@using DepoQuick.Domain
+@inject MemoryDataBase MemoryDataBase
+@inject NavigationManager NavigationManager
+
+<html lang="es">
+    <head>  
+        <meta charset="utf-8"/> 
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+    </head>
+
+    <body>
+        <h3>¡Hola, @_loggedInUser.GetName()! Aquí puedes encontrar las acciones que ha tomado cada cliente.</h3>
+    
+    <table class="table table-striped table-hover">
+        <thead>
+        <tr>
+            <th>Nombre</th>
+            <th>Acción</th>
+            <th>Fecha</th>
+        </tr>
+        </thead>
+        
+        <tbody>
+        @foreach (User user in _listOfUsers)
+        {
+            @foreach((String,DateTime) log in user.GetLogs())
+            {
+                <tr>
+                    <td>@user.GetName()</td>
+                    <td>@log.Item1</td>
+                    <td>@log.Item2.ToString("dd/MM/yyyy")</td>
+                </tr>
+            }
+        }
+        </tbody>
+    </table>
+    </body>
+</html>
+
+@code {
+    private Controller _controller;
+    private List<User> _listOfUsers;
+    private User _loggedInUser;
+    private List<(String, DateTime)> _logs;
+    protected override void OnInitialized()
+    {
+        _controller = new Controller(MemoryDataBase);
+        _loggedInUser = _controller.GetActiveUser();
+        _listOfUsers = _controller.GetUsers();
+    }
+}
