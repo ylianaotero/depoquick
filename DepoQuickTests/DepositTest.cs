@@ -716,5 +716,17 @@ public class DepositTest
         
         Assert.AreEqual(expectedAverageRating, newDeposit.GetAverageRating());
     }
+    
+    [TestMethod]
+    public void TestGetAverageRatingWithNoRatings()
+    {
+        char area = 'a';
+        String size = "Mediano";
+        bool airConditioning = true;
+
+        Deposit newDeposit = new Deposit(area, size, airConditioning);
+        
+        Assert.AreEqual(0, newDeposit.GetAverageRating());
+    }
 
 }
