@@ -277,4 +277,18 @@ public class Deposit
     {
         return _reservations;
     }
+    
+    public double GetAverageRating()
+    {
+        if (_ratings.Count == 0)
+        {
+            return 0; 
+        }
+        double sum = 0; 
+        foreach (var rating in _ratings)
+        {
+            sum += rating.GetStars(); 
+        }
+        return sum / _ratings.Count; 
+    }
 }
