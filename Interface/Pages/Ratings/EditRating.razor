@@ -1,0 +1,113 @@
+@page "/RateReservation/{Id:int}" 
+@using BusinessLogic
+@using DepoQuick.Domain
+@inject MemoryDataBase MemoryDataBase
+@inject NavigationManager NavigationManager
+
+<html lang="es">
+    <head>
+        <meta charset="utf-8"/>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+    </head>
+
+    <body>
+        <h3>Dejar valoración</h3>
+
+        @if (_showAlertComment)
+        {
+            <div class="alert alert-danger" role="alert">
+                El comentario debe tener entre 1 y 500 caracteres. Por favor inténtalo de nuevo.
+            </div>
+        }
+
+        <form action="#" method="POST">
+            <div class="mb-3">
+                <label for="label" class="form-label">Comentario:</label>
+                <input type="text" class="form-control" id="comment" name="comment" @bind="_comment">
+            </div>
+
+           <div class="mb-3">
+               <label for="rating" class="form-label">Estrellas:</label>
+               <div style="display: flex; justify-content: flex-start;">
+                   <div class="rating">
+                       @for (int i = 1; i <= 5; i++)
+                       {
+                           <input type="radio" id="@($"star{i}")" name="rating" value="@i" class="rating__input" @onchange="((e) => UpdateStars(e.Value.ToString()))">
+                           <label for="@($"star{i}")" class="rating__label"><i class="fa fa-star"></i></label>
+                       }
+                   </div>
+               </div>
+           </div>
+
+            <br/>
+            <input @onclick="AttemptToRate" id="addNewRating" class="btn btn-primary" value="Guardar valoración">
+            <input @onclick="GoToMyReservationsPage" id="cancelRating" class="btn btn-primary" value="Cancelar">
+        </form>
+    </body>
+</html>
+
+@code {
+    [Parameter] public int Id { get; set; }
+
+    private Controller _controller;
+    private Reservation _reservationToRate;
+    private string _comment;
+    private int _stars;
+
+    private bool _showAlertComment;
+    
+    protected override void OnParametersSet()
+    {
+        _controller = new Controller(MemoryDataBase);
+        _reservationToRate = _controller.GetReservation(Id);
+        _showAlertComment = false;
+        
+        HideAllAlerts();
+    }
+    
+    private void UpdateStars(string value)
+    {
+        _stars = int.Parse(value);
+    }
+
+    private void AttemptToRate()
+    {
+        ShowAlerts();
+        
+        if (IsAValidComment())
+        {
+            AddRating();
+        } 
+    }
+    
+    private void AddRating()
+    {
+        Rating rating = new Rating(_stars, _comment);
+        _controller.RateReservation(_reservationToRate, rating);
+    }
+    
+    private void GoToMyReservationsPage()
+    {
+        NavigationManager.NavigateTo("/GestionOfReservsClient");
+    }
+    
+    private void ShowAlerts()
+    {
+        HideAllAlerts();
+        
+        if (!IsAValidComment())
+        {
+            _showAlertComment = true;
+        } 
+    }
+    
+    private void HideAllAlerts()
+    {
+        _showAlertComment = false;
+    }
+    
+    private bool IsAValidComment()
+    {
+        return !string.IsNullOrEmpty(_comment) && _comment.Length <= 500;
+    }
+}

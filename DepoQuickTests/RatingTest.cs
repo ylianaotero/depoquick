@@ -77,4 +77,25 @@ public class RatingTest
         Assert.AreEqual(stars, newRating.GetStars());
         Assert.AreEqual(comment, newRating.GetComment());
     }
+    
+    [TestMethod]
+    public void TestUpdateRating()
+    {
+        int stars = 1;
+        String comment = " "; 
+        
+        Rating newRating = new Rating(stars, comment); 
+        
+        Assert.IsNotNull(newRating);
+        Assert.AreEqual(stars, newRating.GetStars());
+        Assert.AreEqual(comment, newRating.GetComment());
+        
+        int newStars = 5;
+        String newComment = "new comment"; 
+        
+        newRating.UpdateRating(newStars, newComment);
+        
+        Assert.AreEqual(newStars, newRating.GetStars());
+        Assert.AreEqual(newComment, newRating.GetComment());
+    }
 }
