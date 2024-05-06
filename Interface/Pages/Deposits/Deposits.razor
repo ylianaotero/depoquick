@@ -82,6 +82,12 @@
                 {
                     <td>@BoolToString(deposit.HasUpcomingReservations())</td>
                 }
+                <td>
+                    <div class="btn-group">
+                        <button class="btn btn-info" @onclick="(() => GoToDepositRatingsPage(deposit))">Ver valoraciones
+                        </button>
+                    </div>
+                </td>
                 @if (_loggedInUser.IsAdministrator())
                 {
                     <td>
@@ -179,5 +185,11 @@
         {
             _showAlertSomethingWentWrong = true;
         }
+    }
+    
+    private void GoToDepositRatingsPage(Deposit deposit)
+    {
+        int depositId = deposit.GetId();
+        NavigationManager.NavigateTo($"/DepositRatings/{depositId}");
     }
 }

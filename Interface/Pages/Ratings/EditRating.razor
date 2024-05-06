@@ -1,4 +1,4 @@
-@page "/RateReservation/{Id:int}" 
+@page "/EditRating/{Id:int}" 
 @using BusinessLogic
 @using DepoQuick.Domain
 @inject MemoryDataBase MemoryDataBase
@@ -11,7 +11,7 @@
     </head>
 
     <body>
-        <h3>Dejar valoración</h3>
+        <h3>Editar valoración</h3>
 
         @if (_showAlertComment)
         {
@@ -53,6 +53,7 @@
     private Reservation _reservationToRate;
     private string _comment;
     private int _stars;
+    Rating _ratingToEdit;
 
     private bool _showAlertComment;
     
@@ -60,7 +61,9 @@
     {
         _controller = new Controller(MemoryDataBase);
         _reservationToRate = _controller.GetReservation(Id);
-        _showAlertComment = false;
+        _ratingToEdit = _reservationToRate.GetRating();
+        _comment = _ratingToEdit.GetComment();
+        _stars = _ratingToEdit.GetStars();
         
         HideAllAlerts();
     }
@@ -76,14 +79,14 @@
         
         if (IsAValidComment())
         {
-            AddRating();
+            UpdateRating();
         } 
     }
     
-    private void AddRating()
+    private void UpdateRating()
     {
-        Rating rating = new Rating(_stars, _comment);
-        _controller.RateReservation(_reservationToRate, rating);
+        _ratingToEdit.UpdateRating(_stars, _comment);
+        GoToMyReservationsPage();
     }
     
     private void GoToMyReservationsPage()

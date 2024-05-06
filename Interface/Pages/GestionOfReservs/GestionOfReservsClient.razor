@@ -54,14 +54,27 @@
                             }
                             @if (ReservationIsOver(reservation))
                             {
+                                if (reservation.GetRating() == null)
+                                {
+                                    <td>
+                                        <div class="btn-group">
+                                            <button class="btn btn-primary btn-sm" @onclick="(() => GoToAddRatingPage(reservation))">Añadir valoración
+                                                <i class="fa fa-star"></i>
+                                            </button>
+                                        </div>
+                                    </td>
+                                }
+                                else
+                                {
+                                    <td>
+                                        <div class="btn-group">
+                                            <button class="btn btn-primary btn-sm" @onclick="(() => GoToEditRatingPage(reservation))">Editar valoración
+                                                <i class="fa fa-star"></i>
+                                            </button>
+                                        </div>
+                                    </td>
+                                }
                                 
-                                <td>
-                                    <div class="btn-group">
-                                        <button class="btn btn-primary btn-sm" @onclick="(() => GoToAddRatingPage(reservation))">Añadir valoración
-                                            <i class="fa fa-star"></i>
-                                        </button>
-                                    </div>
-                                </td>
                             }
                             
                         </tr>
@@ -97,5 +110,11 @@
     {
         int reservationId = reservation.GetId();
         NavigationManager.NavigateTo($"../RateReservation/{reservationId}");
+    }
+    
+    private void GoToEditRatingPage(Reservation reservation)
+    {
+        int reservationId = reservation.GetId();
+        NavigationManager.NavigateTo($"../EditRating/{reservationId}");
     }
 }

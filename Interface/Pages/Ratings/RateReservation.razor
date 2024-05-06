@@ -19,6 +19,12 @@
                 El comentario debe tener entre 1 y 500 caracteres. Por favor inténtalo de nuevo.
             </div>
         }
+        @if (_showAlertStars)
+        {
+            <div class="alert alert-danger" role="alert">
+                Debes seleccionar al menos una estrella. Por favor inténtalo de nuevo.
+            </div>
+        }
 
         <form action="#" method="POST">
             <div class="mb-3">
@@ -29,13 +35,13 @@
            <div class="mb-3">
                <label for="rating" class="form-label">Estrellas:</label>
                <div style="display: flex; justify-content: flex-start;">
-                   <div class="rating">
-                       @for (int i = 1; i <= 5; i++)
-                       {
-                           <input type="radio" id="@($"star{i}")" name="rating" value="@i" class="rating__input" @onchange="((e) => UpdateStars(e.Value.ToString()))">
-                           <label for="@($"star{i}")" class="rating__label"><i class="fa fa-star"></i></label>
-                       }
-                   </div>
+                  <div class="rating">
+                      @for (int i = 1; i <= 5; i++)
+                      {
+                          <input type="radio" id="@($"star{i}")" name="rating" value="@(6 - i)" class="rating__input" @onchange="((e) => UpdateStars(e.Value.ToString()))">
+                          <label for="@($"star{i}")" class="rating__label"><i class="fa fa-star"></i></label>
+                      }
+                  </div>
                </div>
            </div>
 
@@ -55,12 +61,14 @@
     private int _stars;
 
     private bool _showAlertComment;
+    private bool _showAlertStars;
     
     protected override void OnParametersSet()
     {
         _controller = new Controller(MemoryDataBase);
         _reservationToRate = _controller.GetReservation(Id);
-        _showAlertComment = false;
+        _comment = "";
+        _stars = 0;
         
         HideAllAlerts();
     }
@@ -74,7 +82,7 @@
     {
         ShowAlerts();
         
-        if (IsAValidComment())
+        if (IsAValidComment() && IsAValidNumberOfStars())
         {
             AddRating();
         } 
@@ -84,11 +92,12 @@
     {
         Rating rating = new Rating(_stars, _comment);
         _controller.RateReservation(_reservationToRate, rating);
+        GoToMyReservationsPage();
     }
     
     private void GoToMyReservationsPage()
     {
-        NavigationManager.NavigateTo("/GestionOfReservsClient");
+        NavigationManager.NavigateTo("../GestionOfReservsClient");
     }
     
     private void ShowAlerts()
@@ -98,16 +107,25 @@
         if (!IsAValidComment())
         {
             _showAlertComment = true;
-        } 
+        } else if (!IsAValidNumberOfStars())
+        {
+            _showAlertStars = true;
+        }
     }
     
     private void HideAllAlerts()
     {
         _showAlertComment = false;
+        _showAlertStars = false;
     }
     
     private bool IsAValidComment()
     {
         return !string.IsNullOrEmpty(_comment) && _comment.Length <= 500;
+    }
+    
+    private bool IsAValidNumberOfStars()
+    {
+        return _stars > 0 && _stars <= 5;
     }
 }
