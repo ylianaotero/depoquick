@@ -30,8 +30,11 @@ public class Rating
 
     public void UpdateRating(int newStars, string newComment)
     {
-        _stars = newStars;
-        _comment = newComment;
+        if (RatingIsValid(newStars, newComment))
+        {
+            _stars = newStars;
+            _comment = newComment;
+        }
     }
 
     private bool RatingIsValid(int stars, String comment)
