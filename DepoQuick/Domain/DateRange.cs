@@ -102,13 +102,13 @@ public class DateRange
 
     private bool EndDateIsLater(DateTime initialDate, DateTime finalDate)
     {
-        if (initialDate < finalDate)
+        if (initialDate.Date < finalDate.Date)
         {
-            return true; 
+            return true;
         }
         else
         {
-            return false; 
+            return false;
         }
     }
     

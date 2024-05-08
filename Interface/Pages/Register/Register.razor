@@ -21,8 +21,11 @@
 
                 @if (UserLoggedIn())
                 {
-                    <h3 class="text-center" style="color: #0a53be">Registrar cliente</h3>
-                    <p class="lead text-center">Aquí puedes registrar un cliente, como administrador, ingresando toda la información necesaria.</p>
+                    if (_controller.GetActiveUser().IsAdministrator())
+                    {
+                        <h3 class="text-center" style="color: #0a53be">Registrar cliente</h3>
+                        <p class="lead text-center">Aquí puedes registrar un cliente, como administrador, ingresando toda la información necesaria.</p>
+                    }
                 }
                 else
                 {
@@ -160,7 +163,10 @@
                             <div class="text-center">
                                 @if (UserLoggedIn())
                                 {
-                                    <button type="button" class="btn btn-primary mr-2" @onclick="TryToRegister">Registrar cliente</button>
+                                    if (_controller.GetActiveUser().IsAdministrator())
+                                    {
+                                        <button type="button" class="btn btn-primary mr-2" @onclick="TryToRegister">Registrar cliente</button>
+                                    }
                                 }
                                 else
                                 {
@@ -209,6 +215,7 @@
     protected override void OnInitialized()
     {
         _controller = new Controller(MemoryDataBase);
+        CleanForm();
         HideAllAlerts();
     }
     
@@ -319,7 +326,7 @@
         {
             _controller.RegisterAdministrator(_name, _email, _password, _passwordValidation); 
             
-            GoToIndex(); 
+            GoToIndex();
             
         }
         catch (AdministratorAlreadyExistsException alreadyExistsException)
@@ -341,10 +348,12 @@
             if (UserLoggedIn())
             {
                 _showAlertClientRegistered = true; 
+                CleanForm();
             }
             else
             {
-                GoToIndex(); 
+                GoToIndex();
+                CleanForm();
             }
             
         }
@@ -367,6 +376,14 @@
     private void GoToIndex()
     {
         NavigationManager.NavigateTo("/", forceLoad:true);
+    }
+
+    private void CleanForm()
+    {
+        _name = string.Empty;
+        _email = string.Empty;
+        _password = string.Empty;
+        _passwordValidation = string.Empty;
     }
     
 }
