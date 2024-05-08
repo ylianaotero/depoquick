@@ -57,8 +57,6 @@ public class DepositTest
         new Deposit(area, size, airConditioning);
     }
     
-
-    
     [TestMethod]
     public void TestAddRating()
     {
@@ -114,7 +112,7 @@ public class DepositTest
     }
         
     [TestMethod]
-    public void TestClculateSmallDepositPriceWithoutPromotionLessThan7DaysAndWithoutAirConditioning()
+    public void TestCalculateSmallDepositPriceWithoutPromotionLessThan7DaysAndWithoutAirConditioning()
     {
         char area = 'A';
         String size = "Pequeño";
@@ -133,7 +131,7 @@ public class DepositTest
     }
 
     [TestMethod]
-    public void TestClculateMediumDepositPriceWithoutPromotionLessThan7DaysAndWithoutAirConditioning()
+    public void TestCalculateMediumDepositPriceWithoutPromotionLessThan7DaysAndWithoutAirConditioning()
     {
         char area = 'A';
         String size = "Mediano";
@@ -152,7 +150,7 @@ public class DepositTest
     }
 
     [TestMethod]
-    public void TestClculateBigDepositPriceWithoutPromotionLessThan7DaysAndWithoutAirConditioning()
+    public void TestCalculateBigDepositPriceWithoutPromotionLessThan7DaysAndWithoutAirConditioning()
     {
         char area = 'A';
         String size = "Grande";
@@ -171,7 +169,7 @@ public class DepositTest
     }
 
     [TestMethod]
-    public void TestClculateBigDepositPriceWithoutPromotionFor7DaysAndWithoutAirConditioning()
+    public void TestCalculateBigDepositPriceWithoutPromotionFor7DaysAndWithoutAirConditioning()
     {
         char area = 'A';
         String size = "Grande";
@@ -194,7 +192,7 @@ public class DepositTest
     }
 
     [TestMethod]
-    public void TestClculateBigDepositPriceWithoutPromotionFor14DaysAndWithoutAirConditioning()
+    public void TestCalculateBigDepositPriceWithoutPromotionFor14DaysAndWithoutAirConditioning()
     {
         char area = 'A';
         String size = "Grande";
@@ -217,7 +215,7 @@ public class DepositTest
     }
 
     [TestMethod]
-    public void TestClculateBigDepositPriceWithoutPromotionForMoreThan14DaysAndWithoutAirConditioning()
+    public void TestCalculateBigDepositPriceWithoutPromotionForMoreThan14DaysAndWithoutAirConditioning()
     {
         char area = 'A';
         String size = "Grande";
@@ -240,7 +238,7 @@ public class DepositTest
     }
 
     [TestMethod]
-    public void TestClculateBigDepositPriceWithoutPromotionForMoreThan14DaysAndWithAirConditioning()
+    public void TestCalculateBigDepositPriceWithoutPromotionForMoreThan14DaysAndWithAirConditioning()
     {
         char area = 'A';
         String size = "Grande";
@@ -268,7 +266,7 @@ public class DepositTest
     }
 
     [TestMethod]
-    public void TestClculateBigDepositPriceWithoutValidPromotionForMoreThan14DaysAndWithAirConditioning()
+    public void TestCalculateBigDepositPriceWithoutValidPromotionForMoreThan14DaysAndWithAirConditioning()
     {
         double discountRate = 0.5;
         String label = "Ejemplo"; 
@@ -311,7 +309,7 @@ public class DepositTest
     }
 
     [TestMethod]
-    public void TestClculateBigDepositPriceWithValidPromotionForMoreThan14DaysAndWithAirConditioning()
+    public void TestCalculateBigDepositPriceWithValidPromotionForMoreThan14DaysAndWithAirConditioning()
     {
         double discountRate = 0.5;
         String label = "Ejemplo"; 
@@ -358,7 +356,7 @@ public class DepositTest
     }
 
     [TestMethod]
-    public void TestClculateBigDepositPriceWithTwoPromotionsOfForMoreThan14DaysAndWithAirConditioning()
+    public void TestCalculateBigDepositPriceWithTwoPromotionsOfForMoreThan14DaysAndWithAirConditioning()
     {
         double discountRate = 0.5;
         String label = "Ejemplo"; 
@@ -407,7 +405,7 @@ public class DepositTest
 
 
     [TestMethod]
-    public void TestClculateBigDepositPriceWithTwoPromotionsOfForMoreThan14DaysAndWithAirConditioningWithADiscountOf100()
+    public void TestCalculateBigDepositPriceWithTwoPromotionsOfForMoreThan14DaysAndWithAirConditioningWithADiscountOf100()
     {
         double discountRate = 0.45;
         String label = "Ejemplo"; 
