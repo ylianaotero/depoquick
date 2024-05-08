@@ -6,7 +6,14 @@
 
 <div class="top-row ps-3 navbar navbar-dark">
     <div class="container-fluid">
-        <a class="navbar-brand" href="Home">DepoQuick Menu</a>
+        @if (UserLoggedIn())
+        {
+            <a class="navbar-brand" href="Home">DepoQuick Menu</a>
+        }
+        else
+        {
+            <a class="navbar-brand" href="/">DepoQuick Menu</a>
+        }
     </div>
 </div>
 
