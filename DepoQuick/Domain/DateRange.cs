@@ -1,4 +1,4 @@
-﻿using DepoQuick.Domain.Exceptions.DateRangeExceptions;
+﻿using DepoQuick.Exceptions.DateRangeExceptions;
 
 namespace DepoQuick.Domain;
 

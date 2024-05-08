@@ -1,4 +1,4 @@
-﻿using DepoQuick.Domain.Exceptions.RatingException;
+﻿using DepoQuick.Exceptions.RatingException;
 
 namespace DepoQuick.Domain;
 

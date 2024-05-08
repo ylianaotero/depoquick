@@ -1,5 +1,5 @@
 using System.Text.RegularExpressions;
-using DepoQuick.Domain.Exceptions.UserExceptions;
+using DepoQuick.Exceptions.UserExceptions;
 
 namespace DepoQuick.Domain;
 

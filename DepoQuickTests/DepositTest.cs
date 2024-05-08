@@ -1,5 +1,5 @@
 using DepoQuick.Domain;
-using DepoQuick.Domain.Exceptions.DepositExceptions;
+using DepoQuick.Exceptions.DepositExceptions;
 
 namespace DepoQuickTests;
 

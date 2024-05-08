@@ -3,8 +3,8 @@
 @inject MemoryDataBase MemoryDataBase
 @using DepoQuick.Domain
 @using BusinessLogic
-@using DepoQuick.Domain.Exceptions.ControllerExceptions
-@using DepoQuick.Domain.Exceptions.DateRangeExceptions
+@using BusinessLogic.Exceptions.ControllerExceptions
+@using DepoQuick.Exceptions.DateRangeExceptions
 
 <html lang="es">
   <head>
@@ -20,7 +20,7 @@
       <br>
        <div class="alert alert-primary" role="alert">
         <h4 class="alert-heading">¿Estás seguro?</h4>
-        <p>Estas a punto de realizar la reservación del depósito @_deposit.GetId() que tiene un costo de: $ @_deposit.CalculatePrice(_date.NumberOfDays())</p>
+        <p>Estas a punto de realizar la reserva del depósito @_deposit.GetId() que tiene un costo de: $ @_deposit.CalculatePrice(_date.NumberOfDays())</p>
         <hr>
         <input @onclick="AddReservation" type="submit" class="btn btn-primary" value="Aceptar">
       </div>
@@ -51,7 +51,7 @@
     {
       <br>
        <div class="alert alert-danger" role="alert">
-         El Administrador no puede hacer una reservación
+         El Administrador no puede hacer una reserva
        </div>
       <br>
     }
@@ -96,7 +96,7 @@
         <input type="date" class="form-control"  id="finalDate" name="finalDate" @bind="_finalDate">
       </div>
       
-      <input @onclick="ShowAlert"  id="wantToMakeTheReservation" class="btn btn-primary" value="Hacer reservación">
+      <input @onclick="ShowAlert"  id="wantToMakeTheReservation" class="btn btn-primary" value="Reservar">
     </form>
   </body>
 </html>

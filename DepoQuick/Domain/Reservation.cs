@@ -1,4 +1,4 @@
-﻿using DepoQuick.Domain.Exceptions.ReservationExceptions;
+﻿using DepoQuick.Exceptions.ReservationExceptions;
 
 namespace DepoQuick.Domain;
 

@@ -1,9 +1,8 @@
 ﻿@page "/Register"
 @using BusinessLogic
+@using BusinessLogic.Exceptions.ControllerExceptions
 @using DepoQuick.Domain
-@using DepoQuick.Domain.Exceptions.AdministratorExceptions
-@using DepoQuick.Domain.Exceptions.MemoryDataBaseExceptions
-@using DepoQuick.Domain.Exceptions.UserExceptions
+@using DepoQuick.Exceptions.UserExceptions
 @using Microsoft.AspNetCore.Mvc.Infrastructure
 @inject MemoryDataBase MemoryDataBase
 @inject NavigationManager NavigationManager

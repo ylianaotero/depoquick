@@ -15,24 +15,7 @@ public class MemoryDataBase
 
     public MemoryDataBase()
     {
-       /* Client client = new Client("Maria Perez","maria@gmail.com","Maria1..");
-        Deposit deposit = new Deposit('A', "Pequeño", true, false);
-        Deposit deposit2 = new Deposit('C', "Pequeño", true, false);
-        DateTime dayIn = new DateTime(2024, 04, 07);
-        DateTime dayOut = new DateTime(2024, 04, 08);
-        DateRange stay = new DateRange(dayIn, dayOut);
-        Reservation reservation = new Reservation(deposit, client, stay);
-        Reservation reservation2 = new Reservation(deposit2, client, stay);
-        
-
-        reservation.SetSate(1);
-        reservation2.SetSate(1);*/
-        
-        _listOfReservations = new List<Reservation>()
-        /*{
-            reservation,reservation2,reservation
-        }*/;
-        
+       _listOfReservations = new List<Reservation>();
         _listOfDeposits = new List<Deposit>();
         _listOfPromotions = new List<Promotion>();
         _listOfUsers = new List<User>();

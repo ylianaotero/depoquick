@@ -10,4 +10,8 @@
       <ProjectReference Include="..\DepoQuick\DepoQuick.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+      <Folder Include="Exceptions\" />
+    </ItemGroup>
+
 </Project>
