@@ -1,0 +1,131 @@
+@page "/AddDeposit"
+@using BusinessLogic
+@using DepoQuick.Domain
+@inject MemoryDataBase MemoryDataBase
+@inject NavigationManager NavigationManager
+
+<html lang="es">
+    <head>
+      <meta charset="utf-8"/>
+      <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+    </head>
+
+    <body>
+        <h3>Agregar depósito</h3>
+
+    <form action="#" method="POST">
+        <div class="mb-3">
+            <label for="area" class="form-label">Seleccione un area:</label>
+            <br/>
+            <select @bind="_area">
+                <option value="A">Area A</option>
+                <option value="B">Area B</option>
+                <option value="C">Area C</option>
+                <option value="D">Area D</option>
+                <option value="E">Area E</option>
+            </select>
+        </div>
+        <div class="mb-3">
+            <label for="size" class="form-label">Seleccione un tamaño:</label>
+            <br/>
+            <select @bind="_size">
+                <option value="PEQUEÑO">Pequeño</option>
+                <option value="MEDIANO">Mediano</option>
+                <option value="GRANDE">Grande</option>
+            </select>
+        </div>
+        <div class="mb-3">
+            <label for="airConditioning" class="form-label">Climatización:</label>
+            <input type="checkbox" @bind="_airConditioning"/>
+        </div>
+        
+        <label for="deposits" class="form-label">Promociones: </label>
+        <div class="form-check">
+            <input class="form-check-input" type="checkbox" id="select-all" @onclick="() => SelectAllPromotions()" />
+            <label class="form-check-label" for="select-all">
+                Selecccionar todo
+            </label>
+        </div>
+        @foreach (var promotion in _promotions)
+        {
+            <div class="form-check">
+                <input class="form-check-input" type="checkbox" id="@promotion.GetLabel()" @onclick="() => TogglePromotionSelection(promotion)" checked="@IsSelected(promotion)"/>
+                <label class="form-check-label" for="@promotion.GetId()">
+                    Promoción @promotion.GetLabel() - Descuento del @(promotion.GetDiscountRate()*PercentageMultiplier)%
+                </label>
+            </div>
+        }
+        <br/>
+        <input @onclick="AddNewDeposit" id="addNewDeposit" class="btn btn-primary" value="Crear depósito">
+        <input @onclick="GoToDepositsPage" id="cancelAddingDeposit" class="btn btn-primary" value="Cancelar">
+    </form>
+      </body>
+</html> 
+
+@code {
+    private const double PercentageMultiplier = 100.0;
+    private Controller _controller;
+    private char _area;
+    private string _size;
+    private bool _airConditioning;
+    private List<Promotion> _promotions;
+    private List<Promotion> _selectedPromotions;
+    private bool _selectAllPromotions;
+    
+    
+    protected override void OnInitialized()
+    {
+        _controller = new Controller(MemoryDataBase);
+        
+        _area = 'A';
+        _size = "PEQUEÑO";
+        _airConditioning = false;
+        _selectedPromotions = new List<Promotion>();
+        _promotions = _controller.GetPromotions();
+        _selectAllPromotions = false;
+    }
+    
+    private void AddNewDeposit()
+    {
+        Deposit newDeposit = new Deposit(_area, _size, _airConditioning);
+        
+        _controller.AddDeposit(newDeposit, _selectedPromotions);
+
+        GoToDepositsPage();
+    }
+    
+    private void GoToDepositsPage()
+    {
+        NavigationManager.NavigateTo("/Deposits");
+    }
+    
+    void TogglePromotionSelection(Promotion promotion)
+    {
+        if (_selectedPromotions.Contains(promotion))
+        {
+            _selectedPromotions.Remove(promotion);
+        }
+        else
+        {
+            _selectedPromotions.Add(promotion);
+        }
+    }
+    
+    bool IsSelected(Promotion promotion)
+    {
+        return _selectedPromotions.Contains(promotion);
+    }
+
+    void SelectAllPromotions()
+    {
+        _selectAllPromotions = !_selectAllPromotions;
+        if (_selectAllPromotions)
+        {
+            _selectedPromotions = new List<Promotion>(_promotions);
+        }
+        else
+        {
+            _selectedPromotions.Clear();
+        }
+    }   
+}

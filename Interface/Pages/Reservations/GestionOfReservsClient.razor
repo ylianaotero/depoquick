@@ -1,0 +1,120 @@
+﻿@page "/GestionOfReservsClient"
+@using BusinessLogic
+@using DepoQuick.Domain
+@inject MemoryDataBase MemoryDataBase
+@inject NavigationManager NavigationManager
+
+<html lang="es">
+  <head>
+      <meta charset="utf-8"/>
+      <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+  </head>
+
+    <body>
+
+        <h3>¡Hola, @_client.GetName()! Aquí puedes revisar tus reservaciones.</h3>
+
+        <table class="table">
+                <thead>
+                    <tr>
+                        <th>Depósito</th>
+                        <th>Desde</th>
+                        <th>Hasta</th>
+                        <th>Estado</th>
+                        <th>Comentario</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (Reservation reservation in _listOfReservations)
+                    {
+                        <tr>
+                            <td>Depósito @reservation.GetDeposit().GetId()</td>
+                            <td>@reservation.GetDateRange().GetInitialDate().ToString("dd/MM/yyyy")</td>
+                            <td>@reservation.GetDateRange().GetFinalDate().ToString("dd/MM/yyyy")</td>
+                            @if (reservation.GetState() == 0)
+                            {
+                                <td>
+                                    <button class="btn btn-secondary btn-sm">En espera</button>
+                                </td>
+                                <td>-</td>
+                            }
+                            else if (reservation.GetState() == 1)
+                            {
+                                <td>
+                                    <button class="btn btn-success btn-sm">Aprobada</button>
+                                </td>
+                                <td>-</td>
+                            } else {
+                                {
+                                    <td>
+                                        <button class="btn btn-danger btn-sm">Rechazada</button>
+                                    </td>
+                                    <td>@reservation.GetMessage()</td>
+                                }
+                            }
+                            @if (ReservationIsOver(reservation))
+                            {
+                                if (reservation.GetRating() == null)
+                                {
+                                    <td>
+                                        <div class="btn-group">
+                                            <button class="btn btn-primary btn-sm" @onclick="(() => GoToAddRatingPage(reservation))">Añadir valoración
+                                                <i class="fa fa-star"></i>
+                                            </button>
+                                        </div>
+                                    </td>
+                                }
+                                else
+                                {
+                                    <td>
+                                        <div class="btn-group">
+                                            <button class="btn btn-primary btn-sm" @onclick="(() => GoToEditRatingPage(reservation))">Editar valoración
+                                                <i class="fa fa-star"></i>
+                                            </button>
+                                        </div>
+                                    </td>
+                                }
+                                
+                            }
+                            
+                        </tr>
+                    }
+                </tbody>
+            </table>
+    </body>
+</html>
+
+
+
+
+@code {
+    private Controller _controller;
+    private List<Reservation> _listOfReservations;
+    private Client _client; 
+    
+    protected override void OnInitialized()
+    {
+        _controller = new Controller(MemoryDataBase);
+        
+        _client = (Client)_controller.GetActiveUser();
+
+        _listOfReservations = _client.GetReservations(); 
+    }
+    
+    private bool ReservationIsOver(Reservation reservation)
+    {
+        return reservation.GetState() == 1 && reservation.GetDateRange().GetFinalDate() < DateTime.Now;
+    }
+    
+    private void GoToAddRatingPage(Reservation reservation)
+    {
+        int reservationId = reservation.GetId();
+        NavigationManager.NavigateTo($"../RateReservation/{reservationId}");
+    }
+    
+    private void GoToEditRatingPage(Reservation reservation)
+    {
+        int reservationId = reservation.GetId();
+        NavigationManager.NavigateTo($"../EditRating/{reservationId}");
+    }
+}

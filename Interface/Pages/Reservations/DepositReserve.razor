@@ -1,0 +1,258 @@
+﻿@page "/DepositReserve"
+
+@inject MemoryDataBase MemoryDataBase
+@using DepoQuick.Domain
+@using BusinessLogic
+@using BusinessLogic.Exceptions.ControllerExceptions
+@using DepoQuick.Exceptions.DateRangeExceptions
+
+<html lang="es">
+  <head>
+      <meta charset="utf-8"/>
+      <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+  </head>
+
+  <body>
+    <h3>Realizar reserva de un depósito</h3>
+
+    @if (_showAlertPrice)
+    {
+      <br>
+       <div class="alert alert-primary" role="alert">
+        <h4 class="alert-heading">¿Estás seguro?</h4>
+        <p>Estas a punto de realizar la reserva del depósito @_deposit.GetId() que tiene un costo de: $ @_deposit.CalculatePrice(_date.NumberOfDays())</p>
+        <hr>
+        <input @onclick="AddReservation" type="submit" class="btn btn-primary" value="Aceptar">
+      </div>
+      <br>
+    }
+
+    @if (_showAlertReservationMade)
+    {
+      <div class="alert alert-success" role="alert">
+        <h4 class="alert-heading"> ¡Reserva realizada!</h4>
+        <p>¡Gracias por tu reserva! Estamos procesando tu solicitud y te contactaremos pronto para confirmarla. Mientras tanto, puedes revisar el estado de tu reserva en la sección de Gestión de Reservas.</p>
+        <hr>
+        <p class="mb-0">¡Gracias por elegirnos!</p>
+      </div>
+    }
+
+
+    @if (_showAlertInvalidDeposit)
+    {
+      <br>
+       <div class="alert alert-danger" role="alert">
+         ¡Depósito inválido, intente de nuevo!
+       </div>
+      <br>
+    }
+
+    @if (_showAlertAnAdministratorCantMakeAReservation)
+    {
+      <br>
+       <div class="alert alert-danger" role="alert">
+         El Administrador no puede hacer una reserva
+       </div>
+      <br>
+    }
+
+    @if (_showAlertInvalidDate)
+    {
+      <br>
+       <div class="alert alert-danger" role="alert">
+         ¡Fecha inválida, la fecha inicial debe ser anterior a la fecha final!
+       </div>
+      <br>
+    }
+    @if (_showAlertUnavailableDeposit)
+    {
+      <br>
+       <div class="alert alert-danger" role="alert">
+          ¡El depósito seleccionado no está disponible en el rango de fechas seleccionado!
+       </div>
+      <br>
+    }
+
+
+    <form action="#" method="POST">
+      <div class="mb-3">
+        <label for="deposit" class="form-label">Seleccionar depósito que desea reservar:</label>
+        <select class="form-select" id="deposit" name="deposit" @onchange="HandleDepositChange">
+          <option value=" ">Seleccionar depósito</option>
+          @foreach (Deposit deposit in _listOfDeposits)
+          {
+            <option value="@deposit.GetId()">Depósito @deposit.GetId()</option>
+          }
+        </select>
+      </div>
+
+      <div class="mb-3">
+        <label for="initialDate" class="form-label">Desde:</label>
+        <input type="date" class="form-control" id="initialDate" name="initialDate" @bind="_initialDate">
+      </div>
+
+      <div class="mb-3">
+        <label for="finalDate" class="form-label">Hasta:</label>
+        <input type="date" class="form-control"  id="finalDate" name="finalDate" @bind="_finalDate">
+      </div>
+      
+      <input @onclick="ShowAlert"  id="wantToMakeTheReservation" class="btn btn-primary" value="Reservar">
+    </form>
+  </body>
+</html>
+
+
+
+@code {
+  private Controller _controller;
+  private List<Deposit> _listOfDeposits;
+
+  private bool _showAlertPrice;
+  private bool _showAlertInvalidDeposit; 
+  private bool _showAlertInvalidDate;
+  private bool _showAlertAnAdministratorCantMakeAReservation;
+  private bool _showAlertReservationMade;
+  private bool _showAlertUnavailableDeposit;
+  
+  private Deposit _deposit; 
+  private Client _client;
+  private DateRange _date;
+
+  private DateTime _initialDate = DateTime.Today.Date;
+  private DateTime _finalDate = DateTime.Today.Date;
+  
+  
+  protected override void OnInitialized()
+  {
+    _controller = new Controller(MemoryDataBase);
+    _listOfDeposits = _controller.GetDeposits(); 
+    HideAllAlerts();
+    
+    _deposit = null; 
+
+    _initialDate = DateTime.Today.Date;
+    _finalDate = DateTime.Today.Date;
+    _client = (Client)_controller.GetActiveUser();
+  }
+
+  private void ShowAlert()
+  {
+    HideAllAlerts(); 
+    
+    if(IsAValidDate())
+    {
+      if(IsAValidDeposit())
+      {
+        if (IsAClient())
+        {
+          if (DepositIsAvailableInDateRange())
+          {
+            _showAlertPrice = true;
+          }
+          else
+          {
+            _showAlertUnavailableDeposit = true;
+          }
+        }
+        else
+        {
+          _showAlertAnAdministratorCantMakeAReservation = true;
+        }
+      }
+      else
+      {
+        _showAlertInvalidDeposit = true; 
+      }
+    }
+    else
+    {
+      _showAlertInvalidDate = true;
+    }
+
+  }
+
+  private bool IsAClient()
+  {
+    return !_controller.GetActiveUser().IsAdministrator(); 
+  }
+
+  private bool IsAValidDeposit()
+  {
+    return _deposit != null; 
+  }
+
+  private bool IsAValidDate()
+  {
+    try
+    {
+      _date = new DateRange(_initialDate, _finalDate);
+      return true;
+    }
+    catch (InvalidDateRangeException invalidDateRangeException)
+    {
+      return false;
+    }
+    catch (EmptyDateRangeException emptyDateRangeException)
+    {
+      return false;
+    }
+  }
+
+  private bool DepositIsAvailableInDateRange()
+  {
+    return !_deposit.IsReserved(_date);
+  }
+
+  private void HideAllAlerts()
+  {
+    _showAlertPrice = false;
+    _showAlertInvalidDeposit = false; 
+    _showAlertInvalidDate = false;
+    _showAlertAnAdministratorCantMakeAReservation = false; 
+    _showAlertReservationMade = false; 
+  }
+  
+  private void HandleDepositChange(ChangeEventArgs args)
+  {
+    HideAllAlerts();
+    
+    if (ADepositIsSelected(args))
+    {
+      SaveDepositInformation(args); 
+    }
+    else
+    {
+      _deposit = null; 
+      _showAlertInvalidDeposit = true;
+    }
+  }
+
+  private void SaveDepositInformation(ChangeEventArgs args)
+  {
+    int id = int.Parse(args.Value.ToString());
+    try
+    {
+      _deposit = _controller.GetDeposit(id);
+    }
+    catch (DepositNotFoundException exceptionDepositNotFound)
+    {
+      _showAlertInvalidDeposit = true; 
+    }
+  }
+
+  private bool ADepositIsSelected(ChangeEventArgs args)
+  {
+    return !string.IsNullOrEmpty(args.Value.ToString()) && int.TryParse(args.Value.ToString(), out int id); 
+  }
+
+  private void AddReservation()
+  {
+      Reservation newReservation = new Reservation(_deposit,  _client , _date); 
+      
+      _controller.AddReservation(newReservation);
+      
+      HideAllAlerts(); 
+      _showAlertReservationMade = true; 
+  }
+  
+}

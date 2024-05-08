@@ -1,0 +1,45 @@
+﻿@page "/Home"
+@using BusinessLogic
+@using DepoQuick.Domain
+@inject MemoryDataBase MemoryDataBase
+
+
+<div class="container-fluid mt-4">
+    <div class="row">
+        <div class="col">
+            @if (_loggedUser != null)
+            {
+                <h1 class="text-center" style="color: #0a53be"><strong>¡Bienvenido/a @_loggedUser.GetName()!</strong></h1>
+                @if (_loggedUserIsAdmin)
+                {
+                    <p class="lead text-center">Usted ha ingresado como administrador</p>
+                }
+                else
+                {
+                    <p class="lead text-center">Usted ha ingresado como cliente</p>
+                }
+                <p class="lead text-center">DepoQuick es una empresa especializada en el alquiler de depósitos para satisfacer tus necesidades de almacenamiento. Ofrecemos soluciones flexibles y seguras para tus bienes.</p>
+            }
+        </div>
+    </div>
+</div>
+
+@code {
+    private Controller _controller;
+
+    private User _loggedUser;
+    private bool _loggedUserIsAdmin; 
+    
+    protected override void OnInitialized()
+    {
+        _controller = new Controller(MemoryDataBase);
+        _loggedUser = _controller.GetActiveUser();
+        if (_loggedUser != null)
+        {
+            _loggedUserIsAdmin = _loggedUser.IsAdministrator(); 
+        }
+        
+    }
+    
+    
+}

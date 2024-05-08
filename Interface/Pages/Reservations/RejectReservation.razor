@@ -1,0 +1,112 @@
+﻿@page "/Reject/{id:int}"
+@inject MemoryDataBase MemoryDataBase
+@inject NavigationManager NavigationManager
+@using BusinessLogic
+@using BusinessLogic.Exceptions.ControllerExceptions
+@using DepoQuick.Domain
+@using DepoQuick.Exceptions.ReservationExceptions
+
+<html lang="es">
+  <head>
+      <meta charset="utf-8"/>
+      <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+  </head>
+
+    <body>
+        <h3>Rechazar reservación</h3>
+
+        @if (_showAlertReservationNotFound)
+        {
+            <br>
+            <div class="alert alert-danger" role="alert">
+                Lo sentimos, no encontramos ningún depósito con ese ID. No podemos aprobar ni rechazar. ¡Por favor, inténtalo de nuevo!
+            </div>
+            <br>
+        }
+
+        @if (_showAlertInvalidComment)
+          {
+            <br>
+             <div class="alert alert-danger" role="alert">
+               Comentario inválido. Debe tener menos de 300 caracteres.
+             </div>
+            <br>
+          }
+
+        @if (_showAlertEmptyComment)
+          {
+            <br>
+             <div class="alert alert-danger" role="alert">
+               Comentario inválido. No puede estar vacío.
+             </div>
+            <br>
+          }
+
+        <form>
+            <div class="form-group">
+                <br>
+                <label>Por favor, especifique el motivo de rechazo para la reserva.</label>
+                <br> 
+                <textarea @bind="_comment" class="form-control" id="reservationText" name="reservationText" rows="4" cols="50"></textarea>
+                <br>
+            </div>
+        </form>
+        <button @onclick="() => RejectTheReservation()" class="btn btn-danger btn-sm">Rechazar</button>
+        <button @onclick="() => CancelRejection()" class="btn btn-primary btn-sm">Cancelar</button>
+    </body>
+</html>
+
+
+@code {
+    private NavigationManager _navigationManager;
+    
+    private Controller _controller;
+    private Reservation _currentReservation; 
+
+    private String _comment;
+    
+    private bool _showAlertReservationNotFound; 
+    private bool _showAlertInvalidComment;
+    private bool _showAlertEmptyComment; 
+    
+    [Parameter]
+    public int Id { get; set; }
+
+    protected override void OnInitialized()
+    {
+        _controller = new Controller(MemoryDataBase);
+        _currentReservation = _controller.GetReservation(Id);
+        _navigationManager = NavigationManager; 
+    }
+    
+    private void RejectTheReservation()
+    {
+        try
+        {
+            _controller.RejectReservation(_currentReservation, _comment);
+            _navigationManager.NavigateTo("/GestionOfReservsAdmin");
+        }
+        catch (ReservationNotFoundException exceptionReservationNotFound)
+        {
+            _showAlertReservationNotFound = true;
+
+        }
+        catch (ReservationMessageHasMoreThan300CharactersException reservationMessageHasMoreThan300CharactersException)
+        {
+            _showAlertInvalidComment = true;
+        }
+        catch (ReservationWithEmptyMessageException reservationWithEmptyMessageException)
+        {
+            _showAlertEmptyComment = true;
+        }
+
+    }
+    
+    private void CancelRejection()
+    {
+        _controller.CancelRejectionOfReservation(_currentReservation);
+        _navigationManager.NavigateTo("/GestionOfReservsAdmin");
+    }
+    
+}
+    
