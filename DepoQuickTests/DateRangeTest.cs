@@ -1,5 +1,5 @@
 using DepoQuick.Domain;
-using DepoQuick.Domain.Exceptions.DateRangeExceptions;
+using DepoQuick.Exceptions.DateRangeExceptions;
 
 namespace DepoQuickTests;
 

@@ -1,5 +1,5 @@
 using DepoQuick.Domain;
-using DepoQuick.Domain.Exceptions.RatingException;
+using DepoQuick.Exceptions.RatingException;
 
 namespace DepoQuickTests;
 

@@ -1,7 +1,5 @@
-﻿using DepoQuick.Domain;
-using DepoQuick.Domain.Exceptions.AdministratorExceptions;
-using DepoQuick.Domain.Exceptions.ControllerExceptions;
-using DepoQuick.Domain.Exceptions.MemoryDataBaseExceptions;
+﻿using BusinessLogic.Exceptions.ControllerExceptions;
+using DepoQuick.Domain;
 
 namespace BusinessLogic;
 
@@ -16,149 +14,125 @@ public class Controller
     
     public void AddDeposit(Deposit deposit, List<Promotion> promotions)
     {
-        _memoryDataBase.GetDeposits().Add(deposit);
-        foreach (Promotion promotion in promotions)
+        if (GetActiveUser().IsAdministrator())
         {
-            deposit.AddPromotion(promotion);
-            promotion.AddDeposit(deposit);
-        }
-    }
-    
-    public Deposit GetDeposit(int id)
-    {
-        Deposit deposit = SearchDeposit(id); 
-        if (deposit == null)
-        {
-            throw new DepositNotFoundException("Deposito no encontrado"); 
-        }
-        else
-        {
-            return deposit; 
-        }
-    }
-    
-
-    public Deposit SearchDeposit(int id)
-    {
-        return _memoryDataBase.GetDeposits().FirstOrDefault(deposit => deposit.GetId() == id);
-    }
-    
-    public Reservation GetReservation(int id)
-    {
-        Reservation reservation = SearchReservation(id); 
-        if (reservation == null)
-        {
-            throw new ReservationNotFoundException("Reservacion no encontrada"); 
-        }
-        else
-        {
-            return reservation; 
-        }
-    }
-    
-    private Reservation SearchReservation(int id)
-    {
-        return _memoryDataBase.GetReservations().FirstOrDefault(reservation => reservation.GetId() == id);
-    }
-
-    public void AddReservation(Reservation reservation)
-    {
-        _memoryDataBase.GetReservations().Add(reservation);
-        Client client = reservation.GetClient();
-        client.AddReservation(reservation);
-
-    }
-    
-    public List<Reservation> GetReservations()
-    {
-        return _memoryDataBase.GetReservations();
-    }
-
-    public void AddPromotion(Promotion promotion, List<Deposit> deposits)
-    {
-        _memoryDataBase.GetPromotions().Add(promotion);
-        foreach (Deposit deposit in deposits)
-        {
-            promotion.AddDeposit(deposit);
-            deposit.AddPromotion(promotion);
-        }
-    }
-
-    public Promotion GetPromotion(int id)
-    {
-        Promotion promotion = SearchPromotion(id);
-        if (promotion == null)
-        {
-            throw new PromotionNotFoundException("Promoción no encontrada.");
-        }
-        return promotion;
-    }
-
-    public void UpdatePromotionData(Promotion promotion, string label, double discountRate, DateRange validityDate)
-    {
-        promotion.SetLabel(label);
-        promotion.SetDiscountRate(discountRate);
-        promotion.SetValidityDate(validityDate);
-    }
-    
-    public void UpdatePromotionDeposits(Promotion promotion, List<Deposit> deposits)
-    {
-        List<Deposit> oldDeposits = promotion.GetDeposits();
-        List<Deposit> depositsToRemove = new List<Deposit>();
-        
-        foreach (var oldDeposit in oldDeposits)
-        {
-            if (!deposits.Contains(oldDeposit))
-            {
-                oldDeposit.RemovePromotion(promotion);
-                depositsToRemove.Add(oldDeposit);
-            }
-        }
-        
-        foreach (var deposit in depositsToRemove)
-        {
-            promotion.RemoveDeposit(deposit);
-        }
-        
-        foreach (var deposit in deposits)
-        {
-            if (!oldDeposits.Contains(deposit))
+            GetDeposits().Add(deposit);
+            foreach (Promotion promotion in promotions)
             {
                 deposit.AddPromotion(promotion);
                 promotion.AddDeposit(deposit);
             }
         }
-    }
-    
-    public List<Promotion> GetPromotions()
-    {
-        return _memoryDataBase.GetPromotions();
+        else
+        {
+            throw new ActionRestrictedToAdministratorException("Sólo el administrador puede agregar depositos");
+        }
+        
     }
 
-    private Promotion SearchPromotion(int id)
+    public void AddReservation(Reservation reservation)
     {
-        return _memoryDataBase.GetPromotions().Find(p => p.GetId() == id);
+        GetReservations().Add(reservation);
+        Client client = reservation.GetClient();
+        client.AddReservation(reservation);
+
+    }
+
+    public void AddPromotion(Promotion promotion, List<Deposit> deposits)
+    {
+        if (GetActiveUser().IsAdministrator())
+        {
+            GetPromotions().Add(promotion);
+            foreach (Deposit deposit in deposits)
+            {
+                promotion.AddDeposit(deposit);
+                deposit.AddPromotion(promotion);
+            }   
+        }
+        else
+        {
+            throw new ActionRestrictedToAdministratorException("Solo el administrador puede registrar promociones");
+        }
+    }
+
+    public void UpdatePromotionData(Promotion promotion, string label, double discountRate, DateRange validityDate)
+    {
+        if (GetActiveUser().IsAdministrator())
+        {
+            promotion.SetLabel(label);
+            promotion.SetDiscountRate(discountRate);
+            promotion.SetValidityDate(validityDate);
+        }
+        else
+        {
+            throw new ActionRestrictedToAdministratorException(
+                "Solo el administrador puede editar la información de las promociones");
+        }
+        
+    }
+    
+    public void UpdatePromotionDeposits(Promotion promotion, List<Deposit> deposits)
+    {
+        if (GetActiveUser().IsAdministrator())
+        {
+            List<Deposit> oldDeposits = promotion.GetDeposits();
+            List<Deposit> depositsToRemove = new List<Deposit>();
+        
+            foreach (var oldDeposit in oldDeposits)
+            {
+                if (!deposits.Contains(oldDeposit))
+                {
+                    oldDeposit.RemovePromotion(promotion);
+                    depositsToRemove.Add(oldDeposit);
+                }
+            }
+        
+            foreach (var deposit in depositsToRemove)
+            {
+                promotion.RemoveDeposit(deposit);
+            }
+        
+            foreach (var deposit in deposits)
+            {
+                if (!oldDeposits.Contains(deposit))
+                {
+                    deposit.AddPromotion(promotion);
+                    promotion.AddDeposit(deposit);
+                }
+            }
+        }
+        else
+        {
+            throw new ActionRestrictedToAdministratorException("Solo el administrador puede editar una promocion");
+        }
     }
 
     public void DeletePromotion(int id)
     {
-        List<Promotion> promotions = _memoryDataBase.GetPromotions();
-        Promotion promotionToDelete = SearchPromotion(id);
-        
-        List<Deposit> relatedDeposits = promotionToDelete.GetDeposits();
-        
-        foreach (Deposit deposit in relatedDeposits)
+        if (GetActiveUser().IsAdministrator())
         {
-            deposit.RemovePromotion(promotionToDelete);
-        }
+            List<Promotion> promotions = GetPromotions();
+            Promotion promotionToDelete = SearchPromotion(id);
+        
+            List<Deposit> relatedDeposits = promotionToDelete.GetDeposits();
+        
+            foreach (Deposit deposit in relatedDeposits)
+            {
+                deposit.RemovePromotion(promotionToDelete);
+            }
        
-        promotions.Remove(promotionToDelete);
+            promotions.Remove(promotionToDelete);
+        }
+        else
+        {
+            throw new ActionRestrictedToAdministratorException("Solo el administrador puede eliminar promociones");
+        }
     }
-
+    
     public void RegisterAdministrator(string name, string email, string password, String validation)
     {
         User.ValidatePasswordConfirmation(password,validation);
-        if (_memoryDataBase.GetUsers().Count == 0)
+        if (GetUsers().Count == 0)
         {
             Administrator newAdministrator = new Administrator(name, email, password);
             AddUser(newAdministrator);
@@ -167,6 +141,24 @@ public class Controller
         else
         {
             throw new AdministratorAlreadyExistsException("El administrador ya fue registrado");
+        }
+    }
+    
+    public void RegisterClient(string name, string email, string password, string validation)
+    {
+        if (GetUsers().Count == 0)
+        {
+            throw new CannotCreateClientBeforeAdminException("Debe registrarse como administrador");
+        }
+        else
+        {
+            User.ValidatePasswordConfirmation(password, validation);
+            if (UserExists(email))
+            {
+                throw new UserAlreadyExistsException("Un usuario ya fue registrado con ese mail");
+            }
+            Client client = new Client(name, email, password);
+            AddUser(client);
         }
     }
 
@@ -191,72 +183,63 @@ public class Controller
             throw new UserDoesNotExistException("No existe un usuario con los datos proporcionados");
         }
     }
-
-    public Administrator GetAdministrator()
+    
+    public void LogoutUser()
     {
-        Administrator administrator = _memoryDataBase.GetAdministrator(); 
-        if (administrator  == null)  
-        {
-            throw new EmptyAdministratorException("No hay administrador registrado");
-        }
-        else
-        {
-            return administrator;
-        }
+        User u = GetActiveUser();
+        u.LogAction("Cerró sesión",DateTime.Now);
+        _memoryDataBase.SetActiveUser(null);
     }
-
-    public void RegisterClient(string name, string email, string password, string validation)
+    
+    public bool UserExists(string email)
     {
-        if (_memoryDataBase.GetUsers().Count == 0)
+        bool exists = false;
+        foreach (User user in _memoryDataBase.GetUsers())
         {
-            throw new CannotCreateClientBeforeAdminException("Debe registrarse como administrador");
-        }
-        else
-        {
-            User.ValidatePasswordConfirmation(password, validation);
-            if (UserExists(email))
+            if (user.GetEmail() == email)
             {
-                throw new UserAlreadyExistsException("Un usuario ya fue registrado con ese mail");
+                exists = true;
             }
-            Client client = new Client(name, email, password);
-            AddUser(client);
         }
+
+        return exists;
+    }
+    
+    private void AddUser(User newUser)
+    {
+        _memoryDataBase.GetUsers().Add(newUser); 
     }
 
-    public User GetActiveUser()
+    public bool UserLoggedIn()
     {
-        return _memoryDataBase.GetActiveUser();
-    }
-
-    public List<User> GetUsers()
-    {
-        return _memoryDataBase.GetUsers();
-    }
-
-
-    public List<Deposit> GetDeposits()
-    {
-        return _memoryDataBase.GetDeposits();
+        return _memoryDataBase.GetActiveUser() != null;
     }
     
     public void DeleteDeposit(int id)
     {
-        List<Deposit> deposits = _memoryDataBase.GetDeposits();
-        Deposit depositToDelete = SearchDeposit(id);
-        
-        List<Promotion> relatedPromotions = depositToDelete.GetPromotions();
-        
-        foreach (Promotion promotion in relatedPromotions)
+        if (GetActiveUser().IsAdministrator())
         {
-            promotion.RemoveDeposit(depositToDelete);
-        }
+            List<Deposit> deposits = GetDeposits();
+            Deposit depositToDelete = SearchDeposit(id);
+        
+            List<Promotion> relatedPromotions = depositToDelete.GetPromotions();
+        
+            foreach (Promotion promotion in relatedPromotions)
+            {
+                promotion.RemoveDeposit(depositToDelete);
+            }
        
-        deposits.Remove(depositToDelete);
+            deposits.Remove(depositToDelete);   
+        }
+        else
+        {
+            throw new ActionRestrictedToAdministratorException("Sólo los administradores pueden eliminar un deposito");
+        }
     }
     
     public void DeleteAllExpiredPromotions()
     {
-        List<Promotion> promotions = _memoryDataBase.GetPromotions();
+        List<Promotion> promotions = GetPromotions();
         List<Promotion> promotionsToDelete = new List<Promotion>();
         
         foreach (Promotion promotion in promotions)
@@ -287,69 +270,157 @@ public class Controller
     
     public void RejectReservation(Reservation reservation, string reason)
     {
-        Administrator admin = (Administrator)_memoryDataBase.GetActiveUser();
+        Administrator admin = (Administrator)GetActiveUser();
         
         admin.RejectReservation(reservation, reason);
     }
 
     public void CancelRejectionOfReservation(Reservation reservation)
     {
-        reservation.SetState(0);
-        reservation.GetDeposit().AddReservation(reservation);
-    }
-
-    public void LogoutUser()
-    {
-        User u = GetActiveUser();
-        u.LogAction("Cerró sesión",DateTime.Now);
-        _memoryDataBase.SetActiveUser(null);
-    }
-
-    public bool UserExists(string email)
-    {
-        bool exists = false;
-        foreach (User user in _memoryDataBase.GetUsers())
+        if (GetActiveUser().IsAdministrator())
         {
-            if (user.GetEmail() == email)
-            {
-                exists = true;
-            }
+            reservation.SetState(0);
+            reservation.GetDeposit().AddReservation(reservation);
         }
-
-        return exists;
+        else
+        {
+            throw new ActionRestrictedToAdministratorException("Solo el administrador puede cancelar una reserva");
+        }
     }
-
+    
+    public void RateReservation(Reservation reservation, Rating rating)
+    {
+        if (!GetActiveUser().IsAdministrator())
+        {
+            Deposit deposit = reservation.GetDeposit();
+            deposit.AddRating(rating); 
+            reservation.SetRating(rating);
+            GetRatings().Add(rating);
+            reservation.GetClient().LogAction("Agregó valoración de la reserva " + reservation.GetId(),DateTime.Now);
+        }
+        else
+        {
+            throw new ActionRestrictedToClientException("Solo el cliente puede calificar una reserva");
+        }
+        
+    }
+    
     private User GetUserFromUsersList(String email)
     {
         User user = SearchUser(email);
         return user;
     }
     
-    private User SearchUser(String email)
+    public List<(String,DateTime)> GetLogs(User user)
     {
-        return _memoryDataBase.GetUsers().Find(u => u.GetEmail() == email);
+        if (GetActiveUser().IsAdministrator())
+        {
+            return user.GetLogs();
+        }
+        else
+        {
+            throw new ActionRestrictedToAdministratorException("Solo el administrador puede ver los logs");
+        }
+        
     }
-
-    private void AddUser(User newUser)
+    
+    public User GetActiveUser()
     {
-        _memoryDataBase.GetUsers().Add(newUser); 
+        return _memoryDataBase.GetActiveUser();
     }
-
-    public bool UserLoggedIn()
+    
+    public Administrator GetAdministrator()
     {
-        return _memoryDataBase.GetActiveUser() != null;
+        Administrator administrator = _memoryDataBase.GetAdministrator(); 
+        if (administrator  == null)  
+        {
+            throw new EmptyAdministratorException("No hay administrador registrado");
+        }
+        else
+        {
+            return administrator;
+        }
     }
-
-    public void RateReservation(Reservation reservation, Rating rating)
+    
+    public Deposit GetDeposit(int id)
     {
-        Deposit deposit = reservation.GetDeposit();
-        deposit.AddRating(rating); 
-        reservation.SetRating(rating);
-        _memoryDataBase.GetRatings().Add(rating);
+        Deposit deposit = SearchDeposit(id); 
+        if (deposit == null)
+        {
+            throw new DepositNotFoundException("Deposito no encontrado"); 
+        }
+        else
+        {
+            return deposit; 
+        }
+    }
+    
+    public Reservation GetReservation(int id)
+    {
+        Reservation reservation = SearchReservation(id); 
+        if (reservation == null)
+        {
+            throw new ReservationNotFoundException("Reservacion no encontrada"); 
+        }
+        else
+        {
+            return reservation; 
+        }
+    }
+    
+    public Promotion GetPromotion(int id)
+    {
+        Promotion promotion = SearchPromotion(id);
+        if (promotion == null)
+        {
+            throw new PromotionNotFoundException("Promoción no encontrada.");
+        }
+        return promotion;
+    }
+    
+    public List<User> GetUsers()
+    {
+        return _memoryDataBase.GetUsers();
     }
     
     public List<Rating> GetRatings()
     {
         return _memoryDataBase.GetRatings();
     }
+    
+    public List<Deposit> GetDeposits()
+    {
+        return _memoryDataBase.GetDeposits();
+    }
+    
+    public List<Reservation> GetReservations()
+    {
+        return _memoryDataBase.GetReservations();
+    } 
+    
+    public List<Promotion> GetPromotions()
+    {
+        return _memoryDataBase.GetPromotions();
+    }
+    
+    private Reservation SearchReservation(int id)
+    {
+        return _memoryDataBase.GetReservations().FirstOrDefault(reservation => reservation.GetId() == id);
+    }
+    
+    private Promotion SearchPromotion(int id)
+    {
+        return _memoryDataBase.GetPromotions().Find(p => p.GetId() == id);
+    }
+    
+    private User SearchUser(String email)
+    {
+        return _memoryDataBase.GetUsers().Find(u => u.GetEmail() == email);
+    }
+    
+    public Deposit SearchDeposit(int id)
+    {
+        return _memoryDataBase.GetDeposits().FirstOrDefault(deposit => deposit.GetId() == id);
+    }
+    
 }

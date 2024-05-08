@@ -25,7 +25,7 @@
         <tbody>
         @foreach (User user in _listOfUsers)
         {
-            @foreach((String,DateTime) log in user.GetLogs())
+            @foreach((String,DateTime) log in _controller.GetLogs(user))
             {
                 <tr>
                     <td>@user.GetName()</td>

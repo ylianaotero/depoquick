@@ -1,4 +1,4 @@
-﻿using DepoQuick.Domain.Exceptions.DepositExceptions;
+﻿using DepoQuick.Exceptions.DepositExceptions;
 
 namespace DepoQuick.Domain;
 

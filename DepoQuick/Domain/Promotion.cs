@@ -1,4 +1,4 @@
-﻿using DepoQuick.Domain.Exceptions.PromotionExceptions;
+﻿using DepoQuick.Exceptions.PromotionExceptions;
 
 namespace DepoQuick.Domain;
 public class Promotion

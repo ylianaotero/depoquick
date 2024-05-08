@@ -1,6 +1,5 @@
 ﻿using BusinessLogic;
 using DepoQuick.Domain;
-using DepoQuick.Domain.Exceptions.MemoryDataBaseExceptions;
 
 namespace DepoQuickTests;
 
