@@ -25,6 +25,18 @@ public class UserTests
         Assert.AreEqual(_email, _user.Email);
         Assert.AreEqual(_password, _user.Password);
     }
+    
+    [TestMethod]
+    public void TestUserIsCreatedAndPropertiesAreSet()
+    {
+        _user = new User();
+        _user.Name = _name;
+        _user.Email = _email;
+        _user.Password = _password;
+        Assert.AreEqual(_name, _user.Name);
+        Assert.AreEqual(_email, _user.Email);
+        Assert.AreEqual(_password, _user.Password);
+    }
 
     [TestMethod]
     public void TestTwoUsersHaveDifferentIDs()
@@ -177,7 +189,7 @@ public class UserTests
         user.LogAction(action, timestamp);
     }
     
-private bool ThrowsException(Action functionCall)
+    private bool ThrowsException(Action functionCall)
     {
         try
         {
