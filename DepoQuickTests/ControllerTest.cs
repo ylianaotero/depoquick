@@ -142,7 +142,7 @@ public class ControllerTest
         
         controller.LoginUser(AdminEmail, AdminPassword);
         DateTime now = DateTime.Now.AddSeconds(-DateTime.Now.Second);
-        List<(string, DateTime)> logs = controller.GetActiveUser().GetLogs();
+        List<(string, DateTime)> logs = controller.GetActiveUser().Logs;
         
         Assert.IsTrue(logs.Any(log => log.Item1 == UserLogInLogMessage));
         Assert.IsTrue(logs.Any(log => now.Date == log.Item2.Date 
@@ -209,7 +209,7 @@ public class ControllerTest
         controller.RegisterAdministrator(AdminName, AdminEmail, AdminPassword, AdminPassword);
         controller.LoginUser(AdminEmail, AdminPassword);
         
-        List<(string, DateTime)> logs = controller.GetActiveUser().GetLogs();
+        List<(string, DateTime)> logs = controller.GetActiveUser().Logs;
         controller.LogoutUser();
         DateTime now = DateTime.Now.AddSeconds(-DateTime.Now.Second);
         
@@ -778,7 +778,7 @@ public class ControllerTest
         controller.RateReservation(reservation, rating);
         
         DateTime now = DateTime.Now.AddSeconds(-DateTime.Now.Second);
-        List<(string, DateTime)> logs = controller.GetActiveUser().GetLogs();
+        List<(string, DateTime)> logs = controller.GetActiveUser().Logs;
         
         Assert.IsTrue(logs.Any(log => log.Item1 == UserLogInLogMessage));
         Assert.IsTrue(logs.Any(log => now.Date == log.Item2.Date 

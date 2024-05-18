@@ -40,9 +40,9 @@ public class AdministratorTests
     public void TestValidAdministratorIsCreated()
     {
         Administrator user = new Administrator(_adminName, _adminEmail, _adminPassword);
-        Assert.AreEqual(_adminName, user.GetName());
-        Assert.AreEqual(_adminEmail, user.GetEmail());
-        Assert.AreEqual(_adminPassword, user.GetPassword());
+        Assert.AreEqual(_adminName, user.Name);
+        Assert.AreEqual(_adminEmail, user.Email);
+        Assert.AreEqual(_adminPassword, user.Password);
     }
     
     [TestMethod]
@@ -70,6 +70,6 @@ public class AdministratorTests
     [TestMethod]
     public void TestAdministratorUserIsAdministrator()
     {
-        Assert.IsTrue(_admin.IsAdministrator());
+        Assert.IsTrue(_admin.IsAdministrator);
     }
 }
