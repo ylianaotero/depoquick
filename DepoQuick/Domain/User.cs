@@ -1,5 +1,7 @@
+using System.ComponentModel.DataAnnotations;
 using System.Text.RegularExpressions;
 using DepoQuick.Exceptions.UserExceptions;
+using Microsoft.EntityFrameworkCore;
 
 namespace DepoQuick.Domain;
 
@@ -10,15 +12,57 @@ public class User
     
     private static int s_lastId = 0;
     
-    private int _id;
+    [Key]
+    public int Id { get; init; }
     
-    private bool _isAdministrator; 
-    
+    public bool IsAdministrator { get; protected init; }
+
     private string _name;
     private string _email;
     private string _password;
     private List<(string, DateTime)> _logs;
     
+    public string Name
+    {
+        get => _name;
+        set
+        {
+            ValidateName(value);
+            _name = value;
+        }
+    }
+
+    public string Email { 
+        get => _email;
+        set
+        {
+            ValidateEmail(value);
+            _email = value; 
+        } 
+    }
+    
+    public string Password { 
+        get => _password;
+        set
+        {
+            ValidatePassword(value);
+            _password = value;
+        }
+    }
+    
+    public List<(string, DateTime)> Logs
+    {
+        get => _logs;
+        private init => _logs = value;
+    }
+    
+    public User()
+    {
+        Id = s_lastId + 1;
+        s_lastId = Id;
+        
+        Logs = new();
+    }
     
     public User(string name, string email, string password)
     {
@@ -26,14 +70,14 @@ public class User
         ValidateEmail(email);
         ValidatePassword(password);
         
-        _name = name;
-        _email = email;
-        _password = password;
+        Name = name;
+        Email = email;
+        Password = password;
 
-        _logs = new();
+        Logs = new();
 
-        _id = s_lastId + 1;
-        s_lastId = _id;
+        Id = s_lastId + 1;
+        s_lastId = Id;
     }
     
     private void ValidateName(string name)
@@ -103,44 +147,7 @@ public class User
         }
         else
         {
-            _logs.Add((message, timestamp));
+            Logs.Add((message, timestamp));
         }
     }
-    
-    public List<(string, DateTime)> GetLogs()
-    {
-        return _logs;
-    }
-    
-    public bool IsAdministrator()
-    {
-        return _isAdministrator; 
-    }
-
-    public void SetIsAdministrator(bool isAdministrator)
-    {
-        _isAdministrator = isAdministrator; 
-    }
-
-    
-    public string GetName()
-    {
-        return _name;
-    }
-    
-    public string GetEmail()
-    {
-        return _email;
-    }
-    
-    public string GetPassword()
-    {
-        return _password;
-    }
-    
-    public int GetId()
-    {
-        return _id;
-    }
-    
 }
