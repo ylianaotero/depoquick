@@ -20,7 +20,8 @@ public class User
     private string _name;
     private string _email;
     private string _password;
-    private List<(string, DateTime)> _logs;
+    
+    private List<LogEntry> _logs;
     
     public string Name
     {
@@ -50,7 +51,7 @@ public class User
         }
     }
     
-    public List<(string, DateTime)> Logs
+    public List<LogEntry> Logs
     {
         get => _logs;
         private init => _logs = value;
@@ -147,7 +148,14 @@ public class User
         }
         else
         {
-            Logs.Add((message, timestamp));
+            LogEntry log = new()
+            {
+                Message = message,
+                Timestamp = timestamp,
+                UserId = Id
+            };
+            
+            Logs.Add(log);
         }
     }
 }
