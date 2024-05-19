@@ -1,19 +1,25 @@
-﻿using DepoQuick.Exceptions.DateRangeExceptions;
+﻿using System.ComponentModel.DataAnnotations.Schema;
+using DepoQuick.Exceptions.DateRangeExceptions;
 
 namespace DepoQuick.Domain;
 
+[ComplexType]
 public class DateRange
 {
     private DateTime _initialDate;
     private DateTime _finalDate;
     
+    public DateRange()
+    {
+        _initialDate = DateTime.MinValue;
+        _finalDate = DateTime.Now.Date;
+    }
+    
     public DateRange(DateTime initialDate, DateTime finalDate)
     {
-        if (DatesAreValid(initialDate, finalDate))
-        {
-            _initialDate = initialDate;
-            _finalDate = finalDate;
-        }
+        ValidateDateRange(initialDate, finalDate);
+        _initialDate = initialDate;
+        _finalDate = finalDate;
     }
     
     public DateTime GetInitialDate()
@@ -33,7 +39,7 @@ public class DateRange
         return numberOfDays;
     }
     
-    private bool DatesAreValid(DateTime initialDate, DateTime finalDate)
+    private void ValidateDateRange(DateTime initialDate, DateTime finalDate)
     {
         if (TheTwoDatesAreEmpty(initialDate,finalDate))
         {
@@ -53,10 +59,6 @@ public class DateRange
         {
             throw new InvalidDateRangeException("Rango de fechas no valido, fecha final debe ser posterior a fecha inicial");
         }
-
-        return true; 
-
-
     }
 
     private bool TheTwoDatesAreEmpty(DateTime initialDate, DateTime finalDate)
@@ -114,7 +116,7 @@ public class DateRange
     
     public bool DateRangeIsOverlapping(DateRange dateRange)
     {
-        if (IsDateInRange(dateRange.GetInitialDate()) || IsDateInRange(dateRange.GetFinalDate()))
+        if (IsDateInRange(dateRange._initialDate) || IsDateInRange(dateRange._finalDate))
         {
             return true; 
         }
@@ -129,6 +131,4 @@ public class DateRange
         }
         return false; 
     }
-    
-    
 }
