@@ -26,14 +26,14 @@
         <tbody>
         @foreach (Reservation reservation in _deposit.Reservations)
         {
-            if (reservation.GetRating() != null)
+            if (reservation.Rating != null)
             {
                 <tr>
-                    <td>@reservation.GetClient().Name</td>
-                    <td>@reservation.GetDateRange().GetInitialDate().ToString("dd/MM/yyyy")</td>
-                    <td>@reservation.GetDateRange().GetFinalDate().ToString("dd/MM/yyyy")</td>
-                    <td>@reservation.GetRating().GetStars()</td>
-                    <td>@reservation.GetRating().GetComment()</td>
+                    <td>@reservation.Client.Name</td>
+                    <td>@reservation.Date.GetInitialDate().ToString("dd/MM/yyyy")</td>
+                    <td>@reservation.Date.GetFinalDate().ToString("dd/MM/yyyy")</td>
+                    <td>@reservation.Rating.GetStars()</td>
+                    <td>@reservation.Rating.GetComment()</td>
                 </tr>
             }
         }

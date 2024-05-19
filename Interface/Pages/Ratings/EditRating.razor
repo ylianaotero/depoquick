@@ -61,7 +61,7 @@
     {
         _controller = new Controller(MemoryDataBase);
         _reservationToRate = _controller.GetReservation(Id);
-        _ratingToEdit = _reservationToRate.GetRating();
+        _ratingToEdit = _reservationToRate.Rating;
         _comment = _ratingToEdit.GetComment();
         _stars = _ratingToEdit.GetStars();
         

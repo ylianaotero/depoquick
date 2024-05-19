@@ -33,7 +33,7 @@ public class Controller
     public void AddReservation(Reservation reservation)
     {
         GetReservations().Add(reservation);
-        Client client = reservation.GetClient();
+        Client client = reservation.Client;
         client.AddReservation(reservation);
 
     }
@@ -279,8 +279,8 @@ public class Controller
     {
         if (GetActiveUser().IsAdministrator)
         {
-            reservation.SetState(0);
-            reservation.GetDeposit().AddReservation(reservation);
+            reservation.Status = 0;
+            reservation.Deposit.AddReservation(reservation);
         }
         else
         {
@@ -292,11 +292,11 @@ public class Controller
     {
         if (!GetActiveUser().IsAdministrator)
         {
-            Deposit deposit = reservation.GetDeposit();
+            Deposit deposit = reservation.Deposit;
             deposit.AddRating(rating); 
-            reservation.SetRating(rating);
+            reservation.Rating = rating;
             GetRatings().Add(rating);
-            reservation.GetClient().LogAction("Agregó valoración de la reserva " + reservation.GetId(),DateTime.Now);
+            reservation.Client.LogAction("Agregó valoración de la reserva " + reservation.Id,DateTime.Now);
         }
         else
         {
@@ -405,7 +405,7 @@ public class Controller
     
     private Reservation SearchReservation(int id)
     {
-        return _memoryDataBase.GetReservations().FirstOrDefault(reservation => reservation.GetId() == id);
+        return _memoryDataBase.GetReservations().FirstOrDefault(reservation => reservation.Id == id);
     }
     
     private Promotion SearchPromotion(int id)

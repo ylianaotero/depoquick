@@ -643,9 +643,9 @@ public class ControllerTest
         controller.AddReservation(reservation1);
         controller.AddReservation(reservation2);
 
-        Assert.AreEqual(_deposit0, controller.GetReservation(reservation1Id).GetDeposit());
-        Assert.AreEqual(_client, controller.GetReservation(reservation1Id).GetClient());
-        Assert.AreEqual(_validDateRange, controller.GetReservation(reservation1Id).GetDateRange());
+        Assert.AreEqual(_deposit0, controller.GetReservation(reservation1Id).Deposit);
+        Assert.AreEqual(_client, controller.GetReservation(reservation1Id).Client);
+        Assert.AreEqual(_validDateRange, controller.GetReservation(reservation1Id).Date);
         Assert.AreEqual(reservation1Id, controller.GetReservation(reservation1Id).Id);
     }
 
@@ -680,8 +680,8 @@ public class ControllerTest
         controller.LoginUser(AdminEmail, AdminPassword);
         controller.ApproveReservation(reservation);
 
-        Assert.AreEqual(ApprovedReservationState, reservation.GetState());
-        Assert.AreEqual(true, reservation.GetDeposit().IsReserved());
+        Assert.AreEqual(ApprovedReservationState, reservation.Status);
+        Assert.AreEqual(true, reservation.Deposit.IsReserved());
     }
 
     [TestMethod]
@@ -699,8 +699,8 @@ public class ControllerTest
         controller.LoginUser(AdminEmail, AdminPassword);
         controller.RejectReservation(reservation, "No hay disponibilidad");
 
-        Assert.AreEqual(RejectedReservationState, reservation.GetState());
-        Assert.AreEqual("No hay disponibilidad", reservation.GetMessage());
+        Assert.AreEqual(RejectedReservationState, reservation.Status);
+        Assert.AreEqual("No hay disponibilidad", reservation.Message);
         Assert.AreEqual(false, _deposit0.IsReserved());
     }
 
@@ -719,8 +719,8 @@ public class ControllerTest
         controller.LoginUser(AdminEmail, AdminPassword);
         controller.CancelRejectionOfReservation(reservation);
 
-        Assert.AreEqual(PendingReservationState, reservation.GetState());
-        Assert.AreEqual("", reservation.GetMessage());
+        Assert.AreEqual(PendingReservationState, reservation.Status);
+        Assert.AreEqual("-", reservation.Message);
     }
     
     [TestMethod]
@@ -738,8 +738,8 @@ public class ControllerTest
         
         controller.CancelRejectionOfReservation(reservation);
 
-        Assert.AreEqual(PendingReservationState, reservation.GetState());
-        Assert.AreEqual("", reservation.GetMessage());
+        Assert.AreEqual(PendingReservationState, reservation.Status);
+        Assert.AreEqual("", reservation.Message);
     }
 
     [TestMethod]
@@ -759,7 +759,7 @@ public class ControllerTest
 
         CollectionAssert.Contains(_deposit0.Ratings, rating);
         CollectionAssert.Contains(controller.GetRatings(), rating);
-        Assert.AreEqual(reservation.GetRating(), rating);
+        Assert.AreEqual(reservation.Rating, rating);
     }
     
     [TestMethod]
@@ -802,7 +802,7 @@ public class ControllerTest
 
         CollectionAssert.Contains(_deposit0.Ratings, rating);
         CollectionAssert.Contains(controller.GetRatings(), rating);
-        Assert.AreEqual(reservation.GetRating(), rating);
+        Assert.AreEqual(reservation.Rating, rating);
     }
 
     [TestMethod]

@@ -40,11 +40,11 @@
             @foreach (Reservation reservation in _listOfReservations)
             {
                 <tr>
-                    <td>@reservation.GetClient().Name</td>
-                    <td>Depósito @reservation.GetDeposit().Id</td>
-                    <td>@reservation.GetDateRange().GetInitialDate().ToString("dd/MM/yyyy")</td>
-                    <td>@reservation.GetDateRange().GetFinalDate().ToString("dd/MM/yyyy")</td>
-                    @if (reservation.GetState() == 0)
+                    <td>@reservation.Client.Name</td>
+                    <td>Depósito @reservation.Deposit.Id</td>
+                    <td>@reservation.Date.GetInitialDate().ToString("dd/MM/yyyy")</td>
+                    <td>@reservation.Date.GetFinalDate().ToString("dd/MM/yyyy")</td>
+                    @if (reservation.Status == 0)
                     {
                         <td>
                             <button @onclick="() => ApproveReservation(reservation)" class="btn btn-success btn-sm">Aprobar</button>
@@ -54,7 +54,7 @@
                     }
                     else
                     {
-                        @if (reservation.GetState() == 1)
+                        @if (reservation.Status == 1)
                         {
                             <td>
                                 <button class="btn btn-primary btn-sm">Aprobada</button>
@@ -64,12 +64,12 @@
                         }
                         else
                         {
-                            @if (reservation.GetState() == -1)
+                            @if (reservation.Status == -1)
                             {
                                 <td>
                                     <button class="btn btn-secondary btn-sm">Rechazada</button>
                                 </td>
-                                <td>@reservation.GetMessage()</td>
+                                <td>@reservation.Message</td>
                             }
                         }
                     }
