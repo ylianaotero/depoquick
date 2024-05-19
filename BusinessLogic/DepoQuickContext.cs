@@ -10,6 +10,25 @@ public class DepoQuickContext : DbContext
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
-        optionsBuilder.UseSqlServer(@"Server=(localdb)\mssqllocaldb;Database=DepoQuickDb;Trusted_Connection=True;");
+        optionsBuilder.UseSqlServer(@"Server=localhost,1433;Database=depoquick;User Id=sa;Password=Passw1rd;");
     }
+    
+    protected override void OnModelCreating(ModelBuilder modelBuilder)
+    {
+        modelBuilder.Entity<User>().HasMany(u => u.Logs).WithOne().HasForeignKey(l => l.UserId);
+        modelBuilder.Entity<Promotion>().OwnsOne(p => p.ValidityDate);
+        modelBuilder.Entity<Reservation>().OwnsOne(r => r.Date);
+        modelBuilder.Entity<User>()
+            .ToTable("Users");
+
+        modelBuilder.Entity<Administrator>()
+            .ToTable("Administrators")
+            .HasBaseType<User>();
+
+        modelBuilder.Entity<Client>()
+            .ToTable("Clients")
+            .HasBaseType<User>();
+    }
+    
+    
 }
