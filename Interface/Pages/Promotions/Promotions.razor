@@ -66,14 +66,14 @@
         @foreach (Promotion promotion in _listOfPromotions)
         {
             <tr>
-                <td>@promotion.GetLabel()</td>
-                <td>@promotion.GetValidityDate().GetInitialDate().ToString("dd/MM/yyyy")</td>
-                <td>@promotion.GetValidityDate().GetFinalDate().ToString("dd/MM/yyyy")</td>
-                <td>@(promotion.GetDiscountRate()*PercentageMultiplier)%</td>
+                <td>@promotion.Label</td>
+                <td>@promotion.ValidityDate.GetInitialDate().ToString("dd/MM/yyyy")</td>
+                <td>@promotion.ValidityDate.GetFinalDate().ToString("dd/MM/yyyy")</td>
+                <td>@(promotion.DiscountRate*PercentageMultiplier)%</td>
                 <td>
-                    @foreach (var deposit in promotion.GetDeposits())
+                    @foreach (var deposit in promotion.Deposits)
                     {
-                        <p>@deposit.GetId() - Area @deposit.GetArea()</p>
+                        <p>@deposit.Id - Area @deposit.Area</p>
                     }
                 </td>
                 <td>@BoolToString(promotion.IsCurrentlyAvailable())</td>
@@ -141,7 +141,7 @@
     {
         HideAllAlerts();
         
-        if (PromotionIsTiedToReservedDeposit(promotion.GetId()))
+        if (PromotionIsTiedToReservedDeposit(promotion.Id))
         {
             _showAlertPromotionDeletedUnsuccessfully = true;
         } else
@@ -157,7 +157,7 @@
         
         try
         {
-            int id = _promotionToDelete.GetId();
+            int id = _promotionToDelete.Id;
             _controller.DeletePromotion(id);
             _showAlertPromotionDeletedSuccessfully = true;
         }
@@ -178,7 +178,7 @@
     private bool PromotionIsTiedToReservedDeposit(int id)
     {
         Promotion promotion = _controller.GetPromotion(id);
-        List<Deposit> deposits = promotion.GetDeposits();
+        List<Deposit> deposits = promotion.Deposits;
         foreach (Deposit deposit in deposits)
         {
             if (deposit.IsReserved())
@@ -191,7 +191,7 @@
     
     private void GoToEditPromotionPage(Promotion promotion)
     {
-        int promotionId = promotion.GetId();
+        int promotionId = promotion.Id;
         NavigationManager.NavigateTo($"/EditPromotion/{promotionId}");
     }
 }

@@ -28,7 +28,7 @@
                     @foreach (Reservation reservation in _listOfReservations)
                     {
                         <tr>
-                            <td>Depósito @reservation.GetDeposit().GetId()</td>
+                            <td>Depósito @reservation.GetDeposit().Id</td>
                             <td>@reservation.GetDateRange().GetInitialDate().ToString("dd/MM/yyyy")</td>
                             <td>@reservation.GetDateRange().GetFinalDate().ToString("dd/MM/yyyy")</td>
                             @if (reservation.GetState() == 0)

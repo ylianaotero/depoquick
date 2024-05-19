@@ -20,7 +20,7 @@
       <br>
        <div class="alert alert-primary" role="alert">
         <h4 class="alert-heading">¿Estás seguro?</h4>
-        <p>Estas a punto de realizar la reserva del depósito @_deposit.GetId() que tiene un costo de: $ @_deposit.CalculatePrice(_date.NumberOfDays())</p>
+        <p>Estas a punto de realizar la reserva del depósito @_deposit.Id que tiene un costo de: $ @_deposit.CalculatePrice(_date.NumberOfDays())</p>
         <hr>
         <input @onclick="AddReservation" type="submit" class="btn btn-primary" value="Aceptar">
       </div>
@@ -81,7 +81,7 @@
           <option value=" ">Seleccionar depósito</option>
           @foreach (Deposit deposit in _listOfDeposits)
           {
-            <option value="@deposit.GetId()">Depósito @deposit.GetId()</option>
+            <option value="@deposit.Id">Depósito @deposit.Id</option>
           }
         </select>
       </div>

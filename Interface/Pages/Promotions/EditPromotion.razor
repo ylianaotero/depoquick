@@ -62,9 +62,9 @@
     @foreach (var deposit in _deposits)
     {
         <div class="form-check">
-            <input class="form-check-input" type="checkbox" id="@deposit.GetId()" @onclick="() => ToggleDepositSelection(deposit)" checked="@IsSelected(deposit)"/>
-            <label class="form-check-label" for="@deposit.GetId()">
-                Depósito @deposit.GetId() - Area @deposit.GetArea()
+            <input class="form-check-input" type="checkbox" id="@deposit.Id" @onclick="() => ToggleDepositSelection(deposit)" checked="@IsSelected(deposit)"/>
+            <label class="form-check-label" for="@deposit.Id">
+                Depósito @deposit.Id - Area @deposit.Area
             </label>
         </div>
     }
@@ -100,10 +100,10 @@
     {
         _controller = new Controller(MemoryDataBase);
         _promotionToEdit = _controller.GetPromotion(Id);
-        _startDate = _promotionToEdit.GetValidityDate().GetInitialDate();
-        _finalDate = _promotionToEdit.GetValidityDate().GetFinalDate();
-        _label = _promotionToEdit.GetLabel();
-        _discountRate = _promotionToEdit.GetDiscountRate() * PercentageDivider;
+        _startDate = _promotionToEdit.ValidityDate.GetInitialDate();
+        _finalDate = _promotionToEdit.ValidityDate.GetFinalDate();
+        _label = _promotionToEdit.Label;
+        _discountRate = _promotionToEdit.DiscountRate * PercentageDivider;
         _deposits = _controller.GetDeposits();
         _selectedDeposits = new List<Deposit>();
         _selectAllDeposits = false;
@@ -220,7 +220,7 @@
         try
         {
             Promotion promotion = new Promotion();
-            promotion.SetLabel(_label);
+            promotion.Label = _label;
             
             return true;
             
@@ -239,7 +239,7 @@
         try
         {
             Promotion promotion = new Promotion();
-            promotion.SetDiscountRate(_discountRate/100);
+            promotion.DiscountRate = _discountRate/100;
 
             return true;
 

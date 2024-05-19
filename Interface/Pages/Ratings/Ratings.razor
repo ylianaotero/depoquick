@@ -29,7 +29,7 @@
             if (reservation.GetRating() != null)
             {
                 <tr>
-                    <td>@reservation.GetDeposit().GetId()</td>
+                    <td>@reservation.GetDeposit().Id</td>
                     <td>@reservation.GetId()</td>
                     <td>@reservation.GetClient().Name</td>
                     <td>@reservation.GetRating().GetStars()</td>
