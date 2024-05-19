@@ -26,15 +26,15 @@ public class Deposit
     private const String BigSize = "GRANDE";   
 
     [Key]
-    public int Id { get; init; }
+    public int Id { get; }
     
     private Char _area;
     private String _size;
     
     public bool AirConditioning { get; set; }
-    public List<Promotion> Promotions { get; init; }  
-    public List<Rating> Ratings { get; init; }  
-    public List<Reservation> Reservations { get; init; }  
+    public List<Promotion> Promotions { get; }  
+    public List<Rating> Ratings { get; }  
+    public List<Reservation> Reservations { get; }  
     
     public Char Area
     {
@@ -42,7 +42,7 @@ public class Deposit
         set
         {
             ValidateArea(value);
-            _area = value;
+            _area = char.ToUpper(value);
         }
     }
     
@@ -52,8 +52,14 @@ public class Deposit
         set
         {
             ValidateSize(value);
-            _size = value;
+            _size = value.ToUpper();
         }
+    }
+    
+    public Deposit()
+    {
+        Id = s_nextId; 
+        s_nextId++; 
     }
     
     public Deposit(Char area, String size, bool airConditioning)
