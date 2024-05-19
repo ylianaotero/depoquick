@@ -357,7 +357,7 @@ public class ControllerTest
 
         controller.DeleteDeposit(depositId);
 
-        CollectionAssert.DoesNotContain(promotion.GetDeposits(), deposit);
+        CollectionAssert.DoesNotContain(promotion.Deposits, deposit);
     }
     
     [TestMethod]
@@ -369,9 +369,9 @@ public class ControllerTest
         controller.RegisterAdministrator(AdminName,AdminEmail,AdminPassword,AdminPassword);
         controller.LoginUser(AdminEmail,AdminPassword);
         Promotion promotion = new Promotion();
-        promotion.SetDiscountRate(PromotionDiscountRate0);
-        promotion.SetLabel(PromotionLabel0);
-        promotion.SetValidityDate(_validDateRange);
+        promotion.DiscountRate = PromotionDiscountRate0;
+        promotion.Label = PromotionLabel0;
+        promotion.ValidityDate = _validDateRange;
         List<Deposit> depositsToAddToPromotion = new List<Deposit>();
         Deposit deposit = new Deposit(DepositArea0, DepositSize0, DepositAirConditioning0);
         depositsToAddToPromotion.Add(deposit);
@@ -379,7 +379,7 @@ public class ControllerTest
         controller.AddPromotion(promotion, depositsToAddToPromotion);
 
         CollectionAssert.Contains(controller.GetPromotions(), promotion);
-        CollectionAssert.Contains(controller.GetPromotions()[0].GetDeposits(), deposit);
+        CollectionAssert.Contains(controller.GetPromotions()[0].Deposits, deposit);
         CollectionAssert.Contains(deposit.Promotions, promotion);
     }
     
@@ -394,9 +394,9 @@ public class ControllerTest
         controller.RegisterClient(ClientName,ClientEmail,ClientPassword,ClientPassword);
         controller.LoginUser(ClientEmail,ClientPassword);
         Promotion promotion = new Promotion();
-        promotion.SetDiscountRate(PromotionDiscountRate0);
-        promotion.SetLabel(PromotionLabel0);
-        promotion.SetValidityDate(_validDateRange);
+        promotion.DiscountRate = PromotionDiscountRate0;
+        promotion.Label = PromotionLabel0;
+        promotion.ValidityDate = _validDateRange;
         List<Deposit> depositsToAddToPromotion = new List<Deposit>();
         Deposit deposit = new Deposit(DepositArea0, DepositSize0, DepositAirConditioning0);
         depositsToAddToPromotion.Add(deposit);
@@ -471,13 +471,13 @@ public class ControllerTest
         controller.UpdatePromotionDeposits(promotion1, newDepositsToAddPromotion);
         
         CollectionAssert.Contains(controller.GetPromotions(), promotion1);
-        CollectionAssert.DoesNotContain(promotion1.GetDeposits(), _deposit0);
-        CollectionAssert.Contains(promotion1.GetDeposits(), newDeposit);
+        CollectionAssert.DoesNotContain(promotion1.Deposits, _deposit0);
+        CollectionAssert.Contains(promotion1.Deposits, newDeposit);
         CollectionAssert.Contains(newDeposit.Promotions, promotion1);
         CollectionAssert.DoesNotContain(_deposit0.Promotions, promotion1);
-        Assert.AreEqual(newLabel, promotion1.GetLabel());
-        Assert.AreEqual(newDiscountRate, promotion1.GetDiscountRate());
-        Assert.AreEqual(newDateRange, promotion1.GetValidityDate());
+        Assert.AreEqual(newLabel, promotion1.Label);
+        Assert.AreEqual(newDiscountRate, promotion1.DiscountRate);
+        Assert.AreEqual(newDateRange, promotion1.ValidityDate);
     }
     
     [TestMethod]
@@ -603,8 +603,8 @@ public class ControllerTest
         controller.LoginUser(AdminEmail,AdminPassword);
         Promotion promotion1 = new Promotion();
         Promotion promotion2 = new Promotion();
-        promotion1.SetValidityDate(_validDateRange);
-        promotion2.SetValidityDate(_expiredDateRange);
+        promotion1.ValidityDate = _validDateRange;
+        promotion2.ValidityDate = _expiredDateRange;
         List<Deposit> depositsToAddToPromotion = new List<Deposit>();
         depositsToAddToPromotion.Add(_deposit0);
         controller.AddPromotion(promotion1, depositsToAddToPromotion);
