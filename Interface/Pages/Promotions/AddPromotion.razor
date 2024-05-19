@@ -62,9 +62,9 @@
             @foreach (var deposit in _deposits)
             {
                 <div class="form-check">
-                    <input class="form-check-input" type="checkbox" id="@deposit..Id" @onclick="() => ToggleDepositSelection(deposit)" checked="@IsSelected(deposit)"/>
-                    <label class="form-check-label" for="@deposit..Id">
-                        Depósito @deposit..Id - Area @deposit..Area
+                    <input class="form-check-input" type="checkbox" id="@deposit.Id" @onclick="() => ToggleDepositSelection(deposit)" checked="@IsSelected(deposit)"/>
+                    <label class="form-check-label" for="@deposit.Id">
+                        Depósito @deposit.Id - Area @deposit.Area
                     </label>
                 </div>
             }
