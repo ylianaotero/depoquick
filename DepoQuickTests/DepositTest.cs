@@ -7,6 +7,24 @@ namespace DepoQuickTests;
 public class DepositTest
 {
     [TestMethod]
+    public void TestDepositConstructor()
+    {
+        char area = 'A';
+        String size = "Pequeño";
+        bool airConditioning = true;
+        
+        Deposit newDeposit = new Deposit(); 
+        newDeposit.Area = area;
+        newDeposit.Size = size;
+        newDeposit.AirConditioning = airConditioning;
+        
+        Assert.IsNotNull(newDeposit);
+        Assert.AreEqual(char.ToUpper(area), newDeposit.Area);
+        Assert.AreEqual(size.ToUpper(), newDeposit.Size);
+        Assert.AreEqual(airConditioning, newDeposit.AirConditioning);
+    }
+    
+    [TestMethod]
     [ExpectedException(typeof(DepositWithInvalidAreaException))] 
     public void TestInvalidArea()
     {
