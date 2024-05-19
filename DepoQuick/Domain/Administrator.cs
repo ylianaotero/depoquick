@@ -4,7 +4,7 @@ public class Administrator : User
 {
     public Administrator(string name, string email, string password) : base(name, email, password)
     {
-        this.SetIsAdministrator(true);
+        this.IsAdministrator = true;
     }
     
     public void ApproveReservation(Reservation reservation)
