@@ -142,11 +142,11 @@ public class ControllerTest
         
         controller.LoginUser(AdminEmail, AdminPassword);
         DateTime now = DateTime.Now.AddSeconds(-DateTime.Now.Second);
-        List<(string, DateTime)> logs = controller.GetActiveUser().Logs;
+        List<LogEntry> logs = controller.GetActiveUser().Logs;
         
-        Assert.IsTrue(logs.Any(log => log.Item1 == UserLogInLogMessage));
-        Assert.IsTrue(logs.Any(log => now.Date == log.Item2.Date 
-                                      && now.Hour == log.Item2.Hour && now.Minute == log.Item2.Minute));
+        Assert.IsTrue(logs.Any(log => log.Message == UserLogInLogMessage));
+        Assert.IsTrue(logs.Any(log => now.Date == log.Timestamp.Date 
+                                      && now.Hour == log.Timestamp.Hour && now.Minute == log.Timestamp.Minute));
     }
     
     [TestMethod]
@@ -209,13 +209,13 @@ public class ControllerTest
         controller.RegisterAdministrator(AdminName, AdminEmail, AdminPassword, AdminPassword);
         controller.LoginUser(AdminEmail, AdminPassword);
         
-        List<(string, DateTime)> logs = controller.GetActiveUser().Logs;
+        List<LogEntry> logs = controller.GetActiveUser().Logs;
         controller.LogoutUser();
         DateTime now = DateTime.Now.AddSeconds(-DateTime.Now.Second);
         
-        Assert.IsTrue(logs.Any(log => log.Item1 == UserLogOutLogMessage));
-        Assert.IsTrue(logs.Any(log => now.Date == log.Item2.Date && 
-                                      now.Hour == log.Item2.Hour && now.Minute == log.Item2.Minute));
+        Assert.IsTrue(logs.Any(log => log.Message == UserLogOutLogMessage));
+        Assert.IsTrue(logs.Any(log => now.Date == log.Timestamp.Date && 
+                                      now.Hour == log.Timestamp.Hour && now.Minute == log.Timestamp.Minute));
     }
     
     [TestMethod]
@@ -778,11 +778,11 @@ public class ControllerTest
         controller.RateReservation(reservation, rating);
         
         DateTime now = DateTime.Now.AddSeconds(-DateTime.Now.Second);
-        List<(string, DateTime)> logs = controller.GetActiveUser().Logs;
+        List<LogEntry> logs = controller.GetActiveUser().Logs;
         
-        Assert.IsTrue(logs.Any(log => log.Item1 == UserLogInLogMessage));
-        Assert.IsTrue(logs.Any(log => now.Date == log.Item2.Date 
-                                      && now.Hour == log.Item2.Hour && now.Minute == log.Item2.Minute));
+        Assert.IsTrue(logs.Any(log => log.Message == UserLogInLogMessage));
+        Assert.IsTrue(logs.Any(log => now.Date == log.Timestamp.Date 
+                                      && now.Hour == log.Timestamp.Hour && now.Minute == log.Timestamp.Minute));
     }
     
     [TestMethod]

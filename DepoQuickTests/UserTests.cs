@@ -171,10 +171,11 @@ public class UserTests
 
         user.LogAction(action, timestamp);
 
-        List<(string, DateTime)> actionsLog = user.Logs;
+        List<LogEntry> actionsLog = user.Logs;
 
-        Assert.AreEqual(action, actionsLog[0].Item1);
-        Assert.AreEqual(timestamp, actionsLog[0].Item2);
+        Assert.AreEqual(action, actionsLog[0].Message);
+        Assert.AreEqual(timestamp, actionsLog[0].Timestamp);
+        Assert.AreEqual(user.Id, actionsLog[0].UserId);
     }
 
     [TestMethod]
