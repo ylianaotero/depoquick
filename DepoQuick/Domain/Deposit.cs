@@ -261,7 +261,7 @@ public class Deposit
         double sum = 0; 
         foreach (var rating in Ratings)
         {
-            sum += rating.GetStars(); 
+            sum += rating.Stars; 
         }
         return sum / Ratings.Count; 
     }

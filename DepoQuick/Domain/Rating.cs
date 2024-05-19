@@ -1,54 +1,64 @@
-﻿using DepoQuick.Exceptions.RatingException;
+﻿using System.ComponentModel.DataAnnotations;
+using DepoQuick.Exceptions.RatingException;
 
 namespace DepoQuick.Domain;
 
 public class Rating
 {
-    private const int DefaultMaxCharacters = 500;
+    private const int MaxCharacters = 500;
+    
+    private static int s_lastId = 0;
+    
+    [Key]
+    public int Id { get; set; }
     
     private int _stars;
     private String _comment;
     
-    public Rating(int stars, String comment)
+    public int Stars
     {
-        if (RatingIsValid(stars, comment))
+        get => _stars;
+        set
         {
-            _stars = stars;
-            _comment = comment; 
+            ValidateStars(value);
+            _stars = value;
         }
     }
-
-    public int GetStars()
+    
+    public String Comment
     {
-        return _stars; 
+        get => _comment;
+        set
+        {
+            ValidateComment(value);
+            _comment = value;
+        }
     }
-
-    public String GetComment()
+    
+    public Rating()
     {
-        return _comment; 
+        Id = s_lastId + 1;
+        s_lastId++;
+    }
+    
+    public Rating(int stars, String comment)
+    {
+        Stars = stars;
+        Comment = comment; 
+        
+        Id = s_lastId + 1;
+        s_lastId++;
     }
 
     public void UpdateRating(int newStars, string newComment)
     {
-        if (RatingIsValid(newStars, newComment))
-        {
-            _stars = newStars;
-            _comment = newComment;
-        }
-    }
-
-    private bool RatingIsValid(int stars, String comment)
-    {
-        return StarsAreValid(stars) && CommentIsValid(comment); 
+        Stars = newStars;
+        Comment = newComment;
     }
     
-    private bool StarsAreValid(int stars)
+    private void ValidateStars(int stars)
     {
-        if (StarsAreBetween1And5(stars))
-        {
-            return true; 
-        }
-        else
+        if (!StarsAreBetween1And5(stars))
         {
             throw new InvalidStarsForRatingException("Estrellas no válida, debe estar entre 1 y 5");
         }
@@ -59,22 +69,16 @@ public class Rating
         return 0 < stars && 6 > stars; 
     }
     
-    
-    private bool CommentIsValid(String comment)
+    private void ValidateComment(String comment)
     {
         if (CommentHasMoreThan500Characters(comment))
         {
             throw new InvalidCommentForRatingException("Comentario no valido, debe tener menos de 500 caracteres");
         }
-        else
-        {
-            return true; 
-        }
     }
     
     private bool CommentHasMoreThan500Characters(String comment)
     {
-        return comment.Length > DefaultMaxCharacters; 
+        return comment.Length > MaxCharacters; 
     }
-    
 }
