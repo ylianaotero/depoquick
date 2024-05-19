@@ -110,9 +110,9 @@ public class DepositTest
         
         Promotion newPromotion = new Promotion();
         
-        newPromotion.SetDiscountRate(discountRate); 
-        newPromotion.SetValidityDate(dateRange);
-        newPromotion.SetLabel(label);
+        newPromotion.DiscountRate = discountRate; 
+        newPromotion.ValidityDate = dateRange;
+        newPromotion.Label = label;
         
         char area = 'A';
         String size = "Pequeño";
@@ -294,9 +294,9 @@ public class DepositTest
         
         Promotion newPromotion = new Promotion();
         
-        newPromotion.SetDiscountRate(discountRate); 
-        newPromotion.SetValidityDate(dateRange);
-        newPromotion.SetLabel(label);
+        newPromotion.DiscountRate = discountRate; 
+        newPromotion.ValidityDate = dateRange;
+        newPromotion.Label = label;
         
         char area = 'A';
         String size = "Grande";
@@ -337,9 +337,9 @@ public class DepositTest
         
         Promotion newPromotion = new Promotion();
         
-        newPromotion.SetDiscountRate(discountRate); 
-        newPromotion.SetValidityDate(dateRange);
-        newPromotion.SetLabel(label);
+        newPromotion.DiscountRate = discountRate; 
+        newPromotion.ValidityDate = dateRange;
+        newPromotion.Label = label;
         
         char area = 'A';
         String size = "Grande";
@@ -385,13 +385,13 @@ public class DepositTest
         Promotion newPromotion = new Promotion();
         Promotion newPromotion2 = new Promotion();
         
-        newPromotion.SetDiscountRate(discountRate); 
-        newPromotion.SetValidityDate(dateRange);
-        newPromotion.SetLabel(label);
+        newPromotion.DiscountRate = discountRate; 
+        newPromotion.ValidityDate = dateRange;
+        newPromotion.Label = label;
         
-        newPromotion2.SetDiscountRate(discountRate); 
-        newPromotion2.SetValidityDate(dateRange);
-        newPromotion2.SetLabel(label);
+        newPromotion2.DiscountRate = discountRate; 
+        newPromotion2.ValidityDate = dateRange;
+        newPromotion2.Label = label;
         
         char area = 'A';
         String size = "Grande";
@@ -434,13 +434,13 @@ public class DepositTest
         Promotion newPromotion = new Promotion();
         Promotion newPromotion2 = new Promotion();
         
-        newPromotion.SetDiscountRate(discountRate); 
-        newPromotion.SetValidityDate(dateRange);
-        newPromotion.SetLabel(label);
+        newPromotion.DiscountRate = discountRate; 
+        newPromotion.ValidityDate = dateRange;
+        newPromotion.Label = label;
         
-        newPromotion2.SetDiscountRate(discountRate); 
-        newPromotion2.SetValidityDate(dateRange);
-        newPromotion2.SetLabel(label);
+        newPromotion2.DiscountRate = discountRate; 
+        newPromotion2.ValidityDate = dateRange;
+        newPromotion2.Label = label;
         
         char area = 'A';
         String size = "Grande";
