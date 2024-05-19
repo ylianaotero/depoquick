@@ -9,7 +9,7 @@
         <div class="col">
             @if (_loggedUser != null)
             {
-                <h1 class="text-center" style="color: #0a53be"><strong>¡Bienvenido/a @_loggedUser.GetName()!</strong></h1>
+                <h1 class="text-center" style="color: #0a53be"><strong>¡Bienvenido/a @_loggedUser.Name!</strong></h1>
                 @if (_loggedUserIsAdmin)
                 {
                     <p class="lead text-center">Usted ha ingresado como administrador</p>
@@ -36,7 +36,7 @@
         _loggedUser = _controller.GetActiveUser();
         if (_loggedUser != null)
         {
-            _loggedUserIsAdmin = _loggedUser.IsAdministrator(); 
+            _loggedUserIsAdmin = _loggedUser.IsAdministrator; 
         }
         
     }

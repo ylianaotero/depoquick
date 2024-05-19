@@ -10,7 +10,7 @@
     </head>
 
     <body>
-        <h3>¡Hola, @_loggedInUser.GetName()! Aquí puedes encontrar todas las valoraciones.</h3>
+        <h3>¡Hola, @_loggedInUser.Name! Aquí puedes encontrar todas las valoraciones.</h3>
     
     <table class="table table-striped table-hover">
         <thead>
@@ -31,7 +31,7 @@
                 <tr>
                     <td>@reservation.GetDeposit().GetId()</td>
                     <td>@reservation.GetId()</td>
-                    <td>@reservation.GetClient().GetName()</td>
+                    <td>@reservation.GetClient().Name</td>
                     <td>@reservation.GetRating().GetStars()</td>
                     <td>@reservation.GetRating().GetComment()</td>
                 </tr>

@@ -11,7 +11,7 @@
     </head>
 
     <body>
-        <h3>¡Hola, @_loggedInUser.GetName()! Aquí puedes encontrar nuestros depósitos.</h3>
+        <h3>¡Hola, @_loggedInUser.Name! Aquí puedes encontrar nuestros depósitos.</h3>
 
     @if (_showAlertDepositDeletedSuccessfully)
     {
@@ -53,7 +53,7 @@
             <th>Climatización</th>
             <th>Promociones actuales</th>
             <th>Reservado</th>
-            @if (_loggedInUser.IsAdministrator())
+            @if (_loggedInUser.IsAdministrator)
             {
                 <th>Con reservas próximas</th>
             }
@@ -78,7 +78,7 @@
                     }
                 </td>
                 <td>@BoolToString(deposit.IsReserved())</td>
-                @if (_loggedInUser.IsAdministrator())
+                @if (_loggedInUser.IsAdministrator)
                 {
                     <td>@BoolToString(deposit.HasUpcomingReservations())</td>
                 }
@@ -88,7 +88,7 @@
                         </button>
                     </div>
                 </td>
-                @if (_loggedInUser.IsAdministrator())
+                @if (_loggedInUser.IsAdministrator)
                 {
                     <td>
                         <div class="btn-group">
@@ -104,7 +104,7 @@
         
     </table>
     
-    @if (_loggedInUser.IsAdministrator())
+    @if (_loggedInUser.IsAdministrator)
     {
         <button class="btn btn-primary" @onclick="GoToAddDepositPage">Crear depósito</button>
     }

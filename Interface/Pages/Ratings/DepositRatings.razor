@@ -29,7 +29,7 @@
             if (reservation.GetRating() != null)
             {
                 <tr>
-                    <td>@reservation.GetClient().GetName()</td>
+                    <td>@reservation.GetClient().Name</td>
                     <td>@reservation.GetDateRange().GetInitialDate().ToString("dd/MM/yyyy")</td>
                     <td>@reservation.GetDateRange().GetFinalDate().ToString("dd/MM/yyyy")</td>
                     <td>@reservation.GetRating().GetStars()</td>
