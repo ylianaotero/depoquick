@@ -7,6 +7,15 @@ namespace DepoQuickTests;
 public class DateRangeTest
 {
     [TestMethod]
+    public void TestDefaultDateRange()
+    {
+        DateRange dateRange = new DateRange();
+        
+        Assert.AreEqual(DateTime.MinValue, dateRange.GetInitialDate());
+        Assert.AreEqual(DateTime.Now.Date, dateRange.GetFinalDate());
+    }
+    
+    [TestMethod]
     [ExpectedException(typeof(EmptyDateRangeException))] 
     public void TestEmptyDateFrom()
     {
