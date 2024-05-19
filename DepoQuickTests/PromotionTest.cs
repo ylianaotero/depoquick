@@ -12,9 +12,7 @@ public class PromotionTest
     public void TestEmptyLabel()
     {
         Promotion newPromotion = new Promotion();
-
-        newPromotion.SetLabel(" "); 
-        
+        newPromotion.Label = "";
     }
     
     [TestMethod]
@@ -22,9 +20,9 @@ public class PromotionTest
     {
         Promotion newPromotion = new Promotion();
 
-        newPromotion.SetLabel("12 12"); 
+        newPromotion.Label = "12 12"; 
         
-        Assert.AreEqual("12 12", newPromotion.GetLabel());
+        Assert.AreEqual("12 12", newPromotion.Label);
         
     }
     
@@ -34,7 +32,7 @@ public class PromotionTest
     {
         Promotion newPromotion = new Promotion();
         
-        newPromotion.SetLabel("acahay21caracteressss"); 
+        newPromotion.Label = "acahay21caracteressss"; 
 
     }
     
@@ -43,9 +41,9 @@ public class PromotionTest
     {
         Promotion newPromotion = new Promotion();
         
-        newPromotion.SetLabel( "acahay20caracteresss");  
+        newPromotion.Label = "acahay20caracteresss";  
         
-        Assert.AreEqual("acahay20caracteresss", newPromotion.GetLabel());
+        Assert.AreEqual("acahay20caracteresss", newPromotion.Label);
         
     }
     
@@ -55,7 +53,7 @@ public class PromotionTest
     {
         Promotion newPromotion = new Promotion();
         
-        newPromotion.SetDiscountRate(0); 
+        newPromotion.DiscountRate = 0; 
         
     }
     
@@ -65,7 +63,7 @@ public class PromotionTest
     {
         Promotion newPromotion = new Promotion();
         
-        newPromotion.SetDiscountRate(-100); 
+        newPromotion.DiscountRate = -100; 
         
     }
     
@@ -74,9 +72,9 @@ public class PromotionTest
     {
         Promotion newPromotion = new Promotion();
         
-        newPromotion.SetDiscountRate(0.05); 
+        newPromotion.DiscountRate = 0.05; 
         
-        Assert.AreEqual(0.05, newPromotion.GetDiscountRate());
+        Assert.AreEqual(0.05, newPromotion.DiscountRate);
         
     }
     
@@ -85,9 +83,9 @@ public class PromotionTest
     {
         Promotion newPromotion = new Promotion();
         
-        newPromotion.SetDiscountRate(0.75);
+        newPromotion.DiscountRate = 0.75;
         
-        Assert.AreEqual(0.75, newPromotion.GetDiscountRate());
+        Assert.AreEqual(0.75, newPromotion.DiscountRate);
         
     }
     
@@ -96,9 +94,9 @@ public class PromotionTest
     {
         Promotion newPromotion = new Promotion();
         
-        newPromotion.SetDiscountRate(0.55);
+        newPromotion.DiscountRate = 0.55;
         
-        Assert.AreEqual(0.55,newPromotion.GetDiscountRate());
+        Assert.AreEqual(0.55,newPromotion.DiscountRate);
         
     }
     
@@ -108,7 +106,7 @@ public class PromotionTest
     {
         Promotion newPromotion = new Promotion();
         
-        newPromotion.SetDiscountRate(4);
+        newPromotion.DiscountRate = 4;
         
     }
     
@@ -122,9 +120,9 @@ public class PromotionTest
 
         DateRange dateRange = new DateRange(dateFrom, dateTo);
 
-        newPromotion.SetValidityDate(dateRange);
+        newPromotion.ValidityDate = dateRange;
         
-        Assert.AreEqual(dateRange, newPromotion.GetValidityDate());
+        Assert.AreEqual(dateRange, newPromotion.ValidityDate);
         
     }
     
@@ -168,8 +166,8 @@ public class PromotionTest
         newPromotion.AddDeposit(smallDeposit);
         newPromotion.AddDeposit(bigDeposit);
         
-        CollectionAssert.Contains(newPromotion.GetDeposits(), smallDeposit);
-        CollectionAssert.Contains(newPromotion.GetDeposits(), bigDeposit);
+        CollectionAssert.Contains(newPromotion.Deposits, smallDeposit);
+        CollectionAssert.Contains(newPromotion.Deposits, bigDeposit);
     }
     
     [TestMethod]
@@ -183,7 +181,7 @@ public class PromotionTest
         
         newPromotion.RemoveDeposit(smallDeposit);
         
-        CollectionAssert.DoesNotContain(newPromotion.GetDeposits(), smallDeposit);
+        CollectionAssert.DoesNotContain(newPromotion.Deposits, smallDeposit);
     }
 
     [TestMethod]
@@ -191,7 +189,7 @@ public class PromotionTest
     {
         Promotion newPromotion = new Promotion();
         DateRange dateRange = new DateRange(new DateTime(2024, 3, 8).Date, new DateTime(2024, 3, 10).Date);
-        newPromotion.SetValidityDate(dateRange);
+        newPromotion.ValidityDate = dateRange;
         
         Assert.IsFalse(newPromotion.IsCurrentlyAvailable());
     }
