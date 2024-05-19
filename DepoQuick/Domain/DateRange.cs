@@ -6,35 +6,35 @@ namespace DepoQuick.Domain;
 [ComplexType]
 public class DateRange
 {
-    private DateTime _initialDate;
-    private DateTime _finalDate;
+    public DateTime InitialDate { get; private set; }
+    public DateTime FinalDate { get; private set; }
     
     public DateRange()
     {
-        _initialDate = DateTime.MinValue;
-        _finalDate = DateTime.Now.Date;
+        InitialDate = DateTime.MinValue;
+        FinalDate = DateTime.Now.Date;
     }
     
     public DateRange(DateTime initialDate, DateTime finalDate)
     {
         ValidateDateRange(initialDate, finalDate);
-        _initialDate = initialDate;
-        _finalDate = finalDate;
+        InitialDate = initialDate;
+        FinalDate = finalDate;
     }
     
     public DateTime GetInitialDate()
     {
-        return _initialDate;
+        return InitialDate;
     }
     
     public DateTime GetFinalDate()
     {
-        return _finalDate;
+        return FinalDate;
     }
     
     public int NumberOfDays()
     {
-        TimeSpan difference = _finalDate - _initialDate;
+        TimeSpan difference = FinalDate - InitialDate;
         int numberOfDays = difference.Days;
         return numberOfDays;
     }
@@ -116,7 +116,7 @@ public class DateRange
     
     public bool DateRangeIsOverlapping(DateRange dateRange)
     {
-        if (IsDateInRange(dateRange._initialDate) || IsDateInRange(dateRange._finalDate))
+        if (IsDateInRange(dateRange.InitialDate) || IsDateInRange(dateRange.FinalDate))
         {
             return true; 
         }
@@ -125,7 +125,7 @@ public class DateRange
     
     public bool IsDateInRange(DateTime date)
     {
-        if (date >= _initialDate && date <= _finalDate)
+        if (date >= InitialDate && date <= FinalDate)
         {
             return true; 
         }
