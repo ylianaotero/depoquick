@@ -26,7 +26,7 @@ public class Deposit
     private const String BigSize = "GRANDE";   
 
     [Key]
-    public int Id { get; }
+    public int Id { get; set; }
     
     private Char _area;
     private String _size;
@@ -227,9 +227,9 @@ public class Deposit
         double discount = discountAccordingToNumberOfDays; 
         foreach (Promotion promotion in listOfPromotion)
         {
-            if (promotion.IsCurrentlyAvailable() && TheSumOfTheDiscountsIsLessThan100(discount, promotion.GetDiscountRate()))
+            if (promotion.IsCurrentlyAvailable() && TheSumOfTheDiscountsIsLessThan100(discount, promotion.DiscountRate))
             {
-                discount +=  promotion.GetDiscountRate(); 
+                discount +=  promotion.DiscountRate; 
             }
         }
 
