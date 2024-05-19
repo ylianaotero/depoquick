@@ -40,9 +40,9 @@ public class DepositTest
         Deposit newDeposit = new Deposit(area, size, airConditioning); 
         
         Assert.IsNotNull(newDeposit);
-        Assert.AreEqual(char.ToUpper(area), newDeposit.GetArea());
-        Assert.AreEqual(size.ToUpper(), newDeposit.GetSize());
-        Assert.AreEqual(airConditioning, newDeposit.GetAirConditioning());
+        Assert.AreEqual(char.ToUpper(area), newDeposit.Area);
+        Assert.AreEqual(size.ToUpper(), newDeposit.Size);
+        Assert.AreEqual(airConditioning, newDeposit.AirConditioning);
     }
     
     [TestMethod]
@@ -75,10 +75,10 @@ public class DepositTest
         newDeposit.AddRating(newRating);
         
         Assert.IsNotNull(newDeposit);
-        Assert.AreEqual(char.ToUpper(area), newDeposit.GetArea());
-        Assert.AreEqual(size.ToUpper(), newDeposit.GetSize());
-        Assert.AreEqual(airConditioning, newDeposit.GetAirConditioning());
-        CollectionAssert.Contains(newDeposit.GetRatings(), newRating);
+        Assert.AreEqual(char.ToUpper(area), newDeposit.Area);
+        Assert.AreEqual(size.ToUpper(), newDeposit.Size);
+        Assert.AreEqual(airConditioning, newDeposit.AirConditioning);
+        CollectionAssert.Contains(newDeposit.Ratings, newRating);
     }
     
     [TestMethod]
@@ -105,10 +105,10 @@ public class DepositTest
         newDeposit.AddPromotion(newPromotion);
         
         Assert.IsNotNull(newDeposit);
-        Assert.AreEqual(char.ToUpper(area), newDeposit.GetArea());
-        Assert.AreEqual(size.ToUpper(), newDeposit.GetSize());
-        Assert.AreEqual(airConditioning, newDeposit.GetAirConditioning());
-        CollectionAssert.Contains(newDeposit.GetPromotions(), newPromotion);
+        Assert.AreEqual(char.ToUpper(area), newDeposit.Area);
+        Assert.AreEqual(size.ToUpper(), newDeposit.Size);
+        Assert.AreEqual(airConditioning, newDeposit.AirConditioning);
+        CollectionAssert.Contains(newDeposit.Promotions, newPromotion);
     }
         
     [TestMethod]
@@ -304,7 +304,7 @@ public class DepositTest
 
         
         Assert.AreEqual(basePrice, newDeposit.CalculatePrice(numberOfDays));
-        CollectionAssert.Contains(newDeposit.GetPromotions(), newPromotion);
+        CollectionAssert.Contains(newDeposit.Promotions, newPromotion);
 
     }
 
@@ -440,24 +440,6 @@ public class DepositTest
         Assert.AreEqual(0, newDeposit.CalculatePrice(numberOfDays));
 
     }
-
-    
-    [TestMethod]
-    public void TestAddIdToAValidDeposit()
-    {
-        char area = 'a';
-        String size = "Mediano";
-        bool airConditioning = true;
-        
-        
-        Deposit newDeposit = new Deposit(area, size, airConditioning);
-
-        int id = 2; 
-
-        newDeposit.SetId(id); 
-        
-        Assert.AreEqual(id, newDeposit.GetId());
-    }
     
     [TestMethod]
     public void TestTwoDepositsHaveDifferentIDs()
@@ -470,7 +452,7 @@ public class DepositTest
         Deposit newDeposit1 = new Deposit(area, size, airConditioning);
         Deposit newDeposit2 = new Deposit(area, size, airConditioning); 
 
-        Assert.AreNotEqual(newDeposit1.GetId(), newDeposit2.GetId());
+        Assert.AreNotEqual(newDeposit1.Id, newDeposit2.Id);
     }
 
     [TestMethod]
@@ -484,7 +466,7 @@ public class DepositTest
         Deposit newDeposit1 = new Deposit(area, size, airConditioning);
         Deposit newDeposit2 = new Deposit(area, size, airConditioning);
 
-        Assert.IsTrue(newDeposit1.GetId() < newDeposit2.GetId());
+        Assert.IsTrue(newDeposit1.Id < newDeposit2.Id);
     }
 
     [TestMethod]
@@ -505,7 +487,7 @@ public class DepositTest
         
         newDeposit1.RemovePromotion(newPromotion);
         
-        CollectionAssert.DoesNotContain(newDeposit1.GetPromotions(), newPromotion);
+        CollectionAssert.DoesNotContain(newDeposit1.Promotions, newPromotion);
     }
 
     [TestMethod]
@@ -528,7 +510,7 @@ public class DepositTest
         
         newDeposit.AddReservation(reservation);
         
-        CollectionAssert.Contains(newDeposit.GetReservations(), reservation);
+        CollectionAssert.Contains(newDeposit.Reservations, reservation);
     }
 
 
@@ -554,7 +536,7 @@ public class DepositTest
 
         newDeposit.RemoveReservation(reservation);
 
-        CollectionAssert.DoesNotContain(newDeposit.GetReservations(), reservation);
+        CollectionAssert.DoesNotContain(newDeposit.Reservations, reservation);
     }
 
     [TestMethod]
