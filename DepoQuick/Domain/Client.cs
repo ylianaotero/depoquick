@@ -5,7 +5,7 @@ public class Client : User
     List<Reservation> _reservations;
     public Client(string name, string email, string password) : base(name, email, password)
     {
-        this.SetIsAdministrator(false);
+        this.IsAdministrator = false;
         _reservations = new List<Reservation>();
     }
     
@@ -17,7 +17,7 @@ public class Client : User
     public void AddReservation(Reservation reservation)
     {
         _reservations.Add(reservation);
-        reservation.GetDeposit().AddReservation(reservation);
+        reservation.Deposit.AddReservation(reservation);
     }
 }
 

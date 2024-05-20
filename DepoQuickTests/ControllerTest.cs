@@ -142,11 +142,11 @@ public class ControllerTest
         
         controller.LoginUser(AdminEmail, AdminPassword);
         DateTime now = DateTime.Now.AddSeconds(-DateTime.Now.Second);
-        List<(string, DateTime)> logs = controller.GetActiveUser().GetLogs();
+        List<LogEntry> logs = controller.GetActiveUser().Logs;
         
-        Assert.IsTrue(logs.Any(log => log.Item1 == UserLogInLogMessage));
-        Assert.IsTrue(logs.Any(log => now.Date == log.Item2.Date 
-                                      && now.Hour == log.Item2.Hour && now.Minute == log.Item2.Minute));
+        Assert.IsTrue(logs.Any(log => log.Message == UserLogInLogMessage));
+        Assert.IsTrue(logs.Any(log => now.Date == log.Timestamp.Date 
+                                      && now.Hour == log.Timestamp.Hour && now.Minute == log.Timestamp.Minute));
     }
     
     [TestMethod]
@@ -209,13 +209,13 @@ public class ControllerTest
         controller.RegisterAdministrator(AdminName, AdminEmail, AdminPassword, AdminPassword);
         controller.LoginUser(AdminEmail, AdminPassword);
         
-        List<(string, DateTime)> logs = controller.GetActiveUser().GetLogs();
+        List<LogEntry> logs = controller.GetActiveUser().Logs;
         controller.LogoutUser();
         DateTime now = DateTime.Now.AddSeconds(-DateTime.Now.Second);
         
-        Assert.IsTrue(logs.Any(log => log.Item1 == UserLogOutLogMessage));
-        Assert.IsTrue(logs.Any(log => now.Date == log.Item2.Date && 
-                                      now.Hour == log.Item2.Hour && now.Minute == log.Item2.Minute));
+        Assert.IsTrue(logs.Any(log => log.Message == UserLogOutLogMessage));
+        Assert.IsTrue(logs.Any(log => now.Date == log.Timestamp.Date && 
+                                      now.Hour == log.Timestamp.Hour && now.Minute == log.Timestamp.Minute));
     }
     
     [TestMethod]
@@ -234,7 +234,7 @@ public class ControllerTest
         controller.AddDeposit(newDeposit, promotionsToAddToDeposit);
 
         CollectionAssert.Contains(controller.GetDeposits(), newDeposit);
-        CollectionAssert.Contains(controller.GetDeposits()[0].GetPromotions(), promotion);
+        CollectionAssert.Contains(controller.GetDeposits()[0].Promotions, promotion);
     }
     
     [TestMethod]
@@ -269,13 +269,13 @@ public class ControllerTest
         controller.AddDeposit(newDeposit0, promotionsToAddToDeposit);
         controller.AddDeposit(newDeposit1, promotionsToAddToDeposit);
         
-        int idDeposit1 = newDeposit1.GetId();
+        int idDeposit1 = newDeposit1.Id;
 
-        Assert.AreEqual(char.ToUpper(DepositArea1), controller.GetDeposit(idDeposit1).GetArea());
-        Assert.AreEqual(DepositSize1.ToUpper(), controller.GetDeposit(idDeposit1).GetSize());
-        Assert.AreEqual(DepositAirConditioning1, controller.GetDeposit(idDeposit1).GetAirConditioning());
+        Assert.AreEqual(char.ToUpper(DepositArea1), controller.GetDeposit(idDeposit1).Area);
+        Assert.AreEqual(DepositSize1.ToUpper(), controller.GetDeposit(idDeposit1).Size);
+        Assert.AreEqual(DepositAirConditioning1, controller.GetDeposit(idDeposit1).AirConditioning);
         Assert.AreEqual(false, controller.GetDeposit(idDeposit1).IsReserved());
-        Assert.AreEqual(idDeposit1, controller.GetDeposit(idDeposit1).GetId());
+        Assert.AreEqual(idDeposit1, controller.GetDeposit(idDeposit1).Id);
     }
 
     [TestMethod]
@@ -308,7 +308,7 @@ public class ControllerTest
         Deposit deposit = new Deposit(DepositArea0, DepositSize0, DepositAirConditioning0);
         List<Promotion> promotionsToAddToDeposit = new List<Promotion>();
         controller.AddDeposit(deposit, promotionsToAddToDeposit);
-        int id = deposit.GetId();
+        int id = deposit.Id;
 
         controller.DeleteDeposit(id);
         controller.GetDeposit(id);
@@ -331,7 +331,7 @@ public class ControllerTest
         controller.AddDeposit(newDeposit, promotionsToAddToDeposit);
         
         controller.LoginUser(ClientEmail,ClientPassword);
-        controller.DeleteDeposit(newDeposit.GetId());
+        controller.DeleteDeposit(newDeposit.Id);
         
     }
     
@@ -344,7 +344,7 @@ public class ControllerTest
         controller.RegisterAdministrator(AdminName,AdminEmail,AdminPassword,AdminPassword);
         controller.LoginUser(AdminEmail,AdminPassword);
         Deposit deposit = new Deposit(DepositArea0, DepositSize0, DepositAirConditioning0);
-        int depositId = deposit.GetId();
+        int depositId = deposit.Id;
         List<Deposit> deposits = new List<Deposit>();
         deposits.Add(deposit);
         
@@ -357,7 +357,7 @@ public class ControllerTest
 
         controller.DeleteDeposit(depositId);
 
-        CollectionAssert.DoesNotContain(promotion.GetDeposits(), deposit);
+        CollectionAssert.DoesNotContain(promotion.Deposits, deposit);
     }
     
     [TestMethod]
@@ -369,9 +369,9 @@ public class ControllerTest
         controller.RegisterAdministrator(AdminName,AdminEmail,AdminPassword,AdminPassword);
         controller.LoginUser(AdminEmail,AdminPassword);
         Promotion promotion = new Promotion();
-        promotion.SetDiscountRate(PromotionDiscountRate0);
-        promotion.SetLabel(PromotionLabel0);
-        promotion.SetValidityDate(_validDateRange);
+        promotion.DiscountRate = PromotionDiscountRate0;
+        promotion.Label = PromotionLabel0;
+        promotion.ValidityDate = _validDateRange;
         List<Deposit> depositsToAddToPromotion = new List<Deposit>();
         Deposit deposit = new Deposit(DepositArea0, DepositSize0, DepositAirConditioning0);
         depositsToAddToPromotion.Add(deposit);
@@ -379,8 +379,8 @@ public class ControllerTest
         controller.AddPromotion(promotion, depositsToAddToPromotion);
 
         CollectionAssert.Contains(controller.GetPromotions(), promotion);
-        CollectionAssert.Contains(controller.GetPromotions()[0].GetDeposits(), deposit);
-        CollectionAssert.Contains(deposit.GetPromotions(), promotion);
+        CollectionAssert.Contains(controller.GetPromotions()[0].Deposits, deposit);
+        CollectionAssert.Contains(deposit.Promotions, promotion);
     }
     
     [TestMethod]
@@ -394,9 +394,9 @@ public class ControllerTest
         controller.RegisterClient(ClientName,ClientEmail,ClientPassword,ClientPassword);
         controller.LoginUser(ClientEmail,ClientPassword);
         Promotion promotion = new Promotion();
-        promotion.SetDiscountRate(PromotionDiscountRate0);
-        promotion.SetLabel(PromotionLabel0);
-        promotion.SetValidityDate(_validDateRange);
+        promotion.DiscountRate = PromotionDiscountRate0;
+        promotion.Label = PromotionLabel0;
+        promotion.ValidityDate = _validDateRange;
         List<Deposit> depositsToAddToPromotion = new List<Deposit>();
         Deposit deposit = new Deposit(DepositArea0, DepositSize0, DepositAirConditioning0);
         depositsToAddToPromotion.Add(deposit);
@@ -421,7 +421,7 @@ public class ControllerTest
         controller.AddPromotion(promotion1, depositsToAddToPromotion);
         controller.AddPromotion(promotion2, depositsToAddToPromotion);
         
-        int promotion1Id = promotion1.GetId();
+        int promotion1Id = promotion1.Id;
 
         Assert.AreEqual(promotion1, controller.GetPromotion(promotion1Id));
     }
@@ -471,13 +471,13 @@ public class ControllerTest
         controller.UpdatePromotionDeposits(promotion1, newDepositsToAddPromotion);
         
         CollectionAssert.Contains(controller.GetPromotions(), promotion1);
-        CollectionAssert.DoesNotContain(promotion1.GetDeposits(), _deposit0);
-        CollectionAssert.Contains(promotion1.GetDeposits(), newDeposit);
-        CollectionAssert.Contains(newDeposit.GetPromotions(), promotion1);
-        CollectionAssert.DoesNotContain(_deposit0.GetPromotions(), promotion1);
-        Assert.AreEqual(newLabel, promotion1.GetLabel());
-        Assert.AreEqual(newDiscountRate, promotion1.GetDiscountRate());
-        Assert.AreEqual(newDateRange, promotion1.GetValidityDate());
+        CollectionAssert.DoesNotContain(promotion1.Deposits, _deposit0);
+        CollectionAssert.Contains(promotion1.Deposits, newDeposit);
+        CollectionAssert.Contains(newDeposit.Promotions, promotion1);
+        CollectionAssert.DoesNotContain(_deposit0.Promotions, promotion1);
+        Assert.AreEqual(newLabel, promotion1.Label);
+        Assert.AreEqual(newDiscountRate, promotion1.DiscountRate);
+        Assert.AreEqual(newDateRange, promotion1.ValidityDate);
     }
     
     [TestMethod]
@@ -544,7 +544,7 @@ public class ControllerTest
         List<Deposit> depositsToAddPromotion = new List<Deposit>();
         depositsToAddPromotion.Add(_deposit0);
         controller.AddPromotion(promotion, depositsToAddPromotion);
-        int id = promotion.GetId();
+        int id = promotion.Id;
 
         controller.DeletePromotion(id);
 
@@ -563,11 +563,11 @@ public class ControllerTest
         List<Deposit> depositsToAddToPromotion = new List<Deposit>();
         depositsToAddToPromotion.Add(_deposit0);
         controller.AddPromotion(promotion, depositsToAddToPromotion);
-        int id = promotion.GetId();
+        int id = promotion.Id;
 
         controller.DeletePromotion(id);
 
-        CollectionAssert.DoesNotContain(_deposit0.GetPromotions(), promotion);
+        CollectionAssert.DoesNotContain(_deposit0.Promotions, promotion);
     }
     
     [TestMethod]
@@ -584,13 +584,13 @@ public class ControllerTest
         List<Deposit> depositsToAddToPromotion = new List<Deposit>();
         depositsToAddToPromotion.Add(_deposit0);
         controller.AddPromotion(promotion, depositsToAddToPromotion);
-        int id = promotion.GetId();
+        int id = promotion.Id;
     
         controller.LogoutUser();
         controller.LoginUser(ClientEmail,ClientPassword);
         controller.DeletePromotion(id);
 
-        CollectionAssert.DoesNotContain(_deposit0.GetPromotions(), promotion);
+        CollectionAssert.DoesNotContain(_deposit0.Promotions, promotion);
     }
     
     [TestMethod]
@@ -603,8 +603,8 @@ public class ControllerTest
         controller.LoginUser(AdminEmail,AdminPassword);
         Promotion promotion1 = new Promotion();
         Promotion promotion2 = new Promotion();
-        promotion1.SetValidityDate(_validDateRange);
-        promotion2.SetValidityDate(_expiredDateRange);
+        promotion1.ValidityDate = _validDateRange;
+        promotion2.ValidityDate = _expiredDateRange;
         List<Deposit> depositsToAddToPromotion = new List<Deposit>();
         depositsToAddToPromotion.Add(_deposit0);
         controller.AddPromotion(promotion1, depositsToAddToPromotion);
@@ -638,15 +638,15 @@ public class ControllerTest
         
         Reservation reservation1 = new Reservation(_deposit0, _client, _validDateRange);
         Reservation reservation2 = new Reservation(_deposit0, _client, _expiredDateRange);
-        int reservation1Id = reservation1.GetId();
+        int reservation1Id = reservation1.Id;
 
         controller.AddReservation(reservation1);
         controller.AddReservation(reservation2);
 
-        Assert.AreEqual(_deposit0, controller.GetReservation(reservation1Id).GetDeposit());
-        Assert.AreEqual(_client, controller.GetReservation(reservation1Id).GetClient());
-        Assert.AreEqual(_validDateRange, controller.GetReservation(reservation1Id).GetDateRange());
-        Assert.AreEqual(reservation1Id, controller.GetReservation(reservation1Id).GetId());
+        Assert.AreEqual(_deposit0, controller.GetReservation(reservation1Id).Deposit);
+        Assert.AreEqual(_client, controller.GetReservation(reservation1Id).Client);
+        Assert.AreEqual(_validDateRange, controller.GetReservation(reservation1Id).Date);
+        Assert.AreEqual(reservation1Id, controller.GetReservation(reservation1Id).Id);
     }
 
     [TestMethod]
@@ -680,8 +680,8 @@ public class ControllerTest
         controller.LoginUser(AdminEmail, AdminPassword);
         controller.ApproveReservation(reservation);
 
-        Assert.AreEqual(ApprovedReservationState, reservation.GetState());
-        Assert.AreEqual(true, reservation.GetDeposit().IsReserved());
+        Assert.AreEqual(ApprovedReservationState, reservation.Status);
+        Assert.AreEqual(true, reservation.Deposit.IsReserved());
     }
 
     [TestMethod]
@@ -699,8 +699,8 @@ public class ControllerTest
         controller.LoginUser(AdminEmail, AdminPassword);
         controller.RejectReservation(reservation, "No hay disponibilidad");
 
-        Assert.AreEqual(RejectedReservationState, reservation.GetState());
-        Assert.AreEqual("No hay disponibilidad", reservation.GetMessage());
+        Assert.AreEqual(RejectedReservationState, reservation.Status);
+        Assert.AreEqual("No hay disponibilidad", reservation.Message);
         Assert.AreEqual(false, _deposit0.IsReserved());
     }
 
@@ -719,8 +719,8 @@ public class ControllerTest
         controller.LoginUser(AdminEmail, AdminPassword);
         controller.CancelRejectionOfReservation(reservation);
 
-        Assert.AreEqual(PendingReservationState, reservation.GetState());
-        Assert.AreEqual("", reservation.GetMessage());
+        Assert.AreEqual(PendingReservationState, reservation.Status);
+        Assert.AreEqual("-", reservation.Message);
     }
     
     [TestMethod]
@@ -738,8 +738,8 @@ public class ControllerTest
         
         controller.CancelRejectionOfReservation(reservation);
 
-        Assert.AreEqual(PendingReservationState, reservation.GetState());
-        Assert.AreEqual("", reservation.GetMessage());
+        Assert.AreEqual(PendingReservationState, reservation.Status);
+        Assert.AreEqual("", reservation.Message);
     }
 
     [TestMethod]
@@ -757,9 +757,9 @@ public class ControllerTest
         controller.LoginUser(ClientEmail,ClientPassword);
         controller.RateReservation(reservation, rating);
 
-        CollectionAssert.Contains(_deposit0.GetRatings(), rating);
+        CollectionAssert.Contains(_deposit0.Ratings, rating);
         CollectionAssert.Contains(controller.GetRatings(), rating);
-        Assert.AreEqual(reservation.GetRating(), rating);
+        Assert.AreEqual(reservation.Rating, rating);
     }
     
     [TestMethod]
@@ -778,11 +778,11 @@ public class ControllerTest
         controller.RateReservation(reservation, rating);
         
         DateTime now = DateTime.Now.AddSeconds(-DateTime.Now.Second);
-        List<(string, DateTime)> logs = controller.GetActiveUser().GetLogs();
+        List<LogEntry> logs = controller.GetActiveUser().Logs;
         
-        Assert.IsTrue(logs.Any(log => log.Item1 == UserLogInLogMessage));
-        Assert.IsTrue(logs.Any(log => now.Date == log.Item2.Date 
-                                      && now.Hour == log.Item2.Hour && now.Minute == log.Item2.Minute));
+        Assert.IsTrue(logs.Any(log => log.Message == UserLogInLogMessage));
+        Assert.IsTrue(logs.Any(log => now.Date == log.Timestamp.Date 
+                                      && now.Hour == log.Timestamp.Hour && now.Minute == log.Timestamp.Minute));
     }
     
     [TestMethod]
@@ -800,9 +800,9 @@ public class ControllerTest
         controller.LoginUser(AdminEmail,AdminPassword);
         controller.RateReservation(reservation, rating);
 
-        CollectionAssert.Contains(_deposit0.GetRatings(), rating);
+        CollectionAssert.Contains(_deposit0.Ratings, rating);
         CollectionAssert.Contains(controller.GetRatings(), rating);
-        Assert.AreEqual(reservation.GetRating(), rating);
+        Assert.AreEqual(reservation.Rating, rating);
     }
 
     [TestMethod]

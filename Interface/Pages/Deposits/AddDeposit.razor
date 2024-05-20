@@ -49,9 +49,9 @@
         @foreach (var promotion in _promotions)
         {
             <div class="form-check">
-                <input class="form-check-input" type="checkbox" id="@promotion.GetLabel()" @onclick="() => TogglePromotionSelection(promotion)" checked="@IsSelected(promotion)"/>
-                <label class="form-check-label" for="@promotion.GetId()">
-                    Promoción @promotion.GetLabel() - Descuento del @(promotion.GetDiscountRate()*PercentageMultiplier)%
+                <input class="form-check-input" type="checkbox" id="@promotion.Label" @onclick="() => TogglePromotionSelection(promotion)" checked="@IsSelected(promotion)"/>
+                <label class="form-check-label" for="@promotion.Id">
+                    Promoción @promotion.Label - Descuento del @(promotion.DiscountRate*PercentageMultiplier)%
                 </label>
             </div>
         }

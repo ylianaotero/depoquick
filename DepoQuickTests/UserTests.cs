@@ -21,9 +21,21 @@ public class UserTests
     public void TestValidUserIsCreatedWithTheirAttributes()
     {
         _user = new User(_name, _email, _password);
-        Assert.AreEqual(_name, _user.GetName());
-        Assert.AreEqual(_email, _user.GetEmail());
-        Assert.AreEqual(_password, _user.GetPassword());
+        Assert.AreEqual(_name, _user.Name);
+        Assert.AreEqual(_email, _user.Email);
+        Assert.AreEqual(_password, _user.Password);
+    }
+    
+    [TestMethod]
+    public void TestUserIsCreatedAndPropertiesAreSet()
+    {
+        _user = new User();
+        _user.Name = _name;
+        _user.Email = _email;
+        _user.Password = _password;
+        Assert.AreEqual(_name, _user.Name);
+        Assert.AreEqual(_email, _user.Email);
+        Assert.AreEqual(_password, _user.Password);
     }
 
     [TestMethod]
@@ -32,7 +44,7 @@ public class UserTests
         User user1 = new User(_name, _email, _password);
         User user2 = new User(_name, _email, _password);
 
-        Assert.AreNotEqual(user1.GetId(), user2.GetId());
+        Assert.AreNotEqual(user1.Id, user2.Id);
     }
 
     [TestMethod]
@@ -41,7 +53,7 @@ public class UserTests
         User user1 = new User(_name, _email, _password);
         User user2 = new User(_name, _email, _password);
 
-        Assert.IsTrue(user1.GetId() < user2.GetId());
+        Assert.IsTrue(user1.Id < user2.Id);
     }
 
     [TestMethod]
@@ -159,10 +171,11 @@ public class UserTests
 
         user.LogAction(action, timestamp);
 
-        List<(string, DateTime)> actionsLog = user.GetLogs();
+        List<LogEntry> actionsLog = user.Logs;
 
-        Assert.AreEqual(action, actionsLog[0].Item1);
-        Assert.AreEqual(timestamp, actionsLog[0].Item2);
+        Assert.AreEqual(action, actionsLog[0].Message);
+        Assert.AreEqual(timestamp, actionsLog[0].Timestamp);
+        Assert.AreEqual(user.Id, actionsLog[0].UserId);
     }
 
     [TestMethod]
@@ -177,7 +190,7 @@ public class UserTests
         user.LogAction(action, timestamp);
     }
     
-private bool ThrowsException(Action functionCall)
+    private bool ThrowsException(Action functionCall)
     {
         try
         {

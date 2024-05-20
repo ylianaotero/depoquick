@@ -12,7 +12,7 @@
 
     <body>
 
-        <h3>¡Hola, @_client.GetName()! Aquí puedes revisar tus reservaciones.</h3>
+        <h3>¡Hola, @_client.Name! Aquí puedes revisar tus reservaciones.</h3>
 
         <table class="table">
                 <thead>
@@ -28,17 +28,17 @@
                     @foreach (Reservation reservation in _listOfReservations)
                     {
                         <tr>
-                            <td>Depósito @reservation.GetDeposit().GetId()</td>
-                            <td>@reservation.GetDateRange().GetInitialDate().ToString("dd/MM/yyyy")</td>
-                            <td>@reservation.GetDateRange().GetFinalDate().ToString("dd/MM/yyyy")</td>
-                            @if (reservation.GetState() == 0)
+                            <td>Depósito @reservation.Deposit.Id</td>
+                            <td>@reservation.Date.GetInitialDate().ToString("dd/MM/yyyy")</td>
+                            <td>@reservation.Date.GetFinalDate().ToString("dd/MM/yyyy")</td>
+                            @if (reservation.Status == 0)
                             {
                                 <td>
                                     <button class="btn btn-secondary btn-sm">En espera</button>
                                 </td>
                                 <td>-</td>
                             }
-                            else if (reservation.GetState() == 1)
+                            else if (reservation.Status == 1)
                             {
                                 <td>
                                     <button class="btn btn-success btn-sm">Aprobada</button>
@@ -49,12 +49,12 @@
                                     <td>
                                         <button class="btn btn-danger btn-sm">Rechazada</button>
                                     </td>
-                                    <td>@reservation.GetMessage()</td>
+                                    <td>@reservation.Message</td>
                                 }
                             }
                             @if (ReservationIsOver(reservation))
                             {
-                                if (reservation.GetRating() == null)
+                                if (reservation.Rating == null)
                                 {
                                     <td>
                                         <div class="btn-group">
@@ -103,18 +103,18 @@
     
     private bool ReservationIsOver(Reservation reservation)
     {
-        return reservation.GetState() == 1 && reservation.GetDateRange().GetFinalDate() < DateTime.Now;
+        return reservation.Status == 1 && reservation.Date.GetFinalDate() < DateTime.Now;
     }
     
     private void GoToAddRatingPage(Reservation reservation)
     {
-        int reservationId = reservation.GetId();
+        int reservationId = reservation.Id;
         NavigationManager.NavigateTo($"../RateReservation/{reservationId}");
     }
     
     private void GoToEditRatingPage(Reservation reservation)
     {
-        int reservationId = reservation.GetId();
+        int reservationId = reservation.Id;
         NavigationManager.NavigateTo($"../EditRating/{reservationId}");
     }
 }

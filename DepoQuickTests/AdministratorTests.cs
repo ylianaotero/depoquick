@@ -40,36 +40,36 @@ public class AdministratorTests
     public void TestValidAdministratorIsCreated()
     {
         Administrator user = new Administrator(_adminName, _adminEmail, _adminPassword);
-        Assert.AreEqual(_adminName, user.GetName());
-        Assert.AreEqual(_adminEmail, user.GetEmail());
-        Assert.AreEqual(_adminPassword, user.GetPassword());
+        Assert.AreEqual(_adminName, user.Name);
+        Assert.AreEqual(_adminEmail, user.Email);
+        Assert.AreEqual(_adminPassword, user.Password);
     }
     
     [TestMethod]
     public void TestAdministratorCanApproveReservations()
     {
-        Assert.IsTrue(_reservation.GetState() == 0);
+        Assert.IsTrue(_reservation.Status == 0);
         
         _admin.ApproveReservation(_reservation);
 
-        Assert.IsTrue(_reservation.GetState() == 1 && _deposit.IsReserved());
+        Assert.IsTrue(_reservation.Status == 1 && _deposit.IsReserved());
     }
 
     [TestMethod]
     public void TestAdministratorCanRejectReservations()
     {
-        Assert.IsTrue(_reservation.GetState() == 0 && _reservation.GetMessage() == "");
+        Assert.IsTrue(_reservation.Status == 0 && _reservation.Message == "-");
 
         string reason = "No hay disponibilidad.";
 
         _admin.RejectReservation(_reservation, reason);
 
-        Assert.IsTrue(_reservation.GetState() == -1 && _reservation.GetMessage() == reason && !_deposit.IsReserved());
+        Assert.IsTrue(_reservation.Status == -1 && _reservation.Message == reason && !_deposit.IsReserved());
     }
 
     [TestMethod]
     public void TestAdministratorUserIsAdministrator()
     {
-        Assert.IsTrue(_admin.IsAdministrator());
+        Assert.IsTrue(_admin.IsAdministrator);
     }
 }

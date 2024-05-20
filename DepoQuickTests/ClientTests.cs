@@ -16,9 +16,9 @@ public class ClientTests
     public void TestValidClientIsCreated()
     {
         Client client = new Client(_name, _email, _password);
-        Assert.AreEqual(_name, client.GetName());
-        Assert.AreEqual(_email, client.GetEmail());
-        Assert.AreEqual(_password, client.GetPassword());
+        Assert.AreEqual(_name, client.Name);
+        Assert.AreEqual(_email, client.Email);
+        Assert.AreEqual(_password, client.Password);
     }
     
     [TestMethod]
@@ -44,7 +44,7 @@ public class ClientTests
     public void TestClientUserIsNotAdministrator()
     {
         Client client = new Client(_name, _email, _password);
-        Assert.IsFalse(client.IsAdministrator());
+        Assert.IsFalse(client.IsAdministrator);
     }
     
     

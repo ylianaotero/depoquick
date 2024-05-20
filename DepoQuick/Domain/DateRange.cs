@@ -1,39 +1,45 @@
-﻿using DepoQuick.Exceptions.DateRangeExceptions;
+﻿using System.ComponentModel.DataAnnotations.Schema;
+using DepoQuick.Exceptions.DateRangeExceptions;
 
 namespace DepoQuick.Domain;
 
+[ComplexType]
 public class DateRange
 {
-    private DateTime _initialDate;
-    private DateTime _finalDate;
+    public DateTime InitialDate { get; private set; }
+    public DateTime FinalDate { get; private set; }
+    
+    public DateRange()
+    {
+        InitialDate = DateTime.MinValue;
+        FinalDate = DateTime.Now.Date;
+    }
     
     public DateRange(DateTime initialDate, DateTime finalDate)
     {
-        if (DatesAreValid(initialDate, finalDate))
-        {
-            _initialDate = initialDate;
-            _finalDate = finalDate;
-        }
+        ValidateDateRange(initialDate, finalDate);
+        InitialDate = initialDate;
+        FinalDate = finalDate;
     }
     
     public DateTime GetInitialDate()
     {
-        return _initialDate;
+        return InitialDate;
     }
     
     public DateTime GetFinalDate()
     {
-        return _finalDate;
+        return FinalDate;
     }
     
     public int NumberOfDays()
     {
-        TimeSpan difference = _finalDate - _initialDate;
+        TimeSpan difference = FinalDate - InitialDate;
         int numberOfDays = difference.Days;
         return numberOfDays;
     }
     
-    private bool DatesAreValid(DateTime initialDate, DateTime finalDate)
+    private void ValidateDateRange(DateTime initialDate, DateTime finalDate)
     {
         if (TheTwoDatesAreEmpty(initialDate,finalDate))
         {
@@ -53,10 +59,6 @@ public class DateRange
         {
             throw new InvalidDateRangeException("Rango de fechas no valido, fecha final debe ser posterior a fecha inicial");
         }
-
-        return true; 
-
-
     }
 
     private bool TheTwoDatesAreEmpty(DateTime initialDate, DateTime finalDate)
@@ -114,7 +116,7 @@ public class DateRange
     
     public bool DateRangeIsOverlapping(DateRange dateRange)
     {
-        if (IsDateInRange(dateRange.GetInitialDate()) || IsDateInRange(dateRange.GetFinalDate()))
+        if (IsDateInRange(dateRange.InitialDate) || IsDateInRange(dateRange.FinalDate))
         {
             return true; 
         }
@@ -123,12 +125,10 @@ public class DateRange
     
     public bool IsDateInRange(DateTime date)
     {
-        if (date >= _initialDate && date <= _finalDate)
+        if (date >= InitialDate && date <= FinalDate)
         {
             return true; 
         }
         return false; 
     }
-    
-    
 }

@@ -11,7 +11,7 @@
     </head>
 
     <body>
-        <h3>¡Hola, @_loggedInUser.GetName()! Aquí puedes encontrar nuestros depósitos.</h3>
+        <h3>¡Hola, @_loggedInUser.Name! Aquí puedes encontrar nuestros depósitos.</h3>
 
     @if (_showAlertDepositDeletedSuccessfully)
     {
@@ -53,7 +53,7 @@
             <th>Climatización</th>
             <th>Promociones actuales</th>
             <th>Reservado</th>
-            @if (_loggedInUser.IsAdministrator())
+            @if (_loggedInUser.IsAdministrator)
             {
                 <th>Con reservas próximas</th>
             }
@@ -64,21 +64,21 @@
         @foreach (Deposit deposit in _listOfDeposits)
         {
             <tr>
-                <td>@deposit.GetId()</td>
-                <td>@deposit.GetArea()</td>
-                <td>@deposit.GetSize()</td>
-                <td>@BoolToString(deposit.GetAirConditioning())</td>
+                <td>@deposit.Id</td>
+                <td>@deposit.Area</td>
+                <td>@deposit.Size</td>
+                <td>@BoolToString(deposit.AirConditioning)</td>
                 <td>
-                    @foreach (var promotion in deposit.GetPromotions())
+                    @foreach (var promotion in deposit.Promotions)
                     {
                         if (promotion.IsCurrentlyAvailable())
                         {
-                            <p>@promotion.GetLabel() - @(promotion.GetDiscountRate() * PercentageMultiplier)%</p>
+                            <p>@promotion.Label - @(promotion.DiscountRate * PercentageMultiplier)%</p>
                         }
                     }
                 </td>
                 <td>@BoolToString(deposit.IsReserved())</td>
-                @if (_loggedInUser.IsAdministrator())
+                @if (_loggedInUser.IsAdministrator)
                 {
                     <td>@BoolToString(deposit.HasUpcomingReservations())</td>
                 }
@@ -88,7 +88,7 @@
                         </button>
                     </div>
                 </td>
-                @if (_loggedInUser.IsAdministrator())
+                @if (_loggedInUser.IsAdministrator)
                 {
                     <td>
                         <div class="btn-group">
@@ -104,7 +104,7 @@
         
     </table>
     
-    @if (_loggedInUser.IsAdministrator())
+    @if (_loggedInUser.IsAdministrator)
     {
         <button class="btn btn-primary" @onclick="GoToAddDepositPage">Crear depósito</button>
     }
@@ -177,7 +177,7 @@
         HideAllAlerts();
         try
         {
-            int id = _depositToDelete.GetId();
+            int id = _depositToDelete.Id;
             _controller.DeleteDeposit(id);
             _showAlertDepositDeletedSuccessfully = true;
         }
@@ -189,7 +189,7 @@
     
     private void GoToDepositRatingsPage(Deposit deposit)
     {
-        int depositId = deposit.GetId();
+        int depositId = deposit.Id;
         NavigationManager.NavigateTo($"/DepositRatings/{depositId}");
     }
 }

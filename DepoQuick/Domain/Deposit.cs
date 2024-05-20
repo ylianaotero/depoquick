@@ -1,129 +1,118 @@
-﻿using DepoQuick.Exceptions.DepositExceptions;
+﻿using System.ComponentModel.DataAnnotations;
+using DepoQuick.Exceptions.DepositExceptions;
 
 namespace DepoQuick.Domain;
 
 public class Deposit
 {
     
-    private static int s_nextId = 0;
+    private static int s_nextId;
 
-    private const int DefaultAddionalPriceForAirConditioning = 20;
+    private const int AdditionalPriceForAirConditioning = 20;
     
-    private const int DefaultPriceForSmallDeposit = 50;
-    private const int DefaultPriceForMediumDeposit = 75;
-    private const int DefaultPriceForBigDeposit = 100;
+    private const int PriceForSmallDeposit = 50;
+    private const int PriceForMediumDeposit = 75;
+    private const int PriceForBigDeposit = 100;
     
-    private const int DefaultNumberOfDaysForLongStays = 7;
-    private const int DefaultNumberOfDaysForVeryLongStays = 14;
+    private const int NumberOfDaysForLongStays = 7;
+    private const int NumberOfDaysForVeryLongStays = 14;
     
-    private const int DefaultDiscount = 0; 
-    private const double DefaultDiscountForLongStay = 0.05;
-    private const double DefaultDiscountForVeryLongStay = 0.1;
+    private const int InitialDiscount = 0; 
+    private const double DiscountForLongStay = 0.05;
+    private const double DiscountForVeryLongStay = 0.1;
 
-    private const String DefaultSmallSize = "PEQUEÑO"; 
-    private const String DefaultMediumSize = "MEDIANO";
-    private const String DefaultBigSize = "GRANDE";   
+    private const String SmallSize = "PEQUEÑO"; 
+    private const String MediumSize = "MEDIANO";
+    private const String BigSize = "GRANDE";   
 
-    private int _id; 
+    [Key]
+    public int Id { get; set; }
+    
     private Char _area;
     private String _size;
-    private bool _airConditioning;
-    private List<Promotion> _promotions; 
-    private List<Rating> _ratings;
-    private List<Reservation> _reservations;
     
+    public bool AirConditioning { get; set; }
+    public List<Promotion> Promotions { get; }  
+    public List<Rating> Ratings { get; }  
+    public List<Reservation> Reservations { get; }  
+    
+    public Char Area
+    {
+        get => _area;
+        set
+        {
+            ValidateArea(value);
+            _area = char.ToUpper(value);
+        }
+    }
+    
+    public string Size
+    {
+        get => _size;
+        set
+        {
+            ValidateSize(value);
+            _size = value.ToUpper();
+        }
+    }
+    
+    public Deposit()
+    {
+        Id = s_nextId; 
+        s_nextId++; 
+    }
     
     public Deposit(Char area, String size, bool airConditioning)
     {
-        if (DepositIsValid(area, size))
-        {
-            _id = s_nextId; 
-            s_nextId++; 
-            _area = char.ToUpper(area);
-            _airConditioning = airConditioning;
-            _size = size.ToUpper();
-            _ratings = new List<Rating>();
-            _promotions = new List<Promotion>(); 
-            _reservations = new List<Reservation>();
-        }
+        ValidateArea(area);
+        ValidateSize(size);
+        
+        Id = s_nextId; 
+        s_nextId++; 
+        
+        Area = char.ToUpper(area);
+        Size = size.ToUpper();
+        AirConditioning = airConditioning;
+        
+        Ratings = new List<Rating>();
+        Promotions = new List<Promotion>(); 
+        Reservations = new List<Reservation>();
     }
-    
-    private bool DepositIsValid(Char area, String size)
+
+    private void ValidateArea(Char area)
     {
-        if (!AreaIsValid(area))
+        List<Char> possibleAreas = new List<char> { 'A', 'B', 'C', 'D', 'E' };
+        if (!possibleAreas.Contains(char.ToUpper(area)))
         {
             throw new DepositWithInvalidAreaException("Area no válida (Debe ser A, B, C, D o E)");
         }
+    }
 
-        if (!SizeIsValid(size))
+    private void ValidateSize(String size)
+    {
+        List<String> possibleSize = new List<String> {SmallSize,MediumSize,BigSize};
+        if (!possibleSize.Contains(size.ToUpper()))
         {
             throw new DepositWithInvalidSizeException("Tamaño no válido (Puede ser Pequeño, Mediano o Grande)");
         }
-        
-        return true; 
-    }
-
-    private bool AreaIsValid(Char area)
-    {
-        List<Char> possibleAreas = new List<char> { 'A', 'B', 'C', 'D', 'E' };
-        if (possibleAreas.Contains(char.ToUpper(area)))
-        {
-            return true; 
-        }
-        return false; 
-    }
-
-    private bool SizeIsValid(String size)
-    {
-        List<String> possibleSize = new List<String> {DefaultSmallSize,DefaultMediumSize,DefaultBigSize};
-        if (possibleSize.Contains(size.ToUpper()))
-        {
-            return true; 
-        }
-        return false;
-    }
-    
-    public void SetId(int id)
-    {
-        _id = id; 
-    }
-
-    public int GetId()
-    {
-        return _id; 
     }
     
     public void AddPromotion(Promotion promotion)
     {
-        _promotions.Add(promotion);
+        Promotions.Add(promotion);
     }
     
     public void RemovePromotion(Promotion promotion)
     {
-        _promotions.Remove(promotion);
-    }
-    
-    public List<Promotion> GetPromotions()
-    {
-        return _promotions; 
-    }
-
-    public Char GetArea()
-    {
-        return _area; 
-    }
-
-    public bool GetAirConditioning()
-    {
-        return _airConditioning; 
+        Promotions.Remove(promotion);
     }
 
     public bool IsReserved()
     {
-        foreach (var reservation in _reservations)
+        foreach (var reservation in Reservations)
         {
-            bool isAccepted = reservation.GetState() == 1;
-            DateRange dateRange = reservation.GetDateRange();
+            bool isAccepted = reservation.Status == 1;
+            DateRange dateRange = reservation.Date;
             if (isAccepted && dateRange.IsDateInRange(DateTime.Now))
             {
                 return true; 
@@ -134,10 +123,10 @@ public class Deposit
     
     public bool IsReserved(DateRange dateRange)
     {
-        foreach (var reservation in _reservations)
+        foreach (var reservation in Reservations)
         {
-            bool isAccepted = reservation.GetState() == 1;
-            DateRange reservationDateRange = reservation.GetDateRange();
+            bool isAccepted = reservation.Status == 1;
+            DateRange reservationDateRange = reservation.Date;
             
             if (isAccepted && reservationDateRange.DateRangeIsOverlapping(dateRange))
             {
@@ -149,10 +138,10 @@ public class Deposit
 
     public bool HasUpcomingReservations()
     {
-        foreach (var reservation in _reservations)
+        foreach (var reservation in Reservations)
         {
-            bool isAcceptedOrPending = reservation.GetState() != -1;
-            DateTime reservationInitialDate = reservation.GetDateRange().GetInitialDate();
+            bool isAcceptedOrPending = reservation.Status != -1;
+            DateTime reservationInitialDate = reservation.Date.GetInitialDate();
             
             if (isAcceptedOrPending && reservationInitialDate > DateTime.Now)
             {
@@ -161,20 +150,10 @@ public class Deposit
         }
         return false;
     }
-
-    public String GetSize()
-    {
-        return _size; 
-    }
     
     public void AddRating(Rating rating)
     {
-        _ratings.Add(rating);
-    }
-    
-    public List<Rating> GetRatings()
-    {
-        return _ratings; 
+        Ratings.Add(rating);
     }
 
     public int CalculatePrice(int numberOfDays)
@@ -201,14 +180,14 @@ public class Deposit
 
     private int PriceAccordingToSize()
     {
-        switch (_size)
+        switch (Size)
         {
-            case DefaultMediumSize:
-                return DefaultPriceForMediumDeposit;
-            case DefaultBigSize:
-                return DefaultPriceForBigDeposit;
+            case MediumSize:
+                return PriceForMediumDeposit;
+            case BigSize:
+                return PriceForBigDeposit;
             default:
-                return DefaultPriceForSmallDeposit;
+                return PriceForSmallDeposit;
         }
         
     }
@@ -220,23 +199,23 @@ public class Deposit
 
     private double DiscountAccordingToNumberOfDays(int numberOfDays)
     {
-        double discount = DefaultDiscount; 
-        if (numberOfDays >= DefaultNumberOfDaysForLongStays && numberOfDays <= DefaultNumberOfDaysForVeryLongStays)
+        double discount = InitialDiscount; 
+        if (numberOfDays >= NumberOfDaysForLongStays && numberOfDays <= NumberOfDaysForVeryLongStays)
         {
-            discount =  DefaultDiscountForLongStay;
+            discount =  DiscountForLongStay;
         }
-        if (numberOfDays > DefaultNumberOfDaysForVeryLongStays)
+        if (numberOfDays > NumberOfDaysForVeryLongStays)
         {
-            discount = DefaultDiscountForVeryLongStay;
+            discount = DiscountForVeryLongStay;
         }
         return discount; 
     }
 
     private int ApplyIncreaseForAirConditioning(int price, int numberOfDays)
     {
-        if (_airConditioning)
+        if (AirConditioning)
         {
-            price += (Multiply(numberOfDays, DefaultAddionalPriceForAirConditioning)); 
+            price += (Multiply(numberOfDays, AdditionalPriceForAirConditioning)); 
         }
 
         return price; 
@@ -244,13 +223,13 @@ public class Deposit
 
     private double AddTheDiscountAccordingToNumberOfDaysToPromotions(double discountAccordingToNumberOfDays)
     {
-        List<Promotion> listOfPromotion = GetPromotions();
+        List<Promotion> listOfPromotion = Promotions;
         double discount = discountAccordingToNumberOfDays; 
         foreach (Promotion promotion in listOfPromotion)
         {
-            if (promotion.IsCurrentlyAvailable() && TheSumOfTheDiscountsIsLessThan100(discount, promotion.GetDiscountRate()))
+            if (promotion.IsCurrentlyAvailable() && TheSumOfTheDiscountsIsLessThan100(discount, promotion.DiscountRate))
             {
-                discount +=  promotion.GetDiscountRate(); 
+                discount +=  promotion.DiscountRate; 
             }
         }
 
@@ -265,30 +244,25 @@ public class Deposit
     
     public void AddReservation(Reservation reservation)
     {
-        _reservations.Add(reservation);
+        Reservations.Add(reservation);
     }
     
     public void RemoveReservation(Reservation reservation)
     {
-        _reservations.Remove(reservation);
-    }
-    
-    public List<Reservation> GetReservations()
-    {
-        return _reservations;
+        Reservations.Remove(reservation);
     }
     
     public double GetAverageRating()
     {
-        if (_ratings.Count == 0)
+        if (Ratings.Count == 0)
         {
             return 0; 
         }
         double sum = 0; 
-        foreach (var rating in _ratings)
+        foreach (var rating in Ratings)
         {
-            sum += rating.GetStars(); 
+            sum += rating.Stars; 
         }
-        return sum / _ratings.Count; 
+        return sum / Ratings.Count; 
     }
 }

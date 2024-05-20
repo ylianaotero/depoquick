@@ -14,7 +14,7 @@ public class Controller
     
     public void AddDeposit(Deposit deposit, List<Promotion> promotions)
     {
-        if (GetActiveUser().IsAdministrator())
+        if (GetActiveUser().IsAdministrator)
         {
             GetDeposits().Add(deposit);
             foreach (Promotion promotion in promotions)
@@ -33,14 +33,14 @@ public class Controller
     public void AddReservation(Reservation reservation)
     {
         GetReservations().Add(reservation);
-        Client client = reservation.GetClient();
+        Client client = reservation.Client;
         client.AddReservation(reservation);
 
     }
 
     public void AddPromotion(Promotion promotion, List<Deposit> deposits)
     {
-        if (GetActiveUser().IsAdministrator())
+        if (GetActiveUser().IsAdministrator)
         {
             GetPromotions().Add(promotion);
             foreach (Deposit deposit in deposits)
@@ -57,11 +57,11 @@ public class Controller
 
     public void UpdatePromotionData(Promotion promotion, string label, double discountRate, DateRange validityDate)
     {
-        if (GetActiveUser().IsAdministrator())
+        if (GetActiveUser().IsAdministrator)
         {
-            promotion.SetLabel(label);
-            promotion.SetDiscountRate(discountRate);
-            promotion.SetValidityDate(validityDate);
+            promotion.Label = label;
+            promotion.DiscountRate = discountRate;
+            promotion.ValidityDate = validityDate;
         }
         else
         {
@@ -73,9 +73,9 @@ public class Controller
     
     public void UpdatePromotionDeposits(Promotion promotion, List<Deposit> deposits)
     {
-        if (GetActiveUser().IsAdministrator())
+        if (GetActiveUser().IsAdministrator)
         {
-            List<Deposit> oldDeposits = promotion.GetDeposits();
+            List<Deposit> oldDeposits = promotion.Deposits;
             List<Deposit> depositsToRemove = new List<Deposit>();
         
             foreach (var oldDeposit in oldDeposits)
@@ -109,12 +109,12 @@ public class Controller
 
     public void DeletePromotion(int id)
     {
-        if (GetActiveUser().IsAdministrator())
+        if (GetActiveUser().IsAdministrator)
         {
             List<Promotion> promotions = GetPromotions();
             Promotion promotionToDelete = SearchPromotion(id);
         
-            List<Deposit> relatedDeposits = promotionToDelete.GetDeposits();
+            List<Deposit> relatedDeposits = promotionToDelete.Deposits;
         
             foreach (Deposit deposit in relatedDeposits)
             {
@@ -167,7 +167,7 @@ public class Controller
         if (UserExists(email))
         {
             User u = GetUserFromUsersList(email);
-            if (u.GetPassword().Equals(password))
+            if (u.Password.Equals(password))
             {
                 u.LogAction("Ingresó al sistema",DateTime.Now);
                 _memoryDataBase.SetActiveUser(u);
@@ -196,7 +196,7 @@ public class Controller
         bool exists = false;
         foreach (User user in _memoryDataBase.GetUsers())
         {
-            if (user.GetEmail() == email)
+            if (user.Email == email)
             {
                 exists = true;
             }
@@ -217,12 +217,12 @@ public class Controller
     
     public void DeleteDeposit(int id)
     {
-        if (GetActiveUser().IsAdministrator())
+        if (GetActiveUser().IsAdministrator)
         {
             List<Deposit> deposits = GetDeposits();
             Deposit depositToDelete = SearchDeposit(id);
         
-            List<Promotion> relatedPromotions = depositToDelete.GetPromotions();
+            List<Promotion> relatedPromotions = depositToDelete.Promotions;
         
             foreach (Promotion promotion in relatedPromotions)
             {
@@ -252,13 +252,13 @@ public class Controller
         
         foreach (Promotion promotion in promotionsToDelete)
         {
-            DeletePromotion(promotion.GetId());
+            DeletePromotion(promotion.Id);
         }
     }
     
     private bool PromotionIsExpired(Promotion promotion)
     {
-        return promotion.GetValidityDate().GetFinalDate() < DateTime.Now;
+        return promotion.ValidityDate.GetFinalDate() < DateTime.Now;
     }
     
     public void ApproveReservation(Reservation reservation)
@@ -277,10 +277,10 @@ public class Controller
 
     public void CancelRejectionOfReservation(Reservation reservation)
     {
-        if (GetActiveUser().IsAdministrator())
+        if (GetActiveUser().IsAdministrator)
         {
-            reservation.SetState(0);
-            reservation.GetDeposit().AddReservation(reservation);
+            reservation.Status = 0;
+            reservation.Deposit.AddReservation(reservation);
         }
         else
         {
@@ -290,13 +290,13 @@ public class Controller
     
     public void RateReservation(Reservation reservation, Rating rating)
     {
-        if (!GetActiveUser().IsAdministrator())
+        if (!GetActiveUser().IsAdministrator)
         {
-            Deposit deposit = reservation.GetDeposit();
+            Deposit deposit = reservation.Deposit;
             deposit.AddRating(rating); 
-            reservation.SetRating(rating);
+            reservation.Rating = rating;
             GetRatings().Add(rating);
-            reservation.GetClient().LogAction("Agregó valoración de la reserva " + reservation.GetId(),DateTime.Now);
+            reservation.Client.LogAction("Agregó valoración de la reserva " + reservation.Id,DateTime.Now);
         }
         else
         {
@@ -311,11 +311,11 @@ public class Controller
         return user;
     }
     
-    public List<(String,DateTime)> GetLogs(User user)
+    public List<LogEntry> GetLogs(User user)
     {
-        if (GetActiveUser().IsAdministrator())
+        if (GetActiveUser().IsAdministrator)
         {
-            return user.GetLogs();
+            return user.Logs;
         }
         else
         {
@@ -405,22 +405,22 @@ public class Controller
     
     private Reservation SearchReservation(int id)
     {
-        return _memoryDataBase.GetReservations().FirstOrDefault(reservation => reservation.GetId() == id);
+        return _memoryDataBase.GetReservations().FirstOrDefault(reservation => reservation.Id == id);
     }
     
     private Promotion SearchPromotion(int id)
     {
-        return _memoryDataBase.GetPromotions().Find(p => p.GetId() == id);
+        return _memoryDataBase.GetPromotions().Find(p => p.Id == id);
     }
     
     private User SearchUser(String email)
     {
-        return _memoryDataBase.GetUsers().Find(u => u.GetEmail() == email);
+        return _memoryDataBase.GetUsers().Find(u => u.Email == email);
     }
     
     public Deposit SearchDeposit(int id)
     {
-        return _memoryDataBase.GetDeposits().FirstOrDefault(deposit => deposit.GetId() == id);
+        return _memoryDataBase.GetDeposits().FirstOrDefault(deposit => deposit.Id == id);
     }
     
 }

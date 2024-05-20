@@ -9,7 +9,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
 </head>
 <body>
-<h3>Valoraciones del depósito @_deposit.GetId().</h3>
+<h3>Valoraciones del depósito @_deposit.Id.</h3>
 <h4>Puntuación promedio: @_deposit.GetAverageRating()</h4>
     
     <table class="table table-striped table-hover">
@@ -24,16 +24,16 @@
         </thead>
         
         <tbody>
-        @foreach (Reservation reservation in _deposit.GetReservations())
+        @foreach (Reservation reservation in _deposit.Reservations)
         {
-            if (reservation.GetRating() != null)
+            if (reservation.Rating != null)
             {
                 <tr>
-                    <td>@reservation.GetClient().GetName()</td>
-                    <td>@reservation.GetDateRange().GetInitialDate().ToString("dd/MM/yyyy")</td>
-                    <td>@reservation.GetDateRange().GetFinalDate().ToString("dd/MM/yyyy")</td>
-                    <td>@reservation.GetRating().GetStars()</td>
-                    <td>@reservation.GetRating().GetComment()</td>
+                    <td>@reservation.Client.Name</td>
+                    <td>@reservation.Date.GetInitialDate().ToString("dd/MM/yyyy")</td>
+                    <td>@reservation.Date.GetFinalDate().ToString("dd/MM/yyyy")</td>
+                    <td>@reservation.Rating.Stars</td>
+                    <td>@reservation.Rating.Comment</td>
                 </tr>
             }
         }

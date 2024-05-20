@@ -1,33 +1,48 @@
-﻿using DepoQuick.Exceptions.PromotionExceptions;
+﻿using System.ComponentModel.DataAnnotations;
+using DepoQuick.Exceptions.PromotionExceptions;
 
 namespace DepoQuick.Domain;
 public class Promotion
 {
     private static int s_lastId = 0;
     
-    private int _id;
+    [Key]
+    public int Id { get; set; }
+    
+    public DateRange ValidityDate { get; set; }
+    public List<Deposit> Deposits { get; }
     
     private String _label;
     private Double _discountRate;
-    private DateRange _validityDate;
     
-    private List<Deposit> _deposits;
-    
-    public Promotion()
+    public String Label
     {
-        _id = s_lastId++;
-        _deposits = new List<Deposit>();
+        get => _label;
+        set
+        {
+            ValidateLabel(value);
+            _label = value;
+        }
     }
 
-    public void SetLabel(String label)
+    public Double DiscountRate
     {
-        if(LabelIsValid(label))
+        get => _discountRate;
+        set
         {
-            _label = label; 
+            ValidateDiscountRate(value);
+            _discountRate = value;
         }
     }
     
-    private bool LabelIsValid(String label)
+    public Promotion()
+    {
+        
+        Id = s_lastId++;
+        Deposits = new List<Deposit>();
+    }
+    
+    private void ValidateLabel(String label)
     {
         if (LabelIsEmpty(label))
         {
@@ -40,8 +55,6 @@ public class Promotion
                 throw new PromotionLabelHasMoreThan20CharactersException("La etiqueta no debe ser de largo mayor a 20 caracteres");
             }
         }
-
-        return true; 
     }
 
     private bool LabelIsEmpty(String label)
@@ -54,27 +67,9 @@ public class Promotion
         return label.Length > 20;
     }
     
-    public String GetLabel()
+    private void ValidateDiscountRate(double percent)
     {
-        return _label; 
-    }
-
-    public void SetDiscountRate(Double discountRate)
-    {
-        if(PercentageIsValid(discountRate))
-        {
-            _discountRate = discountRate; 
-        }
-    }
-    
-
-    private bool PercentageIsValid(double percent)
-    {
-        if (ItsBetween5And75Percent(percent))
-        {
-            return true; 
-        }
-        else
+        if (!ItsBetween5And75Percent(percent))
         {
             throw new InvalidPercentageForPromotionException("El porcentaje no es valido, debe estar entre 0.05 y 0.75");
         }
@@ -84,44 +79,19 @@ public class Promotion
     {
         return number >= 0.05 && number <= 0.75; 
     }
-
-    public Double GetDiscountRate()
-    {
-        return _discountRate; 
-    }
-
-    public void SetValidityDate(DateRange validityDate)
-    {
-        _validityDate = validityDate; 
-    }
-
-    public DateRange GetValidityDate()
-    {
-        return _validityDate; 
-    }
-    
-    public int GetId()
-    {
-        return _id;
-    }
     
     public void AddDeposit(Deposit deposit)
     {
-        _deposits.Add(deposit);
+        Deposits.Add(deposit);
     }
     
     public void RemoveDeposit(Deposit deposit)
     {
-        _deposits.Remove(deposit);
-    }
-    
-    public List<Deposit> GetDeposits()
-    {
-        return _deposits; 
+        Deposits.Remove(deposit);
     }
     
     public bool IsCurrentlyAvailable()
     {
-        return _validityDate.GetInitialDate() <= DateTime.Now.AddDays(1) && _validityDate.GetFinalDate() >= DateTime.Now.AddDays(-1);
+        return ValidityDate.GetInitialDate() <= DateTime.Now.AddDays(1) && ValidityDate.GetFinalDate() >= DateTime.Now.AddDays(-1);
     }
 }

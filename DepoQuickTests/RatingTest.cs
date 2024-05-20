@@ -7,6 +7,22 @@ namespace DepoQuickTests;
 public class RatingTest
 {
     [TestMethod]
+    public void TestRating()
+    {
+        int stars = 5;
+        String comment = "Excelente servicio"; 
+        
+        Rating newRating = new Rating(); 
+        newRating.Stars = stars;
+        newRating.Comment = comment;
+        
+        Assert.IsNotNull(newRating);
+        Assert.AreEqual(stars, newRating.Stars);
+        Assert.AreEqual(comment, newRating.Comment);
+        Assert.IsTrue(0 != newRating.Id);
+    }
+    
+    [TestMethod]
     [ExpectedException(typeof(InvalidStarsForRatingException))] 
     public void TestRatingInvalidStars()
     {
@@ -25,8 +41,8 @@ public class RatingTest
         Rating newRating = new Rating(stars, comment); 
         
         Assert.IsNotNull(newRating);
-        Assert.AreEqual(stars, newRating.GetStars());
-        Assert.AreEqual(comment, newRating.GetComment());
+        Assert.AreEqual(stars, newRating.Stars);
+        Assert.AreEqual(comment, newRating.Comment);
     }
     
     [TestMethod]
@@ -38,8 +54,8 @@ public class RatingTest
         Rating newRating = new Rating(stars, comment); 
         
         Assert.IsNotNull(newRating);
-        Assert.AreEqual(stars, newRating.GetStars());
-        Assert.AreEqual(comment, newRating.GetComment());
+        Assert.AreEqual(stars, newRating.Stars);
+        Assert.AreEqual(comment, newRating.Comment);
     }
     
     [TestMethod]
@@ -74,8 +90,8 @@ public class RatingTest
         
         
         Assert.IsNotNull(newRating);
-        Assert.AreEqual(stars, newRating.GetStars());
-        Assert.AreEqual(comment, newRating.GetComment());
+        Assert.AreEqual(stars, newRating.Stars);
+        Assert.AreEqual(comment, newRating.Comment);
     }
     
     [TestMethod]
@@ -87,16 +103,16 @@ public class RatingTest
         Rating newRating = new Rating(stars, comment); 
         
         Assert.IsNotNull(newRating);
-        Assert.AreEqual(stars, newRating.GetStars());
-        Assert.AreEqual(comment, newRating.GetComment());
+        Assert.AreEqual(stars, newRating.Stars);
+        Assert.AreEqual(comment, newRating.Comment);
         
         int newStars = 5;
         String newComment = "new comment"; 
         
         newRating.UpdateRating(newStars, newComment);
         
-        Assert.AreEqual(newStars, newRating.GetStars());
-        Assert.AreEqual(newComment, newRating.GetComment());
+        Assert.AreEqual(newStars, newRating.Stars);
+        Assert.AreEqual(newComment, newRating.Comment);
     }
     
     [TestMethod]
@@ -109,8 +125,8 @@ public class RatingTest
         Rating newRating = new Rating(stars, comment); 
         
         Assert.IsNotNull(newRating);
-        Assert.AreEqual(stars, newRating.GetStars());
-        Assert.AreEqual(comment, newRating.GetComment());
+        Assert.AreEqual(stars, newRating.Stars);
+        Assert.AreEqual(comment, newRating.Comment);
         
         int newStars = 6;
         String newComment = "new comment"; 
@@ -128,8 +144,8 @@ public class RatingTest
         Rating newRating = new Rating(stars, comment); 
         
         Assert.IsNotNull(newRating);
-        Assert.AreEqual(stars, newRating.GetStars());
-        Assert.AreEqual(comment, newRating.GetComment());
+        Assert.AreEqual(stars, newRating.Stars);
+        Assert.AreEqual(comment, newRating.Comment);
         
         int newStars = 5;
         String newComment = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam vel sem ligula. Vivamus nec " +

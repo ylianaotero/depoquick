@@ -11,7 +11,7 @@
     </head>
 
     <body>
-        <h3>¡Hola, @_loggedInUser.GetName()! Aquí puedes encontrar las acciones que ha tomado cada cliente.</h3>
+        <h3>¡Hola, @_loggedInUser.Name! Aquí puedes encontrar las acciones que ha tomado cada cliente.</h3>
     
     <table class="table table-striped table-hover">
         <thead>
@@ -25,12 +25,12 @@
         <tbody>
         @foreach (User user in _listOfUsers)
         {
-            @foreach((String,DateTime) log in _controller.GetLogs(user))
+            @foreach(LogEntry log in _controller.GetLogs(user))
             {
                 <tr>
-                    <td>@user.GetName()</td>
-                    <td>@log.Item1</td>
-                    <td>@log.Item2.ToString("dd/MM/yyyy")</td>
+                    <td>@user.Name</td>
+                    <td>@log.Message</td>
+                    <td>@log.Timestamp.ToString("dd/MM/yyyy")</td>
                 </tr>
             }
         }

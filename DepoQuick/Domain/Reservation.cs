@@ -1,4 +1,5 @@
-﻿using DepoQuick.Exceptions.ReservationExceptions;
+﻿using System.ComponentModel.DataAnnotations;
+using DepoQuick.Exceptions.ReservationExceptions;
 
 namespace DepoQuick.Domain;
 
@@ -6,60 +7,49 @@ public class Reservation
 {
     private static int s_nextId = 0;
     
-    private int _id; 
+    [Key]
+    public int Id { get; set; }
     
-    private Deposit _deposit; 
-    private Client _client;
-    private DateRange _date;
+    public Deposit Deposit  { get; set; }
+    public Client Client { get; set; }
+    public DateRange Date { get; set; }
+    public int Status { get; set; }
+    public Rating Rating { get; set; }
+    
     private string _message;
-    private int _state;
-    private Rating _rating;
-
-    public int GetId()
+    
+    public string Message
     {
-        return _id; 
+        get => _message;
+        set
+        {
+            ValidateMessage(value);
+            _message = value;
+        }
+    }
+    
+    public Reservation()
+    {
+        Id = s_nextId; 
+        s_nextId++; 
+        
+        Status = 0;
     }
 
     public Reservation(Deposit deposit, Client client, DateRange date)
     {
-        _id = s_nextId; 
+        Id = s_nextId; 
         s_nextId++; 
-        _deposit = deposit;
-        _client = client;
-        _date = date;
-        _message = "";
-        _state = 0;
+        
+        Deposit = deposit;
+        Client = client;
+        Date = date;
+        
+        Message = "-";
+        Status = 0;
     }
 
-    public void SetClient(Client expectedClient)
-    {
-        _client = expectedClient;
-    }
-
-    public Client GetClient()
-    {
-        return _client;
-    }
-
-    public void SetDeposit(Deposit expectedDeposit)
-    {
-        _deposit = expectedDeposit;
-    }
-
-    public Deposit GetDeposit()
-    {
-        return _deposit;
-    }
-
-    public void SetMessage(string expectedMessage)
-    {
-        if (MessageIsValid(expectedMessage))
-        {
-            _message = expectedMessage;
-        }
-    }
-
-    private bool MessageIsValid(string expectedMessage)
+    private void ValidateMessage(string expectedMessage)
     {
         if (MessageIsEmpty(expectedMessage))
         {
@@ -72,8 +62,6 @@ public class Reservation
                 throw new ReservationMessageHasMoreThan300CharactersException("El mensaje no debe tener un largo mayor a 300 caracteres");
             }
         }
-
-        return true;
     }
 
     private bool MessageHasMoreThan300Characters(string expectedMessage)
@@ -84,40 +72,5 @@ public class Reservation
     private bool MessageIsEmpty(string expectedMessage)
     {
         return string.IsNullOrWhiteSpace(expectedMessage);
-    }
-
-    public string GetMessage()
-    {
-        return _message;
-    }
-
-    public void SetState(int expectedState)
-    {
-        _state = expectedState;
-    }
-
-    public int GetState()
-    {
-        return _state;
-    }
-
-    public void SetDateRange(DateRange newStay)
-    {
-        _date = newStay;
-    }
-
-    public DateRange GetDateRange()
-    {
-        return _date;
-    }
-    
-    public void SetRating(Rating rating)
-    {
-        _rating = rating;
-    }
-    
-    public Rating GetRating()
-    {
-        return _rating;
     }
 }
