@@ -11,8 +11,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BusinessLogic.Migrations
 {
     [DbContext(typeof(DepoQuickContext))]
-    [Migration("20240519205218_InitialCreate")]
-    partial class InitialCreate
+    [Migration("20240522233714_Initial")]
+    partial class Initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
