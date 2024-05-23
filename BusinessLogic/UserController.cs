@@ -57,8 +57,12 @@ public class UserController
         }
     }
 
-    public void Remove(User user)
-    {
+    public void Remove(int id){
+        User user = _context.Users.Find(id);
+        if (user == null)
+        {
+            throw new UserDoesNotExistException("El usuario que se intenta eliminar no existe");
+        }
         _context.Users.Remove(user);
         _context.SaveChanges();
     }
@@ -90,5 +94,15 @@ public class UserController
             Client client = new Client(clientName, clientEmail, clientPassword);
             Add(client);
         }
+    }
+
+    public Administrator GetAdministrator()
+    {
+        Administrator admin = _context.Users.OfType<Administrator>().FirstOrDefault();
+        if (admin == null)
+        {
+            throw new UserDoesNotExistException("No hay ningún administrador registrado.");
+        }
+        return admin;
     }
 }
