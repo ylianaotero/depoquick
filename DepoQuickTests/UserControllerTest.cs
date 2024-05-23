@@ -1,4 +1,6 @@
-﻿namespace DepoQuickTests;
+﻿using BusinessLogic;
+
+namespace DepoQuickTests;
 
 [TestClass]
 public class UserControllerTest
@@ -11,4 +13,6 @@ public class UserControllerTest
         var context = TestContextFactory.CreateContext();
         _userController = new UserController(context);
     }
+    
+    
 }
