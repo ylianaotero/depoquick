@@ -3,19 +3,32 @@ using DepoQuick.Domain;
 
 public class DepoQuickContext : DbContext
 {
-    public DepoQuickContext(DbContextOptions<DepoQuickContext> options) : base(options)
+    public bool UseInMemoryDatabase { get; set; }
+    
+
+    public DepoQuickContext(DbContextOptions<DepoQuickContext> options, bool useInMemoryDatabase) : base(options)
     {
-        this.Database.Migrate();
+        UseInMemoryDatabase = useInMemoryDatabase;
+        if (!UseInMemoryDatabase)
+        {
+            this.Database.Migrate();   
+        }
     }
 
     public DbSet<User> Users { get; set; }
+    public DbSet<Administrator> Administrators { get; set; }
+    public DbSet<Client> Clients { get; set; }
     public DbSet<Reservation> Reservations { get; set; }
     public DbSet<Promotion> Promotions { get; set; }
     public DbSet<Deposit> Deposits { get; set; }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
-        optionsBuilder.UseSqlServer(@"Server=localhost,1433;Database=depoquick;User Id=sa;Password=Passw1rd;");
+        if (!optionsBuilder.IsConfigured)
+        {
+            optionsBuilder.UseSqlServer(@"Server=localhost,1433;Database=depoquick;User Id=sa;Password=Passw1rd;");
+
+        } 
     }
     
     protected override void OnModelCreating(ModelBuilder modelBuilder)
