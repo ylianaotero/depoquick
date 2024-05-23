@@ -3,6 +3,11 @@ using DepoQuick.Domain;
 
 public class DepoQuickContext : DbContext
 {
+    public DepoQuickContext(DbContextOptions<DepoQuickContext> options) : base(options)
+    {
+        this.Database.Migrate();
+    }
+
     public DbSet<User> Users { get; set; }
     public DbSet<Reservation> Reservations { get; set; }
     public DbSet<Promotion> Promotions { get; set; }
