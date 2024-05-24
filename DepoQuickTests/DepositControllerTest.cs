@@ -99,4 +99,25 @@ public class DepositControllerTest
 
         Deposit deposit = _depositController.GetDeposit(-34); 
     }
+    
+    [TestMethod]
+    [ExpectedException(typeof(DepositNotFoundException))]
+    public void TestDeleteDeposit()
+    {
+        _userController.RegisterAdministrator(AdminName, AdminEmail, AdminPassword, AdminPassword);
+        
+        Deposit newDeposit = new Deposit(DepositArea0, DepositSize0, DepositAirConditioning0);
+        Deposit newDeposit0 = new Deposit(DepositArea0, DepositSize0, DepositAirConditioning0);
+        
+
+        List<Promotion> promotionsToAddToDeposit = new List<Promotion>();
+        
+        _depositController.AddDeposit(newDeposit, promotionsToAddToDeposit);
+        _depositController.AddDeposit(newDeposit0, promotionsToAddToDeposit);
+        
+        int id = newDeposit0.Id;
+
+        _depositController.DeleteDeposit(id);
+        _depositController.GetDeposit(id);
+    }
 }
