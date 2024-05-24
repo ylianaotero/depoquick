@@ -1,4 +1,5 @@
 ﻿using BusinessLogic;
+using BusinessLogic.Exceptions.ControllerExceptions;
 using DepoQuick.Domain;
 
 namespace DepoQuickTests;
@@ -79,5 +80,23 @@ public class DepositControllerTest
         Assert.AreEqual(DepositAirConditioning0, deposit.AirConditioning);
         Assert.AreEqual(false, deposit.IsReserved());
         Assert.AreEqual(idDeposit0, deposit.Id);
+    }
+    
+    [TestMethod]
+    [ExpectedException(typeof(DepositNotFoundException))]
+    public void TestSearchForADepositUsingAnInvalidId()
+    {
+        _userController.RegisterAdministrator(AdminName, AdminEmail, AdminPassword, AdminPassword);
+        
+        Deposit newDeposit = new Deposit(DepositArea0, DepositSize0, DepositAirConditioning0);
+        Deposit newDeposit0 = new Deposit(DepositArea0, DepositSize0, DepositAirConditioning0);
+        
+
+        List<Promotion> promotionsToAddToDeposit = new List<Promotion>();
+        
+        _depositController.AddDeposit(newDeposit, promotionsToAddToDeposit);
+        _depositController.AddDeposit(newDeposit0, promotionsToAddToDeposit);
+
+        Deposit deposit = _depositController.GetDeposit(-34); 
     }
 }
