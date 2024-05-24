@@ -53,4 +53,31 @@ public class DepositControllerTest
         CollectionAssert.Contains(_depositController.GetDeposits(), newDeposit);
         CollectionAssert.Contains(_depositController.GetDeposit(newDeposit.Id).Promotions, promotion);
     }
+    
+    [TestMethod]
+    public void TestSearchForADepositById()
+    {
+        _userController.RegisterAdministrator(AdminName, AdminEmail, AdminPassword, AdminPassword);
+        
+        Deposit newDeposit = new Deposit(DepositArea0, DepositSize0, DepositAirConditioning0);
+        Deposit newDeposit0 = new Deposit(DepositArea0, DepositSize0, DepositAirConditioning0);
+        Deposit newDeposit1 = new Deposit(DepositArea1, DepositSize1, DepositAirConditioning1);
+        
+
+        List<Promotion> promotionsToAddToDeposit = new List<Promotion>();
+        
+        _depositController.AddDeposit(newDeposit, promotionsToAddToDeposit);
+        _depositController.AddDeposit(newDeposit0, promotionsToAddToDeposit);
+        _depositController.AddDeposit(newDeposit1, promotionsToAddToDeposit);
+        
+        int idDeposit0 = newDeposit0.Id;
+
+        Deposit deposit = _depositController.GetDeposit(idDeposit0); 
+
+        Assert.AreEqual(char.ToUpper(DepositArea0), deposit.Area);
+        Assert.AreEqual(DepositSize0.ToUpper(), deposit.Size);
+        Assert.AreEqual(DepositAirConditioning0, deposit.AirConditioning);
+        Assert.AreEqual(false, deposit.IsReserved());
+        Assert.AreEqual(idDeposit0, deposit.Id);
+    }
 }
