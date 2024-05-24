@@ -43,12 +43,14 @@ public class DepositControllerTest
         Deposit newDeposit = new Deposit(DepositArea0, DepositSize0, DepositAirConditioning0);
         
         Promotion promotion = new Promotion();
+        promotion.Label = "promo"; 
         List<Promotion> promotionsToAddToDeposit = new List<Promotion>();
         promotionsToAddToDeposit.Add(promotion);
 
         _depositController.AddDeposit(newDeposit, promotionsToAddToDeposit);
-
+        
+        
         CollectionAssert.Contains(_depositController.GetDeposits(), newDeposit);
-        CollectionAssert.Contains(_depositController.GetDeposit(0).Promotions, promotion);
+        CollectionAssert.Contains(_depositController.GetDeposit(newDeposit.Id).Promotions, promotion);
     }
 }
