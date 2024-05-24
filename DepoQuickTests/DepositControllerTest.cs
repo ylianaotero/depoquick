@@ -120,4 +120,28 @@ public class DepositControllerTest
         _depositController.DeleteDeposit(id);
         _depositController.GetDeposit(id);
     }
+    
+    [TestMethod]
+    public void TestDeleteDepositRemovesDepositFromRelatedPromotions()
+    {
+        _userController.RegisterAdministrator(AdminName, AdminEmail, AdminPassword, AdminPassword);
+        
+        Deposit newDeposit = new Deposit(DepositArea0, DepositSize0, DepositAirConditioning0);
+        Deposit newDeposit0 = new Deposit(DepositArea0, DepositSize0, DepositAirConditioning0);
+        
+
+        Promotion promotion = new Promotion();
+        promotion.Label = "promo"; 
+        List<Promotion> promotionsToAddToDeposit = new List<Promotion>();
+        promotionsToAddToDeposit.Add(promotion);
+        
+        _depositController.AddDeposit(newDeposit, promotionsToAddToDeposit);
+        _depositController.AddDeposit(newDeposit0, promotionsToAddToDeposit);
+        
+        int id = newDeposit0.Id;
+
+        _depositController.DeleteDeposit(id);
+
+        CollectionAssert.DoesNotContain(promotion.Deposits, newDeposit0);
+    }
 }
