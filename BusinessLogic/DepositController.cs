@@ -25,7 +25,7 @@ public class DepositController
     
     public Deposit GetDeposit(int depositId)
     {
-        Deposit deposit = _context.Deposits.Find(depositId);
+        Deposit deposit = SearchDeposit(depositId);
         if (deposit == null)
         {
             throw new DepositNotFoundException("Deposito no encontrado"); 
@@ -36,10 +36,30 @@ public class DepositController
         }
     }
     
+    private Deposit SearchDeposit(int id)
+    {
+        return _context.Deposits.Find(id); 
+    }
+    
     public List<Deposit> GetDeposits()
     {
         List<Deposit> deposits = _context.Deposits.ToList();
         return deposits; 
+    }
+
+    public void DeleteDeposit(int id)
+    {
+        Deposit depositToDelete = SearchDeposit(id);
+        
+        List<Promotion> relatedPromotions = depositToDelete.Promotions;
+        
+        foreach (Promotion promotion in relatedPromotions)
+        {
+            promotion.RemoveDeposit(depositToDelete);
+        }
+        
+        _context.Deposits.Remove(depositToDelete);
+        _context.SaveChanges();
     }
     
 
