@@ -1,4 +1,5 @@
-﻿using DepoQuick.Domain;
+﻿using BusinessLogic.Exceptions.ControllerExceptions;
+using DepoQuick.Domain;
 
 namespace BusinessLogic;
 
@@ -25,7 +26,14 @@ public class DepositController
     public Deposit GetDeposit(int depositId)
     {
         Deposit deposit = _context.Deposits.Find(depositId);
-        return deposit; 
+        if (deposit == null)
+        {
+            throw new DepositNotFoundException("Deposito no encontrado"); 
+        }
+        else
+        {
+            return deposit; 
+        }
     }
     
     public List<Deposit> GetDeposits()
