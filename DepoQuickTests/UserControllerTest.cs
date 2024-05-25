@@ -193,4 +193,39 @@ public class UserControllerTest
         _userController.LogAction(_userController.Get(AdminEmail),"",DateTime.Now);
     }
 
+    [TestMethod]
+    public void TestGetListOfUsers()
+    {
+        _userController.RegisterAdministrator(AdminName, AdminEmail, AdminPassword, AdminPassword);
+        _userController.RegisterClient(ClientName, ClientEmail, ClientPassword, ClientPassword);
+        List<User> users = _userController.GetAll();
+        Assert.AreEqual(2,users.Count);
+    }
+
+    [TestMethod]
+    public void TestGetListOfAllLogs()
+    {
+        _userController.RegisterAdministrator(AdminName, AdminEmail, AdminPassword, AdminPassword);
+        _userController.RegisterClient(ClientName, ClientEmail, ClientPassword, ClientPassword);
+        _session.LoginUser(ClientEmail,ClientPassword);
+        _session.LogoutUser();
+        _session.LoginUser(AdminEmail,AdminPassword);
+        
+        List<LogEntry> logs = _userController.GetAllLogs(_session.ActiveUser);
+        
+        Assert.AreEqual(3,logs.Count);
+    }
+
+    [TestMethod]
+    [ExpectedException(typeof(ActionRestrictedToAdministratorException))]
+    public void TestClientCannotGetListOfAllLogs()
+    {
+        _userController.RegisterAdministrator(AdminName, AdminEmail, AdminPassword, AdminPassword);
+        _userController.RegisterClient(ClientName, ClientEmail, ClientPassword, ClientPassword);
+        _session.LoginUser(AdminEmail,AdminPassword);
+        _session.LogoutUser();
+        _session.LoginUser(ClientEmail,ClientPassword);
+        
+        List<LogEntry> logs = _userController.GetAllLogs(_session.ActiveUser);
+    }
 }

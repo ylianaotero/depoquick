@@ -30,7 +30,7 @@ public class Reservation
     
     public Reservation()
     {
-        Id = s_nextId; 
+       // Id = s_nextId; 
         s_nextId++; 
         
         Status = 0;
@@ -38,7 +38,7 @@ public class Reservation
 
     public Reservation(Deposit deposit, Client client, DateRange date)
     {
-        Id = s_nextId; 
+        //Id = s_nextId; 
         s_nextId++; 
         
         Deposit = deposit;

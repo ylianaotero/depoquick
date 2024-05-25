@@ -11,6 +11,7 @@ public class TestContextFactory
         var optionsBuilder = new DbContextOptionsBuilder<DepoQuickContext>().UseInMemoryDatabase(Guid.NewGuid().ToString());
 
         var context = new DepoQuickContext(optionsBuilder.Options, true);
+        context.Database.EnsureCreated();
         
         return context;
         
