@@ -146,25 +146,35 @@ public class PromotionController
         }
     }
     
-    public void DeletePromotion(int id)
+    public void DeletePromotion(Promotion promotion)
     {
         if (_session.ActiveUser.IsAdministrator)
         {
-            List<Promotion> promotions = GetPromotions();
-            Promotion promotionToDelete = SearchPromotion(id);
-        
-            List<Deposit> relatedDeposits = promotionToDelete.Deposits;
-        
-            foreach (Deposit deposit in relatedDeposits)
-            {
-                deposit.RemovePromotion(promotionToDelete);
-            }
-       
-            promotions.Remove(promotionToDelete);
+            _context.Promotions.Remove(promotion);
+            _context.SaveChanges();
         }
         else
         {
             throw new ActionRestrictedToAdministratorException("Solo el administrador puede eliminar promociones");
         }
+    }
+
+    public void DeleteAllExpiredPromotions()
+    {
+        List<Promotion> promotions = GetPromotions();
+        
+        foreach (Promotion promotion in promotions)
+        {
+            if (PromotionIsExpired(promotion))
+            {
+                _context.Promotions.Remove(promotion);
+                _context.SaveChanges();
+            }
+        }
+    }
+    
+    private bool PromotionIsExpired(Promotion promotion)
+    {
+        return promotion.ValidityDate.GetFinalDate() < DateTime.Now;
     }
 }

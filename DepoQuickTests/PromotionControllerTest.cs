@@ -250,5 +250,101 @@ public class PromotionControllerTest
         _session.LoginUser(ClientEmail, ClientPassword);
         _promotionController.UpdatePromotionDeposits(promotion1, newDepositsToAddPromotion);
     }
+    
+    [TestMethod]
+    [ExpectedException(typeof(PromotionNotFoundException))]
+    public void TestDeletePromotion()
+    {
+        _session.LoginUser(AdminEmail,AdminPassword);
+        Promotion promotion = new Promotion();
+        promotion.DiscountRate = PromotionDiscountRate0;
+        promotion.Label = PromotionLabel0;
+        promotion.ValidityDate = _validDateRange;
+        
+        List<Deposit> depositsToAddToPromotion = new List<Deposit>();
+        Deposit deposit0 = new Deposit(DepositArea0, DepositSize0, DepositAirConditioning0);
+        _context.Deposits.Add(deposit0);
+        depositsToAddToPromotion.Add(deposit0);
+        _promotionController.Add(promotion,depositsToAddToPromotion);
+        
+        int id = promotion.Id;
+ 
+        _promotionController.DeletePromotion(promotion);
+ 
+        _promotionController.Get(id);
+    }
+    
+    [TestMethod]
+    public void TestDeletePromotionRemovesPromotionFromRelatedDeposits()
+    { 
+        _session.LoginUser(AdminEmail,AdminPassword);
+        Promotion promotion = new Promotion();
+        promotion.DiscountRate = PromotionDiscountRate0;
+        promotion.Label = PromotionLabel0;
+        promotion.ValidityDate = _validDateRange;
+        
+        
+        List<Deposit> depositsToAddToPromotion = new List<Deposit>();
+        Deposit deposit0 = new Deposit(DepositArea0, DepositSize0, DepositAirConditioning0);
+        _context.Deposits.Add(deposit0);
+        depositsToAddToPromotion.Add(deposit0);
+        _promotionController.Add(promotion,depositsToAddToPromotion);
+        
+        _promotionController.DeletePromotion(promotion);
+ 
+        CollectionAssert.DoesNotContain(_deposit0.Promotions, promotion);
+    }
+    
+    [TestMethod]
+    [ExpectedException(typeof(ActionRestrictedToAdministratorException))]
+    public void TestClientCannotDeletePromotion()
+    {
+        _userController.RegisterClient(ClientName,ClientEmail,ClientPassword,ClientPassword);
+        _session.LoginUser(AdminEmail,AdminPassword);
+        Promotion promotion = new Promotion();
+        promotion.DiscountRate = PromotionDiscountRate0;
+        promotion.Label = PromotionLabel0;
+        promotion.ValidityDate = _validDateRange;
+        
+        
+        List<Deposit> depositsToAddToPromotion = new List<Deposit>();
+        Deposit deposit0 = new Deposit(DepositArea0, DepositSize0, DepositAirConditioning0);
+        _context.Deposits.Add(deposit0);
+        depositsToAddToPromotion.Add(deposit0);
+        _promotionController.Add(promotion,depositsToAddToPromotion);
+     
+        _session.LogoutUser();
+        _session.LoginUser(ClientEmail,ClientPassword);
+        _promotionController.DeletePromotion(promotion);
+ 
+        CollectionAssert.DoesNotContain(_deposit0.Promotions, promotion);
+    }
 
+    [TestMethod]
+    public void TestDeleteAllExpiredPromotions()
+    {
+        _session.LoginUser(AdminEmail,AdminPassword);
+        Promotion promotion1 = new Promotion();
+        promotion1.DiscountRate = PromotionDiscountRate0;
+        promotion1.Label = PromotionLabel0;
+        promotion1.ValidityDate = _validDateRange;
+        
+        Promotion promotion2 = new Promotion();
+        promotion2.DiscountRate = PromotionDiscountRate0;
+        promotion2.Label = PromotionLabel1;
+        promotion2.ValidityDate = _expiredDateRange;
+        
+        List<Deposit> depositsToAddToPromotion = new List<Deposit>();
+        Deposit deposit0 = new Deposit(DepositArea0, DepositSize0, DepositAirConditioning0);
+        _context.Deposits.Add(deposit0);
+        depositsToAddToPromotion.Add(deposit0);
+        _promotionController.Add(promotion1, depositsToAddToPromotion);
+        _promotionController.Add(promotion2, depositsToAddToPromotion);
+        
+ 
+        _promotionController.DeleteAllExpiredPromotions();
+ 
+        CollectionAssert.Contains(_promotionController.GetPromotions(), promotion1);
+        CollectionAssert.DoesNotContain(_promotionController.GetPromotions(), promotion2);
+    }
 }
