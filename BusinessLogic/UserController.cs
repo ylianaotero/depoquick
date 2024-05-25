@@ -1,5 +1,6 @@
 ﻿using BusinessLogic.Exceptions.ControllerExceptions;
 using DepoQuick.Domain;
+using DepoQuick.Exceptions.UserExceptions;
 using SQLitePCL;
 
 namespace BusinessLogic;
@@ -31,11 +32,24 @@ public class UserController
         }
     }
     
-    public void LogAction(User user, string action, DateTime date)
+    public void LogAction(User user, string message, DateTime timestamp)
     {
-        LogEntry log = user.LogAction(action, date);
-        _context.LogEntries.Add(log); 
-        _context.SaveChanges();
+        if (string.IsNullOrEmpty(message))
+        {
+            throw new EmptyActionLogException("El mensaje no puede estar vacío.");
+        }
+        else
+        {
+            LogEntry log = new LogEntry()
+            {
+                Message = message,
+                Timestamp = timestamp,
+                UserId = user.Id
+            };
+
+            _context.LogEntries.Add(log); 
+            _context.SaveChanges();
+        }
     }
     
     public User Get(string email)
