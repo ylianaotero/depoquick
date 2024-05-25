@@ -458,34 +458,6 @@ public class DepositTest
         Assert.AreEqual(0, newDeposit.CalculatePrice(numberOfDays));
 
     }
-    
-   /* [TestMethod]
-    public void TestTwoDepositsHaveDifferentIDs()
-    {
-        char area = 'a';
-        String size = "Mediano";
-        bool airConditioning = true;
-        
-        
-        Deposit newDeposit1 = new Deposit(area, size, airConditioning);
-        Deposit newDeposit2 = new Deposit(area, size, airConditioning); 
-
-        Assert.AreNotEqual(newDeposit1.Id, newDeposit2.Id);
-    }
-
-    [TestMethod]
-    public void TestIDIsIncremental()
-    {
-        char area = 'a';
-        String size = "Mediano";
-        bool airConditioning = true;
-        
-        
-        Deposit newDeposit1 = new Deposit(area, size, airConditioning);
-        Deposit newDeposit2 = new Deposit(area, size, airConditioning);
-
-        Assert.IsTrue(newDeposit1.Id < newDeposit2.Id);
-    }*/
 
     [TestMethod]
     public void TestRemovePromotionFromDeposit()

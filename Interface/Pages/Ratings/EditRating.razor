@@ -3,6 +3,7 @@
 @using DepoQuick.Domain
 @inject Session Session
 @inject NavigationManager NavigationManager
+@inject DepoQuickContext DepoQuickContext
 
 <html lang="es">
     <head>
@@ -49,7 +50,8 @@
 @code {
     [Parameter] public int Id { get; set; }
 
-    private Controller _controller;
+    //private Controller _controller;
+    private ReservationController _reservationController;
     private Reservation _reservationToRate;
     private string _comment;
     private int _stars;
@@ -59,8 +61,9 @@
     
     protected override void OnParametersSet()
     {
-        _controller = new Controller(Session);
-        _reservationToRate = _controller.GetReservation(Id);
+        //_controller = new Controller(Session);
+        _reservationController = new ReservationController(DepoQuickContext, Session);
+        _reservationToRate = _reservationController.Get(Id);
         _ratingToEdit = _reservationToRate.Rating;
         _comment = _ratingToEdit.Comment;
         _stars = _ratingToEdit.Stars;

@@ -1,5 +1,6 @@
 ﻿@page "/Reject/{id:int}"
 @inject Session Session
+@inject DepoQuickContext DepoQuickContext
 @inject NavigationManager NavigationManager
 @using BusinessLogic
 @using BusinessLogic.Exceptions.ControllerExceptions
@@ -60,7 +61,7 @@
 @code {
     private NavigationManager _navigationManager;
     
-    private Controller _controller;
+    private ReservationController _reservationController;
     private Reservation _currentReservation; 
 
     private String _comment;
@@ -74,8 +75,8 @@
 
     protected override void OnInitialized()
     {
-        _controller = new Controller(Session);
-        _currentReservation = _controller.GetReservation(Id);
+        _reservationController = new ReservationController(DepoQuickContext,Session);
+        _currentReservation = _reservationController.Get(Id);
         _navigationManager = NavigationManager; 
     }
     
@@ -83,7 +84,7 @@
     {
         try
         {
-            _controller.RejectReservation(_currentReservation, _comment);
+            _reservationController.RejectReservation(_currentReservation, _comment);
             _navigationManager.NavigateTo("/GestionOfReservsAdmin");
         }
         catch (ReservationNotFoundException exceptionReservationNotFound)
@@ -104,7 +105,7 @@
     
     private void CancelRejection()
     {
-        _controller.CancelRejectionOfReservation(_currentReservation);
+        _reservationController.CancelRejectionOfReservation(_currentReservation);
         _navigationManager.NavigateTo("/GestionOfReservsAdmin");
     }
     

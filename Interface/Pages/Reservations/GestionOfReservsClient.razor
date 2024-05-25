@@ -88,15 +88,12 @@
 
 
 @code {
-    private Controller _controller;
     private List<Reservation> _listOfReservations;
     private Client _client; 
     
     protected override void OnInitialized()
     {
-        _controller = new Controller(Session);
-        
-        _client = (Client)_controller.GetActiveUser();
+        _client = (Client)Session.ActiveUser;
 
         _listOfReservations = _client.GetReservations(); 
     }
