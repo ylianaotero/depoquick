@@ -6,22 +6,38 @@ namespace BusinessLogic;
 public class DepositController
 {
     private DepoQuickContext _context;
+    private Session _session;
     
-    public DepositController(DepoQuickContext context)
+    public DepositController(DepoQuickContext context,Session session )
     {
         _context = context;
+        _session = session; 
     }
     
     public void AddDeposit(Deposit deposit, List<Promotion> promotions)
     {
-        foreach (Promotion promotion in promotions)
+        if (_session.UserLoggedIn() && _session.ActiveUser.IsAdministrator)
         {
-            deposit.AddPromotion(promotion);
-            promotion.AddDeposit(deposit);
+            foreach (Promotion promotion in promotions)
+            {
+                _context.Promotions.Add(promotion);
+            }
+            _context.SaveChanges(); 
+            _context.Deposits.Add(deposit);
+            _context.SaveChanges(); 
+            foreach (Promotion promotion in promotions)
+            {
+                deposit.AddPromotion(promotion);
+                promotion.AddDeposit(deposit);
+            }
+            _context.SaveChanges(); 
         }
-        _context.Deposits.Add(deposit);
-        _context.SaveChanges();
+        else
+        {
+            throw new ActionRestrictedToAdministratorException("No se puede agregar un deposito si sos cliente"); 
+        }
     }
+
     
     public Deposit GetDeposit(int depositId)
     {

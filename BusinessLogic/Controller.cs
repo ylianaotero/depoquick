@@ -1,5 +1,5 @@
-﻿/*
-  using BusinessLogic.Exceptions.ControllerExceptions;
+﻿
+ /* using BusinessLogic.Exceptions.ControllerExceptions;
 using DepoQuick.Domain;
 
 namespace BusinessLogic;
@@ -416,7 +416,7 @@ public class Controller
     
     private User SearchUser(String email)
     {
-        return _memoryDataBase.GetUsers().Find(u => u.Email == email);
+        return _memoryDatsaBase.GetUsers().Find(u => u.Email == email);
     }
     
     public Deposit SearchDeposit(int id)
@@ -424,5 +424,5 @@ public class Controller
         return _memoryDataBase.GetDeposits().FirstOrDefault(deposit => deposit.Id == id);
     }
     
-}
- */
+}*/
+ 

@@ -1,5 +1,5 @@
-﻿ /*
-  using BusinessLogic;
+﻿ 
+/*  using BusinessLogic;
  using BusinessLogic.Exceptions.ControllerExceptions;
  using DepoQuick.Domain;
  using Client = DepoQuick.Domain.Client;
@@ -52,24 +52,7 @@
          _validDateRange = new DateRange(DateTime.Now.AddDays(5), DateTime.Now.AddDays(10));
      }
      
-     [TestMethod]
-     public void TestAddValidDeposit()
-     {
-         Session session = new Session();
-         Controller controller = new Controller(session);
- 
-         controller.RegisterAdministrator(AdminName,AdminEmail,AdminPassword,AdminPassword);
-         controller.LoginUser(AdminEmail,AdminPassword);
-         Deposit newDeposit = new Deposit(DepositArea0, DepositSize0, DepositAirConditioning0);
-         Promotion promotion = new Promotion();
-         List<Promotion> promotionsToAddToDeposit = new List<Promotion>();
-         promotionsToAddToDeposit.Add(promotion);
- 
-         controller.AddDeposit(newDeposit, promotionsToAddToDeposit);
- 
-         CollectionAssert.Contains(controller.GetDeposits(), newDeposit);
-         CollectionAssert.Contains(controller.GetDeposits()[0].Promotions, promotion);
-     }
+
      
      [TestMethod]
      [ExpectedException(typeof(ActionRestrictedToAdministratorException))]
@@ -449,5 +432,5 @@
          CollectionAssert.Contains(controller.GetPromotions(), promotion1);
          CollectionAssert.DoesNotContain(controller.GetPromotions(), promotion2);
      }
- }
- */
+ }*/
+ 

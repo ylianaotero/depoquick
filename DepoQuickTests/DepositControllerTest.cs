@@ -11,6 +11,10 @@ public class DepositControllerTest
     private DepositController _depositController;
     
     private UserController _userController;
+
+    private Session _session; 
+    
+    private DepoQuickContext _context;
     
     private const char DepositArea0 = 'A';
     private const string DepositSize0 = "Pequeño";
@@ -19,25 +23,23 @@ public class DepositControllerTest
     private const string DepositSize1 = "Grande";
     private const bool DepositAirConditioning1 = false;
     
-    private const string ClientName = "Client";
-    private const string ClientEmail = "client@domain.com";
-    private const string ClientPassword = "Password2#";
-    
-    private Deposit _deposit0;
     
     private const string AdminName = "Administrator";
     private const string AdminEmail = "administrator@domain.com";
     private const string AdminPassword = "Password1#";
     
+    private const string ClientName = "Client";
+    private const string ClientEmail = "client@domain.com";
+    private const string ClientPassword = "Password2#";
+    
     [TestInitialize]
     public void Initialize()
     {
-        var context = TestContextFactory.CreateContext();
+        _context = TestContextFactory.CreateContext();
+        _userController = new UserController(_context);
+        _session = new Session(_userController);
+        _depositController = new DepositController(_context,_session);
         
-        _depositController = new DepositController(context);
-        _userController = new UserController(context);
-        
-        _deposit0 = new Deposit(DepositArea0, DepositSize0, DepositAirConditioning0);
     }
     
     [TestMethod]
@@ -45,24 +47,47 @@ public class DepositControllerTest
     {
         _userController.RegisterAdministrator(AdminName, AdminEmail, AdminPassword, AdminPassword);
         
+        _session.LoginUser(AdminEmail,AdminPassword);
+        
         Deposit newDeposit = new Deposit(DepositArea0, DepositSize0, DepositAirConditioning0);
         
         Promotion promotion = new Promotion();
-        promotion.Label = "promo"; 
+         promotion.Label = "promo";
+          List<Promotion> promotionsToAddToDeposit = new List<Promotion>();
+          promotionsToAddToDeposit.Add(promotion);
+          
+         _depositController.AddDeposit(newDeposit, promotionsToAddToDeposit);
+
+
+          CollectionAssert.Contains(_depositController.GetDeposits(), newDeposit);
+          CollectionAssert.Contains(_depositController.GetDeposit(newDeposit.Id).Promotions, promotion);
+    }
+    
+    [TestMethod]
+    [ExpectedException(typeof(ActionRestrictedToAdministratorException))]
+    public void TestClientCannotAddDeposit()
+    {
+        _userController.RegisterAdministrator(AdminName, AdminEmail, AdminPassword, AdminPassword);
+        
+        _userController.RegisterClient(ClientName,ClientEmail,ClientPassword,ClientPassword);
+        
+        _session.LoginUser(ClientEmail,ClientPassword);
+        
+        Deposit newDeposit = new Deposit(DepositArea0, DepositSize0, DepositAirConditioning0);
+        
+        Promotion promotion = new Promotion();
         List<Promotion> promotionsToAddToDeposit = new List<Promotion>();
         promotionsToAddToDeposit.Add(promotion);
-
+ 
         _depositController.AddDeposit(newDeposit, promotionsToAddToDeposit);
-        
-        
-        CollectionAssert.Contains(_depositController.GetDeposits(), newDeposit);
-        CollectionAssert.Contains(_depositController.GetDeposit(newDeposit.Id).Promotions, promotion);
     }
     
     [TestMethod]
     public void TestSearchForADepositById()
     {
         _userController.RegisterAdministrator(AdminName, AdminEmail, AdminPassword, AdminPassword);
+        
+        _session.LoginUser(AdminEmail,AdminPassword);
         
         Deposit newDeposit = new Deposit(DepositArea0, DepositSize0, DepositAirConditioning0);
         Deposit newDeposit0 = new Deposit(DepositArea0, DepositSize0, DepositAirConditioning0);
@@ -71,19 +96,19 @@ public class DepositControllerTest
 
         List<Promotion> promotionsToAddToDeposit = new List<Promotion>();
         
-        _depositController.AddDeposit(newDeposit, promotionsToAddToDeposit);
+         _depositController.AddDeposit(newDeposit, promotionsToAddToDeposit);
         _depositController.AddDeposit(newDeposit0, promotionsToAddToDeposit);
-        _depositController.AddDeposit(newDeposit1, promotionsToAddToDeposit);
-        
-        int idDeposit0 = newDeposit0.Id;
+          _depositController.AddDeposit(newDeposit1, promotionsToAddToDeposit);
 
-        Deposit deposit = _depositController.GetDeposit(idDeposit0); 
+          int idDeposit0 = newDeposit0.Id;
 
-        Assert.AreEqual(char.ToUpper(DepositArea0), deposit.Area);
-        Assert.AreEqual(DepositSize0.ToUpper(), deposit.Size);
-        Assert.AreEqual(DepositAirConditioning0, deposit.AirConditioning);
-        Assert.AreEqual(false, deposit.IsReserved());
-        Assert.AreEqual(idDeposit0, deposit.Id);
+          Deposit deposit = _depositController.GetDeposit(idDeposit0);
+
+          Assert.AreEqual(char.ToUpper(DepositArea0), deposit.Area);
+          Assert.AreEqual(DepositSize0.ToUpper(), deposit.Size);
+          Assert.AreEqual(DepositAirConditioning0, deposit.AirConditioning);
+          Assert.AreEqual(false, deposit.IsReserved());
+          Assert.AreEqual(idDeposit0, deposit.Id);
     }
     
     [TestMethod]
@@ -92,13 +117,16 @@ public class DepositControllerTest
     {
         _userController.RegisterAdministrator(AdminName, AdminEmail, AdminPassword, AdminPassword);
         
+        _session.LoginUser(AdminEmail,AdminPassword);
+        
         Deposit newDeposit = new Deposit(DepositArea0, DepositSize0, DepositAirConditioning0);
         Deposit newDeposit0 = new Deposit(DepositArea0, DepositSize0, DepositAirConditioning0);
         
 
         List<Promotion> promotionsToAddToDeposit = new List<Promotion>();
-        
+
         _depositController.AddDeposit(newDeposit, promotionsToAddToDeposit);
+
         _depositController.AddDeposit(newDeposit0, promotionsToAddToDeposit);
 
         Deposit deposit = _depositController.GetDeposit(-34); 
@@ -109,6 +137,8 @@ public class DepositControllerTest
     public void TestDeleteDeposit()
     {
         _userController.RegisterAdministrator(AdminName, AdminEmail, AdminPassword, AdminPassword);
+        
+        _session.LoginUser(AdminEmail,AdminPassword);
         
         Deposit newDeposit = new Deposit(DepositArea0, DepositSize0, DepositAirConditioning0);
         Deposit newDeposit0 = new Deposit(DepositArea0, DepositSize0, DepositAirConditioning0);
@@ -130,22 +160,28 @@ public class DepositControllerTest
     {
         _userController.RegisterAdministrator(AdminName, AdminEmail, AdminPassword, AdminPassword);
         
+        _session.LoginUser(AdminEmail,AdminPassword);
+        
         Deposit newDeposit = new Deposit(DepositArea0, DepositSize0, DepositAirConditioning0);
         Deposit newDeposit0 = new Deposit(DepositArea0, DepositSize0, DepositAirConditioning0);
         
 
-        Promotion promotion = new Promotion();
-        promotion.Label = "promo"; 
-        List<Promotion> promotionsToAddToDeposit = new List<Promotion>();
-        promotionsToAddToDeposit.Add(promotion);
+        Promotion promotion1 = new Promotion();
+        promotion1.Label = "promo"; 
+        Promotion promotion2 = new Promotion();
+        promotion2.Label = "promo"; 
+        List<Promotion> promotionsToAddToDeposit0 = new List<Promotion>();
+        promotionsToAddToDeposit0.Add(promotion1);
+        List<Promotion> promotionsToAddToDeposit1 = new List<Promotion>();
+        promotionsToAddToDeposit1.Add(promotion2);
         
-        _depositController.AddDeposit(newDeposit, promotionsToAddToDeposit);
-        _depositController.AddDeposit(newDeposit0, promotionsToAddToDeposit);
+        _depositController.AddDeposit(newDeposit, promotionsToAddToDeposit0);
+        _depositController.AddDeposit(newDeposit0, promotionsToAddToDeposit1);
         
         int id = newDeposit0.Id;
 
         _depositController.DeleteDeposit(id);
 
-        CollectionAssert.DoesNotContain(promotion.Deposits, newDeposit0);
+        CollectionAssert.DoesNotContain(promotion2.Deposits, newDeposit0);
     }
 }
