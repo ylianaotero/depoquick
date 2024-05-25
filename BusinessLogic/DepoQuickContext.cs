@@ -15,6 +15,15 @@ public class DepoQuickContext : DbContext
         }
     }
 
+    public DepoQuickContext()
+    {
+        UseInMemoryDatabase = false;
+        if (!UseInMemoryDatabase)
+        {
+            this.Database.Migrate();   
+        }
+    }
+
     public DbSet<User> Users { get; set; }
     public DbSet<Administrator> Administrators { get; set; }
     public DbSet<Client> Clients { get; set; }
@@ -30,7 +39,7 @@ public class DepoQuickContext : DbContext
     {
         if (!optionsBuilder.IsConfigured)
         {
-         //   optionsBuilder.UseSqlServer(@"Server=localhost,1433;Database=depoquick;User Id=sa;Password=Passw1rd;");
+            optionsBuilder.UseSqlServer(@"Server=localhost,1433;Database=depoquick;User Id=sa;Password=Passw1rd;");
 
         }
 

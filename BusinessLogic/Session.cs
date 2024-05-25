@@ -7,7 +7,7 @@ public class Session
 {
 
     private UserController _userController;
-    public User ActiveUser { get; set; }
+    public User? ActiveUser { get; set; }
     
     
     public Session(UserController userController)
