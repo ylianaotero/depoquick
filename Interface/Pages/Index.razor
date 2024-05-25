@@ -3,6 +3,7 @@
 @using BusinessLogic.Exceptions.ControllerExceptions
 @inject NavigationManager NavigationManager
 @inject Session Session
+@inject DepoQuickContext DepoQuickContext
 
 
 <html lang="es" xmlns="http://www.w3.org/1999/html">
@@ -68,11 +69,11 @@
 
 @code {
 
-    private Controller _controller; 
+    private UserController _userController; 
     
     protected override void OnInitialized()
     {
-        _controller = new Controller(Session);
+        _userController = new UserController(DepoQuickContext);
     }
     
     private void RegisterUser()
@@ -89,7 +90,7 @@
     {
         try
         {
-            _controller.GetAdministrator();
+            _userController.GetAdministrator();
             return true; 
         }
         catch (EmptyAdministratorException emptyAdministratorException)
