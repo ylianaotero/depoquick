@@ -156,6 +156,33 @@ public class DepositControllerTest
     }
     
     [TestMethod]
+    [ExpectedException(typeof(ActionRestrictedToAdministratorException))]
+    public void TestClientCannotDeleteDeposit()
+    {
+        _userController.RegisterAdministrator(AdminName, AdminEmail, AdminPassword, AdminPassword);
+        
+        _session.LoginUser(AdminEmail,AdminPassword);
+        
+        Deposit newDeposit = new Deposit(DepositArea0, DepositSize0, DepositAirConditioning0);
+        Deposit newDeposit0 = new Deposit(DepositArea0, DepositSize0, DepositAirConditioning0);
+        
+
+        List<Promotion> promotionsToAddToDeposit = new List<Promotion>();
+        
+        _depositController.AddDeposit(newDeposit, promotionsToAddToDeposit);
+        _depositController.AddDeposit(newDeposit0, promotionsToAddToDeposit);
+        
+        _session.LogoutUser();
+        
+        _userController.RegisterClient(ClientName,ClientEmail,ClientPassword,ClientPassword);
+        
+        _session.LoginUser(ClientEmail,ClientPassword);
+        
+        _depositController.DeleteDeposit(newDeposit.Id);
+         
+    }
+    
+    [TestMethod]
     public void TestDeleteDepositRemovesDepositFromRelatedPromotions()
     {
         _userController.RegisterAdministrator(AdminName, AdminEmail, AdminPassword, AdminPassword);

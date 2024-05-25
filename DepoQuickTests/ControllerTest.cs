@@ -1,5 +1,5 @@
 ﻿ 
-/*  using BusinessLogic;
+ /* using BusinessLogic;
  using BusinessLogic.Exceptions.ControllerExceptions;
  using DepoQuick.Domain;
  using Client = DepoQuick.Domain.Client;
@@ -52,130 +52,7 @@
          _validDateRange = new DateRange(DateTime.Now.AddDays(5), DateTime.Now.AddDays(10));
      }
      
-
      
-     [TestMethod]
-     [ExpectedException(typeof(ActionRestrictedToAdministratorException))]
-     public void TestClientCannotAddDeposit()
-     {
-         Session session = new Session();
-         Controller controller = new Controller(session);
- 
-         controller.RegisterAdministrator(AdminName,AdminEmail,AdminPassword,AdminPassword);
-         controller.RegisterClient(ClientName,ClientEmail,ClientPassword,ClientPassword);
-         controller.LoginUser(ClientEmail,ClientPassword);
-         Deposit newDeposit = new Deposit(DepositArea0, DepositSize0, DepositAirConditioning0);
-         Promotion promotion = new Promotion();
-         List<Promotion> promotionsToAddToDeposit = new List<Promotion>();
-         promotionsToAddToDeposit.Add(promotion);
- 
-         controller.AddDeposit(newDeposit, promotionsToAddToDeposit);
-     }
-     
-     [TestMethod]
-     public void TestSearchForADepositById()
-     {
-         Session session = new Session();
-         Controller controller = new Controller(session);
-         
-         controller.RegisterAdministrator(AdminName,AdminEmail,AdminPassword,AdminPassword);
-         controller.LoginUser(AdminEmail,AdminPassword);
-         Deposit newDeposit0 = new Deposit(DepositArea0, DepositSize0, DepositAirConditioning0);
-         Deposit newDeposit1 = new Deposit(DepositArea1, DepositSize1, DepositAirConditioning1);
-         List<Promotion> promotionsToAddToDeposit = new List<Promotion>();
-         controller.AddDeposit(newDeposit0, promotionsToAddToDeposit);
-         controller.AddDeposit(newDeposit1, promotionsToAddToDeposit);
-         
-         int idDeposit1 = newDeposit1.Id;
- 
-         Assert.AreEqual(char.ToUpper(DepositArea1), controller.GetDeposit(idDeposit1).Area);
-         Assert.AreEqual(DepositSize1.ToUpper(), controller.GetDeposit(idDeposit1).Size);
-         Assert.AreEqual(DepositAirConditioning1, controller.GetDeposit(idDeposit1).AirConditioning);
-         Assert.AreEqual(false, controller.GetDeposit(idDeposit1).IsReserved());
-         Assert.AreEqual(idDeposit1, controller.GetDeposit(idDeposit1).Id);
-     }
- 
-     [TestMethod]
-     [ExpectedException(typeof(DepositNotFoundException))]
-     public void TestSearchForADepositUsingAnInvalidId()
-     {
-         Session session = new Session();
-         Controller controller = new Controller(session);
- 
-         controller.RegisterAdministrator(AdminName,AdminEmail,AdminPassword,AdminPassword);
-         controller.LoginUser(AdminEmail,AdminPassword);
-         Deposit newDeposit0 = new Deposit(DepositArea0, DepositSize0, DepositAirConditioning0);
-         Deposit newDeposit1 = new Deposit(DepositArea1, DepositSize1, DepositAirConditioning1);
-         List<Promotion> promotionsToAddToDeposit = new List<Promotion>();
-         controller.AddDeposit(newDeposit0, promotionsToAddToDeposit);
-         controller.AddDeposit(newDeposit1, promotionsToAddToDeposit);
- 
-         controller.GetDeposit(-34);
-     }
-     
-     [TestMethod]
-     [ExpectedException(typeof(DepositNotFoundException))]
-     public void TestDeleteDeposit()
-     {
-         Session session = new Session();
-         Controller controller = new Controller(session);
- 
-         controller.RegisterAdministrator(AdminName,AdminEmail,AdminPassword,AdminPassword);
-         controller.LoginUser(AdminEmail,AdminPassword);
-         Deposit deposit = new Deposit(DepositArea0, DepositSize0, DepositAirConditioning0);
-         List<Promotion> promotionsToAddToDeposit = new List<Promotion>();
-         controller.AddDeposit(deposit, promotionsToAddToDeposit);
-         int id = deposit.Id;
- 
-         controller.DeleteDeposit(id);
-         controller.GetDeposit(id);
-     }
-     
-     [TestMethod]
-     [ExpectedException(typeof(ActionRestrictedToAdministratorException))]
-     public void TestClientCannotDeleteDeposit()
-     {
-         Session session = new Session();
-         Controller controller = new Controller(session);
- 
-         controller.RegisterAdministrator(AdminName,AdminEmail,AdminPassword,AdminPassword);
-         controller.RegisterClient(ClientName,ClientEmail,ClientPassword,ClientPassword);
-         controller.LoginUser(AdminEmail,AdminPassword);
-         Deposit newDeposit = new Deposit(DepositArea0, DepositSize0, DepositAirConditioning0);
-         Promotion promotion = new Promotion();
-         List<Promotion> promotionsToAddToDeposit = new List<Promotion>();
-         promotionsToAddToDeposit.Add(promotion);
-         controller.AddDeposit(newDeposit, promotionsToAddToDeposit);
-         
-         controller.LoginUser(ClientEmail,ClientPassword);
-         controller.DeleteDeposit(newDeposit.Id);
-         
-     }
-     
-     [TestMethod]
-     public void TestDeleteDepositRemovesDepositFromRelatedPromotions()
-     {
-         Session session = new Session();
-         Controller controller = new Controller(session);
-         
-         controller.RegisterAdministrator(AdminName,AdminEmail,AdminPassword,AdminPassword);
-         controller.LoginUser(AdminEmail,AdminPassword);
-         Deposit deposit = new Deposit(DepositArea0, DepositSize0, DepositAirConditioning0);
-         int depositId = deposit.Id;
-         List<Deposit> deposits = new List<Deposit>();
-         deposits.Add(deposit);
-         
-         Promotion promotion = new Promotion();
-         List<Promotion> promotions = new List<Promotion>();
-         promotions.Add(promotion);
-         
-         controller.AddDeposit(deposit, promotions);
-         controller.AddPromotion(promotion, deposits);
- 
-         controller.DeleteDeposit(depositId);
- 
-         CollectionAssert.DoesNotContain(promotion.Deposits, deposit);
-     }
      
      [TestMethod]
      public void TestAddNewPromotion()
@@ -432,5 +309,5 @@
          CollectionAssert.Contains(controller.GetPromotions(), promotion1);
          CollectionAssert.DoesNotContain(controller.GetPromotions(), promotion2);
      }
- }*/
- 
+ }
+ */
