@@ -95,7 +95,7 @@
     {
         _client = (Client)Session.ActiveUser;
 
-        _listOfReservations = _client.GetReservations(); 
+        _listOfReservations = _client.Reservations; 
     }
     
     private bool ReservationIsOver(Reservation reservation)

@@ -25,7 +25,7 @@ public class ClientTests
     public void TestNewClientHasNoReservations()
     {
         Client client = new Client(_name, _email, _password);
-        Assert.AreEqual(0, client.GetReservations().Count);
+        Assert.AreEqual(0, client.Reservations.Count);
     }
     
     [TestMethod]
@@ -37,7 +37,7 @@ public class ClientTests
 
         client.AddReservation(reservation); 
         
-        CollectionAssert.Contains(client.GetReservations(), reservation);
+        CollectionAssert.Contains(client.Reservations, reservation);
     }
 
     [TestMethod]

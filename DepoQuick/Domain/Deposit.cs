@@ -60,6 +60,9 @@ public class Deposit
     {
        // Id = s_nextId; 
        // s_nextId++; 
+       Ratings = new List<Rating>();
+       Promotions = new List<Promotion>(); 
+       Reservations = new List<Reservation>();
     }
     
     public Deposit(Char area, String size, bool airConditioning)

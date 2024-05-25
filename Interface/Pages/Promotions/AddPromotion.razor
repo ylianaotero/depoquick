@@ -99,8 +99,8 @@
 
     protected override void OnInitialized()
     {
-        _promotionController = new PromotionController(_context,Session);
-        _depositController = new DepositController(_context,Session);
+        _promotionController = new PromotionController(DepoQuickContext,Session);
+        _depositController = new DepositController(DepoQuickContext,Session);
         
         _startDate = DateTime.Now;
         _finalDate = DateTime.Now;

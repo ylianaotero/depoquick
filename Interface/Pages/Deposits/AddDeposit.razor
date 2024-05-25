@@ -67,6 +67,7 @@
     private const double PercentageMultiplier = 100.0;
     private UserController _userController;
     private DepositController _depositController;
+    private PromotionController _promotionController;
     private char _area;
     private string _size;
     private bool _airConditioning;
@@ -79,12 +80,13 @@
     {
         _userController = new UserController(DepoQuickContext);
         _depositController = new DepositController(DepoQuickContext, Session);
+        _promotionController = new PromotionController(DepoQuickContext, Session);
+        
         _area = 'A';
         _size = "PEQUEÑO";
         _airConditioning = false;
         _selectedPromotions = new List<Promotion>();
-        //_promotions = _controller.GetPromotions();
-        _promotions = new List<Promotion>();
+        _promotions = _promotionController.GetPromotions();
         _selectAllPromotions = false;
     }
     

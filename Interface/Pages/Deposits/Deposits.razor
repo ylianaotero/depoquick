@@ -114,7 +114,9 @@
 
 @code {
     private const double PercentageMultiplier = 100.0;
-    private UserController _controller;
+    private UserController _userController;
+    private DepositController _depositController;
+    private PromotionController _promotionController;
     private List<Deposit> _listOfDeposits;
     private User _loggedInUser;
 
@@ -127,13 +129,14 @@
     
     protected override void OnInitialized()
     {
-        _controller = new UserController(DepoQuickContext);
+        _userController = new UserController(DepoQuickContext);
         _loggedInUser = Session.ActiveUser;
+        _depositController = new DepositController(DepoQuickContext, Session);
+        _promotionController = new PromotionController(DepoQuickContext, Session);
 
-        //_listOfDeposits = _controller.GetDeposits();
-        _listOfDeposits = new List<Deposit>();
+        _listOfDeposits = _depositController.GetDeposits();
         
-        //_controller.DeleteAllExpiredPromotions();
+        _promotionController.DeleteAllExpiredPromotions();
 
         _depositToDelete = null;
         

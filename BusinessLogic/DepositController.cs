@@ -18,7 +18,7 @@ public class DepositController
     {
         if (UserIsLogged() && UserLoggedIsAnAdministrator())
         {
-            AddPromotionsToTheDataBase(promotions);
+           // AddPromotionsToTheDataBase(promotions);
 
             AddDepositToTheDataBase(deposit);
 
