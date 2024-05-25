@@ -2,6 +2,7 @@
 @using BusinessLogic
 @using DepoQuick.Domain
 @inject Session Session
+@inject DepoQuickContext DepoQuickContext
 
 <html lang="es">
 <head>
@@ -44,14 +45,14 @@
 
 @code {
     [Parameter] public int Id { get; set; }
-
-    private Controller _controller;
+    
+    private DepositController _depositController;
     private Deposit _deposit;
     
     
     protected override void OnParametersSet()
     {
-        _controller = new Controller(Session);
-        _deposit = _controller.GetDeposit(Id);
+        _depositController = new DepositController(DepoQuickContext, Session);
+        _deposit = _depositController.GetDeposit(Id);
     }
 }

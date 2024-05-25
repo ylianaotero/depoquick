@@ -22,7 +22,7 @@
 
     private bool UserIsAdministrator()
     {
-        return Session.GetActiveUser().IsAdministrator; 
+        return Session.ActiveUser.IsAdministrator;
     }
 
     private void GoToGestionOfReservsForAdmins()
