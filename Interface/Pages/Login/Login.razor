@@ -3,7 +3,7 @@
 @using BusinessLogic.Exceptions.ControllerExceptions
 @inject Session Session
 @inject NavigationManager NavigationManager
-
+@inject DepoQuickContext DepoQuickContext
 
 <html lang="es" xmlns="http://www.w3.org/1999/html">
   <head>
@@ -72,8 +72,6 @@
     private bool _showAlertUserDoesNotExist;
     private bool _showAlertInvalidPassword;
     
-    private Controller _controller;
-    
     private String _email;
     private String _password;
 
@@ -81,7 +79,7 @@
     
      protected override void OnInitialized()
     {
-        _controller = new Controller(Session);
+        HideAllAlerts();
     }
     
     
@@ -91,7 +89,7 @@
         
         try
         {
-            _controller.LoginUser(_email, _password); 
+            Session.LoginUser(_email, _password); 
 
             GoHome(); 
         }

@@ -3,6 +3,7 @@
 @using DepoQuick.Domain
 @inject Session Session
 @inject NavigationManager NavigationManager
+@inject DepoQuickContext DepoQuickContext
 
 <html lang="es">
     <head>
@@ -64,7 +65,8 @@
 
 @code {
     private const double PercentageMultiplier = 100.0;
-    private Controller _controller;
+    private UserController _userController;
+    private DepositController _depositController;
     private char _area;
     private string _size;
     private bool _airConditioning;
@@ -75,13 +77,14 @@
     
     protected override void OnInitialized()
     {
-        _controller = new Controller(Session);
-        
+        _userController = new UserController(DepoQuickContext);
+        _depositController = new DepositController(DepoQuickContext, Session);
         _area = 'A';
         _size = "PEQUEÑO";
         _airConditioning = false;
         _selectedPromotions = new List<Promotion>();
-        _promotions = _controller.GetPromotions();
+        //_promotions = _controller.GetPromotions();
+        _promotions = new List<Promotion>();
         _selectAllPromotions = false;
     }
     
@@ -89,7 +92,7 @@
     {
         Deposit newDeposit = new Deposit(_area, _size, _airConditioning);
         
-        _controller.AddDeposit(newDeposit, _selectedPromotions);
+        _depositController.AddDeposit(newDeposit, _selectedPromotions);
 
         GoToDepositsPage();
     }

@@ -7,7 +7,7 @@
 <div class="container-fluid mt-4">
     <div class="row">
         <div class="col">
-            @if (_loggedUser != null)
+            @if (Session.UserLoggedIn())
             {
                 <h1 class="text-center" style="color: #0a53be"><strong>¡Bienvenido/a @_loggedUser.Name!</strong></h1>
                 @if (_loggedUserIsAdmin)
@@ -25,16 +25,13 @@
 </div>
 
 @code {
-    private Controller _controller;
-
     private User _loggedUser;
     private bool _loggedUserIsAdmin; 
     
     protected override void OnInitialized()
     {
-        _controller = new Controller(Session);
-        _loggedUser = _controller.GetActiveUser();
-        if (_loggedUser != null)
+        _loggedUser = Session.ActiveUser;
+        if (Session.UserLoggedIn())
         {
             _loggedUserIsAdmin = _loggedUser.IsAdministrator; 
         }
