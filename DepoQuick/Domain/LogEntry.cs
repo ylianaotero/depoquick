@@ -8,7 +8,7 @@ public class LogEntry
     private static int s_lastId = 0;
     
     [Key]
-    public int Id { get; init; }
+    public int Id { get; set; }
     public string Message { get; init; }
 
     public DateTime Timestamp { get; init; }
@@ -18,7 +18,7 @@ public class LogEntry
 
     public LogEntry()
     {
-        Id = s_lastId + 1;
-        s_lastId = Id;
+      //  Id = s_lastId + 1;
+        //s_lastId = Id;
     }
 }

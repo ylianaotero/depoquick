@@ -45,8 +45,14 @@ namespace DepoQuickTests
         private DateRange _currentDateRange;
         
         [TestInitialize]
-        public void Initialize()
+        public void TestInitialize()
         {
+            if (_context != null)
+            {
+                _context.Database.EnsureDeleted();
+                _context.Dispose();
+            }
+            
             _context = TestContextFactory.CreateContext();
             _userController = new UserController(_context);
             _session = new Session(_userController);
@@ -69,7 +75,6 @@ namespace DepoQuickTests
             _userController.RegisterClient(ClientName, ClientEmail, ClientPassword, ClientPassword);
             _client = (Client)_userController.Get(ClientEmail);
             Reservation reservation1 = new Reservation(_deposit0, _client, _validDateRange);
-            int reservation1Id = reservation1.Id;
     
             _reservationController.Add(reservation1);
 
@@ -97,11 +102,14 @@ namespace DepoQuickTests
             _client = (Client)_userController.Get(ClientEmail);
             Reservation reservation1 = new Reservation(_deposit0, _client, _validDateRange);
             Reservation reservation2 = new Reservation(_deposit0, _client, _expiredDateRange);
-            int reservation1Id = reservation1.Id;
     
             _reservationController.Add(reservation1);
             _reservationController.Add(reservation2);
             
+            int reservation1Id = reservation1.Id;
+            
+            CollectionAssert.Contains(_reservationController.GetReservations(), reservation1);
+            Assert.AreEqual(_deposit0, _reservationController.Get(reservation1Id).Deposit);
             Assert.AreEqual(_deposit0, _reservationController.Get(reservation1Id).Deposit);
             Assert.AreEqual(_client, _reservationController.Get(reservation1Id).Client);
             Assert.AreEqual(_validDateRange, _reservationController.Get(reservation1Id).Date);
@@ -136,6 +144,20 @@ namespace DepoQuickTests
             _reservationController.Add(reservation2);
  
             _reservationController.Get(_currentDateRange);
+        }
+
+        [TestMethod]
+        public void TestGetAllReservations()
+        {
+            _userController.RegisterClient(ClientName, ClientEmail, ClientPassword, ClientPassword);
+            _client = (Client)_userController.Get(ClientEmail);
+            Reservation reservation1 = new Reservation(_deposit0, _client, _validDateRange);
+            Reservation reservation2 = new Reservation(_deposit0, _client, _expiredDateRange);
+    
+            _reservationController.Add(reservation1);
+            _reservationController.Add(reservation2);
+            
+            Assert.AreEqual(2, _reservationController.GetReservations().Count);
         }
         
         [TestMethod]

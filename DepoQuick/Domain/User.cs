@@ -59,8 +59,8 @@ public class User
     
     public User()
     {
-        Id = s_lastId + 1;
-        s_lastId = Id;
+    //    Id = s_lastId + 1;
+       // s_lastId = Id;
         
         Logs = new();
     }
@@ -77,8 +77,8 @@ public class User
 
         Logs = new();
 
-        Id = s_lastId + 1;
-        s_lastId = Id;
+      //  Id = s_lastId + 1;
+       // s_lastId = Id;
     }
     
     private void ValidateName(string name)

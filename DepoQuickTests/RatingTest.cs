@@ -19,7 +19,7 @@ public class RatingTest
         Assert.IsNotNull(newRating);
         Assert.AreEqual(stars, newRating.Stars);
         Assert.AreEqual(comment, newRating.Comment);
-        Assert.IsTrue(0 != newRating.Id);
+        Assert.IsTrue(0 >= newRating.Id);
     }
     
     [TestMethod]

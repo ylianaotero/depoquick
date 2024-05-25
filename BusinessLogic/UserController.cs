@@ -32,6 +32,11 @@ public class UserController
         }
     }
     
+    public List<User> GetAll()
+    {
+        return _context.Users.ToList();
+    }
+    
     public void LogAction(User user, string message, DateTime timestamp)
     {
         if (string.IsNullOrEmpty(message))
@@ -142,5 +147,17 @@ public class UserController
             throw new ActionRestrictedToAdministratorException("Solo el administrador puede ver los logs");
         }
         
+    }
+    
+    public List<LogEntry> GetAllLogs(User activeUser)
+    {
+        if (activeUser.IsAdministrator)
+        {
+            return _context.LogEntries.ToList();
+        }
+        else
+        {
+            throw new ActionRestrictedToAdministratorException("Solo el administrador puede ver los logs");
+        }
     }
 }

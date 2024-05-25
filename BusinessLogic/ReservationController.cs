@@ -50,6 +50,13 @@ public class ReservationController
             return reservation;
         }
     }
+    
+    
+    public List<Reservation> GetReservations()
+    {
+        List<Reservation> reservations = _context.Reservations.ToList();
+        return reservations; 
+    }
 
     public void ApproveReservation(Reservation reservation)
     {

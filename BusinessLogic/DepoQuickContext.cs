@@ -22,6 +22,7 @@ public class DepoQuickContext : DbContext
     public DbSet<Promotion> Promotions { get; set; }
     public DbSet<Deposit> Deposits { get; set; }
     
+    
     public DbSet<LogEntry> LogEntries { get; set; }
     public DbSet<Rating> Ratings { get; set; }
 

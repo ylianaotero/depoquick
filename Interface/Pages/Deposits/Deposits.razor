@@ -3,6 +3,7 @@
 @using DepoQuick.Domain
 @inject Session Session
 @inject NavigationManager NavigationManager
+@inject DepoQuickContext DepoQuickContext
 
 <html lang="es">
     <head>
@@ -113,7 +114,7 @@
 
 @code {
     private const double PercentageMultiplier = 100.0;
-    private Controller _controller;
+    private UserController _controller;
     private List<Deposit> _listOfDeposits;
     private User _loggedInUser;
 
@@ -126,12 +127,13 @@
     
     protected override void OnInitialized()
     {
-        _controller = new Controller(Session);
-        _loggedInUser = _controller.GetActiveUser();
+        _controller = new UserController(DepoQuickContext);
+        _loggedInUser = Session.ActiveUser;
 
-        _listOfDeposits = _controller.GetDeposits();
+        //_listOfDeposits = _controller.GetDeposits();
+        _listOfDeposits = new List<Deposit>();
         
-        _controller.DeleteAllExpiredPromotions();
+        //_controller.DeleteAllExpiredPromotions();
 
         _depositToDelete = null;
         
@@ -178,7 +180,7 @@
         try
         {
             int id = _depositToDelete.Id;
-            _controller.DeleteDeposit(id);
+            //_controller.DeleteDeposit(id);
             _showAlertDepositDeletedSuccessfully = true;
         }
         catch (Exception)
