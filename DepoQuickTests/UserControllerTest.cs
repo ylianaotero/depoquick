@@ -1,6 +1,7 @@
 ﻿using BusinessLogic;
 using BusinessLogic.Exceptions.ControllerExceptions;
 using DepoQuick.Domain;
+using DepoQuick.Exceptions.UserExceptions;
 
 namespace DepoQuickTests;
 
@@ -15,6 +16,8 @@ public class UserControllerTest
     private const string ClientName = "Client";
     private const string ClientEmail = "client@domain.com";
     private const string ClientPassword = "Password2#";
+    
+    private const string UserLogInLogMessage = "Ingresó al sistema";
 
     [TestInitialize]
     public void Initialize()
@@ -166,9 +169,28 @@ public class UserControllerTest
     {
         _userController.RegisterAdministrator(AdminName, AdminEmail, AdminPassword, AdminPassword);
         _userController.RegisterClient(ClientName, ClientEmail, ClientPassword, ClientPassword);
+        DateTime now = DateTime.Now.AddSeconds(-DateTime.Now.Second);
         _session.LoginUser(AdminEmail,AdminPassword);
         _session.LogoutUser();
         _session.LoginUser(AdminEmail,AdminPassword);
-        Assert.AreEqual(3,_userController.GetLogs(_userController.Get(AdminEmail), _session.ActiveUser).Count);
+        List<LogEntry> logs = _userController.GetLogs(_userController.Get(AdminEmail), _session.ActiveUser);
+        
+        Assert.AreEqual(3,logs.Count);
+        Assert.AreEqual(logs[0].Message , UserLogInLogMessage);
+        Assert.IsTrue(logs.Any(log => now.Date == log.Timestamp.Date
+                              && now.Hour == log.Timestamp.Hour && now.Minute == log.Timestamp.Minute));
+        Assert.AreEqual(logs[0].UserId , _userController.Get(AdminEmail).Id);
     }
+    
+    [TestMethod]
+    [ExpectedException(typeof(EmptyActionLogException))]
+    public void TestEmptyActionLog()
+    {
+        _userController.RegisterAdministrator(AdminName, AdminEmail, AdminPassword, AdminPassword);
+        _session.LoginUser(AdminEmail,AdminPassword);
+        _session.LogoutUser();
+        _session.LoginUser(AdminEmail,AdminPassword);
+        _userController.LogAction(_userController.Get(AdminEmail),"",DateTime.Now);
+    }
+
 }

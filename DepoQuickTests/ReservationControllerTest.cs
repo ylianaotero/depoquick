@@ -305,29 +305,24 @@ namespace DepoQuickTests
             DateTime now = DateTime.Now.AddSeconds(-DateTime.Now.Second);
             List<LogEntry> logs = _session.ActiveUser.Logs;
          
-            Assert.IsTrue(logs.Any(log => log.Message == UserLogInLogMessage));
+            Assert.IsTrue(logs.Any(log => log.Message == "Agregó valoración de la reserva " + reservation.Id));
             Assert.IsTrue(logs.Any(log => now.Date == log.Timestamp.Date 
                                           && now.Hour == log.Timestamp.Hour && now.Minute == log.Timestamp.Minute));
         }
         
-        /*
+        
         [TestMethod]
         [ExpectedException(typeof(ActionRestrictedToClientException))]
         public void TestAdministratorCannotRateReservation()
         {
-            _userController.RegisterAdministrator(AdminName,AdminEmail,AdminPassword,AdminPassword);
             Reservation reservation = new Reservation(_deposit0, _client, _currentDateRange);
-            _reservationController.AddReservation(reservation);
+            _reservationController.Add(reservation);
             Rating rating = new Rating(5, "Excelente");
  
             _session.LoginUser(AdminEmail,AdminPassword);
             _reservationController.RateReservation(reservation, rating);
- 
-            CollectionAssert.Contains(_deposit0.Ratings, rating);
-            CollectionAssert.Contains(.GetRatings(), rating);
-            Assert.AreEqual(reservation.Rating, rating);
         }
-        */
+        
 
     }
 }

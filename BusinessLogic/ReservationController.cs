@@ -109,7 +109,9 @@ public class ReservationController
             deposit.AddRating(rating); 
             reservation.Rating = rating;
             _context.Ratings.Add(rating);
-            reservation.Client.LogAction("Agregó valoración de la reserva " + reservation.Id,DateTime.Now);
+            UserController _userController = new UserController(_context);
+            _userController.LogAction(reservation.Client, "Agregó valoración de la reserva " + reservation.Id, DateTime.Now);
+            reservation.Client.LogAction("Agregó valoración de la reserva" + reservation.Id, DateTime.Now);
         }
         else
         {
