@@ -23,18 +23,21 @@ public class Session
     public void LogoutUser()
     {
         User u = ActiveUser;
-        u.LogAction("Cerró sesión",DateTime.Now);
+        _userController.LogAction(u, "Cerró sesión", DateTime.Now); 
+        //u.LogAction("Cerró sesión",DateTime.Now);
         ActiveUser = null;
     }
     
-    public void LoginUser(string email, string password)
+    public void LoginUser(string email, string password )
     {
         if (_userController.UserExists(email))
         {
             User u = _userController.Get(email);
             if (u.Password.Equals(password))
             {
-                u.LogAction("Ingresó al sistema",DateTime.Now);
+                _userController.LogAction(u, "Ingresó al sistema", DateTime.Now); 
+                //u.LogAction("Ingresó al sistema",DateTime.Now);
+                
                 ActiveUser = u;
             }
             else

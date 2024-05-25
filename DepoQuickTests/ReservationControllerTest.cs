@@ -55,8 +55,7 @@ namespace DepoQuickTests
             _userController.RegisterAdministrator(AdminName, AdminEmail, AdminPassword, AdminPassword);
 
             _deposit0 = new Deposit (DepositArea0,DepositSize0,DepositAirConditioning0);
-            _context.Deposits.Add(_deposit0);
-            _context.SaveChanges();
+
             
             _currentDateRange = new DateRange(DateTime.Now, DateTime.Now.AddDays(10));
             _validDateRange = new DateRange(DateTime.Now.AddDays(5), DateTime.Now.AddDays(10));
@@ -246,24 +245,18 @@ namespace DepoQuickTests
             _client = (Client)_userController.Get(ClientEmail);
             _session.LoginUser(ClientEmail, ClientPassword);
             
-            List<Promotion> promotionsToAddToDeposit = new List<Promotion>();
-            foreach (Promotion promotion in promotionsToAddToDeposit)
-            {
-                _deposit0.AddPromotion(promotion);
-                promotion.AddDeposit(_deposit0);
-            }
-            
-            //TODO: Cambiar el agregar al controller
+            _context.Deposits.Add(_deposit0);
+            _context.SaveChanges();
             Reservation reservation = new Reservation(_deposit0, _client, _currentDateRange);
-            //_reservationController.Add(reservation);
+            _reservationController.Add(reservation);
  
-            /*
+            
              _session.LoginUser(AdminEmail, AdminPassword);
-            _reservationController.CancelRejectionOfReservation(reservation);
- 
-            Assert.AreEqual(PendingReservationState, reservation.Status);
-            Assert.AreEqual("-", reservation.Message);
-             */
+             _reservationController.CancelRejectionOfReservation(reservation);
+
+             Assert.AreEqual(PendingReservationState, reservation.Status);
+             Assert.AreEqual("-", reservation.Message);
+              
         }
     
         [TestMethod]

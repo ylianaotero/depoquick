@@ -139,8 +139,8 @@ public class User
             throw new UserPasswordsDoNotMatchException("Las contraseñas no coinciden.");
         }
     }
-    
-    public void LogAction(string message, DateTime timestamp)
+    //cambiar el nombre
+    public LogEntry LogAction(string message, DateTime timestamp)
     {
         if (string.IsNullOrEmpty(message))
         {
@@ -154,8 +154,11 @@ public class User
                 Timestamp = timestamp,
                 UserId = Id
             };
-            
-            Logs.Add(log);
+
+            return log; 
+
+
+            //Logs.Add(log);
         }
     }
 }

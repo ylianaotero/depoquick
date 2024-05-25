@@ -18,9 +18,9 @@ public class ReservationController
     public void Add(Reservation reservation)
     {
         _context.Reservations.Add(reservation);
-        Client client = reservation.Client;
-        client.AddReservation(reservation);
-        reservation.Deposit.AddReservation(reservation);
+        //Client client = reservation.Client;
+        //client.AddReservation(reservation);
+        //reservation.Deposit.AddReservation(reservation);
         _context.SaveChanges();
     }
     
@@ -93,7 +93,7 @@ public class ReservationController
         {
             reservation.Status = 0;
             reservation.Deposit.AddReservation(reservation);
-            Add(reservation);
+            //Add(reservation);
         }
         else
         {

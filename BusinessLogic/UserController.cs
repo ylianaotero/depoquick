@@ -31,6 +31,13 @@ public class UserController
         }
     }
     
+    public void LogAction(User user, string action, DateTime date)
+    {
+        LogEntry log = user.LogAction(action, date);
+        _context.LogEntries.Add(log); 
+        _context.SaveChanges();
+    }
+    
     public User Get(string email)
     {
         User user = _context.Users.FirstOrDefault(u =>u.Email==email);
