@@ -22,6 +22,7 @@ public class DepoQuickContext : DbContext
     public DbSet<Promotion> Promotions { get; set; }
     public DbSet<Deposit> Deposits { get; set; }
     
+    
     public DbSet<LogEntry> LogEntries { get; set; }
     public DbSet<Rating> Ratings { get; set; }
 
@@ -31,7 +32,10 @@ public class DepoQuickContext : DbContext
         {
             optionsBuilder.UseSqlServer(@"Server=localhost,1433;Database=depoquick;User Id=sa;Password=Passw1rd;");
 
-        } 
+        }
+
+        optionsBuilder.EnableDetailedErrors(true);
+        optionsBuilder.EnableSensitiveDataLogging(true);
     }
     
     protected override void OnModelCreating(ModelBuilder modelBuilder)
