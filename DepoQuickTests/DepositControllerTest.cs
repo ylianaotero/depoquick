@@ -19,6 +19,10 @@ public class DepositControllerTest
     private const string DepositSize1 = "Grande";
     private const bool DepositAirConditioning1 = false;
     
+    private const string ClientName = "Client";
+    private const string ClientEmail = "client@domain.com";
+    private const string ClientPassword = "Password2#";
+    
     private Deposit _deposit0;
     
     private const string AdminName = "Administrator";
