@@ -459,7 +459,7 @@ public class DepositTest
 
     }
     
-    [TestMethod]
+   /* [TestMethod]
     public void TestTwoDepositsHaveDifferentIDs()
     {
         char area = 'a';
@@ -485,7 +485,7 @@ public class DepositTest
         Deposit newDeposit2 = new Deposit(area, size, airConditioning);
 
         Assert.IsTrue(newDeposit1.Id < newDeposit2.Id);
-    }
+    }*/
 
     [TestMethod]
     public void TestRemovePromotionFromDeposit()

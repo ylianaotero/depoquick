@@ -39,7 +39,7 @@ public class Reservation
     public Reservation(Deposit deposit, Client client, DateRange date)
     {
         //Id = s_nextId; 
-        s_nextId++; 
+      //  s_nextId++; 
         
         Deposit = deposit;
         Client = client;

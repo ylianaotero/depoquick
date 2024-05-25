@@ -52,15 +52,15 @@ public class DepositControllerTest
         Deposit newDeposit = new Deposit(DepositArea0, DepositSize0, DepositAirConditioning0);
         
         Promotion promotion = new Promotion();
-         promotion.Label = "promo";
-          List<Promotion> promotionsToAddToDeposit = new List<Promotion>();
-          promotionsToAddToDeposit.Add(promotion);
+        promotion.Label = "promo";
+        List<Promotion> promotionsToAddToDeposit = new List<Promotion>(); 
+        promotionsToAddToDeposit.Add(promotion);
           
-         _depositController.AddDeposit(newDeposit, promotionsToAddToDeposit);
+        _depositController.AddDeposit(newDeposit, promotionsToAddToDeposit);
 
 
-          CollectionAssert.Contains(_depositController.GetDeposits(), newDeposit);
-          CollectionAssert.Contains(_depositController.GetDeposit(newDeposit.Id).Promotions, promotion);
+        CollectionAssert.Contains(_depositController.GetDeposits(), newDeposit);
+        CollectionAssert.Contains(_depositController.GetDeposit(newDeposit.Id).Promotions, promotion);
     }
     
     [TestMethod]
@@ -96,19 +96,19 @@ public class DepositControllerTest
 
         List<Promotion> promotionsToAddToDeposit = new List<Promotion>();
         
-         _depositController.AddDeposit(newDeposit, promotionsToAddToDeposit);
+        _depositController.AddDeposit(newDeposit, promotionsToAddToDeposit);
         _depositController.AddDeposit(newDeposit0, promotionsToAddToDeposit);
-          _depositController.AddDeposit(newDeposit1, promotionsToAddToDeposit);
+        _depositController.AddDeposit(newDeposit1, promotionsToAddToDeposit);
 
-          int idDeposit0 = newDeposit0.Id;
+        int idDeposit0 = newDeposit0.Id;
 
-          Deposit deposit = _depositController.GetDeposit(idDeposit0);
+        Deposit deposit = _depositController.GetDeposit(idDeposit0);
 
-          Assert.AreEqual(char.ToUpper(DepositArea0), deposit.Area);
-          Assert.AreEqual(DepositSize0.ToUpper(), deposit.Size);
-          Assert.AreEqual(DepositAirConditioning0, deposit.AirConditioning);
-          Assert.AreEqual(false, deposit.IsReserved());
-          Assert.AreEqual(idDeposit0, deposit.Id);
+        Assert.AreEqual(char.ToUpper(DepositArea0), deposit.Area);
+        Assert.AreEqual(DepositSize0.ToUpper(), deposit.Size);
+        Assert.AreEqual(DepositAirConditioning0, deposit.AirConditioning);  
+        Assert.AreEqual(false, deposit.IsReserved());
+        Assert.AreEqual(idDeposit0, deposit.Id);
     }
     
     [TestMethod]

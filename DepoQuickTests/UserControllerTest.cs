@@ -180,6 +180,7 @@ public class UserControllerTest
         Assert.IsTrue(logs.Any(log => now.Date == log.Timestamp.Date
                               && now.Hour == log.Timestamp.Hour && now.Minute == log.Timestamp.Minute));
         Assert.AreEqual(logs[0].UserId , _userController.Get(AdminEmail).Id);
+        Assert.IsTrue(logs[0].Id >= 0);
     }
     
     [TestMethod]

@@ -75,7 +75,6 @@ namespace DepoQuickTests
             _userController.RegisterClient(ClientName, ClientEmail, ClientPassword, ClientPassword);
             _client = (Client)_userController.Get(ClientEmail);
             Reservation reservation1 = new Reservation(_deposit0, _client, _validDateRange);
-            int reservation1Id = reservation1.Id;
     
             _reservationController.Add(reservation1);
 

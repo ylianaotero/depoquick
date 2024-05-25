@@ -58,8 +58,8 @@ public class Deposit
     
     public Deposit()
     {
-        Id = s_nextId; 
-        s_nextId++; 
+       // Id = s_nextId; 
+       // s_nextId++; 
     }
     
     public Deposit(Char area, String size, bool airConditioning)
@@ -67,8 +67,8 @@ public class Deposit
         ValidateArea(area);
         ValidateSize(size);
         
-        Id = s_nextId; 
-        s_nextId++; 
+       // Id = s_nextId; 
+       // s_nextId++; 
         
         Area = char.ToUpper(area);
         Size = size.ToUpper();
