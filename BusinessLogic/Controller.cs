@@ -1,4 +1,5 @@
-﻿using BusinessLogic.Exceptions.ControllerExceptions;
+﻿/*
+  using BusinessLogic.Exceptions.ControllerExceptions;
 using DepoQuick.Domain;
 
 namespace BusinessLogic;
@@ -424,3 +425,4 @@ public class Controller
     }
     
 }
+ */

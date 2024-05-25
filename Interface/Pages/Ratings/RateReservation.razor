@@ -1,7 +1,7 @@
 @page "/RateReservation/{Id:int}" 
 @using BusinessLogic
 @using DepoQuick.Domain
-@inject MemoryDataBase MemoryDataBase
+@inject Session Session
 @inject NavigationManager NavigationManager
 
 <html lang="es">
@@ -65,7 +65,7 @@
     
     protected override void OnParametersSet()
     {
-        _controller = new Controller(MemoryDataBase);
+        _controller = new Controller(Session);
         _reservationToRate = _controller.GetReservation(Id);
         _comment = "";
         _stars = 0;

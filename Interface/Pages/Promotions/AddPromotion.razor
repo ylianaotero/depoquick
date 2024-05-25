@@ -3,7 +3,7 @@
 @using DepoQuick.Domain
 @using DepoQuick.Exceptions.DateRangeExceptions
 @using DepoQuick.Exceptions.PromotionExceptions
-@inject MemoryDataBase MemoryDataBase
+@inject Session Session
 @inject NavigationManager NavigationManager
 
 <html lang="es">
@@ -95,7 +95,7 @@
 
     protected override void OnInitialized()
     {
-        _controller = new Controller(MemoryDataBase);
+        _controller = new Controller(Session);
         _startDate = DateTime.Now;
         _finalDate = DateTime.Now;
         _deposits = _controller.GetDeposits();

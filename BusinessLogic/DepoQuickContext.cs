@@ -21,6 +21,9 @@ public class DepoQuickContext : DbContext
     public DbSet<Reservation> Reservations { get; set; }
     public DbSet<Promotion> Promotions { get; set; }
     public DbSet<Deposit> Deposits { get; set; }
+    
+    public DbSet<LogEntry> LogEntries { get; set; }
+    public DbSet<Rating> Ratings { get; set; }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
@@ -46,6 +49,8 @@ public class DepoQuickContext : DbContext
         modelBuilder.Entity<Client>()
             .ToTable("Clients")
             .HasBaseType<User>();
+        modelBuilder.Entity<Deposit>().HasMany<Rating>(d=>d.Ratings);
+        modelBuilder.Entity<Reservation>().HasOne<Rating>(r=>r.Rating);
     }
     
     

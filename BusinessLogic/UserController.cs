@@ -31,6 +31,13 @@ public class UserController
         }
     }
     
+    public void LogAction(User user, string action, DateTime date)
+    {
+        LogEntry log = user.LogAction(action, date);
+        _context.LogEntries.Add(log); 
+        _context.SaveChanges();
+    }
+    
     public User Get(string email)
     {
         User user = _context.Users.FirstOrDefault(u =>u.Email==email);
@@ -70,10 +77,14 @@ public class UserController
     public void RegisterAdministrator(string adminName, string adminEmail, string adminPassword, string passwordValidation)
     {
         User.ValidatePasswordConfirmation(adminPassword,passwordValidation);
-        if (!_context.Users.Any())
+        if (!_context.Administrators.Any())
         {
             Administrator administrator = new Administrator(adminName, adminEmail, adminPassword);
             Add(administrator);
+        }
+        else
+        {
+            throw new AdministratorAlreadyExistsException("Ya existe un administador");
         }
     }
 
@@ -101,8 +112,21 @@ public class UserController
         Administrator admin = _context.Users.OfType<Administrator>().FirstOrDefault();
         if (admin == null)
         {
-            throw new UserDoesNotExistException("No hay ningún administrador registrado.");
+            throw new EmptyAdministratorException("No hay ningún administrador registrado.");
         }
         return admin;
+    }
+    
+    public List<LogEntry> GetLogs(User userToGetLogs, User activeUser)
+    {
+        if (activeUser.IsAdministrator)
+        {
+            return userToGetLogs.Logs;
+        }
+        else
+        {
+            throw new ActionRestrictedToAdministratorException("Solo el administrador puede ver los logs");
+        }
+        
     }
 }

@@ -4,7 +4,7 @@
 @using DepoQuick.Domain
 @using DepoQuick.Exceptions.UserExceptions
 @using Microsoft.AspNetCore.Mvc.Infrastructure
-@inject MemoryDataBase MemoryDataBase
+@inject Session Session
 @inject NavigationManager NavigationManager
 
 <html lang="es" xmlns="http://www.w3.org/1999/html">
@@ -214,7 +214,7 @@
     
     protected override void OnInitialized()
     {
-        _controller = new Controller(MemoryDataBase);
+        _controller = new Controller(Session);
         CleanForm();
         HideAllAlerts();
     }

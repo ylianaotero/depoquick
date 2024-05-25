@@ -1,5 +1,5 @@
 ﻿@page "/GestionOfReservs"
-@inject MemoryDataBase MemoryDataBase
+@inject Session Session
 @inject NavigationManager NavigationManager
 @using BusinessLogic
 
@@ -22,7 +22,7 @@
 
     private bool UserIsAdministrator()
     {
-        return MemoryDataBase.GetActiveUser().IsAdministrator; 
+        return Session.GetActiveUser().IsAdministrator; 
     }
 
     private void GoToGestionOfReservsForAdmins()

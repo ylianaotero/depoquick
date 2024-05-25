@@ -161,7 +161,7 @@ public class UserTests
         Assert.IsFalse(ThrowsException(() => User.ValidatePasswordConfirmation(password, confirmation)));
     }
 
-    [TestMethod]
+    [TestMethod] //modificarlo pq es por tabla
     public void TestValidActionGetsLogged()
     {
         User user = new User(_name, _email, _password);
@@ -170,7 +170,7 @@ public class UserTests
         DateTime timestamp = DateTime.Now;
 
         user.LogAction(action, timestamp);
-
+        //verrrr
         List<LogEntry> actionsLog = user.Logs;
 
         Assert.AreEqual(action, actionsLog[0].Message);
