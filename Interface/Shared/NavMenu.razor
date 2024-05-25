@@ -1,6 +1,6 @@
 ﻿@using BusinessLogic
 @using DepoQuick.Domain
-@inject MemoryDataBase MemoryDataBase
+@inject Session Session
 @inject NavigationManager NavigationManager
 
 
@@ -103,7 +103,7 @@
     
     protected override void OnInitialized()
     { 
-        _controller = new Controller(MemoryDataBase);
+        _controller = new Controller(Session);
         collapseNavMenu = false;
     }
 

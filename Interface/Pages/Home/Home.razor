@@ -1,7 +1,7 @@
 ﻿@page "/Home"
 @using BusinessLogic
 @using DepoQuick.Domain
-@inject MemoryDataBase MemoryDataBase
+@inject Session Session
 
 
 <div class="container-fluid mt-4">
@@ -32,7 +32,7 @@
     
     protected override void OnInitialized()
     {
-        _controller = new Controller(MemoryDataBase);
+        _controller = new Controller(Session);
         _loggedUser = _controller.GetActiveUser();
         if (_loggedUser != null)
         {

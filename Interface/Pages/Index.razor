@@ -2,7 +2,7 @@
 @using BusinessLogic
 @using BusinessLogic.Exceptions.ControllerExceptions
 @inject NavigationManager NavigationManager
-@inject MemoryDataBase MemoryDataBase
+@inject Session Session
 
 
 <html lang="es" xmlns="http://www.w3.org/1999/html">
@@ -72,7 +72,7 @@
     
     protected override void OnInitialized()
     {
-        _controller = new Controller(MemoryDataBase);
+        _controller = new Controller(Session);
     }
     
     private void RegisterUser()

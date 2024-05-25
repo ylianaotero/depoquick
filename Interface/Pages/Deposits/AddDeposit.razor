@@ -1,7 +1,7 @@
 @page "/AddDeposit"
 @using BusinessLogic
 @using DepoQuick.Domain
-@inject MemoryDataBase MemoryDataBase
+@inject Session Session
 @inject NavigationManager NavigationManager
 
 <html lang="es">
@@ -75,7 +75,7 @@
     
     protected override void OnInitialized()
     {
-        _controller = new Controller(MemoryDataBase);
+        _controller = new Controller(Session);
         
         _area = 'A';
         _size = "PEQUEÑO";

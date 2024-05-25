@@ -1,6 +1,6 @@
 ﻿@page "/DepositReserve"
 
-@inject MemoryDataBase MemoryDataBase
+@inject Session Session
 @using DepoQuick.Domain
 @using BusinessLogic
 @using BusinessLogic.Exceptions.ControllerExceptions
@@ -124,7 +124,7 @@
   
   protected override void OnInitialized()
   {
-    _controller = new Controller(MemoryDataBase);
+    _controller = new Controller(Session);
     _listOfDeposits = _controller.GetDeposits(); 
     HideAllAlerts();
     

@@ -1,7 +1,7 @@
 ﻿@page "/LogsUser"
 @using BusinessLogic
 @using DepoQuick.Domain
-@inject MemoryDataBase MemoryDataBase
+@inject Session Session
 @inject NavigationManager NavigationManager
 
 <html lang="es">
@@ -46,7 +46,7 @@
     private List<(String, DateTime)> _logs;
     protected override void OnInitialized()
     {
-        _controller = new Controller(MemoryDataBase);
+        _controller = new Controller(Session);
         _loggedInUser = _controller.GetActiveUser();
         _listOfUsers = _controller.GetUsers();
     }

@@ -1,6 +1,6 @@
 ﻿@inherits LayoutComponentBase
 @using BusinessLogic
-@inject MemoryDataBase MemoryDataBase
+@inject Session Session
 
 <PageTitle>DepoQuick</PageTitle>
 
@@ -26,7 +26,7 @@
 
     protected override void OnInitialized()
     {
-        _controller = new Controller(MemoryDataBase);
+        _controller = new Controller(Session);
     }
 
 }

@@ -2,7 +2,7 @@
 @using BusinessLogic
 @using DepoQuick.Domain
 @using DepoQuick.Exceptions.DateRangeExceptions
-@inject MemoryDataBase MemoryDataBase
+@inject Session Session
 
 <html lang="es">
   <head>
@@ -112,7 +112,7 @@
 
     protected override void OnInitialized()
     {
-        _controller = new Controller(MemoryDataBase);
+        _controller = new Controller(Session);
         _listOfReservations = _controller.GetReservations(); 
         _labels =  new List<char> { 'A', 'B', 'C', 'D', 'E' };
         HideAllAlerts();

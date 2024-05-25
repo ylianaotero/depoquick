@@ -1,5 +1,5 @@
 ﻿@page "/Reject/{id:int}"
-@inject MemoryDataBase MemoryDataBase
+@inject Session Session
 @inject NavigationManager NavigationManager
 @using BusinessLogic
 @using BusinessLogic.Exceptions.ControllerExceptions
@@ -74,7 +74,7 @@
 
     protected override void OnInitialized()
     {
-        _controller = new Controller(MemoryDataBase);
+        _controller = new Controller(Session);
         _currentReservation = _controller.GetReservation(Id);
         _navigationManager = NavigationManager; 
     }

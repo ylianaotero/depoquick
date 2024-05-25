@@ -1,7 +1,7 @@
 ﻿@page "/Login"
 @using BusinessLogic
 @using BusinessLogic.Exceptions.ControllerExceptions
-@inject MemoryDataBase MemoryDataBase
+@inject Session Session
 @inject NavigationManager NavigationManager
 
 
@@ -81,7 +81,7 @@
     
      protected override void OnInitialized()
     {
-        _controller = new Controller(MemoryDataBase);
+        _controller = new Controller(Session);
     }
     
     

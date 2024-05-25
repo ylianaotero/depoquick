@@ -1,6 +1,6 @@
 ﻿@page "/GestionOfReservsAdmin"
 
-@inject MemoryDataBase MemoryDataBase
+@inject Session Session
 @using BusinessLogic
 @using DepoQuick.Domain
 
@@ -90,7 +90,7 @@
     
     protected override void OnInitialized()
     {
-        _controller = new Controller(MemoryDataBase);
+        _controller = new Controller(Session);
         _listOfReservations = _controller.GetReservations();
         HideAllAlerts(); 
     }

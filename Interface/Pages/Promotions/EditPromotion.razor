@@ -3,7 +3,7 @@
 @using DepoQuick.Domain
 @using DepoQuick.Exceptions.DateRangeExceptions
 @using DepoQuick.Exceptions.PromotionExceptions
-@inject MemoryDataBase MemoryDataBase
+@inject Session Session
 @inject NavigationManager NavigationManager
 <html lang="es">
   <head>
@@ -98,7 +98,7 @@
     
     protected override void OnParametersSet()
     {
-        _controller = new Controller(MemoryDataBase);
+        _controller = new Controller(Session);
         _promotionToEdit = _controller.GetPromotion(Id);
         _startDate = _promotionToEdit.ValidityDate.GetInitialDate();
         _finalDate = _promotionToEdit.ValidityDate.GetFinalDate();
