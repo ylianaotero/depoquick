@@ -4,7 +4,6 @@ using DepoQuick.Exceptions.PromotionExceptions;
 namespace DepoQuick.Domain;
 public class Promotion
 {
-    private static int s_lastId = 0;
     
     [Key]
     public int Id { get; set; }
@@ -37,8 +36,6 @@ public class Promotion
     
     public Promotion()
     {
-        
-        Id = s_lastId++;
         Deposits = new List<Deposit>();
     }
     

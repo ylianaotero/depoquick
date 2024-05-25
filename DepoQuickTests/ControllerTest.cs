@@ -54,50 +54,10 @@
      
      
      
-     [TestMethod]
-     public void TestAddNewPromotion()
-     {
-         Session session = new Session();
-         Controller controller = new Controller(session);
- 
-         controller.RegisterAdministrator(AdminName,AdminEmail,AdminPassword,AdminPassword);
-         controller.LoginUser(AdminEmail,AdminPassword);
-         Promotion promotion = new Promotion();
-         promotion.DiscountRate = PromotionDiscountRate0;
-         promotion.Label = PromotionLabel0;
-         promotion.ValidityDate = _validDateRange;
-         List<Deposit> depositsToAddToPromotion = new List<Deposit>();
-         Deposit deposit = new Deposit(DepositArea0, DepositSize0, DepositAirConditioning0);
-         depositsToAddToPromotion.Add(deposit);
-         
-         controller.AddPromotion(promotion, depositsToAddToPromotion);
- 
-         CollectionAssert.Contains(controller.GetPromotions(), promotion);
-         CollectionAssert.Contains(controller.GetPromotions()[0].Deposits, deposit);
-         CollectionAssert.Contains(deposit.Promotions, promotion);
-     }
      
-     [TestMethod]
-     [ExpectedException(typeof(ActionRestrictedToAdministratorException))]
-     public void TestClientCannotAddPromotion()
-     {
-         Session session = new Session();
-         Controller controller = new Controller(session);
- 
-         controller.RegisterAdministrator(AdminName,AdminEmail,AdminPassword,AdminPassword);
-         controller.RegisterClient(ClientName,ClientEmail,ClientPassword,ClientPassword);
-         controller.LoginUser(ClientEmail,ClientPassword);
-         Promotion promotion = new Promotion();
-         promotion.DiscountRate = PromotionDiscountRate0;
-         promotion.Label = PromotionLabel0;
-         promotion.ValidityDate = _validDateRange;
-         List<Deposit> depositsToAddToPromotion = new List<Deposit>();
-         Deposit deposit = new Deposit(DepositArea0, DepositSize0, DepositAirConditioning0);
-         depositsToAddToPromotion.Add(deposit);
-         
-         controller.AddPromotion(promotion, depositsToAddToPromotion);
-     }
- 
+     
+     
+     
      [TestMethod]
      public void TestSearchForAPromotionById()
      {

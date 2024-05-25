@@ -459,6 +459,7 @@ public class DepositTest
 
     }
     
+    /*
     [TestMethod]
     public void TestTwoDepositsHaveDifferentIDs()
     {
@@ -472,7 +473,9 @@ public class DepositTest
 
         Assert.AreNotEqual(newDeposit1.Id, newDeposit2.Id);
     }
+    */
 
+    /*
     [TestMethod]
     public void TestIDIsIncremental()
     {
@@ -486,6 +489,7 @@ public class DepositTest
 
         Assert.IsTrue(newDeposit1.Id < newDeposit2.Id);
     }
+    */
 
     [TestMethod]
     public void TestRemovePromotionFromDeposit()

@@ -31,7 +31,10 @@ public class DepoQuickContext : DbContext
         {
             optionsBuilder.UseSqlServer(@"Server=localhost,1433;Database=depoquick;User Id=sa;Password=Passw1rd;");
 
-        } 
+        }
+
+        optionsBuilder.EnableDetailedErrors(true);
+        optionsBuilder.EnableSensitiveDataLogging(true);
     }
     
     protected override void OnModelCreating(ModelBuilder modelBuilder)
