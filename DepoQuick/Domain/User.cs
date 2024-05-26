@@ -59,8 +59,8 @@ public class User
     
     public User()
     {
-        Id = s_lastId + 1;
-        s_lastId = Id;
+    //    Id = s_lastId + 1;
+       // s_lastId = Id;
         
         Logs = new();
     }
@@ -77,8 +77,8 @@ public class User
 
         Logs = new();
 
-        Id = s_lastId + 1;
-        s_lastId = Id;
+      //  Id = s_lastId + 1;
+       // s_lastId = Id;
     }
     
     private void ValidateName(string name)
@@ -139,8 +139,8 @@ public class User
             throw new UserPasswordsDoNotMatchException("Las contraseñas no coinciden.");
         }
     }
-    
-    public void LogAction(string message, DateTime timestamp)
+    //cambiar el nombre
+    public LogEntry LogAction(string message, DateTime timestamp)
     {
         if (string.IsNullOrEmpty(message))
         {
@@ -154,8 +154,11 @@ public class User
                 Timestamp = timestamp,
                 UserId = Id
             };
-            
-            Logs.Add(log);
+
+            return log; 
+
+
+            //Logs.Add(log);
         }
     }
 }

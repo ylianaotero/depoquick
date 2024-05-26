@@ -1,8 +1,9 @@
 @page "/Promotions"
 @using BusinessLogic
 @using DepoQuick.Domain
-@inject MemoryDataBase MemoryDataBase
+@inject Session Session
 @inject NavigationManager NavigationManager
+@inject DepoQuickContext DepoQuickContext
 
 <html lang="es">
     <head>  
@@ -104,7 +105,7 @@
 
 @code {
     private const double PercentageMultiplier = 100.0;
-    private Controller _controller;
+    private PromotionController _promotionController;
     private List<Promotion> _listOfPromotions;
     private User _loggedInUser;
     
@@ -117,13 +118,12 @@
     
     protected override void OnInitialized()
     {
-        _controller = new Controller(MemoryDataBase);
-        _loggedInUser = _controller.GetActiveUser();
-        
+        _promotionController = new PromotionController(DepoQuickContext,Session);
+        _loggedInUser = Session.ActiveUser;        
         _promotionToDelete = null;
         
-        _controller.DeleteAllExpiredPromotions();
-        _listOfPromotions = _controller.GetPromotions();
+        _promotionController.DeleteAllExpiredPromotions();
+        _listOfPromotions = _promotionController.GetPromotions();
         HideAllAlerts();
     }
     
@@ -157,8 +157,8 @@
         
         try
         {
-            int id = _promotionToDelete.Id;
-            _controller.DeletePromotion(id);
+            //int id = _promotionToDelete.Id;
+            _promotionController.DeletePromotion(_promotionToDelete);
             _showAlertPromotionDeletedSuccessfully = true;
         }
         catch (Exception e)
@@ -177,7 +177,7 @@
     
     private bool PromotionIsTiedToReservedDeposit(int id)
     {
-        Promotion promotion = _controller.GetPromotion(id);
+        Promotion promotion = _promotionController.Get(id);
         List<Deposit> deposits = promotion.Deposits;
         foreach (Deposit deposit in deposits)
         {

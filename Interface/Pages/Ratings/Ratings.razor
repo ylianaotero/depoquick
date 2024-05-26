@@ -1,7 +1,8 @@
 @page "/Ratings"
 @using BusinessLogic
 @using DepoQuick.Domain
-@inject MemoryDataBase MemoryDataBase
+@inject Session Session
+@inject DepoQuickContext DepoQuickContext
 
 <html lang="es">
     <head>  
@@ -26,14 +27,14 @@
         <tbody>
         @foreach (Reservation reservation in _listOfReservations)
         {
-            if (reservation.Rating != null)
+            //if (reservation.Rating != null)
             {
                 <tr>
                     <td>@reservation.Deposit.Id</td>
                     <td>@reservation.Id</td>
                     <td>@reservation.Client.Name</td>
-                    <td>@reservation.Rating.Stars</td>
-                    <td>@reservation.Rating.Comment</td>
+                    <td>reservation.Rating.Stars</td>
+                    <td>reservation.Rating.Comment</td>
                 </tr>
             }
             
@@ -45,15 +46,15 @@
 </html>
 
 @code {
-    private Controller _controller;
+    private ReservationController _reservationController;
     private List<Reservation> _listOfReservations;
     private User _loggedInUser;
     
     protected override void OnInitialized()
     {
-        _controller = new Controller(MemoryDataBase);
-        _loggedInUser = _controller.GetActiveUser();
+        _reservationController = new ReservationController(DepoQuickContext, Session);
+        _loggedInUser = Session.ActiveUser;
         
-        _listOfReservations = _controller.GetReservations();
+        _listOfReservations = _reservationController.GetReservations();
     }
 }

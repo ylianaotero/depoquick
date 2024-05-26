@@ -1,6 +1,7 @@
 ﻿@page "/DepositReserve"
 
-@inject MemoryDataBase MemoryDataBase
+@inject Session Session
+@inject DepoQuickContext DepoQuickContext
 @using DepoQuick.Domain
 @using BusinessLogic
 @using BusinessLogic.Exceptions.ControllerExceptions
@@ -104,7 +105,10 @@
 
 
 @code {
-  private Controller _controller;
+  //private Controller _controller;
+  DepositController _depositController;
+  ReservationController _reservationController;
+  
   private List<Deposit> _listOfDeposits;
 
   private bool _showAlertPrice;
@@ -124,15 +128,16 @@
   
   protected override void OnInitialized()
   {
-    _controller = new Controller(MemoryDataBase);
-    _listOfDeposits = _controller.GetDeposits(); 
+    _depositController = new DepositController(DepoQuickContext, Session);
+    _reservationController = new ReservationController(DepoQuickContext, Session);
+    _listOfDeposits = _depositController.GetDeposits(); 
     HideAllAlerts();
     
     _deposit = null; 
 
     _initialDate = DateTime.Today.Date;
     _finalDate = DateTime.Today.Date;
-    _client = (Client)_controller.GetActiveUser();
+    _client = (Client)Session.ActiveUser;
   }
 
   private void ShowAlert()
@@ -173,7 +178,7 @@
 
   private bool IsAClient()
   {
-    return !_controller.GetActiveUser().IsAdministrator; 
+    return !Session.ActiveUser.IsAdministrator; 
   }
 
   private bool IsAValidDeposit()
@@ -232,7 +237,7 @@
     int id = int.Parse(args.Value.ToString());
     try
     {
-      _deposit = _controller.GetDeposit(id);
+      _deposit = _depositController.GetDeposit(id);
     }
     catch (DepositNotFoundException exceptionDepositNotFound)
     {
@@ -249,7 +254,7 @@
   {
       Reservation newReservation = new Reservation(_deposit,  _client , _date); 
       
-      _controller.AddReservation(newReservation);
+      _reservationController.Add(newReservation);
       
       HideAllAlerts(); 
       _showAlertReservationMade = true; 

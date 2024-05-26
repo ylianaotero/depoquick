@@ -1,8 +1,9 @@
 @page "/Deposits"
 @using BusinessLogic
 @using DepoQuick.Domain
-@inject MemoryDataBase MemoryDataBase
+@inject Session Session
 @inject NavigationManager NavigationManager
+@inject DepoQuickContext DepoQuickContext
 
 <html lang="es">
     <head>
@@ -113,7 +114,9 @@
 
 @code {
     private const double PercentageMultiplier = 100.0;
-    private Controller _controller;
+    private UserController _userController;
+    private DepositController _depositController;
+    private PromotionController _promotionController;
     private List<Deposit> _listOfDeposits;
     private User _loggedInUser;
 
@@ -126,12 +129,14 @@
     
     protected override void OnInitialized()
     {
-        _controller = new Controller(MemoryDataBase);
-        _loggedInUser = _controller.GetActiveUser();
+        _userController = new UserController(DepoQuickContext);
+        _loggedInUser = Session.ActiveUser;
+        _depositController = new DepositController(DepoQuickContext, Session);
+        _promotionController = new PromotionController(DepoQuickContext, Session);
 
-        _listOfDeposits = _controller.GetDeposits();
+        _listOfDeposits = _depositController.GetDeposits();
         
-        _controller.DeleteAllExpiredPromotions();
+        _promotionController.DeleteAllExpiredPromotions();
 
         _depositToDelete = null;
         
@@ -178,7 +183,7 @@
         try
         {
             int id = _depositToDelete.Id;
-            _controller.DeleteDeposit(id);
+            //_controller.DeleteDeposit(id);
             _showAlertDepositDeletedSuccessfully = true;
         }
         catch (Exception)

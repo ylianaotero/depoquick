@@ -11,6 +11,7 @@ public class Rating
     
     [Key]
     public int Id { get; set; }
+    public Reservation Reservation { get; set; }
     
     private int _stars;
     private String _comment;
@@ -37,8 +38,8 @@ public class Rating
     
     public Rating()
     {
-        Id = s_lastId + 1;
-        s_lastId++;
+       // Id = s_lastId + 1;
+        //s_lastId++;
     }
     
     public Rating(int stars, String comment)
@@ -46,8 +47,8 @@ public class Rating
         Stars = stars;
         Comment = comment; 
         
-        Id = s_lastId + 1;
-        s_lastId++;
+        //Id = s_lastId + 1;
+        //s_lastId++;
     }
 
     public void UpdateRating(int newStars, string newComment)

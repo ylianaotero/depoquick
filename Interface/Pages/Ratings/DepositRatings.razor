@@ -1,7 +1,8 @@
 @page "/DepositRatings/{Id:int}" 
 @using BusinessLogic
 @using DepoQuick.Domain
-@inject MemoryDataBase MemoryDataBase
+@inject Session Session
+@inject DepoQuickContext DepoQuickContext
 
 <html lang="es">
 <head>
@@ -26,14 +27,14 @@
         <tbody>
         @foreach (Reservation reservation in _deposit.Reservations)
         {
-            if (reservation.Rating != null)
+            //if (reservation.Rating != null)
             {
                 <tr>
                     <td>@reservation.Client.Name</td>
                     <td>@reservation.Date.GetInitialDate().ToString("dd/MM/yyyy")</td>
                     <td>@reservation.Date.GetFinalDate().ToString("dd/MM/yyyy")</td>
-                    <td>@reservation.Rating.Stars</td>
-                    <td>@reservation.Rating.Comment</td>
+                    <td>reservation.Rating.Stars</td>
+                    <td>reservation.Rating.Comment</td>
                 </tr>
             }
         }
@@ -44,14 +45,14 @@
 
 @code {
     [Parameter] public int Id { get; set; }
-
-    private Controller _controller;
+    
+    private DepositController _depositController;
     private Deposit _deposit;
     
     
     protected override void OnParametersSet()
     {
-        _controller = new Controller(MemoryDataBase);
-        _deposit = _controller.GetDeposit(Id);
+        _depositController = new DepositController(DepoQuickContext, Session);
+        _deposit = _depositController.GetDeposit(Id);
     }
 }

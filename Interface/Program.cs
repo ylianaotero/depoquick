@@ -2,6 +2,7 @@ using BusinessLogic;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
 using Interface.Data;
+using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -9,7 +10,17 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor();
 builder.Services.AddSingleton<WeatherForecastService>();
-builder.Services.AddSingleton<MemoryDataBase>(); 
+
+//DbContextOptionsBuilder<DepoQuickContext> optionsBuilder = new DbContextOptionsBuilder<DepoQuickContext>();
+//optionsBuilder.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
+//DepoQuickContext context = new DepoQuickContext(optionsBuilder.Options, false);
+
+builder.Services.AddDbContext<DepoQuickContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+DepoQuickContext context = builder.Configuration.Get<DepoQuickContext>();
+
+UserController userController = new UserController(context);
+Session session = new Session(userController);
+builder.Services.AddSingleton<Session>(session);
 
 var app = builder.Build();
 

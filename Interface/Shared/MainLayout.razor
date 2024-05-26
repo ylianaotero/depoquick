@@ -1,6 +1,7 @@
 ﻿@inherits LayoutComponentBase
 @using BusinessLogic
-@inject MemoryDataBase MemoryDataBase
+@inject Session Session
+@inject DepoQuickContext DepoQuickContext
 
 <PageTitle>DepoQuick</PageTitle>
 
@@ -12,7 +13,7 @@
     <main>
         <div class="top-row px-4">
             @*<a href="https://docs.microsoft.com/aspnet/" target="_blank">About</a>*@
-            <button id="btn-login" class="btn btn-outline-dark" style="background-color: transparent; color: black">@if (_controller.UserLoggedIn()) { <text>Hola @_controller.GetActiveUser().Name!</text> }else { <text>Sin ingresar al sistema</text> }</button>
+            <button id="btn-login" class="btn btn-outline-dark" style="background-color: transparent; color: black">@if (Session.UserLoggedIn()) { <text>Hola @Session.ActiveUser.Name!</text> }else { <text>Sin ingresar al sistema</text> }</button>
         </div>
 
         <article class="content px-4">
@@ -22,11 +23,8 @@
 </div>
 
 @code{
-    private Controller _controller;
-
     protected override void OnInitialized()
     {
-        _controller = new Controller(MemoryDataBase);
+       
     }
-
 }

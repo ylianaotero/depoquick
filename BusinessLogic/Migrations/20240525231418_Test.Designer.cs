@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -10,9 +11,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BusinessLogic.Migrations
 {
     [DbContext(typeof(DepoQuickContext))]
-    partial class DepoQuickContextModelSnapshot : ModelSnapshot
+    [Migration("20240525231418_Test")]
+    partial class Test
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -105,17 +107,12 @@ namespace BusinessLogic.Migrations
                     b.Property<int?>("DepositId")
                         .HasColumnType("int");
 
-                    b.Property<int>("ReservationId")
-                        .HasColumnType("int");
-
                     b.Property<int>("Stars")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
 
                     b.HasIndex("DepositId");
-
-                    b.HasIndex("ReservationId");
 
                     b.ToTable("Ratings");
                 });
@@ -138,6 +135,9 @@ namespace BusinessLogic.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<int>("RatingId")
+                        .HasColumnType("int");
+
                     b.Property<int>("Status")
                         .HasColumnType("int");
 
@@ -146,6 +146,8 @@ namespace BusinessLogic.Migrations
                     b.HasIndex("ClientId");
 
                     b.HasIndex("DepositId");
+
+                    b.HasIndex("RatingId");
 
                     b.ToTable("Reservations");
                 });
@@ -246,20 +248,12 @@ namespace BusinessLogic.Migrations
                     b.HasOne("DepoQuick.Domain.Deposit", null)
                         .WithMany("Ratings")
                         .HasForeignKey("DepositId");
-
-                    b.HasOne("DepoQuick.Domain.Reservation", "Reservation")
-                        .WithMany()
-                        .HasForeignKey("ReservationId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Reservation");
                 });
 
             modelBuilder.Entity("DepoQuick.Domain.Reservation", b =>
                 {
                     b.HasOne("DepoQuick.Domain.Client", "Client")
-                        .WithMany("Reservations")
+                        .WithMany()
                         .HasForeignKey("ClientId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -267,6 +261,12 @@ namespace BusinessLogic.Migrations
                     b.HasOne("DepoQuick.Domain.Deposit", "Deposit")
                         .WithMany("Reservations")
                         .HasForeignKey("DepositId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("DepoQuick.Domain.Rating", "Rating")
+                        .WithMany()
+                        .HasForeignKey("RatingId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -295,6 +295,8 @@ namespace BusinessLogic.Migrations
                         .IsRequired();
 
                     b.Navigation("Deposit");
+
+                    b.Navigation("Rating");
                 });
 
             modelBuilder.Entity("DepositPromotion", b =>
@@ -340,11 +342,6 @@ namespace BusinessLogic.Migrations
             modelBuilder.Entity("DepoQuick.Domain.User", b =>
                 {
                     b.Navigation("Logs");
-                });
-
-            modelBuilder.Entity("DepoQuick.Domain.Client", b =>
-                {
-                    b.Navigation("Reservations");
                 });
 #pragma warning restore 612, 618
         }

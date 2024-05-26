@@ -15,12 +15,25 @@ public class DepoQuickContext : DbContext
         }
     }
 
+    public DepoQuickContext()
+    {
+        UseInMemoryDatabase = false;
+        if (!UseInMemoryDatabase)
+        {
+            this.Database.Migrate();   
+        }
+    }
+
     public DbSet<User> Users { get; set; }
     public DbSet<Administrator> Administrators { get; set; }
     public DbSet<Client> Clients { get; set; }
     public DbSet<Reservation> Reservations { get; set; }
     public DbSet<Promotion> Promotions { get; set; }
     public DbSet<Deposit> Deposits { get; set; }
+    
+    
+    public DbSet<LogEntry> LogEntries { get; set; }
+    public DbSet<Rating> Ratings { get; set; }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
@@ -28,7 +41,10 @@ public class DepoQuickContext : DbContext
         {
             optionsBuilder.UseSqlServer(@"Server=localhost,1433;Database=depoquick;User Id=sa;Password=Passw1rd;");
 
-        } 
+        }
+
+        optionsBuilder.EnableDetailedErrors(true);
+        optionsBuilder.EnableSensitiveDataLogging(true);
     }
     
     protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -46,6 +62,8 @@ public class DepoQuickContext : DbContext
         modelBuilder.Entity<Client>()
             .ToTable("Clients")
             .HasBaseType<User>();
+        modelBuilder.Entity<Deposit>().HasMany<Rating>(d=>d.Ratings);
+        modelBuilder.Entity<Rating>().HasOne<Reservation>(r=>r.Reservation);
     }
     
     

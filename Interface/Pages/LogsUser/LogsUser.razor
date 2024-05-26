@@ -1,8 +1,8 @@
 ﻿@page "/LogsUser"
 @using BusinessLogic
 @using DepoQuick.Domain
-@inject MemoryDataBase MemoryDataBase
-@inject NavigationManager NavigationManager
+@inject Session Session
+@inject DepoQuickContext DepoQuickContext
 
 <html lang="es">
     <head>  
@@ -11,7 +11,7 @@
     </head>
 
     <body>
-        <h3>¡Hola, @_loggedInUser.Name! Aquí puedes encontrar las acciones que ha tomado cada cliente.</h3>
+        <h3>¡Hola, @_loggedInUser.Name! Aquí puedes encontrar las acciones que ha tomado cada usuario.</h3>
     
     <table class="table table-striped table-hover">
         <thead>
@@ -23,16 +23,13 @@
         </thead>
         
         <tbody>
-        @foreach (User user in _listOfUsers)
+        @foreach (LogEntry log in _logs)
         {
-            @foreach(LogEntry log in _controller.GetLogs(user))
-            {
-                <tr>
-                    <td>@user.Name</td>
-                    <td>@log.Message</td>
-                    <td>@log.Timestamp.ToString("dd/MM/yyyy")</td>
-                </tr>
-            }
+            <tr>
+                <td>@_userController.Get(log.UserId).Name</td>
+                <td>@log.Message</td>
+                <td>@log.Timestamp.ToString("dd/MM/yyyy")</td>
+            </tr>
         }
         </tbody>
     </table>
@@ -40,14 +37,14 @@
 </html>
 
 @code {
-    private Controller _controller;
-    private List<User> _listOfUsers;
+    private UserController _userController;
     private User _loggedInUser;
-    private List<(String, DateTime)> _logs;
+    private List<LogEntry> _logs;
+    
     protected override void OnInitialized()
     {
-        _controller = new Controller(MemoryDataBase);
-        _loggedInUser = _controller.GetActiveUser();
-        _listOfUsers = _controller.GetUsers();
+        _userController = new UserController(DepoQuickContext);
+        _loggedInUser = Session.ActiveUser;
+        _logs = _userController.GetAllLogs(_loggedInUser);
     }
 }

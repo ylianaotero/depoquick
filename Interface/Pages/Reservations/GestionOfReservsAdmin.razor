@@ -1,6 +1,7 @@
 ﻿@page "/GestionOfReservsAdmin"
 
-@inject MemoryDataBase MemoryDataBase
+@inject Session Session
+@inject DepoQuickContext DepoQuickContext
 @using BusinessLogic
 @using DepoQuick.Domain
 
@@ -81,7 +82,7 @@
 </html>
 
 @code {
-    private Controller _controller;
+    ReservationController _reservationController;
     private List<Reservation> _listOfReservations;
 
     private bool _showAlertReservationNotFound; 
@@ -90,8 +91,8 @@
     
     protected override void OnInitialized()
     {
-        _controller = new Controller(MemoryDataBase);
-        _listOfReservations = _controller.GetReservations();
+        _reservationController = new ReservationController(DepoQuickContext, Session);
+        _listOfReservations = _reservationController.GetReservations();
         HideAllAlerts(); 
     }
 
@@ -103,6 +104,6 @@
 
     private void ApproveReservation(Reservation reservation)
     {
-        _controller.ApproveReservation(reservation);
+        _reservationController.ApproveReservation(reservation);
     }
 }

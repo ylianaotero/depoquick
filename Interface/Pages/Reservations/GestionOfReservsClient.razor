@@ -1,7 +1,7 @@
 ﻿@page "/GestionOfReservsClient"
 @using BusinessLogic
 @using DepoQuick.Domain
-@inject MemoryDataBase MemoryDataBase
+@inject Session Session
 @inject NavigationManager NavigationManager
 
 <html lang="es">
@@ -54,7 +54,7 @@
                             }
                             @if (ReservationIsOver(reservation))
                             {
-                                if (reservation.Rating == null)
+                               // if (reservation.Rating == null)
                                 {
                                     <td>
                                         <div class="btn-group">
@@ -64,7 +64,7 @@
                                         </div>
                                     </td>
                                 }
-                                else
+                               // else
                                 {
                                     <td>
                                         <div class="btn-group">
@@ -88,17 +88,14 @@
 
 
 @code {
-    private Controller _controller;
     private List<Reservation> _listOfReservations;
     private Client _client; 
     
     protected override void OnInitialized()
     {
-        _controller = new Controller(MemoryDataBase);
-        
-        _client = (Client)_controller.GetActiveUser();
+        _client = (Client)Session.ActiveUser;
 
-        _listOfReservations = _client.GetReservations(); 
+        _listOfReservations = _client.Reservations; 
     }
     
     private bool ReservationIsOver(Reservation reservation)

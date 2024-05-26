@@ -1,6 +1,7 @@
 ﻿using BusinessLogic;
 using BusinessLogic.Exceptions.ControllerExceptions;
 using DepoQuick.Domain;
+using DepoQuick.Exceptions.UserExceptions;
 
 namespace DepoQuickTests;
 
@@ -8,18 +9,22 @@ namespace DepoQuickTests;
 public class UserControllerTest
 {
     private UserController _userController;
+    private Session _session;
     private const string AdminName = "Administrator";
     private const string AdminEmail = "administrator@domain.com";
     private const string AdminPassword = "Password1#";
     private const string ClientName = "Client";
     private const string ClientEmail = "client@domain.com";
     private const string ClientPassword = "Password2#";
+    
+    private const string UserLogInLogMessage = "Ingresó al sistema";
 
     [TestInitialize]
     public void Initialize()
     {
         var context = TestContextFactory.CreateContext();
         _userController = new UserController(context);
+        _session = new Session(_userController);
     }
     
     [TestMethod]
@@ -29,6 +34,14 @@ public class UserControllerTest
         Administrator result = (Administrator)_userController.Get(AdminEmail);
         Assert.IsNotNull(result);
         Assert.AreEqual(result.Email,AdminEmail);
+    }
+    
+    [TestMethod]
+    [ExpectedException(typeof(AdministratorAlreadyExistsException))]
+    public void TestAdministratorAlreadyExistsException()
+    {
+        _userController.RegisterAdministrator(AdminName, AdminEmail, AdminPassword, AdminPassword);
+        _userController.RegisterAdministrator(AdminName, AdminEmail, AdminPassword, AdminPassword);
     }
     
      [TestMethod]
@@ -133,9 +146,87 @@ public class UserControllerTest
     }
     
     [TestMethod]
-    [ExpectedException(typeof(UserDoesNotExistException))]
+    [ExpectedException(typeof(EmptyAdministratorException))]
     public void TestCannotGetAdministrator()
     {
         _userController.GetAdministrator();
+    }
+    
+    [TestMethod]
+    [ExpectedException(typeof(ActionRestrictedToAdministratorException))]
+    public void TestClientCannotGetLogs()
+    {
+        _userController.RegisterAdministrator(AdminName, AdminEmail, AdminPassword, AdminPassword);
+        _userController.RegisterClient(ClientName, ClientEmail, ClientPassword, ClientPassword);
+        _session.LoginUser(ClientEmail,ClientPassword);
+        _session.LogoutUser();
+        _session.LoginUser(ClientEmail,ClientPassword);
+        _userController.GetLogs(_userController.Get(ClientEmail), _session.ActiveUser);
+    }
+    
+    [TestMethod]
+    public void TestGetLogs()
+    {
+        _userController.RegisterAdministrator(AdminName, AdminEmail, AdminPassword, AdminPassword);
+        _userController.RegisterClient(ClientName, ClientEmail, ClientPassword, ClientPassword);
+        DateTime now = DateTime.Now.AddSeconds(-DateTime.Now.Second);
+        _session.LoginUser(AdminEmail,AdminPassword);
+        _session.LogoutUser();
+        _session.LoginUser(AdminEmail,AdminPassword);
+        List<LogEntry> logs = _userController.GetLogs(_userController.Get(AdminEmail), _session.ActiveUser);
+        
+        Assert.AreEqual(3,logs.Count);
+        Assert.AreEqual(logs[0].Message , UserLogInLogMessage);
+        Assert.IsTrue(logs.Any(log => now.Date == log.Timestamp.Date
+                              && now.Hour == log.Timestamp.Hour && now.Minute == log.Timestamp.Minute));
+        Assert.AreEqual(logs[0].UserId , _userController.Get(AdminEmail).Id);
+        Assert.IsTrue(logs[0].Id >= 0);
+    }
+    
+    [TestMethod]
+    [ExpectedException(typeof(EmptyActionLogException))]
+    public void TestEmptyActionLog()
+    {
+        _userController.RegisterAdministrator(AdminName, AdminEmail, AdminPassword, AdminPassword);
+        _session.LoginUser(AdminEmail,AdminPassword);
+        _session.LogoutUser();
+        _session.LoginUser(AdminEmail,AdminPassword);
+        _userController.LogAction(_userController.Get(AdminEmail),"",DateTime.Now);
+    }
+
+    [TestMethod]
+    public void TestGetListOfUsers()
+    {
+        _userController.RegisterAdministrator(AdminName, AdminEmail, AdminPassword, AdminPassword);
+        _userController.RegisterClient(ClientName, ClientEmail, ClientPassword, ClientPassword);
+        List<User> users = _userController.GetAll();
+        Assert.AreEqual(2,users.Count);
+    }
+
+    [TestMethod]
+    public void TestGetListOfAllLogs()
+    {
+        _userController.RegisterAdministrator(AdminName, AdminEmail, AdminPassword, AdminPassword);
+        _userController.RegisterClient(ClientName, ClientEmail, ClientPassword, ClientPassword);
+        _session.LoginUser(ClientEmail,ClientPassword);
+        _session.LogoutUser();
+        _session.LoginUser(AdminEmail,AdminPassword);
+        
+        List<LogEntry> logs = _userController.GetAllLogs(_session.ActiveUser);
+        
+        Assert.AreEqual(3,logs.Count);
+    }
+
+    [TestMethod]
+    [ExpectedException(typeof(ActionRestrictedToAdministratorException))]
+    public void TestClientCannotGetListOfAllLogs()
+    {
+        _userController.RegisterAdministrator(AdminName, AdminEmail, AdminPassword, AdminPassword);
+        _userController.RegisterClient(ClientName, ClientEmail, ClientPassword, ClientPassword);
+        _session.LoginUser(AdminEmail,AdminPassword);
+        _session.LogoutUser();
+        _session.LoginUser(ClientEmail,ClientPassword);
+        
+        List<LogEntry> logs = _userController.GetAllLogs(_session.ActiveUser);
     }
 }

@@ -1,8 +1,8 @@
 ﻿@using BusinessLogic
 @using DepoQuick.Domain
-@inject MemoryDataBase MemoryDataBase
+@inject Session Session
 @inject NavigationManager NavigationManager
-
+@inject DepoQuickContext DepoQuickContext
 
 <div class="top-row ps-3 navbar navbar-dark">
     <div class="container-fluid">
@@ -93,7 +93,6 @@
 
 @code {
     private bool collapseNavMenu;
-    private Controller _controller;
     private string? NavMenuCssClass => collapseNavMenu ? "collapse" : null;
     
     private void ToggleNavMenu()
@@ -103,25 +102,24 @@
     
     protected override void OnInitialized()
     { 
-        _controller = new Controller(MemoryDataBase);
         collapseNavMenu = false;
     }
 
     private bool UserLoggedIn()
     {
-        return _controller.UserLoggedIn();
+        return Session.UserLoggedIn();
     }
 
     private void Logout()
     {
         
-        _controller.LogoutUser();
+        Session.LogoutUser();
         
         NavigationManager.NavigateTo("/",forceLoad:true);
     }
 
     private bool IsAdministrator()
     {
-        return _controller.GetActiveUser().IsAdministrator;
+        return Session.ActiveUser.IsAdministrator;
     }
 }
