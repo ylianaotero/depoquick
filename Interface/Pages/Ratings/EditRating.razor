@@ -64,7 +64,7 @@
         //_controller = new Controller(Session);
         _reservationController = new ReservationController(DepoQuickContext, Session);
         _reservationToRate = _reservationController.Get(Id);
-        _ratingToEdit = _reservationToRate.Rating;
+       // _ratingToEdit = _reservationToRate.Rating;
         _comment = _ratingToEdit.Comment;
         _stars = _ratingToEdit.Stars;
         

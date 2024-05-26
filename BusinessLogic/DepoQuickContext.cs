@@ -63,7 +63,7 @@ public class DepoQuickContext : DbContext
             .ToTable("Clients")
             .HasBaseType<User>();
         modelBuilder.Entity<Deposit>().HasMany<Rating>(d=>d.Ratings);
-        modelBuilder.Entity<Reservation>().HasOne<Rating>(r=>r.Rating);
+        modelBuilder.Entity<Rating>().HasOne<Reservation>(r=>r.Reservation);
     }
     
     

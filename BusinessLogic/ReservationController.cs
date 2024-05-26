@@ -17,9 +17,9 @@ public class ReservationController
     
     public void Add(Reservation reservation)
     {
-        _context.Reservations.Add(reservation);
-      // Client client = reservation.Client;
-      //  client.AddReservation(reservation);
+        //_context.Reservations.Add(reservation);
+      Client client = reservation.Client;
+       client.AddReservation(reservation);
       //  reservation.Deposit.AddReservation(reservation);
         _context.SaveChanges();
     }
@@ -114,7 +114,7 @@ public class ReservationController
         {
             Deposit deposit = reservation.Deposit;
             deposit.AddRating(rating); 
-            reservation.Rating = rating;
+        //    reservation.Rating = rating;
             _context.Ratings.Add(rating);
             UserController _userController = new UserController(_context);
             _userController.LogAction(reservation.Client, "Agregó valoración de la reserva " + reservation.Id, DateTime.Now);

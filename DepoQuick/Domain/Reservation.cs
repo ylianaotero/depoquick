@@ -14,7 +14,7 @@ public class Reservation
     public Client Client { get; set; }
     public DateRange Date { get; set; }
     public int Status { get; set; }
-    public Rating Rating { get; set; }
+   // public Rating Rating { get; set; }
     
     private string _message;
     

@@ -11,6 +11,7 @@ public class Rating
     
     [Key]
     public int Id { get; set; }
+    public Reservation Reservation { get; set; }
     
     private int _stars;
     private String _comment;
