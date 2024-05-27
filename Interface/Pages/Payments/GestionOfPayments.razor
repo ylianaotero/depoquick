@@ -1,0 +1,37 @@
+﻿@page "/GestionOfPayments"
+@inject Session Session
+@inject NavigationManager NavigationManager
+@using BusinessLogic
+
+@code {
+    private NavigationManager _navigationManager;
+    
+    protected override void OnInitialized()
+    {
+        _navigationManager = NavigationManager; 
+        if (UserIsAdministrator())
+        {
+            GoToGestionOfPaymentsForAdmins(); 
+        }
+        else
+        {
+            GoToGestionOfPaymentsForClients(); 
+        }
+    }
+
+    private bool UserIsAdministrator()
+    {
+        return Session.ActiveUser.IsAdministrator;
+    }
+
+    private void GoToGestionOfPaymentsForAdmins()
+    {
+        _navigationManager.NavigateTo("/GestionOfPaymentsAdmin");
+    }
+
+    private void GoToGestionOfPaymentsForClients()
+    {
+        _navigationManager.NavigateTo("/GestionOfPaymentsClient");
+    }
+
+}

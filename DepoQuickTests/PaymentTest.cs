@@ -31,7 +31,18 @@ public class PaymentTest
     {
         Payment newPayment = new Payment(); 
         
-        Assert.AreEqual(0,newPayment.Status);
+        Assert.AreEqual("reservado",newPayment.Status);
+        
+    }
+    
+    [TestMethod]
+    public void TestGetAndSetId()
+    {
+        Payment newPayment = new Payment();
+
+        newPayment.Id = 1; 
+        
+        Assert.AreEqual(1,newPayment.Id);
         
     }
     
@@ -43,8 +54,8 @@ public class PaymentTest
         
         Assert.AreNotSame(newPayment1.Id, newPayment2.Id);
 
-        Assert.AreEqual(0,newPayment1.Status);
-        Assert.AreEqual(0,newPayment2.Status);
+        Assert.AreEqual("reservado",newPayment1.Status);
+        Assert.AreEqual("reservado",newPayment2.Status);
         
     }
     
@@ -57,7 +68,7 @@ public class PaymentTest
 
         newPayment.Capture(); 
 
-        Assert.AreEqual(1,newPayment.Status);
+        Assert.AreEqual("capturado",newPayment.Status);
     }
     
     [TestMethod]
@@ -67,8 +78,6 @@ public class PaymentTest
         Payment newPayment = new Payment();
 
         newPayment.Capture(); 
-
-        Assert.AreEqual(1,newPayment.Status);
     }
 
 

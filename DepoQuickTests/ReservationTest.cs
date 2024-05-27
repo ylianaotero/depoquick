@@ -183,6 +183,7 @@ public class ReservationTest
         Assert.AreEqual(stay,reservation.Date);
     }
     
+    
     /*[TestMethod]
     public void TestTwoDepositsHaveDifferentIDs()
     {

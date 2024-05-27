@@ -9,14 +9,14 @@ public class Payment
     [Key]
     public int Id { get; set; }
     
-    public int Status { get; private set; }
+    public String Status { get; private set; }
     
     
     public Reservation Reservation { get; set; }
 
     public Payment()
     {
-        Status = 0;
+        Status = "reservado";
     }
 
     public void Capture()
@@ -28,7 +28,7 @@ public class Payment
         }
         else
         {
-            Status = 1;
+            Status = "capturado";
         }
     }
 
