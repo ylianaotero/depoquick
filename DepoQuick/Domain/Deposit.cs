@@ -6,7 +6,6 @@ namespace DepoQuick.Domain;
 public class Deposit
 {
     
-    private static int s_nextId;
 
     private const int AdditionalPriceForAirConditioning = 20;
     

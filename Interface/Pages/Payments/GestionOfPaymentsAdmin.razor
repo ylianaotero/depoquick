@@ -1,13 +1,9 @@
-﻿@page "/GestionOfReservsAdmin"
-
-@inject Session Session
-@inject DepoQuickContext DepoQuickContext
+﻿@page "/GestionOfPaymentsAdmin"
 @using BusinessLogic
-@using BusinessLogic.Exceptions.ControllerExceptions
 @using BusinessLogic.Exceptions.ReservationControllerExceptions
 @using DepoQuick.Domain
-@using DepoQuick.Exceptions.PaymentExceptions
-
+@inject Session Session
+@inject DepoQuickContext DepoQuickContext
 
 <html lang="es">
   <head>
@@ -19,26 +15,6 @@
 
         <h3>Gestión de reservas</h3>
 
-        @if (_showAlertReservationNotFound)
-        {
-            <br>
-            <div class="alert alert-danger" role="alert">
-                "Lo sentimos, no encontramos ningún depósito con ese ID. No podemos aprobar ni rechazar. ¡Por favor, inténtalo de nuevo!"
-            </div>
-            <br>
-        }
-        
-        @if (_showAlertPaymentNotFound)
-        {
-            <br>
-            <div class="alert alert-danger" role="alert">
-                "Lo sentimos, no encontramos ningún pago realizado para esa reservacion. No podemos aprobar ni rechazar. ¡Por favor, inténtalo de nuevo!"
-            
-            </div>
-            <br>
-            
-        }
-
 
         <table class="table">
             <thead>
@@ -47,8 +23,7 @@
                 <th>Depósito</th>
                 <th>Desde</th>
                 <th>Hasta</th>
-                <th>Acciones</th>
-                <th>Comentario</th>
+                <th>Estado del Pago</th>
             </tr>
             </thead>
             <tbody>
@@ -58,41 +33,49 @@
                     @{
                         int clientId = DepoQuickContext.Entry(reservation).Property<int>("ClientId").CurrentValue;
                         string clientName = DepoQuickContext.Clients.Find(clientId).Name;
-                        
+                                            
                         int depositId = DepoQuickContext.Entry(reservation).Property<int>("DepositId").CurrentValue;
                     }
-
                     <td>@clientName</td>
                     <td>Depósito @depositId</td>
                     <td>@reservation.Date.GetInitialDate().ToString("dd/MM/yyyy")</td>
                     <td>@reservation.Date.GetFinalDate().ToString("dd/MM/yyyy")</td>
-                    @if (reservation.Status == 0)
+                    
+                    @{
+                        GetPayment(reservation);
+                    }
+                    
+                    @if (reservation.Status == -1)
                     {
                         <td>
-                            <button @onclick="() => ApproveReservation(reservation)" class="btn btn-success btn-sm">Aprobar</button>
-                            <a href="/Reject/@reservation.Id" class="btn btn-danger btn-sm">Rechazar</a>
+                            <button class="btn btn-secondary btn-sm">Rechazada</button>
                         </td>
-
-                        <td>-</td>
                     }
                     else
                     {
-                        @if (reservation.Status == 1)
+                        
+                        @if (_paymentOfReservation == null)
                         {
                             <td>
-                                <button class="btn btn-primary btn-sm">Aprobada</button>
+                                <button class="btn btn-secondary btn-sm">Pendiente de Pago</button>
                             </td>
-                            <td>-</td>
-
                         }
                         else
                         {
-                            @if (reservation.Status == -1)
+                            @if (_paymentOfReservation.Status == "reservado")
                             {
                                 <td>
-                                    <button class="btn btn-secondary btn-sm">Rechazada</button>
+                                    <button class="btn btn-primary btn-sm">Pendiente de Aprobación</button>
                                 </td>
-                                <td>@reservation.Message</td>
+                            }
+                            else
+                            {
+                                @if (_paymentOfReservation.Status == "capturado")
+                                {
+                                    <td>
+                                        <button class="btn btn-success btn-sm">Pago Aprobado</button>
+                                    </td>
+                                }
                             }
                         }
                     }
@@ -103,43 +86,34 @@
     </body>
 </html>
 
+
+
+
 @code {
     ReservationController _reservationController;
     private List<Reservation> _listOfReservations;
-
-    private bool _showAlertReservationNotFound; 
-    private bool _showAlertPaymentNotFound; 
-
-    private String _comment; 
+    
+    private Payment _paymentOfReservation;
+    
     
     protected override void OnInitialized()
     {
         _reservationController = new ReservationController(DepoQuickContext, Session);
         _listOfReservations = _reservationController.GetReservations();
-        HideAllAlerts(); 
     }
-
-    private void HideAllAlerts()
-    {
-        _showAlertReservationNotFound = false;
-        _showAlertPaymentNotFound = false; 
-
-    }
-
-    private void ApproveReservation(Reservation reservation)
+    
+    private void GetPayment(Reservation reservation)
     {
         try
         {
-            _reservationController.ApproveReservation(reservation);
+            _paymentOfReservation = _reservationController.GetPaymentOfReservation(reservation);
         }
         catch (PaymentNotFoundException paymentNotFoundException)
         {
-            _showAlertPaymentNotFound = true;
-        }
-        catch (CannotCapturePaymentIfDoesNotHaveAnAssociatedReservation cannotCapturePaymentIfDoesNotHaveAnAssociatedReservation)
-        {
-            _showAlertReservationNotFound = true;
+            _paymentOfReservation = null; 
         }
         
+        
     }
+    
 }

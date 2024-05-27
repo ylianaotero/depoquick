@@ -72,11 +72,12 @@
     
     [Parameter]
     public int Id { get; set; }
+    
+    //no esta atrapando las excepciones!!
 
     protected override void OnInitialized()
     {
         _reservationController = new ReservationController(DepoQuickContext,Session);
-        _currentReservation = _reservationController.Get(Id);
         _navigationManager = NavigationManager; 
     }
     
@@ -84,6 +85,7 @@
     {
         try
         {
+            _currentReservation = _reservationController.Get(Id);
             _reservationController.RejectReservation(_currentReservation, _comment);
             _navigationManager.NavigateTo("/GestionOfReservsAdmin");
         }
@@ -105,7 +107,7 @@
     
     private void CancelRejection()
     {
-        _reservationController.CancelRejectionOfReservation(_currentReservation);
+        //_reservationController.CancelRejectionOfReservation(_currentReservation);
         _navigationManager.NavigateTo("/GestionOfReservsAdmin");
     }
     

@@ -7,7 +7,6 @@ public class Rating
 {
     private const int MaxCharacters = 500;
     
-    private static int s_lastId = 0;
     
     [Key]
     public int Id { get; set; }

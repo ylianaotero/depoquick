@@ -178,10 +178,11 @@ public class ReservationTest
         DateTime dayOut = new DateTime(2024, 04, 08);
         DateRange stay = new DateRange(dayIn, dayOut);
         Reservation reservation = new Reservation(deposit, client, stay);
-        Assert.AreEqual(client,reservation.Client);
+        Assert.AreEqual(client.Id,reservation.ClientId);
         Assert.AreEqual(deposit,reservation.Deposit);
         Assert.AreEqual(stay,reservation.Date);
     }
+    
     
     /*[TestMethod]
     public void TestTwoDepositsHaveDifferentIDs()

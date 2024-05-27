@@ -10,7 +10,7 @@ public class User
     private const int MaxNameLength = 100;
     private const int MinPasswordLength = 8;
     
-    private static int s_lastId = 0;
+    //private static int s_lastId = 0;
     
     [Key]
     public int Id { get; init; }

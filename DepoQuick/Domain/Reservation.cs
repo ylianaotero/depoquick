@@ -5,12 +5,11 @@ namespace DepoQuick.Domain;
 
 public class Reservation
 {
-    private static int s_nextId = 0;
-    
-    [Key]
     public int Id { get; set; }
     
     public Deposit Deposit  { get; set; }
+    
+    public int ClientId { get; set; }
     public Client Client { get; set; }
     public DateRange Date { get; set; }
     public int Status { get; set; }
@@ -31,18 +30,18 @@ public class Reservation
     public Reservation()
     {
        // Id = s_nextId; 
-        s_nextId++; 
+       Message = "-";
         
         Status = 0;
     }
 
+    //ver
     public Reservation(Deposit deposit, Client client, DateRange date)
     {
-        //Id = s_nextId; 
-      //  s_nextId++; 
-        
         Deposit = deposit;
-        Client = client;
+        ClientId = client.Id; 
+        
+       // Client = client;
         Date = date;
         
         Message = "-";

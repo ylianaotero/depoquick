@@ -3,6 +3,7 @@
 @using DepoQuick.Domain
 @inject Session Session
 @inject NavigationManager NavigationManager
+@inject DepoQuickContext DepoQuickContext
 
 <html lang="es">
   <head>
@@ -28,7 +29,10 @@
                     @foreach (Reservation reservation in _listOfReservations)
                     {
                         <tr>
-                            <td>Depósito @reservation.Deposit.Id</td>
+                            @{
+                                int depositId = DepoQuickContext.Entry(reservation).Property<int>("DepositId").CurrentValue;
+                            }
+                            <td>Depósito @depositId</td>
                             <td>@reservation.Date.GetInitialDate().ToString("dd/MM/yyyy")</td>
                             <td>@reservation.Date.GetFinalDate().ToString("dd/MM/yyyy")</td>
                             @if (reservation.Status == 0)
@@ -91,11 +95,17 @@
     private List<Reservation> _listOfReservations;
     private Client _client; 
     
+    ReservationController _reservationController;
+    
     protected override void OnInitialized()
     {
+        _reservationController = new ReservationController(DepoQuickContext, Session);
+        
         _client = (Client)Session.ActiveUser;
+        
+        _listOfReservations = _reservationController.GetReservationsById(_client.Id);
 
-        _listOfReservations = _client.Reservations; 
+        //_listOfReservations = _client.Reservations; No funciona porque las tablas son diferentes a las clases (fijarse en dbaver)
     }
     
     private bool ReservationIsOver(Reservation reservation)

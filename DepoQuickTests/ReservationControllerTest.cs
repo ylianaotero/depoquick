@@ -3,6 +3,7 @@ using BusinessLogic.Exceptions.ControllerExceptions;
 using DepoQuick.Domain;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
+using BusinessLogic.Exceptions.ReservationControllerExceptions;
 
 namespace DepoQuickTests
 {
@@ -20,6 +21,9 @@ namespace DepoQuickTests
         private const string ClientName = "Client";
         private const string ClientEmail = "client@domain.com";
         private const string ClientPassword = "Password2#";
+        private const string ClientName2 = "ClientDos";
+        private const string ClientEmail2 = "client2@domain.com";
+        private const string ClientPassword2 = "Password2#";
      
         private const char DepositArea0 = 'A';
         private const string DepositSize0 = "Pequeño";
@@ -39,7 +43,10 @@ namespace DepoQuickTests
         private const string UserLogOutLogMessage = "Cerró sesión";
         
         private Client _client;
+        private Client _client2;
         private Deposit _deposit0;
+        private Deposit _deposit1;
+        private Deposit _deposit2;
         private DateRange _validDateRange;
         private DateRange _expiredDateRange;
         private DateRange _currentDateRange;
@@ -61,7 +68,8 @@ namespace DepoQuickTests
             _userController.RegisterAdministrator(AdminName, AdminEmail, AdminPassword, AdminPassword);
 
             _deposit0 = new Deposit (DepositArea0,DepositSize0,DepositAirConditioning0);
-
+            _deposit1 = new Deposit(DepositArea1,DepositSize1,DepositAirConditioning1);
+            _deposit2 = new Deposit(DepositArea0,DepositSize1,DepositAirConditioning1);
             
             _currentDateRange = new DateRange(DateTime.Now, DateTime.Now.AddDays(10));
             _validDateRange = new DateRange(DateTime.Now.AddDays(5), DateTime.Now.AddDays(10));
@@ -161,12 +169,34 @@ namespace DepoQuickTests
         }
         
         [TestMethod]
+        public void TestGetAllReservationsById()
+        {
+            _userController.RegisterClient(ClientName, ClientEmail, ClientPassword, ClientPassword);
+            _client = (Client)_userController.Get(ClientEmail);
+            
+            _userController.RegisterClient(ClientName2, ClientEmail2, ClientPassword2, ClientPassword2);
+            _client2 = (Client)_userController.Get(ClientEmail2);
+            
+            Reservation reservation1 = new Reservation(_deposit0, _client, _validDateRange);
+            Reservation reservation2 = new Reservation(_deposit1, _client, _currentDateRange);
+            Reservation reservation3 = new Reservation(_deposit2, _client2, _expiredDateRange);
+    
+            _reservationController.Add(reservation1);
+            _reservationController.Add(reservation2);
+            _reservationController.Add(reservation3);
+            
+            Assert.AreEqual(2, _reservationController.GetReservationsById(_client.Id).Count);
+        }
+        
+        [TestMethod]
         public void TestApproveReservation()
         {
             _userController.RegisterClient(ClientName, ClientEmail, ClientPassword, ClientPassword);
             _client = (Client)_userController.Get(ClientEmail);
             var reservation = new Reservation(_deposit0, _client, _validDateRange);
             _reservationController.Add(reservation);
+
+            _reservationController.PayReservation(reservation);
 
             _reservationController.ApproveReservation(reservation);
             
@@ -193,9 +223,12 @@ namespace DepoQuickTests
         }
         
         [TestMethod]
-        [ExpectedException(typeof(UserDoesNotExistException))]
+        [ExpectedException(typeof(EmptyAdministratorException))]
         public void TestApproveReservationWithoutAdmin()
         {
+            _userController.RegisterClient(ClientName, ClientEmail, ClientPassword, ClientPassword);
+            _client = (Client)_userController.Get(ClientEmail);
+            
             Deposit deposit = new Deposit(DepositArea0, DepositSize0, DepositAirConditioning0);
             Reservation reservation = new Reservation(deposit, _client, _validDateRange);
             
@@ -210,6 +243,9 @@ namespace DepoQuickTests
         [ExpectedException(typeof(UserDoesNotExistException))]
         public void TestRejectReservationBecauseThereIsNoAdministrator()
         {
+            _userController.RegisterClient(ClientName, ClientEmail, ClientPassword, ClientPassword);
+            _client = (Client)_userController.Get(ClientEmail);
+            
             Deposit deposit = new Deposit(DepositArea0, DepositSize0, DepositAirConditioning0);
             Reservation reservation = new Reservation(deposit, _client, _validDateRange);
             
@@ -237,6 +273,9 @@ namespace DepoQuickTests
         [ExpectedException(typeof(ArgumentException))]
         public void TestRejectReservationBecauseOfEmptyReason()
         {
+            _userController.RegisterClient(ClientName, ClientEmail, ClientPassword, ClientPassword);
+            _client = (Client)_userController.Get(ClientEmail);
+            
             Deposit deposit = new Deposit(DepositArea0, DepositSize0, DepositAirConditioning0);
             Reservation reservation = new Reservation(deposit, _client, _validDateRange);
             
@@ -251,6 +290,9 @@ namespace DepoQuickTests
         [ExpectedException(typeof(ArgumentException))]
         public void TestRejectReservationBecauseOfNullReason()
         {
+            _userController.RegisterClient(ClientName, ClientEmail, ClientPassword, ClientPassword);
+            _client = (Client)_userController.Get(ClientEmail); 
+            
             Deposit deposit = new Deposit(DepositArea0, DepositSize0, DepositAirConditioning0);
             Reservation reservation = new Reservation(deposit, _client, _validDateRange);
             
@@ -337,12 +379,70 @@ namespace DepoQuickTests
         [ExpectedException(typeof(ActionRestrictedToClientException))]
         public void TestAdministratorCannotRateReservation()
         {
+            _userController.RegisterClient(ClientName, ClientEmail, ClientPassword, ClientPassword);
+            _client = (Client)_userController.Get(ClientEmail);
+            
             Reservation reservation = new Reservation(_deposit0, _client, _currentDateRange);
             _reservationController.Add(reservation);
             Rating rating = new Rating(5, "Excelente");
  
             _session.LoginUser(AdminEmail,AdminPassword);
             _reservationController.RateReservation(reservation, rating);
+        }
+        
+        [TestMethod]
+        public void TestPayReservation()
+        {
+            _userController.RegisterClient(ClientName, ClientEmail, ClientPassword, ClientPassword);
+            _client = (Client)_userController.Get(ClientEmail);
+            
+            Reservation reservation = new Reservation(_deposit0, _client, _currentDateRange);
+            _reservationController.PayReservation(reservation);
+            
+            Assert.AreEqual("reservado", _reservationController.GetPaymentOfReservation(reservation).Status);
+        }
+        
+        [TestMethod]
+        [ExpectedException(typeof(PaymentNotFoundException))]
+        public void TestPaymentNotFoundException()
+        {
+            _userController.RegisterClient(ClientName, ClientEmail, ClientPassword, ClientPassword);
+            _client = (Client)_userController.Get(ClientEmail);
+            
+            Reservation reservation = new Reservation(_deposit0, _client, _currentDateRange);
+
+            _reservationController.GetPaymentOfReservation(reservation); 
+            
+        }
+        
+        [TestMethod]
+        public void TestPaymentCaptured()
+        {
+            _userController.RegisterClient(ClientName, ClientEmail, ClientPassword, ClientPassword);
+            _client = (Client)_userController.Get(ClientEmail);
+            
+            Reservation reservation = new Reservation(_deposit0, _client, _currentDateRange);
+            
+            _reservationController.PayReservation(reservation);
+
+            _reservationController.ApproveReservation(reservation); 
+            
+            Assert.AreEqual("capturado", _reservationController.GetPaymentOfReservation(reservation).Status);
+            
+        }
+        
+        
+        [TestMethod]
+        [ExpectedException(typeof(PaymentNotFoundException))]
+        public void TestPaymentNotFoundExceptionToCapture()
+        {
+            _userController.RegisterClient(ClientName, ClientEmail, ClientPassword, ClientPassword);
+            _client = (Client)_userController.Get(ClientEmail);
+            
+            Reservation reservation = new Reservation(_deposit0, _client, _currentDateRange);
+
+            _reservationController.ApproveReservation(reservation); 
+            
         }
         
 

@@ -1,4 +1,5 @@
 ﻿using BusinessLogic.Exceptions.ControllerExceptions;
+using BusinessLogic.Exceptions.ReservationControllerExceptions;
 using DepoQuick.Domain;
 
 namespace BusinessLogic;
@@ -16,13 +17,41 @@ public class ReservationController
     
     
     public void Add(Reservation reservation)
-    {
-        //_context.Reservations.Add(reservation);
-      Client client = reservation.Client;
-       client.AddReservation(reservation);
+    { 
+        _context.Reservations.Add(reservation);
+      //Client client = reservation.Client;
+       //client.AddReservation(reservation);
+       
       //  reservation.Deposit.AddReservation(reservation);
         _context.SaveChanges();
     }
+
+    public void PayReservation(Reservation reservation)
+    {
+        Payment payment = new Payment(); 
+        payment.Reservation = reservation;
+        _context.Payments.Add(payment); 
+        _context.SaveChanges();
+    }
+    
+    public Payment GetPaymentOfReservation(Reservation reservation)
+    {
+        Payment payment = SearchForAPayment(reservation.Id);
+        if (payment == null)
+        {
+            throw new PaymentNotFoundException("No se encontro pago asociado a la reserva"); 
+        }
+        else
+        {
+            return payment; 
+        }
+    }
+
+    private Payment SearchForAPayment(int idReservation)
+    {
+        return _context.Payments.Find(idReservation);
+    }
+    
     
     public Reservation Get(DateRange validDateRange)
     {
@@ -57,14 +86,34 @@ public class ReservationController
         List<Reservation> reservations = _context.Reservations.ToList();
         return reservations; 
     }
+    
+    
+    public List<Reservation> GetReservationsById(int id)
+    {
+        var reservationsById = new List<Reservation>();
+    
+        foreach (var reservation in _context.Reservations)
+        {
+            int clientId = _context.Entry(reservation).Property<int>("ClientId").CurrentValue;
+            if (clientId == id)
+            {
+                reservationsById.Add(reservation);
+            }
+        }
+        return reservationsById;
+    }
+
 
     public void ApproveReservation(Reservation reservation)
     {
         Administrator admin = (Administrator)_context.Users.FirstOrDefault(u => u.IsAdministrator);
         if (admin == null)
         {
-            throw new UserDoesNotExistException("No se encontró ningún administrador");
+            throw new EmptyAdministratorException("No se encontró ningún administrador");
         }
+
+        Payment payment = GetPaymentOfReservation(reservation); 
+        payment.Capture();
 
         admin.ApproveReservation(reservation);
         _context.SaveChanges();
