@@ -226,6 +226,9 @@ namespace DepoQuickTests
         [ExpectedException(typeof(EmptyAdministratorException))]
         public void TestApproveReservationWithoutAdmin()
         {
+            _userController.RegisterClient(ClientName, ClientEmail, ClientPassword, ClientPassword);
+            _client = (Client)_userController.Get(ClientEmail);
+            
             Deposit deposit = new Deposit(DepositArea0, DepositSize0, DepositAirConditioning0);
             Reservation reservation = new Reservation(deposit, _client, _validDateRange);
             
@@ -240,6 +243,9 @@ namespace DepoQuickTests
         [ExpectedException(typeof(UserDoesNotExistException))]
         public void TestRejectReservationBecauseThereIsNoAdministrator()
         {
+            _userController.RegisterClient(ClientName, ClientEmail, ClientPassword, ClientPassword);
+            _client = (Client)_userController.Get(ClientEmail);
+            
             Deposit deposit = new Deposit(DepositArea0, DepositSize0, DepositAirConditioning0);
             Reservation reservation = new Reservation(deposit, _client, _validDateRange);
             
@@ -267,6 +273,9 @@ namespace DepoQuickTests
         [ExpectedException(typeof(ArgumentException))]
         public void TestRejectReservationBecauseOfEmptyReason()
         {
+            _userController.RegisterClient(ClientName, ClientEmail, ClientPassword, ClientPassword);
+            _client = (Client)_userController.Get(ClientEmail);
+            
             Deposit deposit = new Deposit(DepositArea0, DepositSize0, DepositAirConditioning0);
             Reservation reservation = new Reservation(deposit, _client, _validDateRange);
             
@@ -281,6 +290,9 @@ namespace DepoQuickTests
         [ExpectedException(typeof(ArgumentException))]
         public void TestRejectReservationBecauseOfNullReason()
         {
+            _userController.RegisterClient(ClientName, ClientEmail, ClientPassword, ClientPassword);
+            _client = (Client)_userController.Get(ClientEmail); 
+            
             Deposit deposit = new Deposit(DepositArea0, DepositSize0, DepositAirConditioning0);
             Reservation reservation = new Reservation(deposit, _client, _validDateRange);
             
@@ -367,6 +379,9 @@ namespace DepoQuickTests
         [ExpectedException(typeof(ActionRestrictedToClientException))]
         public void TestAdministratorCannotRateReservation()
         {
+            _userController.RegisterClient(ClientName, ClientEmail, ClientPassword, ClientPassword);
+            _client = (Client)_userController.Get(ClientEmail);
+            
             Reservation reservation = new Reservation(_deposit0, _client, _currentDateRange);
             _reservationController.Add(reservation);
             Rating rating = new Rating(5, "Excelente");
@@ -378,6 +393,9 @@ namespace DepoQuickTests
         [TestMethod]
         public void TestPayReservation()
         {
+            _userController.RegisterClient(ClientName, ClientEmail, ClientPassword, ClientPassword);
+            _client = (Client)_userController.Get(ClientEmail);
+            
             Reservation reservation = new Reservation(_deposit0, _client, _currentDateRange);
             _reservationController.PayReservation(reservation);
             
@@ -388,6 +406,9 @@ namespace DepoQuickTests
         [ExpectedException(typeof(PaymentNotFoundException))]
         public void TestPaymentNotFoundException()
         {
+            _userController.RegisterClient(ClientName, ClientEmail, ClientPassword, ClientPassword);
+            _client = (Client)_userController.Get(ClientEmail);
+            
             Reservation reservation = new Reservation(_deposit0, _client, _currentDateRange);
 
             _reservationController.GetPaymentOfReservation(reservation); 
@@ -397,6 +418,9 @@ namespace DepoQuickTests
         [TestMethod]
         public void TestPaymentCaptured()
         {
+            _userController.RegisterClient(ClientName, ClientEmail, ClientPassword, ClientPassword);
+            _client = (Client)_userController.Get(ClientEmail);
+            
             Reservation reservation = new Reservation(_deposit0, _client, _currentDateRange);
             
             _reservationController.PayReservation(reservation);
@@ -412,6 +436,9 @@ namespace DepoQuickTests
         [ExpectedException(typeof(PaymentNotFoundException))]
         public void TestPaymentNotFoundExceptionToCapture()
         {
+            _userController.RegisterClient(ClientName, ClientEmail, ClientPassword, ClientPassword);
+            _client = (Client)_userController.Get(ClientEmail);
+            
             Reservation reservation = new Reservation(_deposit0, _client, _currentDateRange);
 
             _reservationController.ApproveReservation(reservation); 

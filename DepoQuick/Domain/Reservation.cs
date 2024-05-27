@@ -39,8 +39,9 @@ public class Reservation
     public Reservation(Deposit deposit, Client client, DateRange date)
     {
         Deposit = deposit;
-        //Client = client;
         ClientId = client.Id; 
+        
+       // Client = client;
         Date = date;
         
         Message = "-";
