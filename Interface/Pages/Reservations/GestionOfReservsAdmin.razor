@@ -2,6 +2,7 @@
 
 @inject Session Session
 @inject DepoQuickContext DepoQuickContext
+@inject NavigationManager NavigationManager
 @using BusinessLogic
 @using BusinessLogic.Exceptions.ControllerExceptions
 @using BusinessLogic.Exceptions.ReservationControllerExceptions
@@ -76,7 +77,7 @@
                         
                         <td>
                             <button @onclick="() => ApproveReservation(reservation)" class="btn btn-success btn-sm">Aprobar</button>
-                            <a href="/Reject/@reservation.Id" class="btn btn-danger btn-sm">Rechazar</a>
+                            <button @onclick="() =>  GoToRejectReservation(reservation.Id)" class="btn btn-danger btn-sm">Rechazar</button>
                         </td>
 
                         <td>-</td>
@@ -155,6 +156,12 @@
 
 @code {
     ReservationController _reservationController;
+    
+    private NavigationManager _navigationManager;
+    
+    Session _session;
+
+    DepoQuickContext _context; 
     private List<Reservation> _listOfReservations;
 
     private bool _showAlertReservationNotFound; 
@@ -166,8 +173,11 @@
     
     protected override void OnInitialized()
     {
-        _reservationController = new ReservationController(DepoQuickContext, Session);
+        _context = DepoQuickContext;
+        _session = Session; 
+        _reservationController = new ReservationController(_context, _session);
         _listOfReservations = _reservationController.GetReservations();
+        _navigationManager = NavigationManager;
     
         HideAllAlerts(); 
     }
@@ -207,6 +217,12 @@
         {
             _showAlertReservationNotFound = true;
         }
+        
+    }
+
+    private void GoToRejectReservation(int id)
+    {
+        _navigationManager.NavigateTo("/Reject/" + id);
         
     }
 }

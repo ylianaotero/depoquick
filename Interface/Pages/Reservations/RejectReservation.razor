@@ -6,6 +6,8 @@
 @using BusinessLogic.Exceptions.ControllerExceptions
 @using DepoQuick.Domain
 @using DepoQuick.Exceptions.ReservationExceptions
+@using Microsoft.EntityFrameworkCore.Diagnostics
+@using SQLitePCL
 
 <html lang="es">
   <head>
@@ -24,6 +26,17 @@
             </div>
             <br>
         }
+        
+        @if (_showAlertAdminNotFound)
+        {
+            <br>
+            <div class="alert alert-danger" role="alert">
+                Lo sentimos, no encontramos ningún administrador registrado. No podemos aprobar ni rechazar. ¡Por favor, inténtalo de nuevo!
+            </div>
+            <br>
+        }
+        
+        
 
         @if (_showAlertInvalidComment)
           {
@@ -68,21 +81,32 @@
     
     private bool _showAlertReservationNotFound; 
     private bool _showAlertInvalidComment;
-    private bool _showAlertEmptyComment; 
+    private bool _showAlertEmptyComment;
+    private bool _showAlertAdminNotFound; 
     
     [Parameter]
     public int Id { get; set; }
     
-    //no esta atrapando las excepciones!!
 
     protected override void OnInitialized()
     {
         _reservationController = new ReservationController(DepoQuickContext,Session);
-        _navigationManager = NavigationManager; 
+        _navigationManager = NavigationManager;
+        HideAllAlerts(); 
+    }
+    
+    private void HideAllAlerts()
+    {
+        _showAlertReservationNotFound = false; 
+        _showAlertInvalidComment = false;
+        _showAlertAdminNotFound = false; 
+        _showAlertEmptyComment = false; 
+
     }
     
     private void RejectTheReservation()
     {
+        HideAllAlerts(); 
         try
         {
             _currentReservation = _reservationController.Get(Id);
@@ -102,12 +126,19 @@
         {
             _showAlertEmptyComment = true;
         }
-
+        catch (UserDoesNotExistException userDoesNotExistException)
+        {
+            _showAlertAdminNotFound = true; 
+        }
+        catch (ArgumentNullException argumentNullException)
+        {
+            _showAlertReservationNotFound = true; 
+        }
     }
     
     private void CancelRejection()
     {
-        //_reservationController.CancelRejectionOfReservation(_currentReservation);
+        _reservationController.CancelRejectionOfReservation(_currentReservation); 
         _navigationManager.NavigateTo("/GestionOfReservsAdmin");
     }
     
