@@ -33,6 +33,9 @@
     <ItemGroup>
       <_ContentIncludedByDefault Remove="Pages\Promotions\Promotions.cshtml" />
       <_ContentIncludedByDefault Remove="Pages\Home\Home.razor" />
+      <_ContentIncludedByDefault Remove="Pages\Payments\GestionOfPayments.razor" />
+      <_ContentIncludedByDefault Remove="Pages\Payments\GestionOfPaymentsAdmin.razor" />
+      <_ContentIncludedByDefault Remove="Pages\Payments\GestionOfPaymentsClient.razor" />
     </ItemGroup>
 
 </Project>

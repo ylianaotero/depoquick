@@ -36,7 +36,7 @@ public class ReservationController
     
     public Payment GetPaymentOfReservation(Reservation reservation)
     {
-        Payment payment = SearchForAPayment(reservation.Id);
+        Payment payment = SearchForAPayment(reservation);
         if (payment == null)
         {
             throw new PaymentNotFoundException("No se encontro pago asociado a la reserva"); 
@@ -47,9 +47,10 @@ public class ReservationController
         }
     }
 
-    private Payment SearchForAPayment(int idReservation)
+    private Payment SearchForAPayment(Reservation reservation)
     {
-        return _context.Payments.Find(idReservation);
+        return _context.Payments.FirstOrDefault(r =>r.Reservation == reservation);
+        ;
     }
     
     
@@ -126,30 +127,33 @@ public class ReservationController
         {
             throw new UserDoesNotExistException("No se encontró ningún administrador");
         }
-
-        if (reservation == null)
+        else
         {
-            throw new ArgumentNullException(nameof(reservation), "La reserva no puede ser nula");
-        }
+            if (reservation == null)
+            {
+                throw new ArgumentNullException(nameof(reservation), "La reserva no puede ser nula");
+            }
+            else
+            {
+                admin.RejectReservation(reservation, reason);
+                _context.SaveChanges();
+            }
 
-        if (string.IsNullOrEmpty(reason))
-        {
-            throw new ArgumentException("La razón de rechazo no puede ser nula o vacía", nameof(reason));
         }
-
-        admin.RejectReservation(reservation, reason);
-        reservation.Status = -1;
-        reservation.Message = reason;
-        _context.SaveChanges();
+        
     }
     
     public void CancelRejectionOfReservation(Reservation reservation)
     {
         if (_session.ActiveUser.IsAdministrator)
         {
-            reservation.Status = 0;
-            reservation.Deposit.AddReservation(reservation);
-            //Add(reservation);
+            if (reservation != null)
+            {
+                reservation.Status = 0;
+                _context.SaveChanges();
+                //reservation.Deposit.AddReservation(reservation);
+                //Add(reservation);
+            }
         }
         else
         {

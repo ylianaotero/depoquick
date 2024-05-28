@@ -4,6 +4,7 @@ using DepoQuick.Domain;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using BusinessLogic.Exceptions.ReservationControllerExceptions;
+using DepoQuick.Exceptions.ReservationExceptions;
 
 namespace DepoQuickTests
 {
@@ -270,7 +271,7 @@ namespace DepoQuickTests
         }
         
         [TestMethod]
-        [ExpectedException(typeof(ArgumentException))]
+        [ExpectedException(typeof(ReservationWithEmptyMessageException))]
         public void TestRejectReservationBecauseOfEmptyReason()
         {
             _userController.RegisterClient(ClientName, ClientEmail, ClientPassword, ClientPassword);
@@ -287,7 +288,7 @@ namespace DepoQuickTests
         }
 
         [TestMethod]
-        [ExpectedException(typeof(ArgumentException))]
+        [ExpectedException(typeof(ReservationWithEmptyMessageException))]
         public void TestRejectReservationBecauseOfNullReason()
         {
             _userController.RegisterClient(ClientName, ClientEmail, ClientPassword, ClientPassword);
