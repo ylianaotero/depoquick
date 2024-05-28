@@ -36,7 +36,7 @@ public class ReservationController
     
     public Payment GetPaymentOfReservation(Reservation reservation)
     {
-        Payment payment = SearchForAPayment(reservation.Id);
+        Payment payment = SearchForAPayment(reservation);
         if (payment == null)
         {
             throw new PaymentNotFoundException("No se encontro pago asociado a la reserva"); 
@@ -47,9 +47,10 @@ public class ReservationController
         }
     }
 
-    private Payment SearchForAPayment(int idReservation)
+    private Payment SearchForAPayment(Reservation reservation)
     {
-        return _context.Payments.Find(idReservation);
+        return _context.Payments.FirstOrDefault(r =>r.Reservation == reservation);
+        ;
     }
     
     

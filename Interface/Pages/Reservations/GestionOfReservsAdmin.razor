@@ -49,6 +49,7 @@
                 <th>Hasta</th>
                 <th>Acciones</th>
                 <th>Comentario</th>
+                <th>Estado del Pago</th>
             </tr>
             </thead>
             <tbody>
@@ -66,8 +67,13 @@
                     <td>Depósito @depositId</td>
                     <td>@reservation.Date.GetInitialDate().ToString("dd/MM/yyyy")</td>
                     <td>@reservation.Date.GetFinalDate().ToString("dd/MM/yyyy")</td>
-                    @if (reservation.Status == 0)
+                    
+                    @{
+                        GetPayment(reservation);
+                    }
+                    @if (reservation.Status == 0 && _paymentOfReservation != null)
                     {
+                        
                         <td>
                             <button @onclick="() => ApproveReservation(reservation)" class="btn btn-success btn-sm">Aprobar</button>
                             <a href="/Reject/@reservation.Id" class="btn btn-danger btn-sm">Rechazar</a>
@@ -77,6 +83,7 @@
                     }
                     else
                     {
+                        
                         @if (reservation.Status == 1)
                         {
                             <td>
@@ -94,8 +101,51 @@
                                 </td>
                                 <td>@reservation.Message</td>
                             }
+                            else
+                            {
+                                <td>
+                                    <button class="btn btn-secondary btn-sm">Pendiente de Pago</button>
+                                </td>
+                                <td>-</td>
+                            }
                         }
                     }
+
+                    
+                    @if (reservation.Status == -1)
+                    {
+                        <td>
+                            <button class="btn btn-secondary btn-sm">Rechazada</button>
+                        </td>
+                    }
+                    else
+                    {
+                        
+                        @if (_paymentOfReservation == null)
+                        {
+                            <td>
+                                <button class="btn btn-secondary btn-sm">Pendiente de Pago</button>
+                            </td>
+                        }
+                        else
+                        {
+                            @if (_paymentOfReservation.Status == "reservado")
+                            {
+                                <td>
+                                    <button class="btn btn-primary btn-sm">Pendiente de Aprobación</button>
+                                </td>
+                            }
+                            else
+                            {
+                                @if (_paymentOfReservation.Status == "capturado")
+                                {
+                                    <td>
+                                        <button class="btn btn-success btn-sm">Pago Aprobado</button>
+                                    </td>
+                                }
+                            }
+                        }
+                    }                    
                 </tr>
             }
             </tbody>
@@ -109,6 +159,8 @@
 
     private bool _showAlertReservationNotFound; 
     private bool _showAlertPaymentNotFound; 
+    
+    private Payment _paymentOfReservation;
 
     private String _comment; 
     
@@ -116,6 +168,7 @@
     {
         _reservationController = new ReservationController(DepoQuickContext, Session);
         _listOfReservations = _reservationController.GetReservations();
+    
         HideAllAlerts(); 
     }
 
@@ -124,6 +177,20 @@
         _showAlertReservationNotFound = false;
         _showAlertPaymentNotFound = false; 
 
+    }
+    
+    private void GetPayment(Reservation reservation)
+    {
+        try
+        {
+            _paymentOfReservation = _reservationController.GetPaymentOfReservation(reservation);
+        }
+        catch (PaymentNotFoundException paymentNotFoundException)
+        {
+            _paymentOfReservation = null; 
+        }
+        
+        
     }
 
     private void ApproveReservation(Reservation reservation)

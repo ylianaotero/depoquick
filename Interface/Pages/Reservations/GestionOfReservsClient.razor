@@ -1,5 +1,7 @@
 ﻿@page "/GestionOfReservsClient"
 @using BusinessLogic
+@using BusinessLogic.Exceptions.ControllerExceptions
+@using BusinessLogic.Exceptions.ReservationControllerExceptions
 @using DepoQuick.Domain
 @inject Session Session
 @inject NavigationManager NavigationManager
@@ -14,8 +16,30 @@
     <body>
 
         <h3>¡Hola, @_client.Name! Aquí puedes revisar tus reservaciones.</h3>
+    
+            @if (_showAlertPrice)
+            {
+              <br>
+               <div class="alert alert-primary" role="alert">
+                <h4 class="alert-heading">¿Estás seguro?</h4>
+                <p>Estas a punto de realizar el pago de la reserva</p>
+                <hr>
+                <input @onclick="AddPayment" type="submit" class="btn btn-primary" value="Aceptar">
+              </div>
+              <br>
+            }
+            
+            @if (_showAlertInvalidDeposit)
+            {
+                <br>
+                <div class="alert alert-danger" role="alert">
+                    ¡Error, no se encuentra el deposito de la reservacion, intente de nuevo!
+                    </div>
+                <br>
+                
+            }
 
-        <table class="table">
+    <table class="table">
                 <thead>
                     <tr>
                         <th>Depósito</th>
@@ -23,6 +47,7 @@
                         <th>Hasta</th>
                         <th>Estado</th>
                         <th>Comentario</th>
+                        <th>Estado del Pago</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -54,8 +79,45 @@
                                         <button class="btn btn-danger btn-sm">Rechazada</button>
                                     </td>
                                     <td>@reservation.Message</td>
+                                    <td>
+                                        <button class="btn btn-danger btn-sm">Rechazada</button>
+                                    </td>                                  
                                 }
                             }
+                            @{
+                                _paymentOfReservation = GetPayment(reservation); 
+                            }
+                            @if (reservation.Status != -1)
+                            {
+                                @if (_paymentOfReservation != null)
+                                {
+                                    @if (_paymentOfReservation.Status == "reservado")
+                                    {
+                                        <td>
+                                            <button class="btn btn-secondary btn-sm">Pendiente de Aprobación</button>
+                                        </td>
+                                    
+                                    }
+                                    else
+                                    {
+                                        @if (_paymentOfReservation.Status == "capturado")
+                                        {
+                                            <td>
+                                                <button class= "btn btn-success btn-sm">Pago Aprobado</button>
+                                            </td>
+                                        
+                                        }
+                                    }
+                                }
+                                else 
+                                {
+                                    <td>
+                                        <input @onclick="() => ShowAlert(reservation)"  id="wantToMakeThePayment" class="btn btn-primary" value="Pagar">
+                                    </td>
+                                }
+                                
+                            }
+                            
                             @if (ReservationIsOver(reservation))
                             {
                                // if (reservation.Rating == null)
@@ -95,7 +157,28 @@
     private List<Reservation> _listOfReservations;
     private Client _client; 
     
+    private Deposit _deposit; 
+    private Reservation _reservation;
+    
     ReservationController _reservationController;
+
+    private int _depositId;
+                                
+    private DateTime _initialDate;
+    private DateTime _finalDate;
+    private DateRange _date; 
+    
+    private bool _showAlertPrice;
+    private bool _showAlertInvalidDeposit;
+    
+    
+    private Payment _paymentOfReservation;
+    
+    private DepositController _depositController;
+    
+    private UserController _userController;
+    
+    private Session _session;
     
     protected override void OnInitialized()
     {
@@ -104,8 +187,31 @@
         _client = (Client)Session.ActiveUser;
         
         _listOfReservations = _reservationController.GetReservationsById(_client.Id);
+        
+        HideAllAlerts(); 
 
         //_listOfReservations = _client.Reservations; No funciona porque las tablas son diferentes a las clases (fijarse en dbaver)
+    }
+    
+    private void HideAllAlerts()
+    {
+        _showAlertPrice = false;
+        _showAlertInvalidDeposit = false; 
+    }
+    
+    private Payment GetPayment(Reservation reservation)
+    {
+        try
+        {
+            HideAllAlerts(); 
+            return _reservationController.GetPaymentOfReservation(reservation);
+        }
+        catch (PaymentNotFoundException paymentNotFoundException)
+        {
+            return null;
+        }
+        
+        
     }
     
     private bool ReservationIsOver(Reservation reservation)
@@ -123,5 +229,25 @@
     {
         int reservationId = reservation.Id;
         NavigationManager.NavigateTo($"../EditRating/{reservationId}");
+    }
+    
+    private void ShowAlert(Reservation reservation)
+    {
+        HideAllAlerts(); 
+        try
+        {
+            _reservation = reservation; 
+            _showAlertPrice = true;
+        }
+        catch (DepositNotFoundException depositNotFoundException)
+        {
+            _showAlertInvalidDeposit = true; 
+        }
+        
+    }
+
+    private void AddPayment()
+    {
+        _reservationController.PayReservation(_reservation);
     }
 }
