@@ -63,12 +63,20 @@ public class SqlRepository<T> : IRepository<T> where T : class
     
     private void LoadCollections(T element, PropertyInfo property)
     {
-        _database.Entry(element).Collection(property.Name).Load();
+        var isNavigationCollection = _database.Entry(element).Metadata.FindNavigation(property.Name) != null;
+        if (isNavigationCollection)
+        {
+            _database.Entry(element).Collection(property.Name).Load();
+        }
     }
     
     private void LoadReferences(T element, PropertyInfo property)
     {
-        _database.Entry(element).Reference(property.Name).Load();
+        var isNavigationProperty = _database.Entry(element).Metadata.FindNavigation(property.Name) != null;
+        if (isNavigationProperty)
+        {
+            _database.Entry(element).Reference(property.Name).Load();
+        }
     }
 
     public void Update(T element)
@@ -84,5 +92,10 @@ public class SqlRepository<T> : IRepository<T> where T : class
         _entities.Remove(existingElement);
         
         _database.SaveChanges();
+    }
+    
+    public void Reload(T element)
+    {
+        _database.Entry(element).Reload();
     }
 }

@@ -5,10 +5,10 @@ using SQLitePCL;
 
 namespace BusinessLogic;
 
-public class UserController
+public class UserControllerBkp
 {
     private DepoQuickContext _context;
-    public UserController(DepoQuickContext context)
+    public UserControllerBkp(DepoQuickContext context)
     {
         _context = context;
     }

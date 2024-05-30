@@ -3,6 +3,8 @@
 @using DepoQuick.Domain
 @inject Session Session
 @inject DepoQuickContext DepoQuickContext
+@inject UserController UserController
+@inject LogController LogController
 
 <html lang="es">
     <head>  
@@ -26,7 +28,7 @@
         @foreach (LogEntry log in _logs)
         {
             <tr>
-                <td>@_userController.Get(log.UserId).Name</td>
+                <td>@UserFromLog(log).Name</td>
                 <td>@log.Message</td>
                 <td>@log.Timestamp.ToString("dd/MM/yyyy")</td>
             </tr>
@@ -37,14 +39,21 @@
 </html>
 
 @code {
-    private UserController _userController;
+  //  private UserController _userController;
     private User _loggedInUser;
     private List<LogEntry> _logs;
     
     protected override void OnInitialized()
     {
-        _userController = new UserController(DepoQuickContext);
+        //_userController = new UserController(DepoQuickContext);
+     //   SqlRepository<User> userRepository = new SqlRepository<User>(DepoQuickContext);
+       // _userController = new UserController(userRepository);
         _loggedInUser = Session.ActiveUser;
-        _logs = _userController.GetAllLogs(_loggedInUser);
+        _logs = LogController.GetAllLogs(_loggedInUser);
+    }
+    
+    private User UserFromLog(LogEntry log)
+    {
+        return UserController.Get(log.UserId);
     }
 }

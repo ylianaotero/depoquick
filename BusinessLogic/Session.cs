@@ -5,14 +5,20 @@ namespace BusinessLogic;
 
 public class Session
 {
+    private const string LogInMessage = "Ingresó al sistema";
+    private const string LogOutMessage = "Cerró sesión";
+    
+    private const string UserDoesNotExistExceptionMessage = "No existe un usuario con los datos proporcionados";
+    private const string UserPasswordIsInvalidExceptionMessage = "La contraseña ingresada no es correcta";
 
     private UserController _userController;
+    private LogController _logController;
     public User? ActiveUser { get; set; }
     
-    
-    public Session(UserController userController)
+    public Session(UserController userController, LogController logController)
     {
         _userController = userController;
+        _logController = logController;
     }
     
     public bool UserLoggedIn()
@@ -22,33 +28,31 @@ public class Session
     
     public void LogoutUser()
     {
-        User u = ActiveUser;
-        _userController.LogAction(u, "Cerró sesión", DateTime.Now); 
-        //u.LogAction("Cerró sesión",DateTime.Now);
+        User user = ActiveUser;
+        _logController.LogAction(user, LogOutMessage, DateTime.Now);
         ActiveUser = null;
     }
     
-    public void LoginUser(string email, string password )
+    public void LoginUser(string email, string password)
     {
         if (_userController.UserExists(email))
         {
-            User u = _userController.Get(email);
-            if (u.Password.Equals(password))
+            User user = _userController.Get(email);
+            if (user.Password.Equals(password))
             {
-                _userController.LogAction(u, "Ingresó al sistema", DateTime.Now); 
-                //u.LogAction("Ingresó al sistema",DateTime.Now);
+                _logController.LogAction(user, LogInMessage, DateTime.Now);
                 
-                ActiveUser = u;
+                ActiveUser = user;
             }
             else
             {
-                throw new UserPasswordIsInvalidException("La contraseña ingresada no es correcta");
+                throw new UserPasswordIsInvalidException(UserDoesNotExistExceptionMessage);
             }
             
         }
         else
         {
-            throw new UserDoesNotExistException("No existe un usuario con los datos proporcionados");
+            throw new UserDoesNotExistException(UserPasswordIsInvalidExceptionMessage);
         }
     }
 }

@@ -1,16 +1,22 @@
 ﻿using BusinessLogic.Exceptions.ControllerExceptions;
 using DepoQuick.Domain;
+using Microsoft.EntityFrameworkCore;
 
 namespace BusinessLogic;
 
 public class DepositController
 {
-    private DepoQuickContext _context;
+    private const string DepositNotFoundExceptionMessage = "Deposito no encontrado";
+    private const string ActionRestrictedToAdministratorExceptionMessage = "Solo el administrador puede realizar esta acción";
+    
+    private IRepository<Deposit> _depositRepository;
+    private IRepository<Promotion> _promotionRepository;
     private Session _session;
     
-    public DepositController(DepoQuickContext context,Session session )
+    public DepositController(IRepository<Deposit> depositRepository, IRepository<Promotion> promotionRepository, Session session)
     {
-        _context = context;
+        _depositRepository = depositRepository;
+        _promotionRepository = promotionRepository;
         _session = session; 
     }
     
@@ -18,15 +24,13 @@ public class DepositController
     {
         if (UserIsLogged() && UserLoggedIsAnAdministrator())
         {
-           // AddPromotionsToTheDataBase(promotions);
-
             AddDepositToTheDataBase(deposit);
 
             ConectDepositToPromotions(deposit, promotions);
         }
         else
         {
-            throw new ActionRestrictedToAdministratorException("No se puede agregar un deposito si sos cliente"); 
+            throw new ActionRestrictedToAdministratorException(ActionRestrictedToAdministratorExceptionMessage); 
         }
     }
     
@@ -42,17 +46,7 @@ public class DepositController
     
     private void AddDepositToTheDataBase(Deposit deposit)
     {
-        _context.Deposits.Add(deposit);
-        _context.SaveChanges(); 
-    }
-    
-    private void AddPromotionsToTheDataBase(List<Promotion> promotions)
-    {
-        foreach (Promotion promotion in promotions)
-        {
-            _context.Promotions.Add(promotion);
-        }
-        _context.SaveChanges(); 
+        _depositRepository.Add(deposit);
     }
     
     private void ConectDepositToPromotions(Deposit deposit,List<Promotion> promotions)
@@ -60,11 +54,12 @@ public class DepositController
         foreach (Promotion promotion in promotions)
         {
             deposit.AddPromotion(promotion);
+            _depositRepository.Update(deposit);
+            
             promotion.AddDeposit(deposit);
+            _promotionRepository.Update(promotion);
         }
-        _context.SaveChanges(); 
     }
-
     
     public Deposit GetDeposit(int depositId)
     {
@@ -72,7 +67,7 @@ public class DepositController
         
         if (deposit == null)
         {
-            throw new DepositNotFoundException("Deposito no encontrado"); 
+            throw new DepositNotFoundException(DepositNotFoundExceptionMessage); 
         }
         else
         {
@@ -82,12 +77,12 @@ public class DepositController
     
     private Deposit SearchDeposit(int id)
     {
-        return _context.Deposits.Find(id); 
+        return _depositRepository.GetById(id);
     }
     
     public List<Deposit> GetDeposits()
     {
-        List<Deposit> deposits = _context.Deposits.ToList();
+        List<Deposit> deposits = _depositRepository.GetAll();
         return deposits; 
     }
 
@@ -96,12 +91,14 @@ public class DepositController
         if (UserIsLogged() && UserLoggedIsAnAdministrator())
         {
             Deposit depositToDelete = SearchDeposit(id);
+            
+            _depositRepository.Reload(depositToDelete);
         
             List<Promotion> relatedPromotions = depositToDelete.Promotions;
 
-            RemoveDepositToRelatedPromotions(depositToDelete, relatedPromotions); 
+            RemoveDepositFromRelatedPromotions(depositToDelete, relatedPromotions); 
             
-            RemoveDepositToTheDataBase(depositToDelete);
+            RemoveDeposit(depositToDelete);
         }else
         {
             throw new ActionRestrictedToAdministratorException("No se puede agregar un deposito si sos cliente"); 
@@ -109,20 +106,21 @@ public class DepositController
 
     }
 
-    private void RemoveDepositToRelatedPromotions(Deposit depositToDelete, List<Promotion> relatedPromotions)
+    private void RemoveDepositFromRelatedPromotions(Deposit depositToDelete, List<Promotion> relatedPromotions)
     {
         foreach (Promotion promotion in relatedPromotions)
         {
             promotion.RemoveDeposit(depositToDelete);
+            _promotionRepository.Update(promotion);
+            _depositRepository.Reload(depositToDelete);
+            _depositRepository.Update(depositToDelete);
         }
     }
 
-    private void RemoveDepositToTheDataBase(Deposit depositToDelete)
+    private void RemoveDeposit(Deposit depositToDelete)
     {
-        _context.Deposits.Remove(depositToDelete);
-        _context.SaveChanges();
+        _depositRepository.Reload(depositToDelete);
+        _depositRepository.Delete(depositToDelete.Id);
     }
     
-
-
 }

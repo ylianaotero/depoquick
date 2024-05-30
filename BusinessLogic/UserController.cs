@@ -1,30 +1,29 @@
 ﻿using BusinessLogic.Exceptions.ControllerExceptions;
 using DepoQuick.Domain;
-using DepoQuick.Exceptions.UserExceptions;
-using SQLitePCL;
 
 namespace BusinessLogic;
 
 public class UserController
 {
-    private DepoQuickContext _context;
-    public UserController(DepoQuickContext context)
+    private const string UserNotFoundExceptionMessage = "No se encontro usuario con los datos proporcionados";
+    private const string UserAlreadyExistsExceptionMessage = "Ya existe un usuario registrado con ese email";
+    private const string AdministratorAlreadyExistsExceptionMessage = "Ya existe un administrador registrado";
+    private const string CannotCreateClientBeforeAdminExceptionMessage = "No se puede registrar un cliente sin haber registrado un administrador previamente";
+    private const string EmptyAdministratorExceptionMessage = "No hay ningún administrador registrado.";
+    
+    private IRepository<User> _userRepository;
+    
+    public UserController(IRepository<User> userRepository)
     {
-        _context = context;
-    }
-
-    private void Add(User newUser)
-    {
-        _context.Users.Add(newUser);
-        _context.SaveChanges();
+        _userRepository = userRepository;
     }
 
     public User Get(int userId)
     {
-        User user = _context.Users.Find(userId);
+        User user = _userRepository.GetById(userId);
         if (user == null)
         {
-            throw new UserDoesNotExistException("El usuario buscado no existe");
+            throw new UserDoesNotExistException(UserNotFoundExceptionMessage);
         }
         else
         {
@@ -32,37 +31,12 @@ public class UserController
         }
     }
     
-    public List<User> GetAll()
-    {
-        return _context.Users.ToList();
-    }
-    
-    public void LogAction(User user, string message, DateTime timestamp)
-    {
-        if (string.IsNullOrEmpty(message))
-        {
-            throw new EmptyActionLogException("El mensaje no puede estar vacío.");
-        }
-        else
-        {
-            LogEntry log = new LogEntry()
-            {
-                Message = message,
-                Timestamp = timestamp,
-                UserId = user.Id
-            };
-
-            _context.LogEntries.Add(log); 
-            _context.SaveChanges();
-        }
-    }
-    
     public User Get(string email)
     {
-        User user = _context.Users.FirstOrDefault(u =>u.Email==email);
+        User user = _userRepository.GetBy(u => u.Email == email).FirstOrDefault();
         if (user == null)
         {
-            throw new UserDoesNotExistException("El usuario buscado no existe");
+            throw new UserDoesNotExistException(UserNotFoundExceptionMessage);
         }
         else
         {
@@ -72,7 +46,7 @@ public class UserController
     
     public bool UserExists(string email)
     {
-        User user = _context.Users.FirstOrDefault(u =>u.Email==email);
+        User user = _userRepository.GetBy(u => u.Email == email).FirstOrDefault();
         if (user == null)
         {
             return false;
@@ -83,81 +57,57 @@ public class UserController
         }
     }
 
-    public void Remove(int id){
-        User user = _context.Users.Find(id);
-        if (user == null)
-        {
-            throw new UserDoesNotExistException("El usuario que se intenta eliminar no existe");
-        }
-        _context.Users.Remove(user);
-        _context.SaveChanges();
-    }
-
     public void RegisterAdministrator(string adminName, string adminEmail, string adminPassword, string passwordValidation)
     {
         User.ValidatePasswordConfirmation(adminPassword,passwordValidation);
-        if (!_context.Administrators.Any())
+        
+        if (!AdministratorExists())
         {
             Administrator administrator = new Administrator(adminName, adminEmail, adminPassword);
             Add(administrator);
         }
         else
         {
-            throw new AdministratorAlreadyExistsException("Ya existe un administador");
+            throw new AdministratorAlreadyExistsException(AdministratorAlreadyExistsExceptionMessage);
         }
     }
 
     public void RegisterClient(string clientName, string clientEmail, string clientPassword, string clientPasswordValidation)
     {
-        if (!_context.Users.Any())
+        if (!AdministratorExists())
         {
             throw new CannotCreateClientBeforeAdminException(
-                "No se puede registrar un cliente sin haber registrado un administrador previamente");
+                CannotCreateClientBeforeAdminExceptionMessage);
         }
         else
         {
             User.ValidatePasswordConfirmation(clientPassword,clientPasswordValidation);
             if (UserExists(clientEmail))
             {
-                throw new UserAlreadyExistsException("Ya existe un usuario registrado con ese email");
+                throw new UserAlreadyExistsException(UserAlreadyExistsExceptionMessage);
             }
             Client client = new Client(clientName, clientEmail, clientPassword);
             Add(client);
         }
     }
-
+    
     public Administrator GetAdministrator()
     {
-        Administrator admin = _context.Users.OfType<Administrator>().FirstOrDefault();
+        Administrator admin  = _userRepository.GetBy(u => u.IsAdministrator).FirstOrDefault() as Administrator;
         if (admin == null)
         {
-            throw new EmptyAdministratorException("No hay ningún administrador registrado.");
+            throw new EmptyAdministratorException(EmptyAdministratorExceptionMessage);
         }
         return admin;
     }
     
-    public List<LogEntry> GetLogs(User userToGetLogs, User activeUser)
+    private void Add(User newUser)
     {
-        if (activeUser.IsAdministrator)
-        {
-            return userToGetLogs.Logs;
-        }
-        else
-        {
-            throw new ActionRestrictedToAdministratorException("Solo el administrador puede ver los logs");
-        }
-        
+        _userRepository.Add(newUser);
     }
     
-    public List<LogEntry> GetAllLogs(User activeUser)
+    private bool AdministratorExists()
     {
-        if (activeUser.IsAdministrator)
-        {
-            return _context.LogEntries.ToList();
-        }
-        else
-        {
-            throw new ActionRestrictedToAdministratorException("Solo el administrador puede ver los logs");
-        }
+        return _userRepository.GetBy(u => u.IsAdministrator).Any();
     }
 }

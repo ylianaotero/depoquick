@@ -3,6 +3,7 @@
 @using DepoQuick.Domain
 @inject Session Session
 @inject DepoQuickContext DepoQuickContext
+@inject ReservationController ReservationController
 
 <html lang="es">
     <head>  
@@ -46,15 +47,15 @@
 </html>
 
 @code {
-    private ReservationController _reservationController;
+  //  private ReservationController _reservationController;
     private List<Reservation> _listOfReservations;
     private User _loggedInUser;
     
     protected override void OnInitialized()
     {
-        _reservationController = new ReservationController(DepoQuickContext, Session);
+      //  _reservationController = new ReservationController(DepoQuickContext, Session);
         _loggedInUser = Session.ActiveUser;
         
-        _listOfReservations = _reservationController.GetReservations();
+        _listOfReservations = ReservationController.GetReservations();
     }
 }

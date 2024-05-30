@@ -4,6 +4,9 @@
 @inject Session Session
 @inject NavigationManager NavigationManager
 @inject DepoQuickContext DepoQuickContext
+@inject PromotionController PromotionController
+@inject DepositController DepositController
+
 
 <html lang="es">
     <head>
@@ -114,9 +117,7 @@
 
 @code {
     private const double PercentageMultiplier = 100.0;
-    private UserController _userController;
-    private DepositController _depositController;
-    private PromotionController _promotionController;
+    
     private List<Deposit> _listOfDeposits;
     private User _loggedInUser;
 
@@ -129,14 +130,11 @@
     
     protected override void OnInitialized()
     {
-        _userController = new UserController(DepoQuickContext);
         _loggedInUser = Session.ActiveUser;
-        _depositController = new DepositController(DepoQuickContext, Session);
-        _promotionController = new PromotionController(DepoQuickContext, Session);
 
-        _listOfDeposits = _depositController.GetDeposits();
+        _listOfDeposits = DepositController.GetDeposits();
         
-        _promotionController.DeleteAllExpiredPromotions();
+        PromotionController.DeleteAllExpiredPromotions();
 
         _depositToDelete = null;
         
@@ -180,16 +178,16 @@
     private void DeleteDeposit()
     {
         HideAllAlerts();
-        try
-        {
+      /*  try
+        {*/
             int id = _depositToDelete.Id;
-            //_controller.DeleteDeposit(id);
+             DepositController.DeleteDeposit(id);
             _showAlertDepositDeletedSuccessfully = true;
-        }
-        catch (Exception)
-        {
-            _showAlertSomethingWentWrong = true;
-        }
+            /*  }
+              catch (Exception)
+              {
+                  _showAlertSomethingWentWrong = true;
+              }*/
     }
     
     private void GoToDepositRatingsPage(Deposit deposit)

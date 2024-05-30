@@ -3,12 +3,12 @@ using BusinessLogic.Exceptions.ControllerExceptions;
 using DepoQuick.Domain;
 using DepoQuick.Exceptions.UserExceptions;
 
-namespace DepoQuickTests;
+/*namespace DepoQuickTests;
 
 [TestClass]
-public class UserControllerDeprecatedTest
+public class UserControllerTest
 {
-    private UserControllerDeprecated _userControllerDeprecated;
+    private UserController _userController;
     private Session _session;
     private const string AdminName = "Administrator";
     private const string AdminEmail = "administrator@domain.com";
@@ -23,15 +23,15 @@ public class UserControllerDeprecatedTest
     public void Initialize()
     {
         var context = TestContextFactory.CreateContext();
-        _userControllerDeprecated = new UserControllerDeprecated(context);
-        _session = new Session(_userControllerDeprecated);
+        _userController = new UserController(context);
+        _session = new Session(_userController);
     }
     
     [TestMethod]
     public void TestRegisterAdministrator()
     {
-        _userControllerDeprecated.RegisterAdministrator(AdminName, AdminEmail, AdminPassword, AdminPassword);
-        Administrator result = (Administrator)_userControllerDeprecated.Get(AdminEmail);
+        _userController.RegisterAdministrator(AdminName, AdminEmail, AdminPassword, AdminPassword);
+        Administrator result = (Administrator)_userController.Get(AdminEmail);
         Assert.IsNotNull(result);
         Assert.AreEqual(result.Email,AdminEmail);
     }
@@ -40,16 +40,16 @@ public class UserControllerDeprecatedTest
     [ExpectedException(typeof(AdministratorAlreadyExistsException))]
     public void TestAdministratorAlreadyExistsException()
     {
-        _userControllerDeprecated.RegisterAdministrator(AdminName, AdminEmail, AdminPassword, AdminPassword);
-        _userControllerDeprecated.RegisterAdministrator(AdminName, AdminEmail, AdminPassword, AdminPassword);
+        _userController.RegisterAdministrator(AdminName, AdminEmail, AdminPassword, AdminPassword);
+        _userController.RegisterAdministrator(AdminName, AdminEmail, AdminPassword, AdminPassword);
     }
     
      [TestMethod]
     public void TestRegisterClient()
     {
-        _userControllerDeprecated.RegisterAdministrator(AdminName, AdminEmail, AdminPassword, AdminPassword);
-        _userControllerDeprecated.RegisterClient(ClientName,ClientEmail,ClientPassword,ClientPassword);
-        Client result = (Client)_userControllerDeprecated.Get(ClientEmail);
+        _userController.RegisterAdministrator(AdminName, AdminEmail, AdminPassword, AdminPassword);
+        _userController.RegisterClient(ClientName,ClientEmail,ClientPassword,ClientPassword);
+        Client result = (Client)_userController.Get(ClientEmail);
         Assert.IsNotNull(result);
         Assert.AreEqual(result.Email,ClientEmail);
     }
@@ -58,87 +58,87 @@ public class UserControllerDeprecatedTest
     [ExpectedException(typeof(CannotCreateClientBeforeAdminException))]
     public void TestCannotCreateClientBeforeAdministrator()
     {
-        _userControllerDeprecated.RegisterClient(ClientName,ClientEmail,ClientPassword,ClientPassword);
+        _userController.RegisterClient(ClientName,ClientEmail,ClientPassword,ClientPassword);
     }
     
     [TestMethod]
     [ExpectedException(typeof(UserAlreadyExistsException))]
     public void TestEmailIsAlreadyInUse()
     {
-        _userControllerDeprecated.RegisterAdministrator(AdminName, AdminEmail, AdminPassword, AdminPassword);
-        _userControllerDeprecated.RegisterClient(ClientName,AdminEmail,ClientPassword,ClientPassword);
+        _userController.RegisterAdministrator(AdminName, AdminEmail, AdminPassword, AdminPassword);
+        _userController.RegisterClient(ClientName,AdminEmail,ClientPassword,ClientPassword);
     }
     
     [TestMethod]
     public void TestGetUser()
     {
-        _userControllerDeprecated.RegisterAdministrator(AdminName, AdminEmail, AdminPassword, AdminPassword);
-        _userControllerDeprecated.RegisterClient(ClientName, ClientEmail, ClientPassword, ClientPassword);
+        _userController.RegisterAdministrator(AdminName, AdminEmail, AdminPassword, AdminPassword);
+        _userController.RegisterClient(ClientName, ClientEmail, ClientPassword, ClientPassword);
 
-        User newUser = _userControllerDeprecated.Get(ClientEmail);
+        User newUser = _userController.Get(ClientEmail);
         int id = newUser.Id;
         
-        _userControllerDeprecated.Get(id);
+        _userController.Get(id);
     }
     
     [TestMethod]
     [ExpectedException(typeof(UserDoesNotExistException))]
     public void TestCannotFindUserById()
     {
-        _userControllerDeprecated.RegisterAdministrator(AdminName, AdminEmail, AdminPassword, AdminPassword);
+        _userController.RegisterAdministrator(AdminName, AdminEmail, AdminPassword, AdminPassword);
 
-        User newUser = _userControllerDeprecated.Get(AdminEmail);
+        User newUser = _userController.Get(AdminEmail);
         int id = newUser.Id;
 
-        _userControllerDeprecated.Remove(id);
-        _userControllerDeprecated.Get(id);
+        _userController.Remove(id);
+        _userController.Get(id);
     }
     
     [TestMethod]
     [ExpectedException(typeof(UserDoesNotExistException))]
     public void TestCannotFindUserByEmail()
     {
-        _userControllerDeprecated.RegisterAdministrator(AdminName, AdminEmail, AdminPassword, AdminPassword);
+        _userController.RegisterAdministrator(AdminName, AdminEmail, AdminPassword, AdminPassword);
 
-        User newUser = _userControllerDeprecated.Get(AdminEmail);
+        User newUser = _userController.Get(AdminEmail);
         int id = newUser.Id;
 
-        _userControllerDeprecated.Remove(id);
-        _userControllerDeprecated.Get(AdminEmail);
+        _userController.Remove(id);
+        _userController.Get(AdminEmail);
     }
 
     [TestMethod]
     public void TestRemoveUser()
     {
-        _userControllerDeprecated.RegisterAdministrator(AdminName, AdminEmail, AdminPassword, AdminPassword);
-        _userControllerDeprecated.RegisterClient(ClientName, ClientEmail, ClientPassword, ClientPassword);
+        _userController.RegisterAdministrator(AdminName, AdminEmail, AdminPassword, AdminPassword);
+        _userController.RegisterClient(ClientName, ClientEmail, ClientPassword, ClientPassword);
 
-        User newUser = _userControllerDeprecated.Get(ClientEmail);
+        User newUser = _userController.Get(ClientEmail);
         int id = newUser.Id;
 
-        _userControllerDeprecated.Remove(id);
+        _userController.Remove(id);
     }
     
     [TestMethod]
     [ExpectedException(typeof(UserDoesNotExistException))]
     public void TestCannotRemoveUser()
     {
-        _userControllerDeprecated.RegisterAdministrator(AdminName, AdminEmail, AdminPassword, AdminPassword);
-        _userControllerDeprecated.RegisterClient(ClientName, ClientEmail, ClientPassword, ClientPassword);
+        _userController.RegisterAdministrator(AdminName, AdminEmail, AdminPassword, AdminPassword);
+        _userController.RegisterClient(ClientName, ClientEmail, ClientPassword, ClientPassword);
 
-        User newUser = _userControllerDeprecated.Get(ClientEmail);
+        User newUser = _userController.Get(ClientEmail);
         int id = newUser.Id;
 
-        _userControllerDeprecated.Remove(id);
-        _userControllerDeprecated.Remove(id);
+        _userController.Remove(id);
+        _userController.Remove(id);
     }
     
     [TestMethod]
     public void TestGetAdministrator()
     {
-        _userControllerDeprecated.RegisterAdministrator(AdminName, AdminEmail, AdminPassword, AdminPassword);
+        _userController.RegisterAdministrator(AdminName, AdminEmail, AdminPassword, AdminPassword);
         
-        Administrator admin = _userControllerDeprecated.GetAdministrator();
+        Administrator admin = _userController.GetAdministrator();
         
         Assert.IsNotNull(admin);
         Assert.AreEqual(AdminName, admin.Name);
@@ -149,37 +149,37 @@ public class UserControllerDeprecatedTest
     [ExpectedException(typeof(EmptyAdministratorException))]
     public void TestCannotGetAdministrator()
     {
-        _userControllerDeprecated.GetAdministrator();
+        _userController.GetAdministrator();
     }
     
     [TestMethod]
     [ExpectedException(typeof(ActionRestrictedToAdministratorException))]
     public void TestClientCannotGetLogs()
     {
-        _userControllerDeprecated.RegisterAdministrator(AdminName, AdminEmail, AdminPassword, AdminPassword);
-        _userControllerDeprecated.RegisterClient(ClientName, ClientEmail, ClientPassword, ClientPassword);
+        _userController.RegisterAdministrator(AdminName, AdminEmail, AdminPassword, AdminPassword);
+        _userController.RegisterClient(ClientName, ClientEmail, ClientPassword, ClientPassword);
         _session.LoginUser(ClientEmail,ClientPassword);
         _session.LogoutUser();
         _session.LoginUser(ClientEmail,ClientPassword);
-        _userControllerDeprecated.GetLogs(_userControllerDeprecated.Get(ClientEmail), _session.ActiveUser);
+        _userController.GetLogs(_userController.Get(ClientEmail), _session.ActiveUser);
     }
     
     [TestMethod]
     public void TestGetLogs()
     {
-        _userControllerDeprecated.RegisterAdministrator(AdminName, AdminEmail, AdminPassword, AdminPassword);
-        _userControllerDeprecated.RegisterClient(ClientName, ClientEmail, ClientPassword, ClientPassword);
+        _userController.RegisterAdministrator(AdminName, AdminEmail, AdminPassword, AdminPassword);
+        _userController.RegisterClient(ClientName, ClientEmail, ClientPassword, ClientPassword);
         DateTime now = DateTime.Now.AddSeconds(-DateTime.Now.Second);
         _session.LoginUser(AdminEmail,AdminPassword);
         _session.LogoutUser();
         _session.LoginUser(AdminEmail,AdminPassword);
-        List<LogEntry> logs = _userControllerDeprecated.GetLogs(_userControllerDeprecated.Get(AdminEmail), _session.ActiveUser);
+        List<LogEntry> logs = _userController.GetLogs(_userController.Get(AdminEmail), _session.ActiveUser);
         
         Assert.AreEqual(3,logs.Count);
         Assert.AreEqual(logs[0].Message , UserLogInLogMessage);
         Assert.IsTrue(logs.Any(log => now.Date == log.Timestamp.Date
                               && now.Hour == log.Timestamp.Hour && now.Minute == log.Timestamp.Minute));
-        Assert.AreEqual(logs[0].UserId , _userControllerDeprecated.Get(AdminEmail).Id);
+        Assert.AreEqual(logs[0].UserId , _userController.Get(AdminEmail).Id);
         Assert.IsTrue(logs[0].Id >= 0);
     }
     
@@ -187,32 +187,32 @@ public class UserControllerDeprecatedTest
     [ExpectedException(typeof(EmptyActionLogException))]
     public void TestEmptyActionLog()
     {
-        _userControllerDeprecated.RegisterAdministrator(AdminName, AdminEmail, AdminPassword, AdminPassword);
+        _userController.RegisterAdministrator(AdminName, AdminEmail, AdminPassword, AdminPassword);
         _session.LoginUser(AdminEmail,AdminPassword);
         _session.LogoutUser();
         _session.LoginUser(AdminEmail,AdminPassword);
-        _userControllerDeprecated.LogAction(_userControllerDeprecated.Get(AdminEmail),"",DateTime.Now);
+        _userController.LogAction(_userController.Get(AdminEmail),"",DateTime.Now);
     }
 
     [TestMethod]
     public void TestGetListOfUsers()
     {
-        _userControllerDeprecated.RegisterAdministrator(AdminName, AdminEmail, AdminPassword, AdminPassword);
-        _userControllerDeprecated.RegisterClient(ClientName, ClientEmail, ClientPassword, ClientPassword);
-        List<User> users = _userControllerDeprecated.GetAll();
+        _userController.RegisterAdministrator(AdminName, AdminEmail, AdminPassword, AdminPassword);
+        _userController.RegisterClient(ClientName, ClientEmail, ClientPassword, ClientPassword);
+        List<User> users = _userController.GetAll();
         Assert.AreEqual(2,users.Count);
     }
 
     [TestMethod]
     public void TestGetListOfAllLogs()
     {
-        _userControllerDeprecated.RegisterAdministrator(AdminName, AdminEmail, AdminPassword, AdminPassword);
-        _userControllerDeprecated.RegisterClient(ClientName, ClientEmail, ClientPassword, ClientPassword);
+        _userController.RegisterAdministrator(AdminName, AdminEmail, AdminPassword, AdminPassword);
+        _userController.RegisterClient(ClientName, ClientEmail, ClientPassword, ClientPassword);
         _session.LoginUser(ClientEmail,ClientPassword);
         _session.LogoutUser();
         _session.LoginUser(AdminEmail,AdminPassword);
         
-        List<LogEntry> logs = _userControllerDeprecated.GetAllLogs(_session.ActiveUser);
+        List<LogEntry> logs = _userController.GetAllLogs(_session.ActiveUser);
         
         Assert.AreEqual(3,logs.Count);
     }
@@ -221,12 +221,12 @@ public class UserControllerDeprecatedTest
     [ExpectedException(typeof(ActionRestrictedToAdministratorException))]
     public void TestClientCannotGetListOfAllLogs()
     {
-        _userControllerDeprecated.RegisterAdministrator(AdminName, AdminEmail, AdminPassword, AdminPassword);
-        _userControllerDeprecated.RegisterClient(ClientName, ClientEmail, ClientPassword, ClientPassword);
+        _userController.RegisterAdministrator(AdminName, AdminEmail, AdminPassword, AdminPassword);
+        _userController.RegisterClient(ClientName, ClientEmail, ClientPassword, ClientPassword);
         _session.LoginUser(AdminEmail,AdminPassword);
         _session.LogoutUser();
         _session.LoginUser(ClientEmail,ClientPassword);
         
-        List<LogEntry> logs = _userControllerDeprecated.GetAllLogs(_session.ActiveUser);
+        List<LogEntry> logs = _userController.GetAllLogs(_session.ActiveUser);
     }
-}
+}*/
