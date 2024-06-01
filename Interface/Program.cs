@@ -38,6 +38,9 @@ SqlRepository<Promotion> promotionRepository = new SqlRepository<Promotion>(cont
 DepositController depositController = new DepositController(depositRepository, promotionRepository, session);
 PromotionController promotionController = new PromotionController(depositRepository, promotionRepository, session);
 
+SqlRepository<Rating> ratingRepository = new SqlRepository<Rating>(context);
+RatingController ratingController = new RatingController(ratingRepository, session, logController);
+
 
 builder.Services.AddSingleton<Session>(session);
 builder.Services.AddSingleton<UserController>(userController);
@@ -46,7 +49,7 @@ builder.Services.AddSingleton<ReservationController>(reservationController);
 builder.Services.AddSingleton<PaymentController>(paymentController);
 builder.Services.AddSingleton<DepositController>(depositController);
 builder.Services.AddSingleton<PromotionController>(promotionController);
-
+builder.Services.AddSingleton<RatingController>(ratingController);
 
 var app = builder.Build();
 

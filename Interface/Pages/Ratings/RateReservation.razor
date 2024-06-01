@@ -5,6 +5,7 @@
 @inject NavigationManager NavigationManager
 @inject DepoQuickContext DepoQuickContext
 @inject ReservationController ReservationController
+@inject RatingController RatingController
 
 <html lang="es">
     <head>
@@ -93,7 +94,7 @@
     private void AddRating()
     {
         Rating rating = new Rating(_stars, _comment);
-        ReservationController.RateReservation(_reservationToRate, rating);
+        RatingController.RateReservation(_reservationToRate, rating);
         GoToMyReservationsPage();
     }
     

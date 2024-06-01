@@ -156,8 +156,8 @@
         
         try
         {
-            //int id = _promotionToDelete.Id;
-            PromotionController.Delete(_promotionToDelete);
+            int id = _promotionToDelete.Id;
+            PromotionController.Delete(id);
             _showAlertPromotionDeletedSuccessfully = true;
         }
         catch (Exception e)
