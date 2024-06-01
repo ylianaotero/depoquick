@@ -195,7 +195,7 @@
     {
         try
         {
-            _paymentOfReservation = PaymentController.GetPaymentByReservation(reservation);
+            _paymentOfReservation = PaymentController.Get(reservation);
         }
         catch (PaymentNotFoundException paymentNotFoundException)
         {

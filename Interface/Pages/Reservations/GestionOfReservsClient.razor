@@ -190,7 +190,7 @@
         
         _client = (Client)Session.ActiveUser;
         
-        _listOfReservations = ReservationController.GetReservationsById(_client.Id);
+        _listOfReservations = ReservationController.GetReservationsByUserId(_client.Id);
         
         HideAllAlerts(); 
     }
@@ -206,7 +206,7 @@
         try
         {
             HideAllAlerts(); 
-            return PaymentController.GetPaymentByReservation(reservation);
+            return PaymentController.Get(reservation);
         }
         catch (PaymentNotFoundException paymentNotFoundException)
         {

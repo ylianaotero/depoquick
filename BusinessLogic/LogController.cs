@@ -5,6 +5,9 @@ namespace BusinessLogic;
 
 public class LogController
 {
+    private const string ActionRestrictedToAdministratorExceptionMessage = "Solo el administrador puede realizar esta acción";
+    private const string EmptyActionLogExceptionMessage = "El mensaje no puede estar vacío";
+    
     private IRepository<LogEntry> _logRepository;
     
     public LogController(IRepository<LogEntry> logRepository)
@@ -16,44 +19,37 @@ public class LogController
     {
         if (string.IsNullOrEmpty(message))
         {
-            throw new EmptyActionLogException("El mensaje no puede estar vacío.");
+            throw new EmptyActionLogException(EmptyActionLogExceptionMessage);
         }
-        else
+        
+        LogEntry log = new LogEntry()
         {
-            LogEntry log = new LogEntry()
-            {
-                Message = message,
-                Timestamp = timestamp,
-                UserId = user.Id
-            };
+            Message = message,
+            Timestamp = timestamp,
+            UserId = user.Id
+        };
 
-            Add(log); 
-        }
+        Add(log); 
     }
     
     public List<LogEntry> GetLogs(User userToGetLogs, User activeUser)
     {
-        if (activeUser.IsAdministrator)
+        if (!activeUser.IsAdministrator)
         {
-            return _logRepository.GetBy(log => log.UserId == userToGetLogs.Id);
-        }
-        else
-        {
-            throw new ActionRestrictedToAdministratorException("Solo el administrador puede ver los logs");
+            throw new ActionRestrictedToAdministratorException(ActionRestrictedToAdministratorExceptionMessage);
         }
         
+        return _logRepository.GetBy(log => log.UserId == userToGetLogs.Id);
     }
     
     public List<LogEntry> GetAllLogs(User activeUser)
     {
-        if (activeUser.IsAdministrator)
+        if (!activeUser.IsAdministrator)
         {
-            return _logRepository.GetAll();
+            throw new ActionRestrictedToAdministratorException(ActionRestrictedToAdministratorExceptionMessage);
         }
-        else
-        {
-            throw new ActionRestrictedToAdministratorException("Solo el administrador puede ver los logs");
-        }
+        
+        return _logRepository.GetAll();
     }
     
     private void Add(LogEntry newLog)

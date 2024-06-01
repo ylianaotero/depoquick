@@ -22,29 +22,55 @@ public class DepositController
     
     public void AddDeposit(Deposit deposit, List<Promotion> promotions)
     {
-        if (UserIsLogged() && UserLoggedIsAnAdministrator())
+        if (!(UserIsLogged() && UserLoggedIsAnAdministrator()))
         {
-            AddDepositToTheDataBase(deposit);
+            throw new ActionRestrictedToAdministratorException(ActionRestrictedToAdministratorExceptionMessage); 
 
-            ConectDepositToPromotions(deposit, promotions);
         }
-        else
+        
+        Add(deposit);
+
+        ConectDepositToPromotions(deposit, promotions);
+    }
+    
+    public Deposit Get(int id)
+    {
+        Deposit deposit = _depositRepository.GetById(id);
+        
+        if (deposit == null)
+        {
+            throw new DepositNotFoundException(DepositNotFoundExceptionMessage); 
+        }
+        
+        return deposit; 
+    }
+    
+    public List<Deposit> GetDeposits()
+    {
+        List<Deposit> deposits = _depositRepository.GetAll();
+        
+        return deposits; 
+    }
+
+    public void DeleteDeposit(int id)
+    {
+        if (!(UserIsLogged() && UserLoggedIsAnAdministrator()))
         {
             throw new ActionRestrictedToAdministratorException(ActionRestrictedToAdministratorExceptionMessage); 
         }
+        
+        Deposit depositToDelete = Get(id);
+            
+        _depositRepository.Reload(depositToDelete);
+        
+        List<Promotion> relatedPromotions = depositToDelete.Promotions;
+
+        RemoveDepositFromRelatedPromotions(depositToDelete, relatedPromotions); 
+            
+        Delete(depositToDelete);
     }
     
-    private bool UserIsLogged()
-    {
-        return _session.UserLoggedIn(); 
-    }
-    
-    private bool UserLoggedIsAnAdministrator()
-    {
-        return _session.ActiveUser.IsAdministrator; 
-    }
-    
-    private void AddDepositToTheDataBase(Deposit deposit)
+    private void Add(Deposit deposit)
     {
         _depositRepository.Add(deposit);
     }
@@ -61,51 +87,6 @@ public class DepositController
         }
     }
     
-    public Deposit GetDeposit(int depositId)
-    {
-        Deposit deposit = SearchDeposit(depositId);
-        
-        if (deposit == null)
-        {
-            throw new DepositNotFoundException(DepositNotFoundExceptionMessage); 
-        }
-        else
-        {
-            return deposit; 
-        }
-    }
-    
-    private Deposit SearchDeposit(int id)
-    {
-        return _depositRepository.GetById(id);
-    }
-    
-    public List<Deposit> GetDeposits()
-    {
-        List<Deposit> deposits = _depositRepository.GetAll();
-        return deposits; 
-    }
-
-    public void DeleteDeposit(int id)
-    {
-        if (UserIsLogged() && UserLoggedIsAnAdministrator())
-        {
-            Deposit depositToDelete = SearchDeposit(id);
-            
-            _depositRepository.Reload(depositToDelete);
-        
-            List<Promotion> relatedPromotions = depositToDelete.Promotions;
-
-            RemoveDepositFromRelatedPromotions(depositToDelete, relatedPromotions); 
-            
-            RemoveDeposit(depositToDelete);
-        }else
-        {
-            throw new ActionRestrictedToAdministratorException("No se puede agregar un deposito si sos cliente"); 
-        }
-
-    }
-
     private void RemoveDepositFromRelatedPromotions(Deposit depositToDelete, List<Promotion> relatedPromotions)
     {
         foreach (Promotion promotion in relatedPromotions)
@@ -117,10 +98,20 @@ public class DepositController
         }
     }
 
-    private void RemoveDeposit(Deposit depositToDelete)
+    private void Delete(Deposit depositToDelete)
     {
         _depositRepository.Reload(depositToDelete);
         _depositRepository.Delete(depositToDelete.Id);
+    }
+    
+    private bool UserLoggedIsAnAdministrator()
+    {
+        return _session.ActiveUser.IsAdministrator; 
+    }
+    
+    private bool UserIsLogged()
+    {
+        return _session.UserLoggedIn(); 
     }
     
 }

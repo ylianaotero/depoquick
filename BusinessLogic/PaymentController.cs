@@ -19,50 +19,36 @@ public class PaymentController
         _paymentRepository.Add(payment);
     }
     
-    private void Delete(int paymentId)
-    {
-        _paymentRepository.Delete(paymentId);
-    }
-    
     public void DeleteByReservation(Reservation reservation)
     {
-        Payment payment = SearchForAPayment(reservation);
+        Payment payment = Get(reservation);
         
-        if (payment == null)
-        {
-            throw new PaymentNotFoundException(PaymentNotFoundExceptionMessage); 
-        }
-        else
-        {
-            Delete(payment.Id);
-        }
-    }
-    
-    public Payment GetPaymentByReservation(Reservation reservation)
-    {
-        Payment payment = SearchForAPayment(reservation);
-        
-        if (payment == null)
-        {
-            throw new PaymentNotFoundException(PaymentNotFoundExceptionMessage); 
-        }
-        else
-        {
-            return payment; 
-        }
+        Delete(payment.Id);
     }
     
     public void CapturePayment(Reservation reservation)
     {
-        Payment payment = SearchForAPayment(reservation);
+        Payment payment = Get(reservation);
         
         payment.Capture();
         Update(payment);
     }
     
-    private Payment SearchForAPayment(Reservation reservation)
+    public Payment Get(Reservation reservation)
     {
-        return _paymentRepository.GetBy(p => p.Reservation == reservation).FirstOrDefault();
+        Payment payment = _paymentRepository.GetBy(p => p.Reservation == reservation).FirstOrDefault();
+        
+        if (payment == null)
+        {
+            throw new PaymentNotFoundException(PaymentNotFoundExceptionMessage); 
+        }
+        
+        return payment; 
+    }
+    
+    private void Delete(int paymentId)
+    {
+        _paymentRepository.Delete(paymentId);
     }
     
     private void Update(Payment payment)

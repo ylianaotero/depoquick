@@ -21,7 +21,6 @@ public class ReservationController
         _session = session;
     }
     
-    
     public void Add(Reservation reservation)
     { 
         _reservationRepository.Add(reservation);
@@ -48,10 +47,8 @@ public class ReservationController
         {
             throw new ReservationNotFoundException(ReservationNotFoundExceptionMessage);
         }
-        else
-        {
-            return reservation;
-        }
+        
+        return reservation;
     }
     
     public List<Reservation> GetReservations()
@@ -60,90 +57,64 @@ public class ReservationController
         return reservations; 
     }
     
-    
-    public List<Reservation> GetReservationsById(int id)
+    public List<Reservation> GetReservationsByUserId(int id)
     {
         List<Reservation> reservationsById = _reservationRepository.GetBy(r => r.Client.Id == id);
         
         return reservationsById;
     }
-
-
+    
     public void ApproveReservation(Reservation reservation)
     {
         User activeUser = _session.ActiveUser;
    
-        if (activeUser.IsAdministrator)
+        if (!activeUser.IsAdministrator)
         {
-            _paymentController.CapturePayment(reservation);
-            
-            reservation.Status = 1;
-            
-            UpdateReservation(reservation);
-            
-        } else {
             throw new ActionRestrictedToAdministratorException(ActionRestrictedToAdministratorExceptionMessage);
-        }
+        } 
+        
+        _paymentController.CapturePayment(reservation);
+            
+        reservation.Status = 1;
+            
+        UpdateReservation(reservation);
     }
 
     public void RejectReservation(Reservation reservation, string reason)
     {
         User activeUser = _session.ActiveUser;
    
-        if (activeUser.IsAdministrator)
+        if (!activeUser.IsAdministrator)
         {
-            _paymentController.DeleteByReservation(reservation);
-            
-            reservation.Status = -1;
-            reservation.Message = reason;
-            
-            UpdateReservation(reservation);
-            
-        } else {
             throw new ActionRestrictedToAdministratorException(ActionRestrictedToAdministratorExceptionMessage);
         }
+        
+        _paymentController.DeleteByReservation(reservation);
+            
+        reservation.Status = -1;
+        reservation.Message = reason;
+            
+        UpdateReservation(reservation);
     }
     
     public void CancelRejectionOfReservation(Reservation reservation)
     {
         User activeUser = _session.ActiveUser;
         
-        if (activeUser.IsAdministrator)
-        {
-            if (reservation != null)
-            {
-                reservation.Status = 0;
-                UpdateReservation(reservation);
-            }
-        }
-        else
+        if (!activeUser.IsAdministrator)
         {
             throw new ActionRestrictedToAdministratorException(ActionRestrictedToAdministratorExceptionMessage);
-        }   
+        }
+        
+        if (reservation != null)
+        {
+            reservation.Status = 0;
+            UpdateReservation(reservation);
+        }
     }
     
     private void UpdateReservation(Reservation reservation)
     {
         _reservationRepository.Update(reservation);
-    }
-    public void RateReservation(Reservation reservation, Rating rating)
-    {
-    /*    User activeUser = _session.ActiveUser;
-        
-        if (!activeUser.IsAdministrator)
-        {
-            Deposit deposit = reservation.Deposit;
-            deposit.AddRating(rating); 
-        //    reservation.Rating = rating;
-            _context.Ratings.Add(rating);
-            IRepository<User> userRepository = new SqlRepository<User>(_context);
-            UserController _userController = new UserController(userRepository);
-            _userController.LogAction(reservation.Client, "Agregó valoración de la reserva " + reservation.Id, DateTime.Now);
-            reservation.Client.LogAction("Agregó valoración de la reserva" + reservation.Id, DateTime.Now);
-        }
-        else
-        {
-            throw new ActionRestrictedToClientException("Solo el cliente puede calificar una reserva");
-        }*/
     }
 }

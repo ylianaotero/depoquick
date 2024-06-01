@@ -35,24 +35,19 @@ public class Session
     
     public void LoginUser(string email, string password)
     {
-        if (_userController.UserExists(email))
-        {
-            User user = _userController.Get(email);
-            if (user.Password.Equals(password))
-            {
-                _logController.LogAction(user, LogInMessage, DateTime.Now);
-                
-                ActiveUser = user;
-            }
-            else
-            {
-                throw new UserPasswordIsInvalidException(UserDoesNotExistExceptionMessage);
-            }
-            
-        }
-        else
+        if (!_userController.UserExists(email))
         {
             throw new UserDoesNotExistException(UserPasswordIsInvalidExceptionMessage);
         }
+        
+        User user = _userController.GetUserByEmail(email);
+        if (!user.Password.Equals(password))
+        {
+            throw new UserPasswordIsInvalidException(UserDoesNotExistExceptionMessage);
+        }
+        
+        _logController.LogAction(user, LogInMessage, DateTime.Now);
+                
+        ActiveUser = user;
     }
 }

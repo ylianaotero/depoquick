@@ -238,10 +238,10 @@
     int id = int.Parse(args.Value.ToString());
     try
     {
-      _deposit = DepositController.GetDeposit(id);
+      _deposit = DepositController.Get(id);
     }
     catch (DepositNotFoundException exceptionDepositNotFound)
-    {
+    { 
       _showAlertInvalidDeposit = true; 
     }
   }

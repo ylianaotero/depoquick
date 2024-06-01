@@ -23,44 +23,15 @@ public class PromotionController
     
     public void Add(Promotion promotion, List<Deposit> deposits)
     {
-        if (UserIsLogged() && UserLoggedIsAnAdministrator())
-        {
-            AddPromotionToTheDataBase(promotion);
-
-            ConectPromotionToDeposits(promotion, deposits);
-        }
-        else
+        if (!(UserIsLogged() && UserLoggedIsAnAdministrator()))
         {
             throw new ActionRestrictedToAdministratorException(ActionRestrictedToAdministratorExceptionMessage); 
+
         }
-    }
-    
-    private void AddPromotionToTheDataBase(Promotion promotion)
-    {
-        _promotionRepository.Add(promotion);
-    }
-    
-    private bool UserIsLogged()
-    {
-        return _session.UserLoggedIn(); 
-    }
-    
-    private bool UserLoggedIsAnAdministrator()
-    {
-        return _session.ActiveUser.IsAdministrator; 
-    }
-    
-    
-    private void ConectPromotionToDeposits(Promotion promotion,List<Deposit> deposits)
-    {
-        foreach (Deposit deposit in deposits)
-        {
-            deposit.AddPromotion(promotion);
-        //    _depositRepository.Update(deposit);
-            
-            promotion.AddDeposit(deposit);
-         //   _promotionRepository.Update(promotion);
-        }
+        
+        Add(promotion);
+
+        ConectPromotionToDeposits(promotion, deposits);
     }
     
     public List<Promotion> GetPromotions()
@@ -68,148 +39,156 @@ public class PromotionController
         List<Promotion> promotions = _promotionRepository.GetAll();
         return promotions; 
     }
+    
+    public void UpdatePromotionData(Promotion promotion, string label, double discountRate, DateRange validityDate)
+    {
+        if (!UserLoggedIsAnAdministrator())
+        {
+            throw new ActionRestrictedToAdministratorException(ActionRestrictedToAdministratorExceptionMessage);
+        }
+        
+        promotion.Label = label;
+        promotion.DiscountRate = discountRate;
+        promotion.ValidityDate = validityDate;
+            
+        _promotionRepository.Update(promotion);
+    }
+    
+    public void UpdatePromotionDeposits(Promotion promotion, List<Deposit> deposits) //Muy largo
+    {
+        if (!UserLoggedIsAnAdministrator())
+        {
+            throw new ActionRestrictedToAdministratorException(ActionRestrictedToAdministratorExceptionMessage);
+        }
+        
+        List<Deposit> oldDeposits = new List<Deposit>(promotion.Deposits);
+        List<Deposit> depositsToRemove = new List<Deposit>();
+        List<Deposit> depositsToAdd = new List<Deposit>();
 
+        foreach (var oldDeposit in oldDeposits)
+        {
+            if (!deposits.Contains(oldDeposit))
+            {
+                oldDeposit.RemovePromotion(promotion);
+                _depositRepository.Update(oldDeposit);
+
+                depositsToRemove.Add(oldDeposit);
+            }
+        }
+
+        foreach (var deposit in deposits)
+        {
+            if (!oldDeposits.Contains(deposit))
+            {
+                depositsToAdd.Add(deposit);
+            }
+        }
+
+        foreach (var deposit in depositsToRemove)
+        {
+            promotion.RemoveDeposit(deposit);
+               
+            _promotionRepository.Update(promotion);
+        }
+
+        foreach (var deposit in depositsToAdd)
+        {
+            if (!promotion.Deposits.Contains(deposit))
+            {
+                deposit.AddPromotion(promotion);
+                promotion.AddDeposit(deposit);
+            }
+        }
+    }
+    
+    public void UpdatePromotionDepositsbla(Promotion promotion, List<Deposit> deposits) //Muy largo?
+    {
+        if (!UserLoggedIsAnAdministrator())
+        {
+            throw new ActionRestrictedToAdministratorException(ActionRestrictedToAdministratorExceptionMessage);
+
+        }
+        
+        List<Deposit> oldDeposits = promotion.Deposits;
+        List<Deposit> depositsToRemove = new List<Deposit>();
+        
+        foreach (var oldDeposit in oldDeposits)
+        {
+            if (!deposits.Contains(oldDeposit))
+            {
+                oldDeposit.RemovePromotion(promotion);
+                _depositRepository.Update(oldDeposit);
+                    
+                depositsToRemove.Add(oldDeposit);
+            }
+        }
+        
+        foreach (var deposit in depositsToRemove)
+        {
+            promotion.RemoveDeposit(deposit);
+            _promotionRepository.Update(promotion);
+        }
+        
+        foreach (var deposit in deposits)
+        {
+            if (!oldDeposits.Contains(deposit))
+            {
+                deposit.AddPromotion(promotion);
+                promotion.AddDeposit(deposit);
+                    
+                _depositRepository.Update(deposit);
+                _promotionRepository.Update(promotion);
+            }
+        }
+    }
+    
+    public void DeleteAllExpiredPromotions()
+    {
+        List<Promotion> promotions = GetPromotions();
+        
+        foreach (Promotion promotion in promotions)
+        {
+            if (PromotionIsExpired(promotion))
+            {
+                Delete(promotion.Id);
+            }
+        }
+    }
+    
+    public void Delete(int id)
+    {
+        if (!(UserIsLogged() && UserLoggedIsAnAdministrator()))
+        {
+            throw new ActionRestrictedToAdministratorException(ActionRestrictedToAdministratorExceptionMessage); 
+        }
+        
+        Promotion promotionToDelete = Get(id);
+            
+        _promotionRepository.Reload(promotionToDelete);
+        
+        List<Deposit> relatedDeposits = promotionToDelete.Deposits;
+
+        RemovePromotionFromRelatedDeposits(promotionToDelete, relatedDeposits); 
+            
+        Delete(promotionToDelete);
+    }
+    
     public Promotion Get(int promotionId)
     {
-        Promotion promotion = SearchPromotion(promotionId);
+        Promotion promotion = _promotionRepository.GetById(promotionId);
         
         if (promotion == null)
         {
             throw new PromotionNotFoundException(PromotionNotFoundExceptionMessage); 
         }
-        else
-        {
-            return promotion; 
-        }
-    }
-
-    private Promotion SearchPromotion(int promotionId)
-    {
-        return _promotionRepository.GetById(promotionId);
-    }
-
-    public void UpdatePromotionData(Promotion promotion, string label, double discountRate, DateRange validityDate)
-    {
-        if (UserLoggedIsAnAdministrator())
-        {
-            promotion.Label = label;
-            promotion.DiscountRate = discountRate;
-            promotion.ValidityDate = validityDate;
-            
-            _promotionRepository.Update(promotion);
-        }
-        else
-        {
-            throw new ActionRestrictedToAdministratorException(
-                ActionRestrictedToAdministratorExceptionMessage);
-        }
-    }
-
-    public void UpdatePromotionDeposits(Promotion promotion, List<Deposit> deposits)
-    {
-        if (UserLoggedIsAnAdministrator())
-        {
-            List<Deposit> oldDeposits = new List<Deposit>(promotion.Deposits);
-            List<Deposit> depositsToRemove = new List<Deposit>();
-            List<Deposit> depositsToAdd = new List<Deposit>();
-
-            foreach (var oldDeposit in oldDeposits)
-            {
-                if (!deposits.Contains(oldDeposit))
-                {
-                    oldDeposit.RemovePromotion(promotion);
-                    _depositRepository.Update(oldDeposit);
-
-                    depositsToRemove.Add(oldDeposit);
-                }
-            }
-
-            foreach (var deposit in deposits)
-            {
-                if (!oldDeposits.Contains(deposit))
-                {
-                    depositsToAdd.Add(deposit);
-                }
-            }
-
-            foreach (var deposit in depositsToRemove)
-            {
-                promotion.RemoveDeposit(deposit);
-               
-                _promotionRepository.Update(promotion);
-            }
-
-            foreach (var deposit in depositsToAdd)
-            {
-                if (!promotion.Deposits.Contains(deposit))
-                {
-                    deposit.AddPromotion(promotion);
-                    promotion.AddDeposit(deposit);
-                }
-            }
-        }
-        else
-        {
-            throw new ActionRestrictedToAdministratorException(ActionRestrictedToAdministratorExceptionMessage);
-        }
+        
+        return promotion; 
     }
     
-    public void UpdatePromotionDepositsbla(Promotion promotion, List<Deposit> deposits)
+    private void Delete(Promotion promotionToDelete)
     {
-        if (UserLoggedIsAnAdministrator())
-        {
-            List<Deposit> oldDeposits = promotion.Deposits;
-            List<Deposit> depositsToRemove = new List<Deposit>();
-        
-            foreach (var oldDeposit in oldDeposits)
-            {
-                if (!deposits.Contains(oldDeposit))
-                {
-                    oldDeposit.RemovePromotion(promotion);
-                    _depositRepository.Update(oldDeposit);
-                    
-                    depositsToRemove.Add(oldDeposit);
-                }
-            }
-        
-            foreach (var deposit in depositsToRemove)
-            {
-                promotion.RemoveDeposit(deposit);
-                _promotionRepository.Update(promotion);
-            }
-        
-            foreach (var deposit in deposits)
-            {
-                if (!oldDeposits.Contains(deposit))
-                {
-                    deposit.AddPromotion(promotion);
-                    promotion.AddDeposit(deposit);
-                    
-                    _depositRepository.Update(deposit);
-                    _promotionRepository.Update(promotion);
-                }
-            }
-        }
-        else
-        {
-            throw new ActionRestrictedToAdministratorException(ActionRestrictedToAdministratorExceptionMessage);
-        }
-    }
-    
-    public void DeletePromotion(Promotion promotion)
-    {
-        if (UserLoggedIsAnAdministrator())
-        {
-            List<Deposit> promotionDeposits = _depositRepository.GetBy(d => d.Promotions.Contains(promotion));
-            
-            RemovePromotionFromRelatedDeposits(promotion, promotionDeposits);
-            
-            RemovePromotion(promotion);
-        }
-        else
-        {
-            throw new ActionRestrictedToAdministratorException(ActionRestrictedToAdministratorExceptionMessage);
-        }
+        _promotionRepository.Reload(promotionToDelete);
+        _promotionRepository.Delete(promotionToDelete.Id);
     }
     
     private void RemovePromotionFromRelatedDeposits(Promotion promotionToDelete, List<Deposit> relatedDeposits)
@@ -221,26 +200,35 @@ public class PromotionController
         }
     }
     
-    private void RemovePromotion(Promotion promotion)
-    {
-        _promotionRepository.Delete(promotion.Id);
-    }
-
-    public void DeleteAllExpiredPromotions()
-    {
-        List<Promotion> promotions = GetPromotions();
-        
-        foreach (Promotion promotion in promotions)
-        {
-            if (PromotionIsExpired(promotion))
-            {
-                RemovePromotion(promotion);
-            }
-        }
-    }
-    
     private bool PromotionIsExpired(Promotion promotion)
     {
         return promotion.ValidityDate.GetFinalDate() < DateTime.Now;
+    }
+    
+    private void ConectPromotionToDeposits(Promotion promotion,List<Deposit> deposits)
+    {
+        foreach (Deposit deposit in deposits)
+        {
+            deposit.AddPromotion(promotion);
+            //    _depositRepository.Update(deposit);
+            
+            promotion.AddDeposit(deposit);
+            //   _promotionRepository.Update(promotion);
+        }
+    }
+    
+    private void Add(Promotion promotion)
+    {
+        _promotionRepository.Add(promotion);
+    }
+
+    private bool UserIsLogged()
+    {
+        return _session.UserLoggedIn(); 
+    }
+    
+    private bool UserLoggedIsAnAdministrator()
+    {
+        return _session.ActiveUser.IsAdministrator; 
     }
 }

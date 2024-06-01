@@ -25,23 +25,19 @@ public class UserController
         {
             throw new UserDoesNotExistException(UserNotFoundExceptionMessage);
         }
-        else
-        {
-            return user;
-        }
+        
+        return user;
     }
     
-    public User Get(string email)
+    public User GetUserByEmail(string email)
     {
         User user = _userRepository.GetBy(u => u.Email == email).FirstOrDefault();
         if (user == null)
         {
             throw new UserDoesNotExistException(UserNotFoundExceptionMessage);
         }
-        else
-        {
-            return user;
-        }
+        
+        return user;
     }
     
     public bool UserExists(string email)
@@ -51,44 +47,37 @@ public class UserController
         {
             return false;
         }
-        else
-        {
-            return true;
-        }
+        
+        return true;
     }
 
     public void RegisterAdministrator(string adminName, string adminEmail, string adminPassword, string passwordValidation)
     {
         User.ValidatePasswordConfirmation(adminPassword,passwordValidation);
         
-        if (!AdministratorExists())
-        {
-            Administrator administrator = new Administrator(adminName, adminEmail, adminPassword);
-            Add(administrator);
-        }
-        else
+        if (AdministratorExists())
         {
             throw new AdministratorAlreadyExistsException(AdministratorAlreadyExistsExceptionMessage);
         }
+        
+        Administrator administrator = new Administrator(adminName, adminEmail, adminPassword);
+        Add(administrator);
     }
 
     public void RegisterClient(string clientName, string clientEmail, string clientPassword, string clientPasswordValidation)
     {
         if (!AdministratorExists())
         {
-            throw new CannotCreateClientBeforeAdminException(
-                CannotCreateClientBeforeAdminExceptionMessage);
+            throw new CannotCreateClientBeforeAdminException(CannotCreateClientBeforeAdminExceptionMessage);
         }
-        else
+        
+        User.ValidatePasswordConfirmation(clientPassword,clientPasswordValidation);
+        if (UserExists(clientEmail))
         {
-            User.ValidatePasswordConfirmation(clientPassword,clientPasswordValidation);
-            if (UserExists(clientEmail))
-            {
-                throw new UserAlreadyExistsException(UserAlreadyExistsExceptionMessage);
-            }
-            Client client = new Client(clientName, clientEmail, clientPassword);
-            Add(client);
+            throw new UserAlreadyExistsException(UserAlreadyExistsExceptionMessage);
         }
+        Client client = new Client(clientName, clientEmail, clientPassword);
+        Add(client);
     }
     
     public Administrator GetAdministrator()
