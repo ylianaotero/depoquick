@@ -62,15 +62,20 @@ public class RatingController
         
         _ratingRepository.Update(rating);
     }
-
-    public void GetRatings()
+    
+    public Rating Get(int id)
     {
-        _ratingRepository.GetAll();
+        return _ratingRepository.GetById(id);
     }
 
-    public void GetRatingsByDeposit(Deposit deposit)
+    public List<Rating> GetRatings()
     {
-        _ratingRepository.GetBy(r => r.Reservation.Deposit == deposit); 
+        return _ratingRepository.GetAll();
+    }
+
+    public List<Rating> GetRatingsByDeposit(Deposit deposit)
+    {
+        return _ratingRepository.GetBy(r => r.Reservation.Deposit == deposit); 
     }
     
     private Rating GetRatingByReservation(Reservation reservation)

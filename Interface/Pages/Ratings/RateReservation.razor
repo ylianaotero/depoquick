@@ -1,10 +1,7 @@
 @page "/RateReservation/{Id:int}" 
 @using BusinessLogic
 @using DepoQuick.Domain
-@inject Session Session
 @inject NavigationManager NavigationManager
-@inject DepoQuickContext DepoQuickContext
-@inject ReservationController ReservationController
 @inject RatingController RatingController
 
 <html lang="es">
@@ -58,7 +55,6 @@
 @code {
     [Parameter] public int Id { get; set; }
     
-   // private ReservationController _reservationController;
     private Reservation _reservationToRate;
     private string _comment;
     private int _stars;
@@ -68,8 +64,6 @@
     
     protected override void OnParametersSet()
     {
-       // _reservationController = new ReservationController(DepoQuickContext,Session);
-      //  _reservationToRate = _reservationController.Get(Id);
         _comment = "";
         _stars = 0;
         

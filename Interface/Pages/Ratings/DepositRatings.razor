@@ -1,9 +1,8 @@
 @page "/DepositRatings/{Id:int}" 
 @using BusinessLogic
 @using DepoQuick.Domain
-@inject Session Session
-@inject DepoQuickContext DepoQuickContext
 @inject DepositController DepositController
+@inject RatingController RatingController
 
 <html lang="es">
 <head>
@@ -26,18 +25,16 @@
         </thead>
         
         <tbody>
-        @foreach (Reservation reservation in _deposit.Reservations)
+        @foreach (Rating rating in _ratings)
         {
-            //if (reservation.Rating != null)
-            {
-                <tr>
-                    <td>@reservation.Client.Name</td>
-                    <td>@reservation.Date.GetInitialDate().ToString("dd/MM/yyyy")</td>
-                    <td>@reservation.Date.GetFinalDate().ToString("dd/MM/yyyy")</td>
-                    <td>reservation.Rating.Stars</td>
-                    <td>reservation.Rating.Comment</td>
-                </tr>
-            }
+            
+            <tr>
+                <td>@rating.Reservation.Client.Name</td>
+                <td>@rating.Reservation.Date.GetInitialDate().ToString("dd/MM/yyyy")</td>
+                <td>@rating.Reservation.Date.GetFinalDate().ToString("dd/MM/yyyy")</td>
+                <td>@rating.Stars</td>
+                <td>@rating.Comment</td>
+            </tr>
         }
         </tbody>
     </table>
@@ -48,10 +45,12 @@
     [Parameter] public int Id { get; set; }
     
     private Deposit _deposit;
+    private List<Rating> _ratings;
     
     
     protected override void OnParametersSet()
     {
         _deposit = DepositController.Get(Id);
+        _ratings = RatingController.GetRatingsByDeposit(_deposit);
     }
 }

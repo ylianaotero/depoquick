@@ -5,6 +5,7 @@
 @inject NavigationManager NavigationManager
 @inject DepoQuickContext DepoQuickContext
 @inject ReservationController ReservationController
+@inject RatingController RatingController
 
 <html lang="es">
     <head>
@@ -50,10 +51,7 @@
 
 @code {
     [Parameter] public int Id { get; set; }
-
-    //private Controller _controller;
-    //private ReservationController _reservationController;
-    private Reservation _reservationToRate;
+    
     private string _comment;
     private int _stars;
     Rating _ratingToEdit;
@@ -62,10 +60,8 @@
     
     protected override void OnParametersSet()
     {
-        //_controller = new Controller(Session);
-   //     _reservationController = new ReservationController(DepoQuickContext, Session);
-     //   _reservationToRate = _reservationController.Get(Id);
-       // _ratingToEdit = _reservationToRate.Rating;
+
+        _ratingToEdit = RatingController.Get(Id);
         _comment = _ratingToEdit.Comment;
         _stars = _ratingToEdit.Stars;
         
@@ -89,7 +85,7 @@
     
     private void UpdateRating()
     {
-        _ratingToEdit.UpdateRating(_stars, _comment);
+        RatingController.UpdateRating(_ratingToEdit, _comment, _stars);
         GoToMyReservationsPage();
     }
     
