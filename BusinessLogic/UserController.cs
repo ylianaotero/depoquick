@@ -90,6 +90,11 @@ public class UserController
         return admin;
     }
     
+    public List<User> GetAll()
+    {
+        return _userRepository.GetAll();
+    }
+    
     private void Add(User newUser)
     {
         _userRepository.Add(newUser);
