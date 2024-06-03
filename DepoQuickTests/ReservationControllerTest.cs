@@ -33,9 +33,7 @@ namespace DepoQuickTests
         private const char DepositArea1 = 'B';
         private const string DepositSize1 = "Grande";
         private const bool DepositAirConditioning1 = false;
-     
-        private const string PromotionLabel0 = "Promotion 0";
-        private const double PromotionDiscountRate0 = 0.5;
+        
      
         private const int ApprovedReservationState = 1;
         private const int PendingReservationState = 0;
