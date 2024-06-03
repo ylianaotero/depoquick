@@ -1,4 +1,5 @@
-﻿using BusinessLogic.Exceptions.ControllerExceptions;
+﻿using System.Reflection.Metadata.Ecma335;
+using BusinessLogic.Exceptions.ControllerExceptions;
 using DepoQuick.Domain;
 
 namespace BusinessLogic;
@@ -10,6 +11,8 @@ public class UserController
     private const string AdministratorAlreadyExistsExceptionMessage = "Ya existe un administrador registrado";
     private const string CannotCreateClientBeforeAdminExceptionMessage = "No se puede registrar un cliente sin haber registrado un administrador previamente";
     private const string EmptyAdministratorExceptionMessage = "No hay ningún administrador registrado.";
+    private const string UserDoesNotExistMessage = "El usuario no existe";
+
     
     private IRepository<User> _userRepository;
     
@@ -88,6 +91,23 @@ public class UserController
             throw new EmptyAdministratorException(EmptyAdministratorExceptionMessage);
         }
         return admin;
+    }
+
+    public void Delete(User user) //Hay excepciones? Primero lo busco y despues lo elimino?
+    {
+        if (user == null)
+        {
+            throw new UserDoesNotExistException(UserDoesNotExistMessage);
+        }
+
+        _userRepository.Reload(user);
+        User userToDelete = _userRepository.GetById(user.Id);
+        if (userToDelete == null)
+        {
+            throw new UserDoesNotExistException(UserDoesNotExistMessage);
+        }
+
+        _userRepository.Delete(userToDelete.Id);
     }
     
     private void Add(User newUser)

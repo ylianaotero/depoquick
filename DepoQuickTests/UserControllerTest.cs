@@ -3,12 +3,13 @@ using BusinessLogic.Exceptions.ControllerExceptions;
 using DepoQuick.Domain;
 using DepoQuick.Exceptions.UserExceptions;
 
-/*namespace DepoQuickTests;
+namespace DepoQuickTests;
 
 [TestClass]
 public class UserControllerTest
 {
     private UserController _userController;
+    private LogController _logController;
     private Session _session;
     private const string AdminName = "Administrator";
     private const string AdminEmail = "administrator@domain.com";
@@ -22,16 +23,19 @@ public class UserControllerTest
     [TestInitialize]
     public void Initialize()
     {
-        var context = TestContextFactory.CreateContext();
-        _userController = new UserController(context);
-        _session = new Session(_userController);
+        DepoQuickContext context = TestContextFactory.CreateContext();
+        IRepository<User> _userRepository = new SqlRepository<User>(context);
+        
+        _userController = new UserController(_userRepository);
+        _logController = new LogController(new SqlRepository<LogEntry>(context));
+        _session = new Session(_userController, _logController);
     }
     
     [TestMethod]
     public void TestRegisterAdministrator()
     {
         _userController.RegisterAdministrator(AdminName, AdminEmail, AdminPassword, AdminPassword);
-        Administrator result = (Administrator)_userController.Get(AdminEmail);
+        Administrator result = (Administrator)_userController.GetUserByEmail(AdminEmail);
         Assert.IsNotNull(result);
         Assert.AreEqual(result.Email,AdminEmail);
     }
@@ -49,7 +53,7 @@ public class UserControllerTest
     {
         _userController.RegisterAdministrator(AdminName, AdminEmail, AdminPassword, AdminPassword);
         _userController.RegisterClient(ClientName,ClientEmail,ClientPassword,ClientPassword);
-        Client result = (Client)_userController.Get(ClientEmail);
+        Client result = (Client)_userController.GetUserByEmail(ClientEmail);
         Assert.IsNotNull(result);
         Assert.AreEqual(result.Email,ClientEmail);
     }
@@ -75,7 +79,7 @@ public class UserControllerTest
         _userController.RegisterAdministrator(AdminName, AdminEmail, AdminPassword, AdminPassword);
         _userController.RegisterClient(ClientName, ClientEmail, ClientPassword, ClientPassword);
 
-        User newUser = _userController.Get(ClientEmail);
+        User newUser = _userController.GetUserByEmail(ClientEmail);
         int id = newUser.Id;
         
         _userController.Get(id);
@@ -87,10 +91,10 @@ public class UserControllerTest
     {
         _userController.RegisterAdministrator(AdminName, AdminEmail, AdminPassword, AdminPassword);
 
-        User newUser = _userController.Get(AdminEmail);
+        User newUser = _userController.GetUserByEmail(AdminEmail);
         int id = newUser.Id;
 
-        _userController.Remove(id);
+        _userController.Delete(newUser);
         _userController.Get(id);
     }
     
@@ -100,11 +104,11 @@ public class UserControllerTest
     {
         _userController.RegisterAdministrator(AdminName, AdminEmail, AdminPassword, AdminPassword);
 
-        User newUser = _userController.Get(AdminEmail);
-        int id = newUser.Id;
+        User newUser = _userController.GetUserByEmail(AdminEmail);
+        //int id = newUser.Id;
 
-        _userController.Remove(id);
-        _userController.Get(AdminEmail);
+        _userController.Delete(newUser);
+        _userController.GetUserByEmail(AdminEmail);
     }
 
     [TestMethod]
@@ -113,10 +117,10 @@ public class UserControllerTest
         _userController.RegisterAdministrator(AdminName, AdminEmail, AdminPassword, AdminPassword);
         _userController.RegisterClient(ClientName, ClientEmail, ClientPassword, ClientPassword);
 
-        User newUser = _userController.Get(ClientEmail);
-        int id = newUser.Id;
+        User newUser = _userController.GetUserByEmail(ClientEmail);
+        //int id = newUser.Id;
 
-        _userController.Remove(id);
+        _userController.Delete(newUser);
     }
     
     [TestMethod]
@@ -126,11 +130,11 @@ public class UserControllerTest
         _userController.RegisterAdministrator(AdminName, AdminEmail, AdminPassword, AdminPassword);
         _userController.RegisterClient(ClientName, ClientEmail, ClientPassword, ClientPassword);
 
-        User newUser = _userController.Get(ClientEmail);
-        int id = newUser.Id;
+        User newUser = _userController.GetUserByEmail(ClientEmail);
+        //int id = newUser.Id;
 
-        _userController.Remove(id);
-        _userController.Remove(id);
+        _userController.Delete(newUser);
+        _userController.Delete(newUser);
     }
     
     [TestMethod]
@@ -161,7 +165,8 @@ public class UserControllerTest
         _session.LoginUser(ClientEmail,ClientPassword);
         _session.LogoutUser();
         _session.LoginUser(ClientEmail,ClientPassword);
-        _userController.GetLogs(_userController.Get(ClientEmail), _session.ActiveUser);
+        _logController.GetLogs(_userController.GetUserByEmail(ClientEmail), _session.ActiveUser);
+        //_userController.GetLogs(_userController.Get(ClientEmail), _session.ActiveUser);
     }
     
     [TestMethod]
@@ -173,13 +178,14 @@ public class UserControllerTest
         _session.LoginUser(AdminEmail,AdminPassword);
         _session.LogoutUser();
         _session.LoginUser(AdminEmail,AdminPassword);
-        List<LogEntry> logs = _userController.GetLogs(_userController.Get(AdminEmail), _session.ActiveUser);
+        List<LogEntry> logs = _logController.GetLogs(_userController.GetUserByEmail(AdminEmail), _session.ActiveUser);
+        //List<LogEntry> logs = _userController.GetLogs(_userController.Get(AdminEmail), _session.ActiveUser);
         
         Assert.AreEqual(3,logs.Count);
         Assert.AreEqual(logs[0].Message , UserLogInLogMessage);
         Assert.IsTrue(logs.Any(log => now.Date == log.Timestamp.Date
                               && now.Hour == log.Timestamp.Hour && now.Minute == log.Timestamp.Minute));
-        Assert.AreEqual(logs[0].UserId , _userController.Get(AdminEmail).Id);
+        Assert.AreEqual(logs[0].UserId , _userController.GetUserByEmail(AdminEmail).Id);
         Assert.IsTrue(logs[0].Id >= 0);
     }
     
@@ -191,9 +197,11 @@ public class UserControllerTest
         _session.LoginUser(AdminEmail,AdminPassword);
         _session.LogoutUser();
         _session.LoginUser(AdminEmail,AdminPassword);
-        _userController.LogAction(_userController.Get(AdminEmail),"",DateTime.Now);
+        _logController.LogAction(_userController.GetUserByEmail(AdminEmail),"",DateTime.Now);
+        //_userController.LogAction(_userController.Get(AdminEmail),"",DateTime.Now);
     }
 
+    /*
     [TestMethod]
     public void TestGetListOfUsers()
     {
@@ -201,7 +209,7 @@ public class UserControllerTest
         _userController.RegisterClient(ClientName, ClientEmail, ClientPassword, ClientPassword);
         List<User> users = _userController.GetAll();
         Assert.AreEqual(2,users.Count);
-    }
+    }*/
 
     [TestMethod]
     public void TestGetListOfAllLogs()
@@ -212,7 +220,7 @@ public class UserControllerTest
         _session.LogoutUser();
         _session.LoginUser(AdminEmail,AdminPassword);
         
-        List<LogEntry> logs = _userController.GetAllLogs(_session.ActiveUser);
+        List<LogEntry> logs = _logController.GetAllLogs(_session.ActiveUser);
         
         Assert.AreEqual(3,logs.Count);
     }
@@ -227,6 +235,6 @@ public class UserControllerTest
         _session.LogoutUser();
         _session.LoginUser(ClientEmail,ClientPassword);
         
-        List<LogEntry> logs = _userController.GetAllLogs(_session.ActiveUser);
+        List<LogEntry> logs = _logController.GetAllLogs(_session.ActiveUser);
     }
-}*/
+}
