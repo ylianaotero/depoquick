@@ -13,7 +13,7 @@ public class Session
 
     private UserController _userController;
     private LogController _logController;
-    public User? ActiveUser { get; set; }
+    public User ActiveUser { get; set; }
     
     public Session(UserController userController, LogController logController)
     {
@@ -49,5 +49,10 @@ public class Session
         _logController.LogAction(user, LogInMessage, DateTime.Now);
                 
         ActiveUser = user;
+    }
+
+    public bool ActiveUserIsAdministrator()
+    {
+        return ActiveUser.IsAdministrator; 
     }
 }

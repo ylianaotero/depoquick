@@ -250,8 +250,6 @@
 
     private void AddPayment()
     {
-        Payment payment = new Payment();
-        payment.Reservation = _reservation;
-        PaymentController.Add(payment);
+        ReservationController.PayReservation(_reservation);
     }
 }

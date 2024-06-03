@@ -21,9 +21,18 @@ public class PaymentController
     
     public void DeleteByReservation(Reservation reservation)
     {
-        Payment payment = Get(reservation);
+        try
+        {
+            Payment payment = Get(reservation);
+            Delete(payment.Id);
+        }
+        catch (PaymentNotFoundException paymentNotFoundException)
+        {
+            return; 
+        }
         
-        Delete(payment.Id);
+        
+        
     }
     
     public void CapturePayment(Reservation reservation)

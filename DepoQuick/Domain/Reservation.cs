@@ -29,7 +29,6 @@ public class Reservation
     
     public Reservation()
     {
-       // Id = s_nextId; 
        Message = "-";
         
         Status = 0;
@@ -39,9 +38,8 @@ public class Reservation
     public Reservation(Deposit deposit, Client client, DateRange date)
     {
         Deposit = deposit;
-        ClientId = client.Id; 
         
-       // Client = client;
+        Client = client;
         Date = date;
         
         Message = "-";

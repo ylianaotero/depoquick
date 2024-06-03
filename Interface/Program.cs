@@ -30,13 +30,15 @@ Session session = new Session(userController, logController);
 SqlRepository<Payment> paymentRepository = new SqlRepository<Payment>(context);
 PaymentController paymentController = new PaymentController(paymentRepository);
 
-SqlRepository<Reservation> reservationRepository = new SqlRepository<Reservation>(context);
-ReservationController reservationController = new ReservationController(reservationRepository, session, paymentController);
-
 SqlRepository<Deposit> depositRepository = new SqlRepository<Deposit>(context);
 SqlRepository<Promotion> promotionRepository = new SqlRepository<Promotion>(context);
 DepositController depositController = new DepositController(depositRepository, promotionRepository, session);
 PromotionController promotionController = new PromotionController(depositRepository, promotionRepository, session);
+
+
+SqlRepository<Reservation> reservationRepository = new SqlRepository<Reservation>(context);
+ReservationController reservationController = new ReservationController(reservationRepository, session, paymentController);
+
 
 SqlRepository<Rating> ratingRepository = new SqlRepository<Rating>(context);
 RatingController ratingController = new RatingController(ratingRepository, session, logController);

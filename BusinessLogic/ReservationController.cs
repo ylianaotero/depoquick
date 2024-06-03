@@ -10,7 +10,9 @@ public class ReservationController
     private const string ActionRestrictedToAdministratorExceptionMessage = "Solo el administrador puede realizar esta acción";
     
     private IRepository<Reservation> _reservationRepository;
+    
     private PaymentController _paymentController;
+    
     private Session _session;
     
     public ReservationController(IRepository<Reservation> reservationRepository, Session session,
@@ -33,23 +35,28 @@ public class ReservationController
         
         Reservation reservation = _reservationRepository.GetBy(r => r.Date.InitialDate.Date == initialDate && r.Date.FinalDate.Date == finalDate).FirstOrDefault();
 
-        if (reservation == null)
-        {
-            throw new ReservationNotFoundException(ReservationNotFoundExceptionMessage);
-        }
+        ReservationIsFound(reservation); 
+        
         return reservation;
     }
     
     public Reservation Get(int reservationId)
     {
         Reservation reservation = _reservationRepository.GetById(reservationId);
+
+        ReservationIsFound(reservation); 
+        
+        return reservation;
+    }
+
+    private void ReservationIsFound(Reservation reservation)
+    {
         if (reservation == null)
         {
             throw new ReservationNotFoundException(ReservationNotFoundExceptionMessage);
         }
-        
-        return reservation;
     }
+    
     
     public List<Reservation> GetReservations()
     {
@@ -66,12 +73,9 @@ public class ReservationController
     
     public void ApproveReservation(Reservation reservation)
     {
-        User activeUser = _session.ActiveUser;
-   
-        if (!activeUser.IsAdministrator)
-        {
-            throw new ActionRestrictedToAdministratorException(ActionRestrictedToAdministratorExceptionMessage);
-        } 
+        ValidateActiveUser(); 
+        
+        ValidateExistanceOfReservation(reservation); 
         
         _paymentController.CapturePayment(reservation);
             
@@ -82,39 +86,65 @@ public class ReservationController
 
     public void RejectReservation(Reservation reservation, string reason)
     {
-        User activeUser = _session.ActiveUser;
-   
-        if (!activeUser.IsAdministrator)
-        {
-            throw new ActionRestrictedToAdministratorException(ActionRestrictedToAdministratorExceptionMessage);
-        }
+        ValidateActiveUser();
+
+        ValidateExistanceOfReservation(reservation); 
         
         _paymentController.DeleteByReservation(reservation);
-            
+        
         reservation.Status = -1;
         reservation.Message = reason;
             
         UpdateReservation(reservation);
     }
     
-    public void CancelRejectionOfReservation(Reservation reservation)
+    private void ValidateActiveUser()
     {
-        User activeUser = _session.ActiveUser;
-        
-        if (!activeUser.IsAdministrator)
+        if (!_session.ActiveUserIsAdministrator())
         {
             throw new ActionRestrictedToAdministratorException(ActionRestrictedToAdministratorExceptionMessage);
         }
-        
-        if (reservation != null)
+    }
+    
+    private void ValidateExistanceOfReservation(Reservation reservation)
+    {
+        if (!Exits(reservation))
         {
-            reservation.Status = 0;
-            UpdateReservation(reservation);
+            throw new ReservationNotFoundException(ReservationNotFoundExceptionMessage); 
         }
+    }
+    
+    private bool Exits(Reservation reservation)
+    {
+        Reservation _reservation = _reservationRepository.GetBy(p => p == reservation).FirstOrDefault();
+        if (_reservation == null)
+        {
+            return false; 
+        }
+        return true;
+    }
+    
+    public void CancelRejectionOfReservation(Reservation reservation)
+    {
+        ValidateActiveUser(); 
+        
+        ValidateExistanceOfReservation(reservation); 
+        
+        reservation.Status = 0;
+        UpdateReservation(reservation);
     }
     
     private void UpdateReservation(Reservation reservation)
     {
         _reservationRepository.Update(reservation);
     }
+    
+    public void PayReservation(Reservation reservation)
+    {
+        Payment payment = new Payment(); 
+        payment.Reservation = reservation;
+        _paymentController.Add(payment); 
+    }
+    
+
 }
