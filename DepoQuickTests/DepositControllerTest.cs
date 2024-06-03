@@ -1,7 +1,6 @@
 ﻿using BusinessLogic;
 using BusinessLogic.Exceptions.ControllerExceptions;
 using DepoQuick.Domain;
-/*
 namespace DepoQuickTests;
 
 
@@ -9,11 +8,9 @@ namespace DepoQuickTests;
 public class DepositControllerTest
 {
     private DepositController _depositController;
-    
-    private UserController _userControllerDeprecated;
-
+    private UserController _userController;
+    private LogController _logController;
     private Session _session; 
-    
     private DepoQuickContext _context;
     
     private const char DepositArea0 = 'A';
@@ -36,16 +33,18 @@ public class DepositControllerTest
     public void Initialize()
     {
         _context = TestContextFactory.CreateContext();
-        _userControllerDeprecated = new UserController(_context);
-        _session = new Session(_userControllerDeprecated);
-        _depositController = new DepositController(_context,_session);
+        IRepository<User> _userRepository = new SqlRepository<User>(_context);
         
+        _userController = new UserController(_userRepository);
+        _logController = new LogController(new SqlRepository<LogEntry>(_context));
+        _session = new Session(_userController, _logController);
+        _depositController = new DepositController(new SqlRepository<Deposit>(_context), new SqlRepository<Promotion>(_context), _session);
     }
     
     [TestMethod]
     public void TestAddValidDeposit()
     {
-        _userControllerDeprecated.RegisterAdministrator(AdminName, AdminEmail, AdminPassword, AdminPassword);
+        _userController.RegisterAdministrator(AdminName, AdminEmail, AdminPassword, AdminPassword);
         
         _session.LoginUser(AdminEmail,AdminPassword);
         
@@ -60,16 +59,16 @@ public class DepositControllerTest
 
 
         CollectionAssert.Contains(_depositController.GetDeposits(), newDeposit);
-        CollectionAssert.Contains(_depositController.GetDeposit(newDeposit.Id).Promotions, promotion);
+        CollectionAssert.Contains(_depositController.Get(newDeposit.Id).Promotions, promotion);
     }
     
     [TestMethod]
     [ExpectedException(typeof(ActionRestrictedToAdministratorException))]
     public void TestClientCannotAddDeposit()
     {
-        _userControllerDeprecated.RegisterAdministrator(AdminName, AdminEmail, AdminPassword, AdminPassword);
+        _userController.RegisterAdministrator(AdminName, AdminEmail, AdminPassword, AdminPassword);
         
-        _userControllerDeprecated.RegisterClient(ClientName,ClientEmail,ClientPassword,ClientPassword);
+        _userController.RegisterClient(ClientName,ClientEmail,ClientPassword,ClientPassword);
         
         _session.LoginUser(ClientEmail,ClientPassword);
         
@@ -85,7 +84,7 @@ public class DepositControllerTest
     [TestMethod]
     public void TestSearchForADepositById()
     {
-        _userControllerDeprecated.RegisterAdministrator(AdminName, AdminEmail, AdminPassword, AdminPassword);
+        _userController.RegisterAdministrator(AdminName, AdminEmail, AdminPassword, AdminPassword);
         
         _session.LoginUser(AdminEmail,AdminPassword);
         
@@ -102,7 +101,7 @@ public class DepositControllerTest
 
         int idDeposit0 = newDeposit0.Id;
 
-        Deposit deposit = _depositController.GetDeposit(idDeposit0);
+        Deposit deposit = _depositController.Get(idDeposit0);
 
         Assert.AreEqual(char.ToUpper(DepositArea0), deposit.Area);
         Assert.AreEqual(DepositSize0.ToUpper(), deposit.Size);
@@ -115,7 +114,7 @@ public class DepositControllerTest
     [ExpectedException(typeof(DepositNotFoundException))]
     public void TestSearchForADepositUsingAnInvalidId()
     {
-        _userControllerDeprecated.RegisterAdministrator(AdminName, AdminEmail, AdminPassword, AdminPassword);
+        _userController.RegisterAdministrator(AdminName, AdminEmail, AdminPassword, AdminPassword);
         
         _session.LoginUser(AdminEmail,AdminPassword);
         
@@ -129,14 +128,14 @@ public class DepositControllerTest
 
         _depositController.AddDeposit(newDeposit0, promotionsToAddToDeposit);
 
-        Deposit deposit = _depositController.GetDeposit(-34); 
+        Deposit deposit = _depositController.Get(-34); 
     }
     
     [TestMethod]
     [ExpectedException(typeof(DepositNotFoundException))]
     public void TestDeleteDeposit()
     {
-        _userControllerDeprecated.RegisterAdministrator(AdminName, AdminEmail, AdminPassword, AdminPassword);
+        _userController.RegisterAdministrator(AdminName, AdminEmail, AdminPassword, AdminPassword);
         
         _session.LoginUser(AdminEmail,AdminPassword);
         
@@ -152,14 +151,14 @@ public class DepositControllerTest
         int id = newDeposit0.Id;
 
         _depositController.DeleteDeposit(id);
-        _depositController.GetDeposit(id);
+        _depositController.Get(id);
     }
     
     [TestMethod]
     [ExpectedException(typeof(ActionRestrictedToAdministratorException))]
     public void TestClientCannotDeleteDeposit()
     {
-        _userControllerDeprecated.RegisterAdministrator(AdminName, AdminEmail, AdminPassword, AdminPassword);
+        _userController.RegisterAdministrator(AdminName, AdminEmail, AdminPassword, AdminPassword);
         
         _session.LoginUser(AdminEmail,AdminPassword);
         
@@ -174,7 +173,7 @@ public class DepositControllerTest
         
         _session.LogoutUser();
         
-        _userControllerDeprecated.RegisterClient(ClientName,ClientEmail,ClientPassword,ClientPassword);
+        _userController.RegisterClient(ClientName,ClientEmail,ClientPassword,ClientPassword);
         
         _session.LoginUser(ClientEmail,ClientPassword);
         
@@ -185,7 +184,7 @@ public class DepositControllerTest
     [TestMethod]
     public void TestDeleteDepositRemovesDepositFromRelatedPromotions()
     {
-        _userControllerDeprecated.RegisterAdministrator(AdminName, AdminEmail, AdminPassword, AdminPassword);
+        _userController.RegisterAdministrator(AdminName, AdminEmail, AdminPassword, AdminPassword);
         
         _session.LoginUser(AdminEmail,AdminPassword);
         
@@ -211,4 +210,22 @@ public class DepositControllerTest
 
         CollectionAssert.DoesNotContain(promotion2.Deposits, newDeposit0);
     }
-}*/
+}
+
+/*
+ private UserController _userController;
+    private LogController _logController;
+    private Session _session;
+
+    [TestInitialize]
+    public void Initialize()
+    {
+        var context = TestContextFactory.CreateContext();
+        IRepository<User> _userRepository = new SqlRepository<User>(context);
+        
+        _userController = new UserController(_userRepository);
+        _logController = new LogController(new SqlRepository<LogEntry>(context));
+        
+        _session = new Session(_userController, _logController);
+    }
+ */
