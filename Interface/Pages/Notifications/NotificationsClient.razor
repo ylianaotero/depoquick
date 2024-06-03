@@ -1,0 +1,53 @@
+﻿@page "/NotificationsClient"
+@using BusinessLogic
+@using DepoQuick.Domain
+@inject Session Session
+@inject NotificationController NotificationController
+
+
+<html lang="es">
+    <head>  
+        <meta charset="utf-8"/> 
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+    </head>
+
+    <body>
+        <h3>¡Hola, @_loggedInUser.Name! Aquí puedes encontrar todas sus notificaciones.</h3>
+    
+    <table class="table table-striped table-hover">
+        <thead>
+        <tr>
+            <th>Nombre</th>
+            <th>Mensaje</th>
+            <th>Fecha</th>
+        </tr>
+        </thead>
+        
+        <tbody>
+        @foreach (Notification notification in _notifications)
+        {
+            <tr>
+                <td>@notification.Client.Name</td>
+                <td>@notification.Message</td>
+                <td>@notification.Timestamp.ToString("dd/MM/yyyy")</td>
+            </tr>
+        }
+        </tbody>
+    </table>
+    </body>
+</html>
+
+
+@code {
+    private User _loggedInUser;
+    private List<Notification> _notifications;
+    
+    protected override void OnInitialized()
+    {
+        _loggedInUser = Session.ActiveUser;
+        _notifications = NotificationController.GetLogs((Client)_loggedInUser);
+    }
+    
+    
+    
+}

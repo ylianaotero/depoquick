@@ -9,6 +9,11 @@ public class ReservationController
     private const string ReservationNotFoundExceptionMessage = "No se encontró la reserva";
     private const string ActionRestrictedToAdministratorExceptionMessage = "Solo el administrador puede realizar esta acción";
     
+    private const string MessageForAnApprovedReservation = "Su reservacion ha sido aprobada";
+    private const string MessageForAnRejectedReservation = "Su reservacion ha sido rechazada";
+    
+    private NotificationController _notificationController;
+    
     private IRepository<Reservation> _reservationRepository;
     
     private PaymentController _paymentController;
@@ -16,10 +21,11 @@ public class ReservationController
     private Session _session;
     
     public ReservationController(IRepository<Reservation> reservationRepository, Session session,
-                                PaymentController paymentController)
+                                PaymentController paymentController, NotificationController notificationController)
     {
         _reservationRepository = reservationRepository;
         _paymentController = paymentController;
+        _notificationController = notificationController; 
         _session = session;
     }
     
@@ -80,6 +86,8 @@ public class ReservationController
         _paymentController.CapturePayment(reservation);
             
         reservation.Status = 1;
+        
+        _notificationController.Notify(reservation.Client, reservation, MessageForAnApprovedReservation , DateTime.Now);
             
         UpdateReservation(reservation);
     }
@@ -94,6 +102,8 @@ public class ReservationController
         
         reservation.Status = -1;
         reservation.Message = reason;
+        
+        _notificationController.Notify(reservation.Client, reservation, MessageForAnRejectedReservation , DateTime.Now);
             
         UpdateReservation(reservation);
     }

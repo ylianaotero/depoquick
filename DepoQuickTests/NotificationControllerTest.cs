@@ -3,13 +3,16 @@ using DepoQuick.Domain;
 
 namespace DepoQuickTests;
 
+[TestClass]
 public class NotificationControllerTest
 {
+    private const string NotificationMessage = "Esta es una noti";
+    
     
     private const char DepositArea0 = 'A';
     private const string DepositSize0 = "Pequeño";
     private const bool DepositAirConditioning0 = true;
-    
+
     private NotificationController _notificationController;
     private UserController _userController;
     private ReservationController _reservationController; 
@@ -46,11 +49,11 @@ public class NotificationControllerTest
             
         IRepository<Payment> _paymentRepository = new SqlRepository<Payment>(context);
         PaymentController _paymentController = new PaymentController(_paymentRepository);
-
-        _reservationController = new ReservationController(_reservationRepository,_session,_paymentController );
-        
         
         _notificationController = new NotificationController(new SqlRepository<Notification>(context));
+        
+        _reservationController = new ReservationController(_reservationRepository,_session,_paymentController,_notificationController );
+
         
         _userController.RegisterAdministrator(AdminName, AdminEmail, AdminPassword, AdminPassword);
         _userController.RegisterClient(ClientName, ClientEmail, ClientPassword, ClientPassword);
@@ -73,16 +76,17 @@ public class NotificationControllerTest
     
         _reservationController.Add(reservation1);
 
-        _notificationController.Notify(_client, reservation1, "Esta es una noti", DateTime.Now);
+        _notificationController.Notify(_client, reservation1, NotificationMessage , DateTime.Now);
 
         List<Notification> listOfNotifications = _notificationController.GetLogs(_client); 
         
         Assert.AreEqual(1,listOfNotifications.Count);
-        Assert.AreEqual(listOfNotifications[0].Message , "Esta es una noti");
+        Assert.AreEqual(listOfNotifications[0].Message , NotificationMessage );
         Assert.IsTrue(listOfNotifications.Any(log => now.Date == log.Timestamp.Date
                                                      && now.Hour == log.Timestamp.Hour && now.Minute == log.Timestamp.Minute));
         Assert.AreEqual(listOfNotifications[0].Client , _client);
         Assert.AreEqual(listOfNotifications[0].Reservation , reservation1);
+        CollectionAssert.Contains(_client.Notifications,listOfNotifications[0]);
     }
     
     

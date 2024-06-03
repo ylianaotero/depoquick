@@ -34,10 +34,11 @@ public class DepoQuickContext : DbContext
     
     public DbSet<Payment> Payments { get; set; }
     
-    
     public DbSet<LogEntry> LogEntries { get; set; }
     public DbSet<Rating> Ratings { get; set; }
 
+    public DbSet<Notification> Notifications{ get; set; }
+    
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
         if (!optionsBuilder.IsConfigured)
@@ -66,13 +67,17 @@ public class DepoQuickContext : DbContext
 
         modelBuilder.Entity<Client>()
             .ToTable("Clients")
-            .HasBaseType<User>();
+            .HasBaseType<User>()
+            .HasMany(u => u.Notifications);
+        
         modelBuilder.Entity<Deposit>().HasMany<Rating>(d=>d.Ratings);
         modelBuilder.Entity<Deposit>().Property(d => d.Id).ValueGeneratedOnAdd();
         
         modelBuilder.Entity<Rating>().HasOne<Reservation>(r=>r.Reservation);
         
         modelBuilder.Entity<Payment>().HasOne<Reservation>(p=>p.Reservation);
+        
+        modelBuilder.Entity<Notification>().HasOne<Reservation>(p=>p.Reservation);
     }
     
     

@@ -23,6 +23,7 @@ public class User
     
     private List<LogEntry> _logs;
     
+    
     public string Name
     {
         get => _name;
@@ -56,6 +57,7 @@ public class User
         get => _logs;
         private init => _logs = value;
     }
+    
     
     public User()
     {
