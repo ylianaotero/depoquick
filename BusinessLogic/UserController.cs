@@ -110,6 +110,11 @@ public class UserController
         _userRepository.Delete(userToDelete.Id);
     }
     
+    public List<User> GetAll()
+    {
+        return _userRepository.GetAll();
+    }
+    
     private void Add(User newUser)
     {
         _userRepository.Add(newUser);

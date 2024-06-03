@@ -6,11 +6,12 @@ using DepoQuick.Exceptions.UserExceptions;
 namespace DepoQuickTests;
 
 [TestClass]
-public class UserControllerTest
+public class UserControllerTests
 {
     private UserController _userController;
     private LogController _logController;
     private Session _session;
+    
     private const string AdminName = "Administrator";
     private const string AdminEmail = "administrator@domain.com";
     private const string AdminPassword = "Password1#";
@@ -18,16 +19,21 @@ public class UserControllerTest
     private const string ClientEmail = "client@domain.com";
     private const string ClientPassword = "Password2#";
     
+    private const string InvalidEmail = "invalidemail";
+    private const int InvalidId = -1;
+    
     private const string UserLogInLogMessage = "Ingresó al sistema";
 
     [TestInitialize]
     public void Initialize()
     {
-        DepoQuickContext context = TestContextFactory.CreateContext();
-        IRepository<User> _userRepository = new SqlRepository<User>(context);
+        var context = TestContextFactory.CreateContext();
+        IRepository<User> userRepository = new SqlRepository<User>(context);
+        IRepository<LogEntry> logRepository = new SqlRepository<LogEntry>(context);
         
-        _userController = new UserController(_userRepository);
-        _logController = new LogController(new SqlRepository<LogEntry>(context));
+        _userController = new UserController(userRepository);
+        _logController = new LogController(logRepository);
+        
         _session = new Session(_userController, _logController);
     }
     
@@ -48,7 +54,7 @@ public class UserControllerTest
         _userController.RegisterAdministrator(AdminName, AdminEmail, AdminPassword, AdminPassword);
     }
     
-     [TestMethod]
+    [TestMethod]
     public void TestRegisterClient()
     {
         _userController.RegisterAdministrator(AdminName, AdminEmail, AdminPassword, AdminPassword);
@@ -96,6 +102,8 @@ public class UserControllerTest
 
         _userController.Delete(newUser);
         _userController.Get(id);
+        //_userController.Get(InvalidId);
+
     }
     
     [TestMethod]
@@ -135,6 +143,7 @@ public class UserControllerTest
 
         _userController.Delete(newUser);
         _userController.Delete(newUser);
+        //_userController.GetUserByEmail(InvalidEmail);
     }
     
     [TestMethod]
