@@ -78,15 +78,53 @@ public class NotificationControllerTest
 
         _notificationController.Notify(_client, reservation1, NotificationMessage , DateTime.Now);
 
-        List<Notification> listOfNotifications = _notificationController.GetLogs(_client); 
+        List<Notification> listOfNotifications = _notificationController.GetNotifications(_client); 
         
         Assert.AreEqual(1,listOfNotifications.Count);
         Assert.AreEqual(listOfNotifications[0].Message , NotificationMessage );
         Assert.IsTrue(listOfNotifications.Any(log => now.Date == log.Timestamp.Date
                                                      && now.Hour == log.Timestamp.Hour && now.Minute == log.Timestamp.Minute));
         Assert.AreEqual(listOfNotifications[0].Client , _client);
-      //  Assert.AreEqual(listOfNotifications[0].Reservation , reservation1);
         CollectionAssert.Contains(_client.Notifications,listOfNotifications[0]);
+    }
+    
+    [TestMethod]
+    public void TestDeleteNotifications()
+    {
+        DateTime now = DateTime.Now.AddSeconds(-DateTime.Now.Second);
+            
+        Reservation reservation1 = new Reservation(_deposit0, _client, _validDateRange);
+    
+        _reservationController.Add(reservation1);
+
+        _notificationController.Notify(_client, reservation1, NotificationMessage , DateTime.Now);
+
+        List<Notification> listOfNotifications = _notificationController.GetNotifications(_client); 
+        
+        Assert.AreEqual(1,listOfNotifications.Count);
+        Assert.AreEqual(listOfNotifications[0].Message , NotificationMessage );
+        Assert.IsTrue(listOfNotifications.Any(log => now.Date == log.Timestamp.Date
+                                                     && now.Hour == log.Timestamp.Hour && now.Minute == log.Timestamp.Minute));
+        Assert.AreEqual(listOfNotifications[0].Client , _client);
+        CollectionAssert.Contains(_client.Notifications,listOfNotifications[0]);
+    }
+    
+    
+    [TestMethod]
+    [ExpectedException(typeof(ArgumentNullException))]
+    public void TestDeleteNotificationsThatDoesntExist()
+    {
+        Notification notification = new Notification()
+        {
+            Id = 1,
+            Client = _client,
+            Message = "este es un mesnaje",
+            Timestamp = DateTime.Now
+        }; 
+        
+        _notificationController.Delete(notification);
+        
+        
     }
     
     

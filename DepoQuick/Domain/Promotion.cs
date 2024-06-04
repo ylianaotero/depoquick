@@ -9,7 +9,7 @@ public class Promotion
     public int Id { get; set; }
     
     public DateRange ValidityDate { get; set; }
-    public List<Deposit> Deposits { get; }
+    public List<Deposit> Deposits { get; set; }
     
     private String _label;
     private Double _discountRate;

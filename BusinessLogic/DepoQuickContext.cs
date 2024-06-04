@@ -41,11 +41,11 @@ public class DepoQuickContext : DbContext
     
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
-      //  if (!optionsBuilder.IsConfigured)
-     //   {
+        if (!optionsBuilder.IsConfigured)
+        {
             optionsBuilder.UseSqlServer(@"Server=localhost,1433;Database=depoquick;User Id=sa;Password=Passw1rd;");
 
-      //  }
+        }
 
         optionsBuilder.EnableDetailedErrors(true);
         optionsBuilder.EnableSensitiveDataLogging(true);

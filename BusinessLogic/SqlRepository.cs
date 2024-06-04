@@ -89,6 +89,11 @@ public class SqlRepository<T> : IRepository<T> where T : class
     public void Delete(int id)
     {
         T existingElement = GetById(id);
+        
+        if (existingElement == null)
+        {
+            throw new ArgumentNullException( "Elemento no encontrado");
+        }
         _entities.Remove(existingElement);
         
         _database.SaveChanges();

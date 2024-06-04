@@ -13,7 +13,7 @@ public class User
     //private static int s_lastId = 0;
     
     [Key]
-    public int Id { get; init; }
+    public int Id { get; set; }
     
     public bool IsAdministrator { get; protected init; }
 

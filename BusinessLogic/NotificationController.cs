@@ -18,13 +18,12 @@ public class NotificationController
             Message = message,
             Timestamp = timestamp,
             Client = client,
-      //      Reservation = reservation
         };
 
         Add(notification); 
     }
     
-    public List<Notification> GetLogs(Client clientToGetNotification)
+    public List<Notification> GetNotifications(Client clientToGetNotification)
     {
         return _notificationRepository.GetBy(notification => notification.Client == clientToGetNotification);
     }
@@ -32,5 +31,10 @@ public class NotificationController
     private void Add(Notification notification)
     {
         _notificationRepository.Add(notification);
+    }
+
+    public void Delete(Notification notification)
+    {
+        _notificationRepository.Delete(notification.Id);
     }
 }

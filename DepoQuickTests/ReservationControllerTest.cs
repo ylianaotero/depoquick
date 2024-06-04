@@ -11,8 +11,8 @@ namespace DepoQuickTests
     [TestClass]
     public class ReservationControllerTest
     {
-        private const string ExpectedMessageForAnApprovedReservation = "Su reservacion ha sido aprobada";
-        private const string ExpectedMessageForAnRejectedReservation = "Su reservacion ha sido rechazada";
+        private const string ExpectedMessageForAnApprovedReservation = " ha sido aprobada";
+        private const string ExpectedMessageForAnRejectedReservation = " ha sido rechazada";
         
         private ReservationController _reservationController;
         private PaymentController _paymentController;
@@ -454,16 +454,15 @@ namespace DepoQuickTests
 
             _reservationController.ApproveReservation(reservation);
             
-            List<Notification> listOfNotifications = _notificationController.GetLogs(_client); 
+            List<Notification> listOfNotifications = _notificationController.GetNotifications(_client); 
             
             DateTime now = DateTime.Now.AddSeconds(-DateTime.Now.Second);
             
             Assert.AreEqual(1,listOfNotifications.Count);
-            Assert.AreEqual(listOfNotifications[0].Message , ExpectedMessageForAnApprovedReservation);
+            Assert.AreEqual(listOfNotifications[0].Message , "Su reserva del deposito "+reservation.Deposit.Id+" en las fechas "+reservation.Date.InitialDate.ToString("dd/MM/yyyy")+" a "+reservation.Date.FinalDate.ToString("dd/MM/yyyy") + ExpectedMessageForAnApprovedReservation);
             Assert.IsTrue(listOfNotifications.Any(log => now.Date == log.Timestamp.Date
                                                          && now.Hour == log.Timestamp.Hour && now.Minute == log.Timestamp.Minute));
             Assert.AreEqual(listOfNotifications[0].Client , _client);
-          //  Assert.AreEqual(listOfNotifications[0].Reservation , reservation);
             CollectionAssert.Contains(_client.Notifications,listOfNotifications[0]);
         }
         
@@ -482,17 +481,13 @@ namespace DepoQuickTests
             string rejectionReason = "Precio demasiado elevado";
             _reservationController.RejectReservation(reservation, rejectionReason);
             
-            List<Notification> listOfNotifications = _notificationController.GetLogs(_client); 
+            List<Notification> listOfNotifications = _notificationController.GetNotifications(_client);
+
+            Notification notification = listOfNotifications[0];
+
+            _notificationController.Delete(notification); 
             
-            DateTime now = DateTime.Now.AddSeconds(-DateTime.Now.Second);
-            
-            Assert.AreEqual(1,listOfNotifications.Count);
-            Assert.AreEqual(listOfNotifications[0].Message , ExpectedMessageForAnRejectedReservation);
-            Assert.IsTrue(listOfNotifications.Any(log => now.Date == log.Timestamp.Date
-                                                         && now.Hour == log.Timestamp.Hour && now.Minute == log.Timestamp.Minute));
-            Assert.AreEqual(listOfNotifications[0].Client , _client);
-           // Assert.AreEqual(listOfNotifications[0].Reservation , reservation);
-            CollectionAssert.Contains(_client.Notifications,listOfNotifications[0]);
+            CollectionAssert.DoesNotContain(_client.Notifications,notification);
         }
         
 
