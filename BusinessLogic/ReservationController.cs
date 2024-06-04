@@ -9,8 +9,8 @@ public class ReservationController
     private const string ReservationNotFoundExceptionMessage = "No se encontró la reserva";
     private const string ActionRestrictedToAdministratorExceptionMessage = "Solo el administrador puede realizar esta acción";
     
-    private const string MessageForAnApprovedReservation = "Su reservacion ha sido aprobada";
-    private const string MessageForAnRejectedReservation = "Su reservacion ha sido rechazada";
+    private const string MessageForAnApprovedReservation = " ha sido aprobada";
+    private const string MessageForAnRejectedReservation = " ha sido rechazada";
     
     private NotificationController _notificationController;
     
@@ -87,7 +87,7 @@ public class ReservationController
             
         reservation.Status = 1;
         
-        _notificationController.Notify(reservation.Client, reservation, MessageForAnApprovedReservation , DateTime.Now);
+        _notificationController.Notify(reservation.Client, reservation, "Su reserva del deposito "+reservation.Deposit.Id+" en las fechas "+reservation.Date.InitialDate.ToString("dd/MM/yyyy")+" a "+reservation.Date.FinalDate.ToString("dd/MM/yyyy") +MessageForAnApprovedReservation , DateTime.Now);
             
         UpdateReservation(reservation);
     }
@@ -103,7 +103,7 @@ public class ReservationController
         reservation.Status = -1;
         reservation.Message = reason;
         
-        _notificationController.Notify(reservation.Client, reservation, MessageForAnRejectedReservation , DateTime.Now);
+        _notificationController.Notify(reservation.Client, reservation,"Su reserva del deposito "+reservation.Deposit.Id+" en las fechas "+reservation.Date.InitialDate.ToString("dd/MM/yyyy")+" a "+reservation.Date.FinalDate.ToString("dd/MM/yyyy")+ MessageForAnRejectedReservation , DateTime.Now);
             
         UpdateReservation(reservation);
     }
