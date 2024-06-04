@@ -30,7 +30,7 @@ public class ReservationController
     }
     
     public void Add(Reservation reservation)
-    { 
+    {
         _reservationRepository.Add(reservation);
     }
     
@@ -98,10 +98,8 @@ public class ReservationController
 
         ValidateExistanceOfReservation(reservation); 
         
-        _paymentController.DeleteByReservation(reservation);
-        
-        reservation.Status = -1;
         reservation.Message = reason;
+        reservation.Status = -1;
         
         _notificationController.Notify(reservation.Client, reservation,"Su reserva del deposito "+reservation.Deposit.Id+" en las fechas "+reservation.Date.InitialDate.ToString("dd/MM/yyyy")+" a "+reservation.Date.FinalDate.ToString("dd/MM/yyyy")+ MessageForAnRejectedReservation , DateTime.Now);
             
@@ -134,16 +132,6 @@ public class ReservationController
         return true;
     }
     
-    public void CancelRejectionOfReservation(Reservation reservation)
-    {
-        ValidateActiveUser(); 
-        
-        ValidateExistanceOfReservation(reservation); 
-        
-        reservation.Status = 0;
-        UpdateReservation(reservation);
-    }
-    
     private void UpdateReservation(Reservation reservation)
     {
         _reservationRepository.Update(reservation);
@@ -151,8 +139,8 @@ public class ReservationController
     
     public void PayReservation(Reservation reservation)
     {
-        Payment payment = new Payment(); 
-        payment.Reservation = reservation;
+        Payment payment = new Payment();
+        payment.Reservation = reservation; 
         _paymentController.Add(payment); 
     }
     

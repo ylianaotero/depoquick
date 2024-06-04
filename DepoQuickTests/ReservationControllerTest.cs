@@ -323,39 +323,6 @@ namespace DepoQuickTests
             _reservationController.RejectReservation(reservation, null);
         }
         
-        [TestMethod]
-        public void TestCancelRejectionOfReservation()
-        {
-            _userController.RegisterClient(ClientName, ClientEmail, ClientPassword, ClientPassword);
-            _client = (Client)_userController.GetUserByEmail(ClientEmail);
-            _session.LoginUser(ClientEmail, ClientPassword);
-            
-            _context.Deposits.Add(_deposit0);
-            _context.SaveChanges();
-            Reservation reservation = new Reservation(_deposit0, _client, _currentDateRange);
-            _reservationController.Add(reservation);
-            _reservationController.PayReservation(reservation);
-            
-             _session.LoginUser(AdminEmail, AdminPassword);
-             _reservationController.CancelRejectionOfReservation(reservation);
-
-             Assert.AreEqual(PendingReservationState, reservation.Status);
-             Assert.AreEqual("-", reservation.Message);
-              
-        }
-    
-        [TestMethod]
-        [ExpectedException(typeof(ActionRestrictedToAdministratorException))]
-        public void TestClientCannotCancelRejectionOfReservation()
-        {
-            _userController.RegisterClient(ClientName, ClientEmail, ClientPassword, ClientPassword);
-            _session.LoginUser(ClientEmail, ClientPassword);
-            _client = (Client)_userController.GetUserByEmail(ClientEmail);
-            Reservation reservation = new Reservation(_deposit0, _client, _currentDateRange);
-            _reservationController.Add(reservation);
-            _reservationController.CancelRejectionOfReservation(reservation);
-        }
-        
         /*
         [TestMethod]
         public void TestRateReservation()
