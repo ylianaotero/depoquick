@@ -13,7 +13,7 @@ public class User
     //private static int s_lastId = 0;
     
     [Key]
-    public int Id { get; init; }
+    public int Id { get; set; }
     
     public bool IsAdministrator { get; protected init; }
 
@@ -22,6 +22,7 @@ public class User
     private string _password;
     
     private List<LogEntry> _logs;
+    
     
     public string Name
     {
@@ -56,6 +57,7 @@ public class User
         get => _logs;
         private init => _logs = value;
     }
+    
     
     public User()
     {

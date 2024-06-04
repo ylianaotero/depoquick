@@ -11,11 +11,15 @@ namespace DepoQuickTests
     [TestClass]
     public class ReservationControllerTest
     {
+        private const string ExpectedMessageForAnApprovedReservation = " ha sido aprobada";
+        private const string ExpectedMessageForAnRejectedReservation = " ha sido rechazada";
+        
         private ReservationController _reservationController;
         private PaymentController _paymentController;
         private UserController _userController;
         private DepoQuickContext _context;
         private Session _session;
+        private NotificationController _notificationController;
         
         private const string AdminName = "Administrator";
         private const string AdminEmail = "administrator@domain.com";
@@ -33,9 +37,7 @@ namespace DepoQuickTests
         private const char DepositArea1 = 'B';
         private const string DepositSize1 = "Grande";
         private const bool DepositAirConditioning1 = false;
-     
-        private const string PromotionLabel0 = "Promotion 0";
-        private const double PromotionDiscountRate0 = 0.5;
+        
      
         private const int ApprovedReservationState = 1;
         private const int PendingReservationState = 0;
@@ -71,10 +73,14 @@ namespace DepoQuickTests
             _session = new Session(_userController, _logController);
             IRepository<Reservation> _reservationRepository = new SqlRepository<Reservation>(_context);
             
+            
             IRepository<Payment> _paymentRepository = new SqlRepository<Payment>(_context);
             _paymentController = new PaymentController(_paymentRepository);
+            
+            _notificationController = new NotificationController(new SqlRepository<Notification>(_context));
 
-           _reservationController = new ReservationController(_reservationRepository,_session,_paymentController );
+
+           _reservationController = new ReservationController(_reservationRepository,_session,_paymentController,_notificationController  );
             
             _userController.RegisterAdministrator(AdminName, AdminEmail, AdminPassword, AdminPassword);
 
@@ -317,39 +323,6 @@ namespace DepoQuickTests
             _reservationController.RejectReservation(reservation, null);
         }
         
-        [TestMethod]
-        public void TestCancelRejectionOfReservation()
-        {
-            _userController.RegisterClient(ClientName, ClientEmail, ClientPassword, ClientPassword);
-            _client = (Client)_userController.GetUserByEmail(ClientEmail);
-            _session.LoginUser(ClientEmail, ClientPassword);
-            
-            _context.Deposits.Add(_deposit0);
-            _context.SaveChanges();
-            Reservation reservation = new Reservation(_deposit0, _client, _currentDateRange);
-            _reservationController.Add(reservation);
-            _reservationController.PayReservation(reservation);
-            
-             _session.LoginUser(AdminEmail, AdminPassword);
-             _reservationController.CancelRejectionOfReservation(reservation);
-
-             Assert.AreEqual(PendingReservationState, reservation.Status);
-             Assert.AreEqual("-", reservation.Message);
-              
-        }
-    
-        [TestMethod]
-        [ExpectedException(typeof(ActionRestrictedToAdministratorException))]
-        public void TestClientCannotCancelRejectionOfReservation()
-        {
-            _userController.RegisterClient(ClientName, ClientEmail, ClientPassword, ClientPassword);
-            _session.LoginUser(ClientEmail, ClientPassword);
-            _client = (Client)_userController.GetUserByEmail(ClientEmail);
-            Reservation reservation = new Reservation(_deposit0, _client, _currentDateRange);
-            _reservationController.Add(reservation);
-            _reservationController.CancelRejectionOfReservation(reservation);
-        }
-        
         /*
         [TestMethod]
         public void TestRateReservation()
@@ -466,6 +439,55 @@ namespace DepoQuickTests
 
             _reservationController.ApproveReservation(reservation); 
             
+        }
+        
+        [TestMethod]
+        public void TestApproveReservationNotifcation()
+        {
+            _userController.RegisterClient(ClientName, ClientEmail, ClientPassword, ClientPassword);
+            _client = (Client)_userController.GetUserByEmail(ClientEmail);
+            _session.LoginUser(AdminEmail, AdminPassword);
+            var reservation = new Reservation(_deposit0, _client, _validDateRange);
+            _reservationController.Add(reservation);
+
+            _reservationController.PayReservation(reservation);
+
+            _reservationController.ApproveReservation(reservation);
+            
+            List<Notification> listOfNotifications = _notificationController.GetNotifications(_client); 
+            
+            DateTime now = DateTime.Now.AddSeconds(-DateTime.Now.Second);
+            
+            Assert.AreEqual(1,listOfNotifications.Count);
+            Assert.AreEqual(listOfNotifications[0].Message , "Su reserva del deposito "+reservation.Deposit.Id+" en las fechas "+reservation.Date.InitialDate.ToString("dd/MM/yyyy")+" a "+reservation.Date.FinalDate.ToString("dd/MM/yyyy") + ExpectedMessageForAnApprovedReservation);
+            Assert.IsTrue(listOfNotifications.Any(log => now.Date == log.Timestamp.Date
+                                                         && now.Hour == log.Timestamp.Hour && now.Minute == log.Timestamp.Minute));
+            Assert.AreEqual(listOfNotifications[0].Client , _client);
+            CollectionAssert.Contains(_client.Notifications,listOfNotifications[0]);
+        }
+        
+        [TestMethod]
+        public void TestRejectReservationNotification()
+        {
+            _userController.RegisterClient(ClientName, ClientEmail, ClientPassword, ClientPassword);
+            _client = (Client)_userController.GetUserByEmail(ClientEmail);
+
+            Reservation reservation = new Reservation(_deposit0, _client, _validDateRange);
+            _reservationController.Add(reservation);
+            _reservationController.PayReservation(reservation);
+            
+            _session.LoginUser(AdminEmail, AdminPassword);
+            
+            string rejectionReason = "Precio demasiado elevado";
+            _reservationController.RejectReservation(reservation, rejectionReason);
+            
+            List<Notification> listOfNotifications = _notificationController.GetNotifications(_client);
+
+            Notification notification = listOfNotifications[0];
+
+            _notificationController.Delete(notification); 
+            
+            CollectionAssert.DoesNotContain(_client.Notifications,notification);
         }
         
 

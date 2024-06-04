@@ -36,8 +36,12 @@ DepositController depositController = new DepositController(depositRepository, p
 PromotionController promotionController = new PromotionController(depositRepository, promotionRepository, session);
 
 
+SqlRepository<Notification> notificationRepository = new SqlRepository<Notification>(context);
+NotificationController notificationController = new NotificationController(notificationRepository );
+
 SqlRepository<Reservation> reservationRepository = new SqlRepository<Reservation>(context);
-ReservationController reservationController = new ReservationController(reservationRepository, session, paymentController);
+ReservationController reservationController = new ReservationController(reservationRepository, session, paymentController,notificationController);
+
 
 
 SqlRepository<Rating> ratingRepository = new SqlRepository<Rating>(context);
@@ -52,6 +56,7 @@ builder.Services.AddSingleton<PaymentController>(paymentController);
 builder.Services.AddSingleton<DepositController>(depositController);
 builder.Services.AddSingleton<PromotionController>(promotionController);
 builder.Services.AddSingleton<RatingController>(ratingController);
+builder.Services.AddSingleton<NotificationController>(notificationController);
 
 var app = builder.Build();
 
