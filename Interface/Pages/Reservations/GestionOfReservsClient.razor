@@ -98,7 +98,7 @@
                                     @if (_paymentOfReservation.Status == "reservado")
                                     {
                                         <td>
-                                            <button class="btn btn-secondary btn-sm">Pendiente de Aprobación</button>
+                                            <button class="btn btn-secondary btn-sm">Pago reservado</button>
                                         </td>
                                     
                                     }
@@ -107,7 +107,7 @@
                                         @if (_paymentOfReservation.Status == "capturado")
                                         {
                                             <td>
-                                                <button class= "btn btn-success btn-sm">Pago Aprobado</button>
+                                                <button class= "btn btn-success btn-sm">Pago Capturado</button>
                                             </td>
                                         
                                         }
@@ -185,8 +185,6 @@
     
     protected override void OnInitialized()
     {
-       // _reservationController = new ReservationController(DepoQuickContext, Session);
-        
         _client = (Client)Session.ActiveUser;
         
         _listOfReservations = ReservationController.GetReservationsByUserId(_client.Id);
