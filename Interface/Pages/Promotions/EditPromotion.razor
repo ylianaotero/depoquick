@@ -4,9 +4,10 @@
 @using DepoQuick.Exceptions.DateRangeExceptions
 @using DepoQuick.Exceptions.PromotionExceptions
 @using SQLitePCL
-@inject Session Session
-@inject DepoQuickContext DepoQuickContext
+
+@inject PromotionController PromotionController
 @inject NavigationManager NavigationManager
+@inject DepositController DepositController
 <html lang="es">
   <head>
       <meta charset="utf-8"/>
@@ -82,8 +83,6 @@
     public int Id { get; set; }
     
     private const double PercentageDivider = 100.0;
-    private PromotionController _promotionController;
-    private DepositController _depositController;
     
     private string _label;
     private double _discountRate;
@@ -102,13 +101,12 @@
     
     protected override void OnParametersSet()
     {
-        _promotionController = new PromotionController(DepoQuickContext, Session);
-        _promotionToEdit = _promotionController.Get(Id);
+        _promotionToEdit = PromotionController.Get(Id);
         _startDate = _promotionToEdit.ValidityDate.GetInitialDate();
         _finalDate = _promotionToEdit.ValidityDate.GetFinalDate();
         _label = _promotionToEdit.Label;
         _discountRate = _promotionToEdit.DiscountRate * PercentageDivider;
-        _deposits = _depositController.GetDeposits();
+        _deposits = DepositController.GetDeposits();
         _selectedDeposits = new List<Deposit>();
         _selectAllDeposits = false;
         
@@ -164,8 +162,8 @@
     {
         _date = new DateRange(_startDate, _finalDate); 
         
-        _promotionController.UpdatePromotionData(_promotionToEdit, _label, _discountRate/PercentageDivider, _date);
-        _promotionController.UpdatePromotionDeposits(_promotionToEdit, _selectedDeposits);
+        PromotionController.UpdatePromotionData(_promotionToEdit, _label, _discountRate/PercentageDivider, _date);
+        PromotionController.UpdatePromotionDeposits(_promotionToEdit, _selectedDeposits);
     }
     
     private void GoToPromotionsPage()

@@ -1,58 +1,79 @@
 ﻿using BusinessLogic.Exceptions.ControllerExceptions;
 using DepoQuick.Domain;
+using Microsoft.EntityFrameworkCore;
 
 namespace BusinessLogic;
 
 public class DepositController
 {
-    private DepoQuickContext _context;
+    private const string DepositNotFoundExceptionMessage = "Deposito no encontrado";
+    private const string ActionRestrictedToAdministratorExceptionMessage = "Solo el administrador puede realizar esta acción";
+    
+    private IRepository<Deposit> _depositRepository;
+    private IRepository<Promotion> _promotionRepository;
     private Session _session;
     
-    public DepositController(DepoQuickContext context,Session session )
+    public DepositController(IRepository<Deposit> depositRepository, IRepository<Promotion> promotionRepository, Session session)
     {
-        _context = context;
+        _depositRepository = depositRepository;
+        _promotionRepository = promotionRepository;
         _session = session; 
     }
     
     public void AddDeposit(Deposit deposit, List<Promotion> promotions)
     {
-        if (UserIsLogged() && UserLoggedIsAnAdministrator())
+        if (!(UserIsLogged() && UserLoggedIsAnAdministrator()))
         {
-           // AddPromotionsToTheDataBase(promotions);
+            throw new ActionRestrictedToAdministratorException(ActionRestrictedToAdministratorExceptionMessage); 
 
-            AddDepositToTheDataBase(deposit);
+        }
+        
+        Add(deposit);
 
-            ConectDepositToPromotions(deposit, promotions);
-        }
-        else
+        ConectDepositToPromotions(deposit, promotions);
+    }
+    
+    public Deposit Get(int id)
+    {
+        Deposit deposit = _depositRepository.GetById(id);
+        
+        if (deposit == null)
         {
-            throw new ActionRestrictedToAdministratorException("No se puede agregar un deposito si sos cliente"); 
+            throw new DepositNotFoundException(DepositNotFoundExceptionMessage); 
         }
+        
+        return deposit; 
     }
     
-    private bool UserIsLogged()
+    public List<Deposit> GetDeposits()
     {
-        return _session.UserLoggedIn(); 
+        List<Deposit> deposits = _depositRepository.GetAll();
+        
+        return deposits; 
     }
-    
-    private bool UserLoggedIsAnAdministrator()
+
+    public void DeleteDeposit(int id)
     {
-        return _session.ActiveUser.IsAdministrator; 
-    }
-    
-    private void AddDepositToTheDataBase(Deposit deposit)
-    {
-        _context.Deposits.Add(deposit);
-        _context.SaveChanges(); 
-    }
-    
-    private void AddPromotionsToTheDataBase(List<Promotion> promotions)
-    {
-        foreach (Promotion promotion in promotions)
+        if (!(UserIsLogged() && UserLoggedIsAnAdministrator()))
         {
-            _context.Promotions.Add(promotion);
+            throw new ActionRestrictedToAdministratorException(ActionRestrictedToAdministratorExceptionMessage); 
         }
-        _context.SaveChanges(); 
+        
+        Deposit depositToDelete = Get(id);
+            
+        _depositRepository.Reload(depositToDelete);
+        
+        List<Promotion> relatedPromotions = depositToDelete.Promotions;
+
+        RemoveDepositFromRelatedPromotions(depositToDelete, relatedPromotions); 
+            
+        Delete(depositToDelete);
+    }
+    
+    
+    private void Add(Deposit deposit)
+    {
+        _depositRepository.Add(deposit);
     }
     
     private void ConectDepositToPromotions(Deposit deposit,List<Promotion> promotions)
@@ -60,69 +81,38 @@ public class DepositController
         foreach (Promotion promotion in promotions)
         {
             deposit.AddPromotion(promotion);
-            promotion.AddDeposit(deposit);
-        }
-        _context.SaveChanges(); 
-    }
-
-    
-    public Deposit GetDeposit(int depositId)
-    {
-        Deposit deposit = SearchDeposit(depositId);
-        
-        if (deposit == null)
-        {
-            throw new DepositNotFoundException("Deposito no encontrado"); 
-        }
-        else
-        {
-            return deposit; 
-        }
-    }
-    
-    private Deposit SearchDeposit(int id)
-    {
-        return _context.Deposits.Find(id); 
-    }
-    
-    public List<Deposit> GetDeposits()
-    {
-        List<Deposit> deposits = _context.Deposits.ToList();
-        return deposits; 
-    }
-
-    public void DeleteDeposit(int id)
-    {
-        if (UserIsLogged() && UserLoggedIsAnAdministrator())
-        {
-            Deposit depositToDelete = SearchDeposit(id);
-        
-            List<Promotion> relatedPromotions = depositToDelete.Promotions;
-
-            RemoveDepositToRelatedPromotions(depositToDelete, relatedPromotions); 
+            _depositRepository.Update(deposit);
             
-            RemoveDepositToTheDataBase(depositToDelete);
-        }else
-        {
-            throw new ActionRestrictedToAdministratorException("No se puede agregar un deposito si sos cliente"); 
+            promotion.AddDeposit(deposit);
+            _promotionRepository.Update(promotion);
         }
-
     }
-
-    private void RemoveDepositToRelatedPromotions(Deposit depositToDelete, List<Promotion> relatedPromotions)
+    
+    private void RemoveDepositFromRelatedPromotions(Deposit depositToDelete, List<Promotion> relatedPromotions)
     {
         foreach (Promotion promotion in relatedPromotions)
         {
             promotion.RemoveDeposit(depositToDelete);
+            _promotionRepository.Update(promotion);
+            _depositRepository.Reload(depositToDelete);
+            _depositRepository.Update(depositToDelete);
         }
     }
 
-    private void RemoveDepositToTheDataBase(Deposit depositToDelete)
+    private void Delete(Deposit depositToDelete)
     {
-        _context.Deposits.Remove(depositToDelete);
-        _context.SaveChanges();
+        _depositRepository.Reload(depositToDelete);
+        _depositRepository.Delete(depositToDelete.Id);
     }
     
-
-
+    private bool UserLoggedIsAnAdministrator()
+    {
+        return _session.ActiveUser.IsAdministrator; 
+    }
+    
+    private bool UserIsLogged()
+    {
+        return _session.UserLoggedIn(); 
+    }
+    
 }

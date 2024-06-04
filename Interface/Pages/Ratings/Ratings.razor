@@ -2,7 +2,7 @@
 @using BusinessLogic
 @using DepoQuick.Domain
 @inject Session Session
-@inject DepoQuickContext DepoQuickContext
+@inject RatingController RatingController
 
 <html lang="es">
     <head>  
@@ -25,20 +25,15 @@
         </thead>
         
         <tbody>
-        @foreach (Reservation reservation in _listOfReservations)
+        @foreach (Rating rating in _listOfRatings)
         {
-            //if (reservation.Rating != null)
-            {
-                <tr>
-                    <td>@reservation.Deposit.Id</td>
-                    <td>@reservation.Id</td>
-                    <td>@reservation.Client.Name</td>
-                    <td>reservation.Rating.Stars</td>
-                    <td>reservation.Rating.Comment</td>
-                </tr>
-            }
-            
-            
+            <tr>
+                <td>@rating.Reservation.Deposit.Id</td>
+                <td>@rating.Reservation.Id</td>
+                <td>@rating.Reservation.Client.Name</td>
+                <td>@rating.Stars</td>
+                <td>@rating.Comment</td>
+            </tr>
         }
         </tbody>
     </table>
@@ -46,15 +41,12 @@
 </html>
 
 @code {
-    private ReservationController _reservationController;
-    private List<Reservation> _listOfReservations;
     private User _loggedInUser;
+    private List<Rating> _listOfRatings;
     
     protected override void OnInitialized()
     {
-        _reservationController = new ReservationController(DepoQuickContext, Session);
         _loggedInUser = Session.ActiveUser;
-        
-        _listOfReservations = _reservationController.GetReservations();
+        _listOfRatings = RatingController.GetRatings();
     }
 }

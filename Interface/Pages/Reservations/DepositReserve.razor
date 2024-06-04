@@ -2,6 +2,9 @@
 
 @inject Session Session
 @inject DepoQuickContext DepoQuickContext
+@inject DepositController DepositController
+@inject ReservationController ReservationController
+
 @using DepoQuick.Domain
 @using BusinessLogic
 @using BusinessLogic.Exceptions.ControllerExceptions
@@ -105,9 +108,7 @@
 
 
 @code {
-  //private Controller _controller;
-  DepositController _depositController;
-  ReservationController _reservationController;
+
   
   private List<Deposit> _listOfDeposits;
 
@@ -128,9 +129,8 @@
   
   protected override void OnInitialized()
   {
-    _depositController = new DepositController(DepoQuickContext, Session);
-    _reservationController = new ReservationController(DepoQuickContext, Session);
-    _listOfDeposits = _depositController.GetDeposits(); 
+   //_reservationController = new ReservationController(DepoQuickContext, Session);
+    _listOfDeposits = DepositController.GetDeposits(); 
     HideAllAlerts();
     
     _deposit = null; 
@@ -238,10 +238,10 @@
     int id = int.Parse(args.Value.ToString());
     try
     {
-      _deposit = _depositController.GetDeposit(id);
+      _deposit = DepositController.Get(id);
     }
     catch (DepositNotFoundException exceptionDepositNotFound)
-    {
+    { 
       _showAlertInvalidDeposit = true; 
     }
   }
@@ -255,7 +255,7 @@
   {
       Reservation newReservation = new Reservation(_deposit,  _client , _date); 
       
-      _reservationController.Add(newReservation);
+      ReservationController.Add(newReservation);
       
       HideAllAlerts(); 
       _showAlertReservationMade = true; 

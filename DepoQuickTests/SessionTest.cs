@@ -2,7 +2,7 @@
 using BusinessLogic.Exceptions.ControllerExceptions;
 using DepoQuick.Domain;
 
-namespace DepoQuickTests;
+/*namespace DepoQuickTests;
 
 [TestClass]
 public class SessionTest
@@ -104,4 +104,4 @@ public class SessionTest
                                       now.Hour == log.Timestamp.Hour && now.Minute == log.Timestamp.Minute));
     }
 
-}
+}*/

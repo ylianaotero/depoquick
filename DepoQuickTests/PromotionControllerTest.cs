@@ -1,7 +1,6 @@
 ﻿using BusinessLogic;
 using BusinessLogic.Exceptions.ControllerExceptions;
 using DepoQuick.Domain;
-
 namespace DepoQuickTests;
 
 [TestClass]
@@ -12,6 +11,7 @@ public class PromotionControllerTest
     private Session _session;
     private ReservationController _reservationController;
     private DepoQuickContext _context;
+    private LogController _logController;
 
     private const string AdminName = "Administrator";
     private const string AdminEmail = "administrator@domain.com";
@@ -48,11 +48,19 @@ public class PromotionControllerTest
     [TestInitialize]
     public void Initialize()
     {
+        //_context = TestContextFactory.CreateContext();
+        //_userController = new UserController(_context);
+        //_session = new Session(_userController);
+        //_reservationController = new ReservationController(_context, _session);
+        //_promotionController = new PromotionController(_context, _session);
+        
         _context = TestContextFactory.CreateContext();
-        _userController = new UserController(_context);
-        _session = new Session(_userController);
-        _reservationController = new ReservationController(_context, _session);
-        _promotionController = new PromotionController(_context, _session);
+        IRepository<User> _userRepository = new SqlRepository<User>(_context);
+        
+        _userController = new UserController(_userRepository);
+        _logController = new LogController(new SqlRepository<LogEntry>(_context));
+        _session = new Session(_userController, _logController);
+        _promotionController = new PromotionController(new SqlRepository<Deposit>(_context), new SqlRepository<Promotion>(_context), _session);
 
         _userController.RegisterAdministrator(AdminName, AdminEmail, AdminPassword, AdminPassword);
 
@@ -269,7 +277,7 @@ public class PromotionControllerTest
         
         int id = promotion.Id;
  
-        _promotionController.DeletePromotion(promotion);
+        _promotionController.Delete(promotion.Id);
  
         _promotionController.Get(id);
     }
@@ -290,7 +298,7 @@ public class PromotionControllerTest
         depositsToAddToPromotion.Add(deposit0);
         _promotionController.Add(promotion,depositsToAddToPromotion);
         
-        _promotionController.DeletePromotion(promotion);
+        _promotionController.Delete(promotion.Id);
  
         CollectionAssert.DoesNotContain(_deposit0.Promotions, promotion);
     }
@@ -315,7 +323,7 @@ public class PromotionControllerTest
      
         _session.LogoutUser();
         _session.LoginUser(ClientEmail,ClientPassword);
-        _promotionController.DeletePromotion(promotion);
+        _promotionController.Delete(promotion.Id);
  
         CollectionAssert.DoesNotContain(_deposit0.Promotions, promotion);
     }

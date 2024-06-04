@@ -1,7 +1,6 @@
 ﻿using BusinessLogic;
 using BusinessLogic.Exceptions.ControllerExceptions;
 using DepoQuick.Domain;
-
 namespace DepoQuickTests;
 
 
@@ -9,11 +8,9 @@ namespace DepoQuickTests;
 public class DepositControllerTest
 {
     private DepositController _depositController;
-    
     private UserController _userController;
-
+    private LogController _logController;
     private Session _session; 
-    
     private DepoQuickContext _context;
     
     private const char DepositArea0 = 'A';
@@ -36,10 +33,12 @@ public class DepositControllerTest
     public void Initialize()
     {
         _context = TestContextFactory.CreateContext();
-        _userController = new UserController(_context);
-        _session = new Session(_userController);
-        _depositController = new DepositController(_context,_session);
+        IRepository<User> _userRepository = new SqlRepository<User>(_context);
         
+        _userController = new UserController(_userRepository);
+        _logController = new LogController(new SqlRepository<LogEntry>(_context));
+        _session = new Session(_userController, _logController);
+        _depositController = new DepositController(new SqlRepository<Deposit>(_context), new SqlRepository<Promotion>(_context), _session);
     }
     
     [TestMethod]
@@ -60,7 +59,7 @@ public class DepositControllerTest
 
 
         CollectionAssert.Contains(_depositController.GetDeposits(), newDeposit);
-        CollectionAssert.Contains(_depositController.GetDeposit(newDeposit.Id).Promotions, promotion);
+        CollectionAssert.Contains(_depositController.Get(newDeposit.Id).Promotions, promotion);
     }
     
     [TestMethod]
@@ -102,7 +101,7 @@ public class DepositControllerTest
 
         int idDeposit0 = newDeposit0.Id;
 
-        Deposit deposit = _depositController.GetDeposit(idDeposit0);
+        Deposit deposit = _depositController.Get(idDeposit0);
 
         Assert.AreEqual(char.ToUpper(DepositArea0), deposit.Area);
         Assert.AreEqual(DepositSize0.ToUpper(), deposit.Size);
@@ -129,7 +128,7 @@ public class DepositControllerTest
 
         _depositController.AddDeposit(newDeposit0, promotionsToAddToDeposit);
 
-        Deposit deposit = _depositController.GetDeposit(-34); 
+        Deposit deposit = _depositController.Get(-34); 
     }
     
     [TestMethod]
@@ -152,7 +151,7 @@ public class DepositControllerTest
         int id = newDeposit0.Id;
 
         _depositController.DeleteDeposit(id);
-        _depositController.GetDeposit(id);
+        _depositController.Get(id);
     }
     
     [TestMethod]
@@ -212,3 +211,21 @@ public class DepositControllerTest
         CollectionAssert.DoesNotContain(promotion2.Deposits, newDeposit0);
     }
 }
+
+/*
+ private UserController _userController;
+    private LogController _logController;
+    private Session _session;
+
+    [TestInitialize]
+    public void Initialize()
+    {
+        var context = TestContextFactory.CreateContext();
+        IRepository<User> _userRepository = new SqlRepository<User>(context);
+        
+        _userController = new UserController(_userRepository);
+        _logController = new LogController(new SqlRepository<LogEntry>(context));
+        
+        _session = new Session(_userController, _logController);
+    }
+ */

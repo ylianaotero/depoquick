@@ -6,6 +6,10 @@
 @inject Session Session
 @inject NavigationManager NavigationManager
 @inject DepoQuickContext DepoQuickContext
+@inject ReservationController ReservationController
+@inject DepositController DepositController
+@inject UserController UserController
+@inject PaymentController PaymentController
 
 <html lang="es">
   <head>
@@ -160,7 +164,7 @@
     private Deposit _deposit; 
     private Reservation _reservation;
     
-    ReservationController _reservationController;
+ //   ReservationController _reservationController;
 
     private int _depositId;
                                 
@@ -182,11 +186,11 @@
     
     protected override void OnInitialized()
     {
-        _reservationController = new ReservationController(DepoQuickContext, Session);
+       // _reservationController = new ReservationController(DepoQuickContext, Session);
         
         _client = (Client)Session.ActiveUser;
         
-        _listOfReservations = _reservationController.GetReservationsById(_client.Id);
+        _listOfReservations = ReservationController.GetReservationsByUserId(_client.Id);
         
         HideAllAlerts(); 
     }
@@ -202,7 +206,7 @@
         try
         {
             HideAllAlerts(); 
-            return _reservationController.GetPaymentOfReservation(reservation);
+            return PaymentController.Get(reservation);
         }
         catch (PaymentNotFoundException paymentNotFoundException)
         {
@@ -246,6 +250,6 @@
 
     private void AddPayment()
     {
-        _reservationController.PayReservation(_reservation);
+        ReservationController.PayReservation(_reservation);
     }
 }

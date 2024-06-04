@@ -5,7 +5,8 @@
 @using DepoQuick.Exceptions.PromotionExceptions
 @inject Session Session
 @inject NavigationManager NavigationManager
-@inject DepoQuickContext DepoQuickContext
+@inject PromotionController PromotionController
+@inject DepositController DepositController
 
 <html lang="es">
     <head>
@@ -80,8 +81,6 @@
 @code {
     private const double PercentageDivider = 100.0;
     private DepoQuickContext _context;
-    private PromotionController _promotionController;
-    private DepositController _depositController;
     
     private string _label;
     private double _discountRate;
@@ -99,12 +98,9 @@
 
     protected override void OnInitialized()
     {
-        _promotionController = new PromotionController(DepoQuickContext,Session);
-        _depositController = new DepositController(DepoQuickContext,Session);
-        
         _startDate = DateTime.Now;
         _finalDate = DateTime.Now;
-        _deposits = _depositController.GetDeposits();
+        _deposits = DepositController.GetDeposits();
         _selectedDeposits = new List<Deposit>();
         _selectAllDeposits = false;
         HideAllAlerts();
@@ -166,7 +162,7 @@
         newPromotion.ValidityDate = _date;
         
         
-        _promotionController.Add(newPromotion, _selectedDeposits);
+        PromotionController.Add(newPromotion, _selectedDeposits);
     }
     
     private void GoToPromotionsPage()

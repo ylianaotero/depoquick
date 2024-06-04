@@ -3,6 +3,8 @@
 @inject Session Session
 @inject DepoQuickContext DepoQuickContext
 @inject NavigationManager NavigationManager
+@inject ReservationController ReservationController
+@inject PaymentController PaymentController
 @using BusinessLogic
 @using BusinessLogic.Exceptions.ControllerExceptions
 @using BusinessLogic.Exceptions.ReservationControllerExceptions
@@ -155,7 +157,7 @@
 </html>
 
 @code {
-    ReservationController _reservationController;
+ //   ReservationController _reservationController;
     
     private NavigationManager _navigationManager;
     
@@ -175,8 +177,8 @@
     {
         _context = DepoQuickContext;
         _session = Session; 
-        _reservationController = new ReservationController(_context, _session);
-        _listOfReservations = _reservationController.GetReservations();
+      //  _reservationController = new ReservationController(_context, _session);
+        _listOfReservations = ReservationController.GetReservations();
         _navigationManager = NavigationManager;
     
         HideAllAlerts(); 
@@ -193,7 +195,7 @@
     {
         try
         {
-            _paymentOfReservation = _reservationController.GetPaymentOfReservation(reservation);
+            _paymentOfReservation = PaymentController.Get(reservation);
         }
         catch (PaymentNotFoundException paymentNotFoundException)
         {
@@ -207,7 +209,7 @@
     {
         try
         {
-            _reservationController.ApproveReservation(reservation);
+            ReservationController.ApproveReservation(reservation);
         }
         catch (PaymentNotFoundException paymentNotFoundException)
         {

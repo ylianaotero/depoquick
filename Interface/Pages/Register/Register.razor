@@ -7,6 +7,7 @@
 @inject Session Session
 @inject NavigationManager NavigationManager
 @inject DepoQuickContext DepoQuickContext
+@inject UserController UserController
 
 <html lang="es" xmlns="http://www.w3.org/1999/html">
   <head>
@@ -207,7 +208,7 @@
 
     private bool _showAlertClientRegistered; 
     
-    private UserController _userController;
+   // private UserController _userController;
     private String _name;
     private String _email;
     private String _password;
@@ -215,7 +216,9 @@
     
     protected override void OnInitialized()
     {
-        _userController = new UserController(DepoQuickContext);
+        //_userController = new UserController(DepoQuickContext);
+      //  SqlRepository<User> userRepository = new SqlRepository<User>(DepoQuickContext);
+       // _userController = new UserController(userRepository);
         CleanForm();
         HideAllAlerts();
     }
@@ -312,7 +315,7 @@
     {
         try
         {
-            _userController.GetAdministrator();
+            UserController.GetAdministrator();
             return true; 
         }
         catch (EmptyAdministratorException emptyAdministratorException)
@@ -325,7 +328,7 @@
     {
         try
         {
-            _userController.RegisterAdministrator(_name, _email, _password, _passwordValidation); 
+            UserController.RegisterAdministrator(_name, _email, _password, _passwordValidation); 
             
             GoToIndex();
             
@@ -344,7 +347,7 @@
     {
         try
         {
-            _userController.RegisterClient(_name,_email,_password,_passwordValidation);
+            UserController.RegisterClient(_name,_email,_password,_passwordValidation);
 
             if (UserLoggedIn())
             {

@@ -11,7 +11,6 @@ public class Payment
     
     public String Status { get; private set; }
     
-    
     public Reservation Reservation { get; set; }
 
     public Payment()
@@ -24,7 +23,7 @@ public class Payment
         if (ThereIsAReservationAssociated())
         {
             throw new CannotCapturePaymentIfDoesNotHaveAnAssociatedReservation(
-                "No se puede capturar un pago no asociado con una reservacion"); 
+                "No se puede capturar un pago no asociado con una reserva"); 
         }
         else
         {
