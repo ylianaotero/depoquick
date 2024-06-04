@@ -18,7 +18,7 @@ public class NotificationController
             Message = message,
             Timestamp = timestamp,
             Client = client,
-            Reservation = reservation
+      //      Reservation = reservation
         };
 
         Add(notification); 

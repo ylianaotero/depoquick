@@ -6,11 +6,18 @@ public class Notification
 {
     [Key]
     public int Id { get; set; }
-    public string Message { get; init; }
+    public string Message { get; set; }
 
-    public DateTime Timestamp { get; init; }
+    public DateTime Timestamp { get; set; }
     
-    public Client Client { get; init; }
+    public Client Client { get; set; }
     
-    public Reservation Reservation { get; init; }
+   // public Reservation Reservation { get; set; }
+    
+  //  public int ReservationId { get; set; }
+    
+    public Notification()
+    {
+        Timestamp = DateTime.Now;
+    }
 }

@@ -37,15 +37,15 @@ public class DepoQuickContext : DbContext
     public DbSet<LogEntry> LogEntries { get; set; }
     public DbSet<Rating> Ratings { get; set; }
 
-    public DbSet<Notification> Notifications{ get; set; }
+    public DbSet<Notification> Notifications { get; set; }
     
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
-        if (!optionsBuilder.IsConfigured)
-        {
+      //  if (!optionsBuilder.IsConfigured)
+     //   {
             optionsBuilder.UseSqlServer(@"Server=localhost,1433;Database=depoquick;User Id=sa;Password=Passw1rd;");
 
-        }
+      //  }
 
         optionsBuilder.EnableDetailedErrors(true);
         optionsBuilder.EnableSensitiveDataLogging(true);
@@ -77,7 +77,13 @@ public class DepoQuickContext : DbContext
         
         modelBuilder.Entity<Payment>().HasOne<Reservation>(p=>p.Reservation);
         
-        modelBuilder.Entity<Notification>().HasOne<Reservation>(p=>p.Reservation);
+        modelBuilder.Entity<Notification>().HasOne<Client>(n=>n.Client);
+        
+        
+        
+        
+        
+      //  modelBuilder.Entity<Notification>().HasOne<Reservation>(p=>p.Reservation);
     }
     
     
