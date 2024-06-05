@@ -76,10 +76,12 @@ public class DepoQuickContext : DbContext
         modelBuilder.Entity<Rating>().HasOne<Reservation>(r=>r.Reservation);
         
         modelBuilder.Entity<Payment>().HasOne<Reservation>(p=>p.Reservation);
-        
-        modelBuilder.Entity<Notification>().HasOne<Client>(n=>n.Client);
+
+        modelBuilder.Entity<Notification>().HasOne<Client>(n => n.Client);
          
         modelBuilder.Entity<Deposit>().OwnsMany(d => d.AvailableDates);
         //  modelBuilder.Entity<Notification>().HasOne<Reservation>(p=>p.Reservation);
     }
+    
+    
 }

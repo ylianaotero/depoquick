@@ -8,56 +8,58 @@ public class DateRange
 {
     public DateTime InitialDate { get; private set; }
     public DateTime FinalDate { get; private set; }
-    
+
     public DateRange()
     {
         InitialDate = DateTime.MinValue;
         FinalDate = DateTime.Now.Date;
     }
-    
+
     public DateRange(DateTime initialDate, DateTime finalDate)
     {
         ValidateDateRange(initialDate, finalDate);
         InitialDate = initialDate;
         FinalDate = finalDate;
     }
-    
+
     public DateTime GetInitialDate()
     {
         return InitialDate;
     }
-    
+
     public DateTime GetFinalDate()
     {
         return FinalDate;
     }
-    
+
     public int NumberOfDays()
     {
         TimeSpan difference = FinalDate - InitialDate;
         int numberOfDays = difference.Days;
         return numberOfDays;
     }
-    
+
     private void ValidateDateRange(DateTime initialDate, DateTime finalDate)
     {
-        if (TheTwoDatesAreEmpty(initialDate,finalDate))
+        if (TheTwoDatesAreEmpty(initialDate, finalDate))
         {
-            throw new EmptyDateRangeException ("Ambas fechas vacias, no se puede");
+            throw new EmptyDateRangeException("Ambas fechas vacias, no se puede");
         }
+
         if (InitialDateIsEmpty(initialDate))
         {
-            throw new EmptyDateRangeException ("Fecha inicial vacia, no se puede");
+            throw new EmptyDateRangeException("Fecha inicial vacia, no se puede");
         }
 
         if (FinalDateIsEmpty(finalDate))
         {
-            throw new EmptyDateRangeException ("Fecha final vacia, no se puede");
+            throw new EmptyDateRangeException("Fecha final vacia, no se puede");
         }
 
         if (!EndDateIsLater(initialDate, finalDate))
         {
-            throw new InvalidDateRangeException("Rango de fechas no valido, fecha final debe ser posterior a fecha inicial");
+            throw new InvalidDateRangeException(
+                "Rango de fechas no valido, fecha final debe ser posterior a fecha inicial");
         }
     }
 
@@ -65,36 +67,37 @@ public class DateRange
     {
         if (!DateIsNotEmpty(initialDate) && !DateIsNotEmpty(finalDate))
         {
-            return true; 
+            return true;
         }
-        return false; 
+
+        return false;
     }
 
     private bool InitialDateIsEmpty(DateTime initialDate)
     {
         if (!DateIsNotEmpty(initialDate))
         {
-            return true; 
+            return true;
         }
 
-        return false; 
+        return false;
     }
-    
+
     private bool FinalDateIsEmpty(DateTime finalDate)
     {
         if (!DateIsNotEmpty(finalDate))
         {
-            return true; 
+            return true;
         }
 
-        return false; 
+        return false;
     }
 
     private bool DateIsNotEmpty(DateTime date)
     {
         if (date != DateTime.MinValue)
         {
-            return true; 
+            return true;
         }
         else
         {
@@ -113,31 +116,34 @@ public class DateRange
             return false;
         }
     }
-    
+
     public bool DateRangeIsOverlapping(DateRange dateRange)
     {
         if (IsDateInRange(dateRange.InitialDate) || IsDateInRange(dateRange.FinalDate))
         {
-            return true; 
+            return true;
         }
-        return false; 
+
+        return false;
     }
-    
+
     public bool IsDateInRange(DateTime date)
     {
         if (date >= InitialDate && date <= FinalDate)
         {
-            return true; 
+            return true;
         }
-        return false; 
+
+        return false;
     }
 
     public bool Contains(DateRange dateRange)
     {
         if (IsDateInRange(dateRange.InitialDate) || IsDateInRange(dateRange.FinalDate))
         {
-            return true; 
+            return true;
         }
-        return false; 
+
+        return false;
     }
 }
