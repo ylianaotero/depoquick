@@ -79,7 +79,7 @@ public class DepoQuickContext : DbContext
         
         modelBuilder.Entity<Notification>().HasOne<Client>(n=>n.Client);
         
-        modelBuilder.Entity<Deposit>().HasMany<DateRange>(d=>d.AvailableDates);
+        modelBuilder.Entity<Deposit>().OwnsMany<DateRange>(d=>d.AvailableDates);
         
         //  modelBuilder.Entity<Notification>().HasOne<Reservation>(p=>p.Reservation);
     }
