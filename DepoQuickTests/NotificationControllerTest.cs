@@ -8,7 +8,7 @@ public class NotificationControllerTest
 {
     private const string NotificationMessage = "Esta es una noti";
     
-    
+    private const string DepositName = "Deposito";
     private const char DepositArea0 = 'A';
     private const string DepositSize0 = "Pequeño";
     private const bool DepositAirConditioning0 = true;
@@ -58,7 +58,7 @@ public class NotificationControllerTest
         _userController.RegisterAdministrator(AdminName, AdminEmail, AdminPassword, AdminPassword);
         _userController.RegisterClient(ClientName, ClientEmail, ClientPassword, ClientPassword);
         
-        _deposit0 = new Deposit (DepositArea0,DepositSize0,DepositAirConditioning0);
+        _deposit0 = new Deposit (DepositName,DepositArea0,DepositSize0,DepositAirConditioning0);
         
         _client = (Client)_userController.GetUserByEmail(ClientEmail);
         

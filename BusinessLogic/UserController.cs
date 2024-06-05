@@ -93,7 +93,7 @@ public class UserController
         return admin;
     }
 
-    public void Delete(User user) //Hay excepciones? Primero lo busco y despues lo elimino?
+    public void Delete(User user)
     {
         if (user == null)
         {

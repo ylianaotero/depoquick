@@ -25,7 +25,7 @@ public class AdministratorTests
         _admin = new Administrator(_adminName, _adminEmail, _adminPassword);
         _client = new Client(_clientName, _clientEmail, _clientPassword);
         
-        _deposit = new Deposit('A', "Mediano", true);
+        _deposit = new Deposit("Deposito",'A', "Mediano", true);
         
         
         DateRange dateRange = new DateRange(DateTime.Now, DateTime.Now.AddDays(5));

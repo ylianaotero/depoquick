@@ -30,7 +30,8 @@ namespace DepoQuickTests
         private const string ClientName2 = "ClientDos";
         private const string ClientEmail2 = "client2@domain.com";
         private const string ClientPassword2 = "Password2#";
-     
+
+        private const string DepositName = "Deposito";
         private const char DepositArea0 = 'A';
         private const string DepositSize0 = "Pequeño";
         private const bool DepositAirConditioning0 = true;
@@ -84,9 +85,9 @@ namespace DepoQuickTests
             
             _userController.RegisterAdministrator(AdminName, AdminEmail, AdminPassword, AdminPassword);
 
-            _deposit0 = new Deposit (DepositArea0,DepositSize0,DepositAirConditioning0);
-            _deposit1 = new Deposit(DepositArea1,DepositSize1,DepositAirConditioning1);
-            _deposit2 = new Deposit(DepositArea0,DepositSize1,DepositAirConditioning1);
+            _deposit0 = new Deposit (DepositName,DepositArea0,DepositSize0,DepositAirConditioning0);
+            _deposit1 = new Deposit(DepositName,DepositArea1,DepositSize1,DepositAirConditioning1);
+            _deposit2 = new Deposit(DepositName,DepositArea0,DepositSize1,DepositAirConditioning1);
             
             _currentDateRange = new DateRange(DateTime.Now, DateTime.Now.AddDays(10));
             _validDateRange = new DateRange(DateTime.Now.AddDays(5), DateTime.Now.AddDays(10));
@@ -251,7 +252,7 @@ namespace DepoQuickTests
             _userController.RegisterClient(ClientName, ClientEmail, ClientPassword, ClientPassword);
             _client = (Client)_userController.GetUserByEmail(ClientEmail);
             
-            Deposit deposit = new Deposit(DepositArea0, DepositSize0, DepositAirConditioning0);
+            Deposit deposit = new Deposit(DepositName,DepositArea0, DepositSize0, DepositAirConditioning0);
             Reservation reservation = new Reservation(deposit, _client, _validDateRange);
             _reservationController.Add(reservation);
             
@@ -269,7 +270,7 @@ namespace DepoQuickTests
             
             _session.LoginUser(ClientEmail, ClientPassword);
             
-            Deposit deposit = new Deposit(DepositArea0, DepositSize0, DepositAirConditioning0);
+            Deposit deposit = new Deposit(DepositName,DepositArea0, DepositSize0, DepositAirConditioning0);
             Reservation reservation = new Reservation(deposit, _client, _validDateRange);
             _reservationController.Add(reservation);
             
@@ -297,7 +298,7 @@ namespace DepoQuickTests
             _userController.RegisterClient(ClientName, ClientEmail, ClientPassword, ClientPassword);
             _client = (Client)_userController.GetUserByEmail(ClientEmail);
             
-            Deposit deposit = new Deposit(DepositArea0, DepositSize0, DepositAirConditioning0);
+            Deposit deposit = new Deposit(DepositName,DepositArea0, DepositSize0, DepositAirConditioning0);
             Reservation reservation = new Reservation(deposit, _client, _validDateRange);
             
             _reservationController.Add(reservation);
@@ -314,7 +315,7 @@ namespace DepoQuickTests
             _userController.RegisterClient(ClientName, ClientEmail, ClientPassword, ClientPassword);
             _client = (Client)_userController.GetUserByEmail(ClientEmail);
             
-            Deposit deposit = new Deposit(DepositArea0, DepositSize0, DepositAirConditioning0);
+            Deposit deposit = new Deposit(DepositName,DepositArea0, DepositSize0, DepositAirConditioning0);
             Reservation reservation = new Reservation(deposit, _client, _validDateRange);
             _reservationController.Add(reservation);
             

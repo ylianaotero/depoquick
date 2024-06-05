@@ -13,6 +13,7 @@ public class ReservationTest
     private const string ClientName2 = "Mario S";
     private const string ClientEmail2 = "mario@gmail.com";
     private const string ClientPassword2 = "maRio.68";
+    private const string DepositName = "Deposito";
     private const char DepositArea1 = 'A';
     private const string DepositSize1 = "Pequeño";
     private const string DepositSize2 = "Mediano";
@@ -24,7 +25,7 @@ public class ReservationTest
     public void TestCreateReservationAndSetProperties()
     {
         Client client = new Client(ClientName1, ClientEmail1, ClientPassword1);
-        Deposit deposit = new Deposit(DepositArea1, DepositSize1, DepositAirConditioning1);
+        Deposit deposit = new Deposit(DepositName,DepositArea1, DepositSize1, DepositAirConditioning1);
         DateTime dayIn = new DateTime(2024, 04, 07);
         DateTime dayOut = new DateTime(2024, 04, 08);
         DateRange stay = new DateRange(dayIn, dayOut);
@@ -44,7 +45,7 @@ public class ReservationTest
     public void TestInvalidDateReservation()
     {
         Client client = new Client(ClientName1,ClientEmail1,ClientPassword1);
-        Deposit deposit = new Deposit(DepositArea1,DepositSize1,DepositAirConditioning1);
+        Deposit deposit = new Deposit(DepositName,DepositArea1,DepositSize1,DepositAirConditioning1);
         DateTime dayIn = new DateTime(2025, 04, 09);
         DateTime dayOut = new DateTime(2024, 04, 08);
         DateRange stay = new DateRange(dayIn, dayOut);
@@ -54,7 +55,7 @@ public class ReservationTest
     public void TestValidClient()
     {
         Client client = new Client(ClientName1,ClientEmail1,ClientPassword1);
-        Deposit deposit = new Deposit(DepositArea1,DepositSize1,DepositAirConditioning1);
+        Deposit deposit = new Deposit(DepositName,DepositArea1,DepositSize1,DepositAirConditioning1);
         DateTime dayIn = new DateTime(2024, 04, 07);
         DateTime dayOut = new DateTime(2024, 04, 08);
         DateRange stay = new DateRange(dayIn, dayOut);
@@ -71,13 +72,13 @@ public class ReservationTest
     public void TestValidDeposit()
     {
         Client client = new Client(ClientName1,ClientEmail1,ClientPassword1);
-        Deposit deposit = new Deposit(DepositArea1, DepositSize1, DepositAirConditioning1);
+        Deposit deposit = new Deposit(DepositName,DepositArea1, DepositSize1, DepositAirConditioning1);
         DateTime dayIn = new DateTime(2024, 04, 07);
         DateTime dayOut = new DateTime(2024, 04, 08);
         DateRange stay = new DateRange(dayIn, dayOut);
         Reservation reservation = new Reservation(deposit,client,stay);
 
-        Deposit expectedDeposit = new Deposit(DepositArea1, DepositSize3, DepositAirConditioning2);
+        Deposit expectedDeposit = new Deposit(DepositName,DepositArea1, DepositSize3, DepositAirConditioning2);
         reservation.Deposit = expectedDeposit;
         Deposit actualDeposit = reservation.Deposit;
         
@@ -88,7 +89,7 @@ public class ReservationTest
     public void TestValidStatus()
     {
         Client client = new Client(ClientName1,ClientEmail1,ClientPassword1);
-        Deposit deposit = new Deposit(DepositArea1, DepositSize1, DepositAirConditioning1);
+        Deposit deposit = new Deposit(DepositName,DepositArea1, DepositSize1, DepositAirConditioning1);
         DateTime dayIn = new DateTime(2024, 04, 07);
         DateTime dayOut = new DateTime(2024, 04, 08);
         DateRange stay = new DateRange(dayIn, dayOut);
@@ -105,7 +106,7 @@ public class ReservationTest
     public void TestValidDateRange()
     {
         Client client = new Client(ClientName1,ClientEmail1,ClientPassword1);
-        Deposit deposit = new Deposit(DepositArea1, DepositSize1, DepositAirConditioning1);
+        Deposit deposit = new Deposit(DepositName,DepositArea1, DepositSize1, DepositAirConditioning1);
         DateTime dayIn = new DateTime(2024, 04, 07);
         DateTime dayOut = new DateTime(2024, 04, 08);
         DateRange stay = new DateRange(dayIn, dayOut);
@@ -126,7 +127,7 @@ public class ReservationTest
     public void TestValidMessage()
     {
         Client client = new Client(ClientName1,ClientEmail1,ClientPassword1);
-        Deposit deposit = new Deposit(DepositArea1, DepositSize1, DepositAirConditioning1);
+        Deposit deposit = new Deposit(DepositName,DepositArea1, DepositSize1, DepositAirConditioning1);
         DateTime dayIn = new DateTime(2024, 04, 07);
         DateTime dayOut = new DateTime(2024, 04, 08);
         DateRange stay = new DateRange(dayIn, dayOut);
@@ -144,7 +145,7 @@ public class ReservationTest
     public void TestMessageWithMoreThan300Characters()
     {
         Client client = new Client(ClientName1,ClientEmail1,ClientPassword1);
-        Deposit deposit = new Deposit(DepositArea1, DepositSize1, DepositAirConditioning1);
+        Deposit deposit = new Deposit(DepositName,DepositArea1, DepositSize1, DepositAirConditioning1);
         DateTime dayIn = new DateTime(2024, 04, 07);
         DateTime dayOut = new DateTime(2024, 04, 08);
         DateRange stay = new DateRange(dayIn, dayOut);
@@ -159,7 +160,7 @@ public class ReservationTest
     public void TestEmptyMessage()
     {
         Client client = new Client(ClientName1,ClientEmail1,ClientPassword1);
-        Deposit deposit = new Deposit(DepositArea1, DepositSize1, DepositAirConditioning1);
+        Deposit deposit = new Deposit(DepositName,DepositArea1, DepositSize1, DepositAirConditioning1);
         DateTime dayIn = new DateTime(2024, 04, 07);
         DateTime dayOut = new DateTime(2024, 04, 08);
         DateRange stay = new DateRange(dayIn, dayOut);
@@ -173,7 +174,7 @@ public class ReservationTest
     public void TestValidReservation()
     {
         Client client = new Client(ClientName1,ClientEmail1,ClientPassword1);
-        Deposit deposit = new Deposit(DepositArea1, DepositSize1, DepositAirConditioning1);
+        Deposit deposit = new Deposit(DepositName,DepositArea1, DepositSize1, DepositAirConditioning1);
         DateTime dayIn = new DateTime(2024, 04, 07);
         DateTime dayOut = new DateTime(2024, 04, 08);
         DateRange stay = new DateRange(dayIn, dayOut);

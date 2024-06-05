@@ -20,6 +20,7 @@ public class PromotionControllerTest
     private const string ClientEmail = "client@domain.com";
     private const string ClientPassword = "Password2#";
 
+    private const string DepositName = "Deposito";
     private const char DepositArea0 = 'A';
     private const string DepositSize0 = "Pequeño";
     private const bool DepositAirConditioning0 = true;
@@ -64,7 +65,7 @@ public class PromotionControllerTest
 
         _userController.RegisterAdministrator(AdminName, AdminEmail, AdminPassword, AdminPassword);
 
-        _deposit0 = new Deposit(DepositArea0, DepositSize0, DepositAirConditioning0);
+        _deposit0 = new Deposit(DepositName,DepositArea0, DepositSize0, DepositAirConditioning0);
 
 
         _currentDateRange = new DateRange(DateTime.Now, DateTime.Now.AddDays(10));
@@ -83,7 +84,7 @@ public class PromotionControllerTest
         promotion.ValidityDate = _validDateRange;
 
         List<Deposit> depositsToAddToPromotion = new List<Deposit>();
-        Deposit deposit = new Deposit(DepositArea0, DepositSize0, DepositAirConditioning0);
+        Deposit deposit = new Deposit(DepositName,DepositArea0, DepositSize0, DepositAirConditioning0);
         depositsToAddToPromotion.Add(deposit);
         _context.Deposits.Add(deposit);
 
@@ -106,7 +107,7 @@ public class PromotionControllerTest
         promotion.Label = PromotionLabel0;
         promotion.ValidityDate = _validDateRange;
         List<Deposit> depositsToAddToPromotion = new List<Deposit>();
-        Deposit deposit = new Deposit(DepositArea0, DepositSize0, DepositAirConditioning0);
+        Deposit deposit = new Deposit(DepositName,DepositArea0, DepositSize0, DepositAirConditioning0);
         depositsToAddToPromotion.Add(deposit);
 
         _promotionController.Add(promotion, depositsToAddToPromotion);
@@ -128,7 +129,7 @@ public class PromotionControllerTest
 
         List<Deposit> depositsToAddToPromotion = new List<Deposit>();
 
-        Deposit deposit = new Deposit(DepositArea0, DepositSize0, DepositAirConditioning0);
+        Deposit deposit = new Deposit(DepositName,DepositArea0, DepositSize0, DepositAirConditioning0);
         _context.Deposits.Add(deposit);
         depositsToAddToPromotion.Add(deposit);
 
@@ -153,7 +154,7 @@ public class PromotionControllerTest
         promotion2.ValidityDate = _currentDateRange;
 
         List<Deposit> depositsToAddToPromotion = new List<Deposit>();
-        Deposit deposit = new Deposit(DepositArea0, DepositSize0, DepositAirConditioning0);
+        Deposit deposit = new Deposit(DepositName,DepositArea0, DepositSize0, DepositAirConditioning0);
         _context.Deposits.Add(deposit);
         depositsToAddToPromotion.Add(deposit);
 
@@ -177,7 +178,7 @@ public class PromotionControllerTest
         _context.Deposits.Add(_deposit0);
         _promotionController.Add(promotion1, depositsToAddToPromotion);
 
-        Deposit deposit = new Deposit(DepositArea0, DepositSize0, DepositAirConditioning0);
+        Deposit deposit = new Deposit(DepositName,DepositArea0, DepositSize0, DepositAirConditioning0);
 
         List<Deposit> newDepositsToAddPromotion = new List<Deposit>();
         newDepositsToAddPromotion.Add(deposit);
@@ -210,14 +211,14 @@ public class PromotionControllerTest
         promotion1.ValidityDate = _validDateRange;
 
         List<Deposit> depositsToAddToPromotion = new List<Deposit>();
-        Deposit deposit0 = new Deposit(DepositArea0, DepositSize0, DepositAirConditioning0);
+        Deposit deposit0 = new Deposit(DepositName,DepositArea0, DepositSize0, DepositAirConditioning0);
         _context.Deposits.Add(deposit0);
         depositsToAddToPromotion.Add(deposit0);
 
         _promotionController.Add(promotion1, depositsToAddToPromotion);
 
         List<Deposit> newDepositsToAddPromotion = new List<Deposit>();
-        Deposit deposit1 = new Deposit(DepositArea0, DepositSize0, DepositAirConditioning0);
+        Deposit deposit1 = new Deposit(DepositName,DepositArea0, DepositSize0, DepositAirConditioning0);
         _context.Deposits.Add(deposit1);
         newDepositsToAddPromotion.Add(deposit1);
 
@@ -243,14 +244,14 @@ public class PromotionControllerTest
         promotion1.ValidityDate = _validDateRange;
 
         List<Deposit> depositsToAddToPromotion = new List<Deposit>();
-        Deposit deposit0 = new Deposit(DepositArea0, DepositSize0, DepositAirConditioning0);
+        Deposit deposit0 = new Deposit(DepositName,DepositArea0, DepositSize0, DepositAirConditioning0);
         _context.Deposits.Add(deposit0);
         depositsToAddToPromotion.Add(deposit0);
         _promotionController.Add(promotion1, depositsToAddToPromotion);
 
 
         List<Deposit> newDepositsToAddPromotion = new List<Deposit>();
-        Deposit deposit1 = new Deposit(DepositArea0, DepositSize0, DepositAirConditioning0);
+        Deposit deposit1 = new Deposit(DepositName,DepositArea0, DepositSize0, DepositAirConditioning0);
         _context.Deposits.Add(deposit1);
         newDepositsToAddPromotion.Add(deposit1);
 
@@ -270,7 +271,7 @@ public class PromotionControllerTest
         promotion.ValidityDate = _validDateRange;
         
         List<Deposit> depositsToAddToPromotion = new List<Deposit>();
-        Deposit deposit0 = new Deposit(DepositArea0, DepositSize0, DepositAirConditioning0);
+        Deposit deposit0 = new Deposit(DepositName,DepositArea0, DepositSize0, DepositAirConditioning0);
         _context.Deposits.Add(deposit0);
         depositsToAddToPromotion.Add(deposit0);
         _promotionController.Add(promotion,depositsToAddToPromotion);
@@ -293,7 +294,7 @@ public class PromotionControllerTest
         
         
         List<Deposit> depositsToAddToPromotion = new List<Deposit>();
-        Deposit deposit0 = new Deposit(DepositArea0, DepositSize0, DepositAirConditioning0);
+        Deposit deposit0 = new Deposit(DepositName,DepositArea0, DepositSize0, DepositAirConditioning0);
         _context.Deposits.Add(deposit0);
         depositsToAddToPromotion.Add(deposit0);
         _promotionController.Add(promotion,depositsToAddToPromotion);
@@ -316,7 +317,7 @@ public class PromotionControllerTest
         
         
         List<Deposit> depositsToAddToPromotion = new List<Deposit>();
-        Deposit deposit0 = new Deposit(DepositArea0, DepositSize0, DepositAirConditioning0);
+        Deposit deposit0 = new Deposit(DepositName,DepositArea0, DepositSize0, DepositAirConditioning0);
         _context.Deposits.Add(deposit0);
         depositsToAddToPromotion.Add(deposit0);
         _promotionController.Add(promotion,depositsToAddToPromotion);
@@ -343,7 +344,7 @@ public class PromotionControllerTest
         promotion2.ValidityDate = _expiredDateRange;
         
         List<Deposit> depositsToAddToPromotion = new List<Deposit>();
-        Deposit deposit0 = new Deposit(DepositArea0, DepositSize0, DepositAirConditioning0);
+        Deposit deposit0 = new Deposit(DepositName,DepositArea0, DepositSize0, DepositAirConditioning0);
         _context.Deposits.Add(deposit0);
         depositsToAddToPromotion.Add(deposit0);
         _promotionController.Add(promotion1, depositsToAddToPromotion);

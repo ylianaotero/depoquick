@@ -67,7 +67,8 @@
 
 @code {
     private const double PercentageMultiplier = 100.0;
-    
+
+    private string _name;
     private char _area;
     private string _size;
     private bool _airConditioning;
@@ -78,6 +79,7 @@
     
     protected override void OnInitialized()
     {
+        _name = "Deposito";
         _area = 'A';
         _size = "PEQUEÑO";
         _airConditioning = false;
@@ -88,7 +90,7 @@
     
     private void AddNewDeposit()
     {
-        Deposit newDeposit = new Deposit(_area, _size, _airConditioning);
+        Deposit newDeposit = new Deposit(_name,_area, _size, _airConditioning);
         
         DepositController.AddDeposit(newDeposit, _selectedPromotions);
 

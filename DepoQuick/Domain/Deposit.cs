@@ -1,12 +1,14 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using DepoQuick.Exceptions.DepositExceptions;
+using System.Text.RegularExpressions;
+
 
 namespace DepoQuick.Domain;
 
 public class Deposit
 {
-    
 
+    private const string DepositNameIsNotValidMessage = "El nombre del depósito no es válido";
     private const int AdditionalPriceForAirConditioning = 20;
     
     private const int PriceForSmallDeposit = 50;
@@ -26,15 +28,37 @@ public class Deposit
 
     [Key]
     public int Id { get; set; }
+
+    private String _name;
     
     private Char _area;
     private String _size;
     
     public bool AirConditioning { get; set; }
-    public List<Promotion> Promotions { get; }  
-    public List<Rating> Ratings { get; }  
-    public List<Reservation> Reservations { get; }  
+    public List<Promotion> Promotions { get; set; }  
+    public List<Rating> Ratings { get; set; }  
+    public List<Reservation> Reservations { get; set; }  
+    public List<DateRange> AvailableDates { get; set;}
     
+    public string Name
+    {
+        get => _name;
+        set
+        {
+            ValidateName(value);
+            _name = value;
+        }
+    }
+
+    private void ValidateName(string value)
+    {
+        bool nameOnlyContainsLetters = Regex.IsMatch(value, @"^[A-Za-z]+$");
+        if (!nameOnlyContainsLetters)
+        {
+            throw new DepositNameIsNotValidException(DepositNameIsNotValidMessage);
+        }
+    }
+
     public Char Area
     {
         get => _area;
@@ -59,19 +83,22 @@ public class Deposit
     {
        // Id = s_nextId; 
        // s_nextId++; 
+       AvailableDates = new List<DateRange>();
        Ratings = new List<Rating>();
        Promotions = new List<Promotion>(); 
        Reservations = new List<Reservation>();
     }
     
-    public Deposit(Char area, String size, bool airConditioning)
+    public Deposit(String name, Char area, String size, bool airConditioning)
     {
+        ValidateName(name);
         ValidateArea(area);
         ValidateSize(size);
         
        // Id = s_nextId; 
        // s_nextId++; 
-        
+
+        Name = name;
         Area = char.ToUpper(area);
         Size = size.ToUpper();
         AirConditioning = airConditioning;
@@ -79,6 +106,7 @@ public class Deposit
         Ratings = new List<Rating>();
         Promotions = new List<Promotion>(); 
         Reservations = new List<Reservation>();
+        AvailableDates = new List<DateRange>();
     }
 
     private void ValidateArea(Char area)
@@ -156,6 +184,21 @@ public class Deposit
     public void AddRating(Rating rating)
     {
         Ratings.Add(rating);
+    }
+    
+    public void RemoveRating(Rating rating)
+    {
+        Ratings.Remove(rating);
+    }
+
+    public void AddDateRange(DateRange dateRange)
+    {
+        AvailableDates.Add(dateRange);
+    }
+    
+    public void RemoveDateRange(DateRange dateRange)
+    {
+        AvailableDates.Remove(dateRange);
     }
 
     public int CalculatePrice(int numberOfDays)

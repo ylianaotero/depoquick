@@ -12,15 +12,16 @@ public class DepositControllerTest
     private LogController _logController;
     private Session _session; 
     private DepoQuickContext _context;
-    
+    //private DateRange _validDateRange;
+
+    private const string DepositValidName = "Deposito";
+    private const string DepositInvalidName = "Desposito 1";
     private const char DepositArea0 = 'A';
     private const string DepositSize0 = "Pequeño";
     private const bool DepositAirConditioning0 = true;
     private const char DepositArea1 = 'B';
     private const string DepositSize1 = "Grande";
     private const bool DepositAirConditioning1 = false;
-    
-    
     private const string AdminName = "Administrator";
     private const string AdminEmail = "administrator@domain.com";
     private const string AdminPassword = "Password1#";
@@ -35,6 +36,7 @@ public class DepositControllerTest
         _context = TestContextFactory.CreateContext();
         IRepository<User> _userRepository = new SqlRepository<User>(_context);
         
+        //_validDateRange = new DateRange(DateTime.Now.AddDays(5), DateTime.Now.AddDays(10));
         _userController = new UserController(_userRepository);
         _logController = new LogController(new SqlRepository<LogEntry>(_context));
         _session = new Session(_userController, _logController);
@@ -48,7 +50,7 @@ public class DepositControllerTest
         
         _session.LoginUser(AdminEmail,AdminPassword);
         
-        Deposit newDeposit = new Deposit(DepositArea0, DepositSize0, DepositAirConditioning0);
+        Deposit newDeposit = new Deposit(DepositValidName,DepositArea0, DepositSize0, DepositAirConditioning0);
         
         Promotion promotion = new Promotion();
         promotion.Label = "promo";
@@ -72,7 +74,7 @@ public class DepositControllerTest
         
         _session.LoginUser(ClientEmail,ClientPassword);
         
-        Deposit newDeposit = new Deposit(DepositArea0, DepositSize0, DepositAirConditioning0);
+        Deposit newDeposit = new Deposit(DepositValidName,DepositArea0, DepositSize0, DepositAirConditioning0);
         
         Promotion promotion = new Promotion();
         List<Promotion> promotionsToAddToDeposit = new List<Promotion>();
@@ -88,9 +90,9 @@ public class DepositControllerTest
         
         _session.LoginUser(AdminEmail,AdminPassword);
         
-        Deposit newDeposit = new Deposit(DepositArea0, DepositSize0, DepositAirConditioning0);
-        Deposit newDeposit0 = new Deposit(DepositArea0, DepositSize0, DepositAirConditioning0);
-        Deposit newDeposit1 = new Deposit(DepositArea1, DepositSize1, DepositAirConditioning1);
+        Deposit newDeposit = new Deposit(DepositValidName,DepositArea0, DepositSize0, DepositAirConditioning0);
+        Deposit newDeposit0 = new Deposit(DepositValidName,DepositArea0, DepositSize0, DepositAirConditioning0);
+        Deposit newDeposit1 = new Deposit(DepositValidName,DepositArea1, DepositSize1, DepositAirConditioning1);
         
 
         List<Promotion> promotionsToAddToDeposit = new List<Promotion>();
@@ -118,8 +120,8 @@ public class DepositControllerTest
         
         _session.LoginUser(AdminEmail,AdminPassword);
         
-        Deposit newDeposit = new Deposit(DepositArea0, DepositSize0, DepositAirConditioning0);
-        Deposit newDeposit0 = new Deposit(DepositArea0, DepositSize0, DepositAirConditioning0);
+        Deposit newDeposit = new Deposit(DepositValidName,DepositArea0, DepositSize0, DepositAirConditioning0);
+        Deposit newDeposit0 = new Deposit(DepositValidName,DepositArea0, DepositSize0, DepositAirConditioning0);
         
 
         List<Promotion> promotionsToAddToDeposit = new List<Promotion>();
@@ -139,8 +141,8 @@ public class DepositControllerTest
         
         _session.LoginUser(AdminEmail,AdminPassword);
         
-        Deposit newDeposit = new Deposit(DepositArea0, DepositSize0, DepositAirConditioning0);
-        Deposit newDeposit0 = new Deposit(DepositArea0, DepositSize0, DepositAirConditioning0);
+        Deposit newDeposit = new Deposit(DepositValidName,DepositArea0, DepositSize0, DepositAirConditioning0);
+        Deposit newDeposit0 = new Deposit(DepositValidName,DepositArea0, DepositSize0, DepositAirConditioning0);
         
 
         List<Promotion> promotionsToAddToDeposit = new List<Promotion>();
@@ -162,8 +164,8 @@ public class DepositControllerTest
         
         _session.LoginUser(AdminEmail,AdminPassword);
         
-        Deposit newDeposit = new Deposit(DepositArea0, DepositSize0, DepositAirConditioning0);
-        Deposit newDeposit0 = new Deposit(DepositArea0, DepositSize0, DepositAirConditioning0);
+        Deposit newDeposit = new Deposit(DepositValidName,DepositArea0, DepositSize0, DepositAirConditioning0);
+        Deposit newDeposit0 = new Deposit(DepositValidName,DepositArea0, DepositSize0, DepositAirConditioning0);
         
 
         List<Promotion> promotionsToAddToDeposit = new List<Promotion>();
@@ -188,8 +190,8 @@ public class DepositControllerTest
         
         _session.LoginUser(AdminEmail,AdminPassword);
         
-        Deposit newDeposit = new Deposit(DepositArea0, DepositSize0, DepositAirConditioning0);
-        Deposit newDeposit0 = new Deposit(DepositArea0, DepositSize0, DepositAirConditioning0);
+        Deposit newDeposit = new Deposit(DepositValidName,DepositArea0, DepositSize0, DepositAirConditioning0);
+        Deposit newDeposit0 = new Deposit(DepositValidName,DepositArea0, DepositSize0, DepositAirConditioning0);
         
 
         Promotion promotion1 = new Promotion();
@@ -210,6 +212,29 @@ public class DepositControllerTest
 
         CollectionAssert.DoesNotContain(promotion2.Deposits, newDeposit0);
     }
+
+    /*
+    [TestMethod]
+    [ExpectedException(typeof(DepositDateIsAlreadyReservedException))]
+    public void TestDepositDateIsNotAvailable()
+    {
+        _userController.RegisterAdministrator(AdminName, AdminEmail, AdminPassword, AdminPassword);
+        
+        _session.LoginUser(AdminEmail,AdminPassword);
+        
+        Deposit newDeposit = new Deposit(DepositValidName,DepositArea0, DepositSize0, DepositAirConditioning0);
+        
+        Promotion promotion1 = new Promotion();
+        promotion1.Label = "promo"; 
+       
+        List<Promotion> promotionsToAddToDeposit0 = new List<Promotion>();
+        promotionsToAddToDeposit0.Add(promotion1);
+        
+        _depositController.AddDeposit(newDeposit, promotionsToAddToDeposit0);
+        
+        _depositController.AddAvailabilityDate(newDeposit,_validDateRange);
+        _depositController.AddAvailabilityDate(newDeposit,_validDateRange);
+    }*/
 }
 
 /*

@@ -6,6 +6,7 @@ namespace BusinessLogic;
 
 public class DepositController
 {
+    private const string DepositDateIsAlreadyreservedMessage = "El deposito no esta disponible en esa fecha";
     private const string DepositNotFoundExceptionMessage = "Deposito no encontrado";
     private const string ActionRestrictedToAdministratorExceptionMessage = "Solo el administrador puede realizar esta acción";
     
@@ -69,7 +70,15 @@ public class DepositController
             
         Delete(depositToDelete);
     }
-    
+
+    public void AddAvailabilityDate(Deposit deposit, DateRange date)
+    {
+        if (deposit.IsReserved(date))
+        {
+            throw new DepositDateIsAlreadyReservedException(DepositDateIsAlreadyreservedMessage);
+        }
+        deposit.AvailableDates.Add(date);
+    }
     
     private void Add(Deposit deposit)
     {
