@@ -131,4 +131,13 @@ public class DateRange
         }
         return false; 
     }
+
+    public bool Contains(DateRange dateRange)
+    {
+        if (IsDateInRange(dateRange.InitialDate) || IsDateInRange(dateRange.FinalDate))
+        {
+            return true; 
+        }
+        return false; 
+    }
 }

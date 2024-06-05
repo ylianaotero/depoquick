@@ -1,6 +1,9 @@
-﻿using BusinessLogic;
+﻿using System.Threading.Channels;
+using BusinessLogic;
 using BusinessLogic.Exceptions.ControllerExceptions;
 using DepoQuick.Domain;
+using SQLitePCL;
+
 namespace DepoQuickTests;
 
 
@@ -10,9 +13,12 @@ public class DepositControllerTest
     private DepositController _depositController;
     private UserController _userController;
     private LogController _logController;
+    private PaymentController _paymentController;
+    private NotificationController _notificationController;
+    private ReservationController _reservationController;
     private Session _session; 
     private DepoQuickContext _context;
-    //private DateRange _validDateRange;
+    private DateRange _validDateRange;
 
     private const string DepositValidName = "Deposito";
     private const string DepositInvalidName = "Desposito 1";
@@ -36,7 +42,7 @@ public class DepositControllerTest
         _context = TestContextFactory.CreateContext();
         IRepository<User> _userRepository = new SqlRepository<User>(_context);
         
-        //_validDateRange = new DateRange(DateTime.Now.AddDays(5), DateTime.Now.AddDays(10));
+        _validDateRange = new DateRange(DateTime.Now.AddDays(5), DateTime.Now.AddDays(10));
         _userController = new UserController(_userRepository);
         _logController = new LogController(new SqlRepository<LogEntry>(_context));
         _session = new Session(_userController, _logController);
@@ -213,10 +219,10 @@ public class DepositControllerTest
         CollectionAssert.DoesNotContain(promotion2.Deposits, newDeposit0);
     }
 
-    /*
+    
     [TestMethod]
-    [ExpectedException(typeof(DepositDateIsAlreadyReservedException))]
-    public void TestDepositDateIsNotAvailable()
+    [ExpectedException(typeof(DepositDateIsOverlappingException))]
+    public void TestDepositDateIsOverlapping()
     {
         _userController.RegisterAdministrator(AdminName, AdminEmail, AdminPassword, AdminPassword);
         
@@ -234,7 +240,42 @@ public class DepositControllerTest
         
         _depositController.AddAvailabilityDate(newDeposit,_validDateRange);
         _depositController.AddAvailabilityDate(newDeposit,_validDateRange);
-    }*/
+    }
+    
+    [TestMethod]
+    [ExpectedException(typeof(DepositDateIsAlreadyReservedException))]
+    public void TestDepositDateIsNotAvailable()
+    {
+        IRepository<Reservation> _reservationRepository = new SqlRepository<Reservation>(_context);
+        IRepository<Payment> _paymentRepository = new SqlRepository<Payment>(_context);
+        _paymentController = new PaymentController(_paymentRepository);
+        _notificationController = new NotificationController(new SqlRepository<Notification>(_context));
+        _reservationController = new ReservationController(_reservationRepository, _session, _paymentController, _notificationController);
+        
+        _userController.RegisterAdministrator(AdminName, AdminEmail, AdminPassword, AdminPassword);
+        _userController.RegisterClient(ClientName,ClientEmail,ClientPassword,ClientPassword);
+        _session.LoginUser(AdminEmail,AdminPassword);
+
+        Client client = (Client)_userController.GetUserByEmail(ClientEmail);
+        Deposit newDeposit = new Deposit(DepositValidName,DepositArea0, DepositSize0, DepositAirConditioning0);
+        
+        Promotion promotion1 = new Promotion();
+        promotion1.Label = "promo"; 
+       
+        List<Promotion> promotionsToAddToDeposit0 = new List<Promotion>();
+        promotionsToAddToDeposit0.Add(promotion1);
+        
+        _depositController.AddDeposit(newDeposit, promotionsToAddToDeposit0);
+        
+        _depositController.AddAvailabilityDate(newDeposit,_validDateRange);
+        Reservation newReservation = new Reservation(newDeposit,client,_validDateRange);
+        _reservationController.Add(newReservation);
+        _reservationController.PayReservation(newReservation);
+        _reservationController.ApproveReservation(newReservation);
+        
+        DateRange newDateRange = new DateRange(DateTime.Now.AddDays(9), DateTime.Now.AddDays(11));
+        _depositController.AddAvailabilityDate(newDeposit,newDateRange);
+    }
 }
 
 /*

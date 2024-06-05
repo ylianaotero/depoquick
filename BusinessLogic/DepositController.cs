@@ -9,6 +9,7 @@ public class DepositController
     private const string DepositDateIsAlreadyreservedMessage = "El deposito no esta disponible en esa fecha";
     private const string DepositNotFoundExceptionMessage = "Deposito no encontrado";
     private const string ActionRestrictedToAdministratorExceptionMessage = "Solo el administrador puede realizar esta acción";
+    private const string DepositDateIsOverlappingMessage = "El deposito ya tiene una reserva en esa fecha";
     
     private IRepository<Deposit> _depositRepository;
     private IRepository<Promotion> _promotionRepository;
@@ -73,11 +74,62 @@ public class DepositController
 
     public void AddAvailabilityDate(Deposit deposit, DateRange date)
     {
+        ValidateDepositIsNotReserved(deposit,date);
+
+        ValidateDepositDateIsNotOverlapping(deposit,date);
+        
+        deposit.AvailableDates.Add(date);
+        _depositRepository.Update(deposit);
+    }
+    
+    public List<Deposit> AvailableDeposits(DateRange date)
+    {
+        List<Deposit> deposits = _depositRepository.GetAll();
+        List<Deposit> availableDeposits = new List<Deposit>();
+        
+        foreach (Deposit deposit in deposits)
+        {
+            if (!deposit.IsReserved(date) && DateIsAvailable(deposit, date))
+            {
+                availableDeposits.Add(deposit);
+            }
+        }
+        
+        return availableDeposits; 
+    }
+
+    private bool DateIsAvailable(Deposit deposit, DateRange date)
+    {
+        List<DateRange> availableDates = deposit.AvailableDates;
+        foreach (DateRange depositDate in availableDates)
+        {
+            if (depositDate.Contains(date))
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    private void ValidateDepositIsNotReserved(Deposit deposit, DateRange date)
+    {
         if (deposit.IsReserved(date))
         {
             throw new DepositDateIsAlreadyReservedException(DepositDateIsAlreadyreservedMessage);
         }
-        deposit.AvailableDates.Add(date);
+    }
+    
+    private void ValidateDepositDateIsNotOverlapping(Deposit deposit, DateRange date)
+    {
+        List<DateRange> availableDates = deposit.AvailableDates;
+        foreach (DateRange depositDate in availableDates)
+        {
+            if (depositDate.DateRangeIsOverlapping(date))
+            {
+                throw new DepositDateIsOverlappingException(DepositDateIsOverlappingMessage);
+            }
+        }
     }
     
     private void Add(Deposit deposit)
