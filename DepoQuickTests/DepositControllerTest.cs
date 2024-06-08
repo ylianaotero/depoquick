@@ -50,7 +50,7 @@ public class DepositControllerTest
         _userController = new UserController(_userRepository);
         _logController = new LogController(new SqlRepository<LogEntry>(_context));
         _session = new Session(_userController, _logController);
-        _depositController = new DepositController(new SqlRepository<Deposit>(_context), new SqlRepository<Promotion>(_context), _session);
+        _depositController = new DepositController(new SqlRepository<Deposit>(_context), _session);
     }
     
     [TestMethod]
@@ -219,8 +219,10 @@ public class DepositControllerTest
         int id = newDeposit0.Id;
 
         _depositController.DeleteDeposit(id);
+        
+        List<Deposit> deposits = _depositController.GetDepositsByPromotion(promotion2);
 
-        CollectionAssert.DoesNotContain(promotion2.Deposits, newDeposit0);
+        CollectionAssert.DoesNotContain(deposits, newDeposit0);
     }
 
     

@@ -153,38 +153,6 @@ public class PromotionTest
     }
 
     [TestMethod]
-    public void TestGetDepositsWithPromotion()
-    {
-        Promotion newPromotion = new Promotion();
-        
-        Deposit smallDeposit = new Deposit("Deposito",'A', "pequeño", false);
-        Deposit bigDeposit = new Deposit("Deposito",'B', "grande", true);
-        
-        smallDeposit.AddPromotion(newPromotion);
-        bigDeposit.AddPromotion(newPromotion);
-        
-        newPromotion.AddDeposit(smallDeposit);
-        newPromotion.AddDeposit(bigDeposit);
-        
-        CollectionAssert.Contains(newPromotion.Deposits, smallDeposit);
-        CollectionAssert.Contains(newPromotion.Deposits, bigDeposit);
-    }
-    
-    [TestMethod]
-    public void TestRemoveDepositFromPromotion()
-    {
-        Promotion newPromotion = new Promotion();
-        
-        Deposit smallDeposit = new Deposit("Deposito",'A', "pequeño", false);
-        
-        newPromotion.AddDeposit(smallDeposit);
-        
-        newPromotion.RemoveDeposit(smallDeposit);
-        
-        CollectionAssert.DoesNotContain(newPromotion.Deposits, smallDeposit);
-    }
-
-    [TestMethod]
     public void TestPromotionIsCurrentlyAvailable()
     {
         Promotion newPromotion = new Promotion();

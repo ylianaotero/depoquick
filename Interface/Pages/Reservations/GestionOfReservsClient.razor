@@ -7,8 +7,6 @@
 @inject NavigationManager NavigationManager
 @inject DepoQuickContext DepoQuickContext
 @inject ReservationController ReservationController
-@inject DepositController DepositController
-@inject UserController UserController
 @inject PaymentController PaymentController
 
 <html lang="es">
@@ -19,7 +17,7 @@
 
     <body>
 
-        <h3>¡Hola, @_client.Name! Aquí puedes revisar tus reservaciones.</h3>
+        <h3>¡Hola, @_client.Name! Aquí puedes revisar tus reservas.</h3>
     
             @if (_showAlertPrice)
             {

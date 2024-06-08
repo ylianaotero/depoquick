@@ -1,7 +1,5 @@
 using BusinessLogic;
 using DepoQuick.Domain;
-using Microsoft.AspNetCore.Components;
-using Microsoft.AspNetCore.Components.Web;
 using Interface.Data;
 using Microsoft.EntityFrameworkCore;
 
@@ -32,8 +30,8 @@ PaymentController paymentController = new PaymentController(paymentRepository);
 
 SqlRepository<Deposit> depositRepository = new SqlRepository<Deposit>(context);
 SqlRepository<Promotion> promotionRepository = new SqlRepository<Promotion>(context);
-DepositController depositController = new DepositController(depositRepository, promotionRepository, session);
-PromotionController promotionController = new PromotionController(depositRepository, promotionRepository, session);
+DepositController depositController = new DepositController(depositRepository, session);
+PromotionController promotionController = new PromotionController(promotionRepository, session, depositController);
 
 
 SqlRepository<Notification> notificationRepository = new SqlRepository<Notification>(context);
