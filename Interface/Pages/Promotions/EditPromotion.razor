@@ -1,5 +1,6 @@
 @page "/EditPromotion/{Id:int}" 
 @using BusinessLogic
+@using BusinessLogic.Exceptions.ControllerExceptions
 @using DepoQuick.Domain
 @using DepoQuick.Exceptions.DateRangeExceptions
 @using DepoQuick.Exceptions.PromotionExceptions
@@ -17,26 +18,49 @@
 
 <h3>Editar promoción</h3>
 
-@if (_showAlertLabel)
+@if (_showAlertLabelHasMoreThan20Characters || _showAlertEmptyLabel)
 {
     <div class="alert alert-danger" role="alert">
         La etiqueta debe tener entre 1 y 20 caracteres. Por favor intentalo de nuevo.
     </div>
 }
 
-@if (_showAlertDiscountRate)
+@if (_showAlertInvalidPercentage)
 {
     <div class="alert alert-danger" role="alert">
         El porcentaje de descuento debe estar entre 5 y 75. Por favor intentalo de nuevo.
     </div>
 }
 
-@if (_showAlertDate)
+@if (_showAlertInvalidDateRange)
 {
     <div class="alert alert-danger" role="alert">
         La fecha de inicio debe ser menor a la fecha de finalización. Por favor intentalo de nuevo.
     </div>
-}  
+}
+
+@if (_showAlertEmptyDateRange)
+{
+    <div class="alert alert-danger" role="alert">
+        La fecha de no puede ser vacía. Por favor intentalo de nuevo.
+    </div>
+}    
+
+@if (_showAlertSomethingWentWrong)
+{
+    <div class="alert alert-danger" role="alert">
+        Algo salió mal. Por favor intentalo de nuevo.
+    </div>
+}
+
+@if (_showAlertActionRestrictedToAdministrator)
+{
+    <br/>
+    <div class="alert alert-danger" role="alert">
+        Solo un administrador puede eliminar promociones.
+    </div>
+    <br/>
+}
 
 <form action="#" method="POST">
     <div class="mb-3">
@@ -67,7 +91,7 @@
         <div class="form-check">
             <input class="form-check-input" type="checkbox" id="@deposit.Id" @onclick="() => ToggleDepositSelection(deposit)" checked="@IsSelected(deposit)"/>
             <label class="form-check-label" for="@deposit.Id">
-                Depósito @deposit.Id - Area @deposit.Area
+                Depósito @deposit.Name (@deposit.Id) - Area @deposit.Area
             </label>
         </div>
     }
@@ -95,9 +119,14 @@
     
     private Promotion _promotionToEdit;
     
-    private bool _showAlertLabel;
-    private bool _showAlertDiscountRate;
-    private bool _showAlertDate;
+    private bool _showAlertActionRestrictedToAdministrator;
+    private bool _showAlertEmptyDateRange;
+    private bool _showAlertInvalidDateRange;
+    private bool _showAlertSomethingWentWrong;
+    private bool _showAlertEmptyLabel;
+    private bool _showAlertLabelHasMoreThan20Characters;
+    private bool _showAlertInvalidPercentage;
+    
     
     protected override void OnParametersSet()
     {
@@ -116,18 +145,12 @@
     private void AttemptToEditPromotion()
     {
         HideAllAlerts();
-        ShowAlerts();
-        
-        if (WrongPromotionData())
-        {
-            return;
-        }
         
         UpdatePromotion();
         GoToPromotionsPage();
     }
     
-    void ToggleDepositSelection(Deposit deposit)
+    private void ToggleDepositSelection(Deposit deposit)
     {
         if (_selectedDeposits.Contains(deposit))
         {
@@ -139,13 +162,12 @@
         }
     }
     
-
-    bool IsSelected(Deposit deposit)
+    private bool IsSelected(Deposit deposit)
     {
         return _selectedDeposits.Contains(deposit);
     }
 
-    void SelectAllDeposits()
+    private void SelectAllDeposits()
     {
         _selectAllDeposits = !_selectAllDeposits;
         if (_selectAllDeposits)
@@ -160,10 +182,69 @@
     
     private void UpdatePromotion()
     {
-        _date = new DateRange(_startDate, _finalDate); 
-        
-        PromotionController.UpdatePromotionData(_promotionToEdit, _label, _discountRate/PercentageDivider, _date);
-        PromotionController.UpdatePromotionDeposits(_promotionToEdit, _selectedDeposits);
+        CreateDateRange();
+        UpdatePromotionData();
+        UpdatePromotionDeposits();
+    }
+
+    private void CreateDateRange()
+    {
+        try 
+        {
+            _date = new DateRange(_startDate, _finalDate);
+        }
+        catch (InvalidDateRangeException invalidDateRangeException)
+        {
+            _showAlertInvalidDateRange = true;
+        }
+        catch (EmptyDateRangeException emptyDateRangeException)
+        {
+            _showAlertEmptyDateRange = true;
+        }
+        catch (Exception e)
+        {
+            _showAlertSomethingWentWrong = true;
+        }
+    }
+    
+    private void UpdatePromotionData()
+    {
+        try
+        {
+            PromotionController.UpdatePromotionData(_promotionToEdit, _label, _discountRate / PercentageDivider, _date);
+        }
+        catch (ActionRestrictedToAdministratorException actionRestrictedToAdministratorException)
+        {
+            _showAlertActionRestrictedToAdministrator = true;
+        }
+        catch (PromotionWithEmptyLabelException emptyLabelException)
+        {
+            _showAlertEmptyLabel = true;
+        }
+        catch (PromotionLabelHasMoreThan20CharactersException labelHasMoreThan20CharactersException)
+        {
+            _showAlertLabelHasMoreThan20Characters = true;
+        }
+        catch (InvalidPercentageForPromotionException invalidPercentageForPromotionException)
+        {
+            _showAlertInvalidPercentage = true;
+        }
+        catch (Exception e)
+        {
+            _showAlertSomethingWentWrong = true;
+        }
+    }
+    
+    private void UpdatePromotionDeposits()
+    {
+        try
+        {
+            PromotionController.UpdatePromotionDeposits(_promotionToEdit, _selectedDeposits);
+        }
+        catch (Exception e)
+        {
+            _showAlertSomethingWentWrong = true;
+        }
     }
     
     private void GoToPromotionsPage()
@@ -171,84 +252,15 @@
         NavigationManager.NavigateTo("/Promotions");
     }
     
-    private bool WrongPromotionData()
-    {
-        return _showAlertLabel || _showAlertDiscountRate || _showAlertDate;
-    }
-    
-    private void ShowAlerts()
-    {
-        HideAllAlerts();
-        
-        if (!IsAValidLabel())
-        {
-            _showAlertLabel = true;
-        } else if (!IsAValidDiscountRate())
-        {
-            _showAlertDiscountRate = true;
-        } else if (!IsAValidDate())
-        {
-            _showAlertDate = true;
-        }
-    }
     
     private void HideAllAlerts()
     {
-        _showAlertLabel = false;
-        _showAlertDiscountRate = false;
-        _showAlertDate = false;
-    }
-    
-    private bool IsAValidDate()
-    {
-        try
-        {
-            _date = new DateRange(_startDate, _finalDate);
-            return true;
-        }
-        catch (InvalidDateRangeException invalidDateRangeException)
-        {
-            return false;
-        }
-        catch (EmptyDateRangeException emptyDateRangeException)
-        {
-            return false;
-        }
-    }
-    
-    
-    private bool IsAValidLabel()
-    {
-        try
-        {
-            Promotion promotion = new Promotion();
-            promotion.Label = _label;
-            
-            return true;
-            
-        } catch (PromotionWithEmptyLabelException emptyLabelException)
-        {
-            return false;
-        } 
-        catch (PromotionLabelHasMoreThan20CharactersException labelHasMoreThan20CharactersException)
-        {
-            return false;
-        }
-    }
-    
-    private bool IsAValidDiscountRate()
-    {
-        try
-        {
-            Promotion promotion = new Promotion();
-            promotion.DiscountRate = _discountRate/100;
-
-            return true;
-
-        }
-        catch (InvalidPercentageForPromotionException invalidPercentageForPromotionException)
-        {
-            return false;
-        }
+        _showAlertActionRestrictedToAdministrator = false;
+        _showAlertEmptyDateRange = false;
+        _showAlertInvalidDateRange = false;
+        _showAlertSomethingWentWrong = false;
+        _showAlertEmptyLabel = false;
+        _showAlertLabelHasMoreThan20Characters = false;
+        _showAlertInvalidPercentage = false;
     }
 }

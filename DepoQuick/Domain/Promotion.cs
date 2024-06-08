@@ -9,7 +9,6 @@ public class Promotion
     public int Id { get; set; }
     
     public DateRange ValidityDate { get; set; }
-    public List<Deposit> Deposits { get; set; }
     
     private String _label;
     private Double _discountRate;
@@ -36,7 +35,7 @@ public class Promotion
     
     public Promotion()
     {
-        Deposits = new List<Deposit>();
+      
     }
     
     private void ValidateLabel(String label)
@@ -75,16 +74,6 @@ public class Promotion
     private bool ItsBetween5And75Percent(double number)
     {
         return number >= 0.05 && number <= 0.75; 
-    }
-    
-    public void AddDeposit(Deposit deposit)
-    {
-        Deposits.Add(deposit);
-    }
-    
-    public void RemoveDeposit(Deposit deposit)
-    {
-        Deposits.Remove(deposit);
     }
     
     public bool IsCurrentlyAvailable()

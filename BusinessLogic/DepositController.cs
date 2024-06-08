@@ -1,6 +1,5 @@
 ﻿using BusinessLogic.Exceptions.ControllerExceptions;
 using DepoQuick.Domain;
-using Microsoft.EntityFrameworkCore;
 
 namespace BusinessLogic;
 
@@ -12,13 +11,11 @@ public class DepositController
     private const string DepositDateIsOverlappingMessage = "El deposito ya tiene una reserva en esa fecha";
     
     private IRepository<Deposit> _depositRepository;
-    private IRepository<Promotion> _promotionRepository;
     private Session _session;
     
-    public DepositController(IRepository<Deposit> depositRepository, IRepository<Promotion> promotionRepository, Session session)
+    public DepositController(IRepository<Deposit> depositRepository, Session session)
     {
         _depositRepository = depositRepository;
-        _promotionRepository = promotionRepository;
         _session = session; 
     }
     
@@ -32,7 +29,7 @@ public class DepositController
         
         Add(deposit);
 
-        ConectDepositToPromotions(deposit, promotions);
+        ConnectPromotionsToDeposit(deposit, promotions);
     }
     
     public Deposit Get(int id)
@@ -54,6 +51,22 @@ public class DepositController
 
         }
         return _depositRepository.GetAll().FirstOrDefault(d => d.Name == name);
+    }
+    
+    public List<Deposit> GetDepositsByPromotion(Promotion promotion)
+    {
+        List<Deposit> deposits = _depositRepository.GetAll();
+        List<Deposit> depositsWithPromotion = new List<Deposit>();
+        
+        foreach (Deposit deposit in deposits)
+        {
+            if (deposit.Promotions.Contains(promotion))
+            {
+                depositsWithPromotion.Add(deposit);
+            }
+        }
+        
+        return depositsWithPromotion; 
     }
 
     public bool DepositExists(string name)
@@ -78,10 +91,6 @@ public class DepositController
         Deposit depositToDelete = Get(id);
             
         _depositRepository.Reload(depositToDelete);
-        
-        List<Promotion> relatedPromotions = depositToDelete.Promotions;
-
-        RemoveDepositFromRelatedPromotions(depositToDelete, relatedPromotions); 
             
         Delete(depositToDelete);
     }
@@ -110,6 +119,30 @@ public class DepositController
         }
         
         return availableDeposits; 
+    }
+    
+    public void ConnectPromotionsToDeposit(Deposit deposit, List<Promotion> promotions)
+    {
+        foreach (Promotion promotion in promotions)
+        {
+            if (!deposit.Promotions.Contains(promotion))
+            {
+                deposit.AddPromotion(promotion);
+                _depositRepository.Update(deposit);
+            }
+        }
+    }
+    
+    public void DisconnectPromotionsFromDeposit(Deposit deposit, List<Promotion> promotions)
+    {
+        foreach (Promotion promotion in promotions)
+        {
+            if (deposit.Promotions.Contains(promotion))
+            {
+                deposit.RemovePromotion(promotion);
+                _depositRepository.Update(deposit);
+            }
+        }
     }
     
     private bool DateIsAvailable(Deposit deposit, DateRange date)
@@ -151,29 +184,6 @@ public class DepositController
         _depositRepository.Add(deposit);
     }
     
-    private void ConectDepositToPromotions(Deposit deposit,List<Promotion> promotions)
-    {
-        foreach (Promotion promotion in promotions)
-        {
-            deposit.AddPromotion(promotion);
-            _depositRepository.Update(deposit);
-            
-            promotion.AddDeposit(deposit);
-            _promotionRepository.Update(promotion);
-        }
-    }
-    
-    private void RemoveDepositFromRelatedPromotions(Deposit depositToDelete, List<Promotion> relatedPromotions)
-    {
-        foreach (Promotion promotion in relatedPromotions)
-        {
-            promotion.RemoveDeposit(depositToDelete);
-            _promotionRepository.Update(promotion);
-            _depositRepository.Reload(depositToDelete);
-            _depositRepository.Update(depositToDelete);
-        }
-    }
-
     private void Delete(Deposit depositToDelete)
     {
         _depositRepository.Reload(depositToDelete);
@@ -189,5 +199,4 @@ public class DepositController
     {
         return _session.UserLoggedIn(); 
     }
-    
 }

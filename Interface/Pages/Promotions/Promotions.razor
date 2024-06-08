@@ -1,9 +1,11 @@
 @page "/Promotions"
 @using BusinessLogic
+@using BusinessLogic.Exceptions.ControllerExceptions
 @using DepoQuick.Domain
 @inject Session Session
 @inject NavigationManager NavigationManager
 @inject PromotionController PromotionController
+@inject DepositController DepositController
 
 <html lang="es">
     <head>  
@@ -12,7 +14,7 @@
     </head>
 
     <body>
-        <h3>¡Hola, @_loggedInUser.Name! Aquí puedes encontrar nuestras promociones actuales.</h3>
+        <h3>¡Hola, @_loggedInUser.Name! Aquí puedes encontrar nuestras promociones.</h3>
 
     @if (_showAlertPromotionDeletedSuccessfully)
     {
@@ -22,11 +24,19 @@
         </div>
         <br/>
     }
-    @if (_showAlertPromotionDeletedUnsuccessfully)
+    @if (_showAlertPromotionIsTiedToReservedDeposit)
     {
         <br/>
         <div class="alert alert-danger" role="alert">
             La promoción no pudo ser eliminada porque está atada a un depósito reservado o con reservas pendientes.
+        </div>
+        <br/>
+    }
+    @if (_showAlertActionRestrictedToAdministrator)
+    {
+        <br/>
+        <div class="alert alert-danger" role="alert">
+            Solo un administrador puede eliminar promociones.
         </div>
         <br/>
     }
@@ -72,9 +82,9 @@
                 <td>@promotion.ValidityDate.GetFinalDate().ToString("dd/MM/yyyy")</td>
                 <td>@(promotion.DiscountRate*PercentageMultiplier)%</td>
                 <td>
-                    @foreach (var deposit in promotion.Deposits)
+                    @foreach (var deposit in DepositController.GetDepositsByPromotion(promotion))
                     {
-                        <p>@deposit.Id - Area @deposit.Area</p>
+                        <p>@deposit.Name (@deposit.Id)</p>
                     }
                 </td>
                 <td>@BoolToString(promotion.IsCurrentlyAvailable())</td>
@@ -111,9 +121,10 @@
     Promotion _promotionToDelete;
     
     private bool _showAlertPromotionDeletedSuccessfully;
-    private bool _showAlertPromotionDeletedUnsuccessfully;
+    private bool _showAlertPromotionIsTiedToReservedDeposit;
     private bool _showAlertAboutToDeletePromotion;
     private bool _showAlertSomethingWentWrong;
+    private bool _showAlertActionRestrictedToAdministrator;
     
     protected override void OnInitialized()
     {
@@ -121,7 +132,6 @@
         _loggedInUser = Session.ActiveUser;        
         _promotionToDelete = null;
         
-        PromotionController.DeleteAllExpiredPromotions();
         _listOfPromotions = PromotionController.GetPromotions();
         HideAllAlerts();
     }
@@ -140,9 +150,9 @@
     {
         HideAllAlerts();
         
-        if (PromotionIsTiedToReservedDeposit(promotion.Id))
+        if (PromotionController.PromotionIsTiedToReservedDeposit(promotion))
         {
-            _showAlertPromotionDeletedUnsuccessfully = true;
+            _showAlertPromotionIsTiedToReservedDeposit = true;
         } else
         {
             _showAlertAboutToDeletePromotion = true;
@@ -159,6 +169,11 @@
             int id = _promotionToDelete.Id;
             PromotionController.Delete(id);
             _showAlertPromotionDeletedSuccessfully = true;
+            _listOfPromotions = PromotionController.GetPromotions();
+        }
+        catch (ActionRestrictedToAdministratorException e)
+        {
+            _showAlertActionRestrictedToAdministrator = true;
         }
         catch (Exception e)
         {
@@ -168,24 +183,11 @@
     
     private void HideAllAlerts()
     {
-        _showAlertPromotionDeletedUnsuccessfully = false;
+        _showAlertActionRestrictedToAdministrator = false;
+        _showAlertPromotionIsTiedToReservedDeposit = false;
         _showAlertPromotionDeletedSuccessfully = false;
         _showAlertAboutToDeletePromotion = false;
         _showAlertSomethingWentWrong = false;
-    }
-    
-    private bool PromotionIsTiedToReservedDeposit(int id)
-    {
-        Promotion promotion = PromotionController.Get(id);
-        List<Deposit> deposits = promotion.Deposits;
-        foreach (Deposit deposit in deposits)
-        {
-            if (deposit.IsReserved())
-            {
-                return true;
-            }
-        }
-        return false;
     }
     
     private void GoToEditPromotionPage(Promotion promotion)

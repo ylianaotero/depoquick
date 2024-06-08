@@ -10,6 +10,7 @@ public class PromotionControllerTest
     private UserController _userController;
     private Session _session;
     private ReservationController _reservationController;
+    private DepositController _depositController;
     private DepoQuickContext _context;
     private LogController _logController;
 
@@ -24,21 +25,10 @@ public class PromotionControllerTest
     private const char DepositArea0 = 'A';
     private const string DepositSize0 = "Pequeño";
     private const bool DepositAirConditioning0 = true;
-    private const char DepositArea1 = 'B';
-    private const string DepositSize1 = "Grande";
-    private const bool DepositAirConditioning1 = false;
 
     private const string PromotionLabel0 = "Promotion 0";
-    private const string PromotionLabel1 = "Promotion 1";
 
     private const double PromotionDiscountRate0 = 0.5;
-
-    private const int ApprovedReservationState = 1;
-    private const int PendingReservationState = 0;
-    private const int RejectedReservationState = -1;
-
-    private const string UserLogInLogMessage = "Ingresó al sistema";
-    private const string UserLogOutLogMessage = "Cerró sesión";
 
     private Client _client;
     private Deposit _deposit0;
@@ -49,19 +39,16 @@ public class PromotionControllerTest
     [TestInitialize]
     public void Initialize()
     {
-        //_context = TestContextFactory.CreateContext();
-        //_userController = new UserController(_context);
-        //_session = new Session(_userController);
-        //_reservationController = new ReservationController(_context, _session);
-        //_promotionController = new PromotionController(_context, _session);
-        
         _context = TestContextFactory.CreateContext();
         IRepository<User> _userRepository = new SqlRepository<User>(_context);
         
         _userController = new UserController(_userRepository);
         _logController = new LogController(new SqlRepository<LogEntry>(_context));
         _session = new Session(_userController, _logController);
-        _promotionController = new PromotionController(new SqlRepository<Deposit>(_context), new SqlRepository<Promotion>(_context), _session);
+
+        _depositController = new DepositController(new SqlRepository<Deposit>(_context), _session);
+            
+        _promotionController = new PromotionController(new SqlRepository<Promotion>(_context), _session, _depositController);
 
         _userController.RegisterAdministrator(AdminName, AdminEmail, AdminPassword, AdminPassword);
 
@@ -89,9 +76,11 @@ public class PromotionControllerTest
         _context.Deposits.Add(deposit);
 
         _promotionController.Add(promotion, depositsToAddToPromotion);
+        
+        List<Deposit> deposits = _depositController.GetDepositsByPromotion(promotion);
 
         CollectionAssert.Contains(_promotionController.GetPromotions(), promotion);
-        CollectionAssert.Contains(_promotionController.GetPromotions()[0].Deposits, deposit);
+        CollectionAssert.Contains(deposits, deposit);
         CollectionAssert.Contains(deposit.Promotions, promotion);
     }
 
@@ -188,10 +177,12 @@ public class PromotionControllerTest
 
         _promotionController.UpdatePromotionData(promotion1, newLabel, newDiscountRate, newDateRange);
         _promotionController.UpdatePromotionDeposits(promotion1, newDepositsToAddPromotion);
+        
+        List<Deposit> deposits = _depositController.GetDepositsByPromotion(promotion1);
 
         CollectionAssert.Contains(_promotionController.GetPromotions(), promotion1);
-        CollectionAssert.DoesNotContain(promotion1.Deposits, _deposit0);
-        CollectionAssert.Contains(promotion1.Deposits, deposit);
+        CollectionAssert.DoesNotContain(deposits, _deposit0);
+        CollectionAssert.Contains(deposits, deposit);
         CollectionAssert.Contains(deposit.Promotions, promotion1);
         CollectionAssert.DoesNotContain(_deposit0.Promotions, promotion1);
         Assert.AreEqual(newLabel, promotion1.Label);
@@ -271,10 +262,8 @@ public class PromotionControllerTest
         promotion.ValidityDate = _validDateRange;
         
         List<Deposit> depositsToAddToPromotion = new List<Deposit>();
-        Deposit deposit0 = new Deposit(DepositName,DepositArea0, DepositSize0, DepositAirConditioning0);
-        _context.Deposits.Add(deposit0);
-        depositsToAddToPromotion.Add(deposit0);
-        _promotionController.Add(promotion,depositsToAddToPromotion);
+        
+        _promotionController.Add(promotion, depositsToAddToPromotion);
         
         int id = promotion.Id;
  
@@ -327,33 +316,5 @@ public class PromotionControllerTest
         _promotionController.Delete(promotion.Id);
  
         CollectionAssert.DoesNotContain(_deposit0.Promotions, promotion);
-    }
-
-    [TestMethod]
-    public void TestDeleteAllExpiredPromotions()
-    {
-        _session.LoginUser(AdminEmail,AdminPassword);
-        Promotion promotion1 = new Promotion();
-        promotion1.DiscountRate = PromotionDiscountRate0;
-        promotion1.Label = PromotionLabel0;
-        promotion1.ValidityDate = _validDateRange;
-        
-        Promotion promotion2 = new Promotion();
-        promotion2.DiscountRate = PromotionDiscountRate0;
-        promotion2.Label = PromotionLabel1;
-        promotion2.ValidityDate = _expiredDateRange;
-        
-        List<Deposit> depositsToAddToPromotion = new List<Deposit>();
-        Deposit deposit0 = new Deposit(DepositName,DepositArea0, DepositSize0, DepositAirConditioning0);
-        _context.Deposits.Add(deposit0);
-        depositsToAddToPromotion.Add(deposit0);
-        _promotionController.Add(promotion1, depositsToAddToPromotion);
-        _promotionController.Add(promotion2, depositsToAddToPromotion);
-        
- 
-        _promotionController.DeleteAllExpiredPromotions();
- 
-        CollectionAssert.Contains(_promotionController.GetPromotions(), promotion1);
-        CollectionAssert.DoesNotContain(_promotionController.GetPromotions(), promotion2);
     }
 }
