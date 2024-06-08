@@ -1,5 +1,5 @@
-﻿using BusinessLogic.Exceptions.ControllerExceptions;
-using BusinessLogic.Exceptions.ReservationControllerExceptions;
+﻿using BusinessLogic.Exceptions.ReservationControllerExceptions;
+using BusinessLogic.Exceptions.UserControllerExceptions;
 using DepoQuick.Domain;
 
 namespace BusinessLogic;

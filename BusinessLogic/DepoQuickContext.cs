@@ -1,5 +1,7 @@
-using Microsoft.EntityFrameworkCore;
 using DepoQuick.Domain;
+using Microsoft.EntityFrameworkCore;
+
+namespace BusinessLogic;
 
 public class DepoQuickContext : DbContext
 {

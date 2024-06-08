@@ -52,6 +52,7 @@
         <thead>
         <tr>
             <th>Depósito</th>
+            <th>Nombre</th>
             <th>Área</th>
             <th>Tamaño</th>
             <th>Climatización</th>
@@ -69,6 +70,7 @@
         {
             <tr>
                 <td>@deposit.Id</td>
+                <td>@deposit.Name</td>
                 <td>@deposit.Area</td>
                 <td>@deposit.Size</td>
                 <td>@BoolToString(deposit.AirConditioning)</td>
@@ -94,6 +96,13 @@
                 </td>
                 @if (_loggedInUser.IsAdministrator)
                 {
+                    <td>
+                        <div class="btn-group">
+                            <button class="btn btn-info" @onclick="(() => AddAvailabilityToDeposit(deposit))">Agregar fecha de disponibilidad
+                                <i class="oi oi-calendar"></i>
+                            </button>
+                        </div>
+                    </td>
                     <td>
                         <div class="btn-group">
                             <button class="btn btn-danger" @onclick="(() => AttemptToDeleteDeposit(deposit))">Eliminar
@@ -127,6 +136,7 @@
     private bool _showAlertSomethingWentWrong;
     
     private Deposit _depositToDelete;
+    private Deposit _depositToAddDate;
     
     protected override void OnInitialized()
     {
@@ -137,6 +147,7 @@
         PromotionController.DeleteAllExpiredPromotions();
 
         _depositToDelete = null;
+        _depositToAddDate = null;
         
         HideAllAlerts();
     }
@@ -167,6 +178,15 @@
         }
     }
     
+    /*
+     * private void AttemptToAddDateToDeposit(Deposit deposit)
+    {
+        HideAllAlerts();
+        _depositToAddDate = deposit;
+        AddAvailabilityToDeposit(_depositToAddDate);
+    }
+     */
+    
     public void HideAllAlerts()
     {
         _showAlertDepositDeletedUnsuccessfully = false;
@@ -188,6 +208,12 @@
               {
                   _showAlertSomethingWentWrong = true;
               }*/
+    }
+
+    private void AddAvailabilityToDeposit(Deposit deposit)
+    {
+        int depositId = deposit.Id;
+        NavigationManager.NavigateTo($"/DepositAvailability/{depositId}");
     }
     
     private void GoToDepositRatingsPage(Deposit deposit)

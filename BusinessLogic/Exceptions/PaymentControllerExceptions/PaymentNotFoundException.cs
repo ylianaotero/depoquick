@@ -1,4 +1,4 @@
-﻿namespace BusinessLogic.Exceptions.ReservationControllerExceptions;
+﻿namespace BusinessLogic.Exceptions.PaymentControllerExceptions;
 
 public class PaymentNotFoundException : Exception
     {

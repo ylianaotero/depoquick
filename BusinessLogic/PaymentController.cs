@@ -1,4 +1,4 @@
-using BusinessLogic.Exceptions.ReservationControllerExceptions;
+using BusinessLogic.Exceptions.PaymentControllerExceptions;
 using DepoQuick.Domain;
 
 namespace BusinessLogic;

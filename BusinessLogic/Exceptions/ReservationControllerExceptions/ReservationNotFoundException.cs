@@ -1,4 +1,4 @@
-﻿namespace BusinessLogic.Exceptions.ControllerExceptions;
+﻿namespace BusinessLogic.Exceptions.ReservationControllerExceptions;
 
 public class ReservationNotFoundException : Exception
 {

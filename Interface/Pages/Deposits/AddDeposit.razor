@@ -1,7 +1,10 @@
 @page "/AddDeposit"
 @using BusinessLogic
+@using BusinessLogic.Exceptions.DepositControllerExceptions
+@using BusinessLogic.Exceptions.UserControllerExceptions
 @using DepoQuick.Domain
 @using DepoQuick.Exceptions.DateRangeExceptions
+@using DepoQuick.Exceptions.DepositExceptions
 @inject Session Session
 @inject NavigationManager NavigationManager
 @inject DepoQuickContext DepoQuickContext
@@ -16,84 +19,132 @@
 
     <body>
         <h3>Agregar depósito</h3>
-
-    @if (_showAlertNewDeposit)
-    {
-      <br>
-       <div class="alert alert-primary" role="alert">
-        <h4 class="alert-heading">¿Estás seguro?</h4>
-        <p>Estas a punto de crear el nuevo deposito @_name para la fecha @_date</p>
-        <hr>
-        <input @onclick="AddNewDeposit" type="submit" class="btn btn-primary" value="Aceptar">
-      </div>
-      <br>
-    }
     
-    @if (_showAlertInvalidDate)
-    {
-      <br>
-       <div class="alert alert-danger" role="alert">
-         ¡Fecha inválida, la fecha inicial debe ser anterior a la fecha final!
-       </div>
-      <br>
-    }
-    
-    <form action="#" method="POST">
-        <div class="mb-3">
-           <label for="initialDate" class="form-label">Desde:</label>
-           <input type="date" class="form-control" id="initialDate" name="initialDate" @bind="_initialDate">
-        </div>
-      
-        <div class="mb-3">
-            <label for="finalDate" class="form-label">Hasta:</label>
-            <input type="date" class="form-control" id="finalDate" name="finalDate" @bind="_finalDate">
-        </div>
-        
-        <div class="mb-3">
-            <label for="area" class="form-label">Seleccione un area:</label>
-            <br/>
-            <select @bind="_area">
-                <option value="A">Area A</option>
-                <option value="B">Area B</option>
-                <option value="C">Area C</option>
-                <option value="D">Area D</option>
-                <option value="E">Area E</option>
-            </select>
-        </div>
-        <div class="mb-3">
-            <label for="size" class="form-label">Seleccione un tamaño:</label>
-            <br/>
-            <select @bind="_size">
-                <option value="PEQUEÑO">Pequeño</option>
-                <option value="MEDIANO">Mediano</option>
-                <option value="GRANDE">Grande</option>
-            </select>
-        </div>
-        <div class="mb-3">
-            <label for="airConditioning" class="form-label">Climatización:</label>
-            <input type="checkbox" @bind="_airConditioning"/>
-        </div>
-
-        <label for="deposits" class="form-label">Promociones: </label>
-        <div class="form-check">
-            <input class="form-check-input" type="checkbox" id="select-all" @onclick="() => SelectAllPromotions()"/>
-            <label class="form-check-label" for="select-all">
-                Selecccionar todo
-            </label>
-        </div>
-        @foreach (var promotion in _promotions)
+        @if (_showAlertEmptyDateRange)
         {
-            <div class="form-check">
-                <input class="form-check-input" type="checkbox" id="@promotion.Label" @onclick="() => TogglePromotionSelection(promotion)" checked="@IsSelected(promotion)"/>
-                <label class="form-check-label" for="@promotion.Id">
-                    Promoción @promotion.Label - Descuento del @(promotion.DiscountRate * PercentageMultiplier)%
-                </label>
+          <br>
+           <div class="alert alert-danger" role="alert">
+             ¡Debe ingresar un rango de fechas!
+           </div>
+          <br>
+        }
+        
+        @if (_showAlertInvalidDateRange)
+        {
+          <br>
+           <div class="alert alert-danger" role="alert">
+             ¡Fecha inválida, la fecha inicial debe ser anterior a la fecha final!
+           </div>
+          <br>
+        }
+        
+        @if (_showAlertClientCanotCreateADeposit)
+        {
+            <div class="alert alert-danger" role="alert">
+                ¡Unicamente el administrador puede crear depositos!
             </div>
         }
-        <br/>
-        <input @onclick="ShowAlert" id="addNewDeposit" class="btn btn-primary" value="Crear depósito">
-        <input @onclick="GoToDepositsPage" id="cancelAddingDeposit" class="btn btn-primary" value="Cancelar">
-    </form>
+        
+        @if (_showAlertDepositAlreadyExists)
+        {
+            <div class="alert alert-danger" role="alert">
+                ¡Ya existe un depósito con ese nombre!
+            </div>
+        }
+        
+        @if (_showAlertDepositDateIsOverlapping)
+        {
+          <br>
+           <div class="alert alert-danger" role="alert">
+             ¡La fecha de disponibilidad se superpone con otra fecha de disponibilidad!
+           </div>
+          <br>
+        }
+        
+        @if (_showAlertDepositIsAlreadyReserved)
+        {
+            <br>
+            <div class="alert alert-danger" role="alert">
+                ¡Ya existe una fecha para la cual el depósito fue reservado!
+            </div>
+            <br>
+        }
+        
+        @if (_showAlerDepositNameIsNotValid)
+        {
+            <div class="alert alert-danger" role="alert">
+                ¡El nombre del depósito no es válido!
+            </div>
+        }
+        
+        @if (_showAlertSomethingWentWrong)
+        {
+            <div class="alert alert-danger" role="alert">
+                ¡Algo salió mal!
+            </div>
+        }
+        <br>
+        <form action="#" method="POST">
+            <div class="mb-3">
+                <label for="label" class="form-label">Nombre:</label>
+                <input type="text" class="form-control" id="label" name="label" @bind="_name">
+            </div>
+            <p>Ingrese las fechas en las que desea que el deposito esté disponible. Luego podrá agregar más fechas de disponibilidad.</p>
+            <div class="mb-3">
+                <label for="initialDate" class="form-label">Fecha de comienzo de disponibilidad:</label>
+                <input type="date" class="form-control" id="initialDate" name="initialDate" @bind="_initialDate">
+            </div>
+
+            <div class="mb-3">
+                <label for="finalDate" class="form-label">Fecha de fin de disponibilidad :</label>
+                <input type="date" class="form-control" id="finalDate" name="finalDate" @bind="_finalDate">
+            </div>
+
+            <div class="mb-3">
+                <label for="area" class="form-label">Seleccione un area:</label>
+                <br/>
+                <select @bind="_area">
+                    <option value="A">Area A</option>
+                    <option value="B">Area B</option>
+                    <option value="C">Area C</option>
+                    <option value="D">Area D</option>
+                    <option value="E">Area E</option>
+                </select>
+            </div>
+            <div class="mb-3">
+                <label for="size" class="form-label">Seleccione un tamaño:</label>
+                <br/>
+                <select @bind="_size">
+                    <option value="PEQUEÑO">Pequeño</option>
+                    <option value="MEDIANO">Mediano</option>
+                    <option value="GRANDE">Grande</option>
+                </select>
+            </div>
+            <div class="mb-3">
+                <label for="airConditioning" class="form-label">Climatización:</label>
+                <input type="checkbox" @bind="_airConditioning"/>
+            </div>
+
+            <label for="deposits" class="form-label">Promociones: </label>
+            <div class="form-check">
+                <input class="form-check-input" type="checkbox" id="select-all" @onclick="() => SelectAllPromotions()"/>
+                <label class="form-check-label" for="select-all">
+                    Selecccionar todo
+                </label>
+            </div>
+            @foreach (var promotion in _promotions)
+            {
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" id="@promotion.Label" @onclick="() => TogglePromotionSelection(promotion)" checked="@IsSelected(promotion)"/>
+                    <label class="form-check-label" for="@promotion.Id">
+                        Promoción @promotion.Label - Descuento del @(promotion.DiscountRate * PercentageMultiplier)%
+                    </label>
+                </div>
+            }
+            <br/>
+            <input @onclick="CreateDeposit" id="addNewDeposit" class="btn btn-primary" value="Crear depósito">
+            <input @onclick="GoToDepositsPage" id="cancelAddingDeposit" class="btn btn-primary" value="Cancelar">
+        </form>
       </body>
 </html> 
 
@@ -108,10 +159,17 @@
     private List<Promotion> _promotions;
     private List<Promotion> _selectedPromotions;
     private bool _selectAllPromotions;
+    
+    private String DepositAlreadyExistsMessage = "Ya existe un depósito con ese nombre";
 
-    private bool _showAlertInvalidDate;
-    private bool _showAlertNewDeposit;
+    private bool _showAlertEmptyDateRange;
+    private bool _showAlertInvalidDateRange;
     private bool _showAlertClientCanotCreateADeposit;
+    private bool _showAlertDepositAlreadyExists;
+    private bool _showAlertDepositDateIsOverlapping;
+    private bool _showAlertDepositIsAlreadyReserved;
+    private bool _showAlertSomethingWentWrong;
+    private bool _showAlerDepositNameIsNotValid;
     
     private DateTime _initialDate = DateTime.Today.Date;
     private DateTime _finalDate = DateTime.Today.Date;
@@ -128,74 +186,80 @@
         _initialDate = DateTime.Today.Date;
         _finalDate = DateTime.Today.Date;
     }
-
-    private void ShowAlert()
+    
+    private void CreateDeposit()
     {
         HideAllAlerts();
-        if (IsAnAdministrator())
-        {
-            if (IsAValidDate())
-            {
-                _showAlertNewDeposit = true;
-            }
-            else
-            {
-                _showAlertInvalidDate = true;
-            }
-        }
-        else
-        {
-            _showAlertClientCanotCreateADeposit = true;
-
-        }
-        
-    }
-
-    private void HideAllAlerts()
-    {
-        _showAlertClientCanotCreateADeposit = false;
-        _showAlertNewDeposit = false;
-        _showAlertInvalidDate = false;
-    }
-
-    private bool IsAnAdministrator()
-    {
-        return Session.ActiveUser.IsAdministrator;
+        AddNewDeposit();
+        AddAvailabilityDate(DepositController.GetDepositByName(_name), _date);
+        GoToDepositsPage();
     }
     
-    private bool IsAValidDate()
+    private void HideAllAlerts()
     {
-        try
-        {
-            _date = new DateRange(_initialDate, _finalDate);
-            return true;
-        }
-        catch (InvalidDateRangeException invalidDateRangeException)
-        {
-            return false;
-        }
-        catch (EmptyDateRangeException emptyDateRangeException)
-        {
-            return false;
-        }
+        _showAlertEmptyDateRange = false;
+        _showAlertInvalidDateRange = false;
+        _showAlertClientCanotCreateADeposit = false;
+        _showAlertDepositAlreadyExists = false;
+        _showAlertDepositDateIsOverlapping = false;
+        _showAlertDepositIsAlreadyReserved = false;
+        _showAlertSomethingWentWrong = false;
+        _showAlerDepositNameIsNotValid = false;
     }
     
     private void AddNewDeposit()
     {
-        _date = new DateRange(_initialDate, _finalDate);
-        if (DepositController.DepositExists(_name))
+        try
         {
-            Deposit deposit = DepositController.GetDepositByName(_name);
-            DepositController.AddAvailabilityDate(deposit,_date); //Acá tengo que hacer el catch?
-        }
-        else
-        {
-            Deposit newDeposit = new Deposit(_name,_area, _size, _airConditioning);
+            Deposit newDeposit = new Deposit(_name, _area, _size, _airConditioning);
             DepositController.AddDeposit(newDeposit, _selectedPromotions);
-            DepositController.AddAvailabilityDate(newDeposit,_date);
         }
-
-        GoToDepositsPage();
+        catch (DepositNameIsNotValidException depositNameIsNotValidException)
+        {
+            _showAlerDepositNameIsNotValid = true;
+        }
+        catch (DepositNameAlreadyExistsException depositAlreadyExistsException)
+        {
+            _showAlertDepositAlreadyExists = true;
+        }
+        catch (ActionRestrictedToAdministratorException actionRestrictedToAdministratorException)
+        {
+            _showAlertClientCanotCreateADeposit = true;
+        }
+        catch (Exception e)
+        {
+            _showAlertSomethingWentWrong = true;
+        }
+    }
+    
+    private void AddAvailabilityDate(Deposit newDeposit, DateRange _date)
+    {
+        HideAllAlerts();
+        try
+        {
+            _date = new DateRange(_initialDate, _finalDate);
+            AddAvailabilityDate(newDeposit, _date);
+        }
+        catch (InvalidDateRangeException invalidDateRangeException)
+        {
+            _showAlertInvalidDateRange = true;
+        }
+        catch (EmptyDateRangeException emptyDateRangeException)
+        {
+            _showAlertEmptyDateRange = true;
+        }
+        catch (DepositDateIsOverlappingException depositDateIsOverlappingException)
+        {
+            _showAlertDepositDateIsOverlapping = true;
+        }
+        catch (DepositDateIsAlreadyReservedException depositDateIsAlreadyReservedException)
+        {
+            _showAlertDepositIsAlreadyReserved = true;
+        }
+        catch (Exception e)
+        {
+            _showAlertSomethingWentWrong = true;
+        }
     }
     
     private void GoToDepositsPage()

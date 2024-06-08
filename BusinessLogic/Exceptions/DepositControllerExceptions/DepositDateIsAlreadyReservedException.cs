@@ -1,4 +1,4 @@
-﻿namespace BusinessLogic.Exceptions.ControllerExceptions;
+﻿namespace BusinessLogic.Exceptions.DepositControllerExceptions;
 
 public class DepositDateIsAlreadyReservedException : Exception
 {

@@ -1,5 +1,6 @@
 ﻿using System.Collections;
-using BusinessLogic.Exceptions.ControllerExceptions;
+using BusinessLogic.Exceptions.PromotionControllerExceptions;
+using BusinessLogic.Exceptions.UserControllerExceptions;
 using DepoQuick.Domain;
 using Microsoft.EntityFrameworkCore;
 

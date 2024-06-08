@@ -1,9 +1,10 @@
 ﻿using BusinessLogic;
-using BusinessLogic.Exceptions.ControllerExceptions;
 using DepoQuick.Domain;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
+using BusinessLogic.Exceptions.PaymentControllerExceptions;
 using BusinessLogic.Exceptions.ReservationControllerExceptions;
+using BusinessLogic.Exceptions.UserControllerExceptions;
 using DepoQuick.Exceptions.ReservationExceptions;
 
 namespace DepoQuickTests

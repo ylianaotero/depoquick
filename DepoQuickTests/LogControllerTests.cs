@@ -1,5 +1,5 @@
 using BusinessLogic;
-using BusinessLogic.Exceptions.ControllerExceptions;
+using BusinessLogic.Exceptions.UserControllerExceptions;
 using DepoQuick.Domain;
 using DepoQuick.Exceptions.UserExceptions;
 

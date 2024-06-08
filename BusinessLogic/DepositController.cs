@@ -1,4 +1,5 @@
-﻿using BusinessLogic.Exceptions.ControllerExceptions;
+﻿using BusinessLogic.Exceptions.DepositControllerExceptions;
+using BusinessLogic.Exceptions.UserControllerExceptions;
 using DepoQuick.Domain;
 using Microsoft.EntityFrameworkCore;
 
@@ -10,6 +11,7 @@ public class DepositController
     private const string DepositNotFoundExceptionMessage = "Deposito no encontrado";
     private const string ActionRestrictedToAdministratorExceptionMessage = "Solo el administrador puede realizar esta acción";
     private const string DepositDateIsOverlappingMessage = "El deposito ya tiene una reserva en esa fecha";
+    private const string DepositAlreadyExistsMessage = "Ya existe un deposito con ese nombre";
     
     private IRepository<Deposit> _depositRepository;
     private IRepository<Promotion> _promotionRepository;
@@ -28,6 +30,9 @@ public class DepositController
         {
             throw new ActionRestrictedToAdministratorException(ActionRestrictedToAdministratorExceptionMessage); 
 
+        }
+        if(DepositExists(deposit.Name)){
+            throw new DepositNameAlreadyExistsException(DepositAlreadyExistsMessage);
         }
         
         Add(deposit);

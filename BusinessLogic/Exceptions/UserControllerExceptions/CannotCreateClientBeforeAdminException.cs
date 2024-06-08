@@ -1,4 +1,4 @@
-﻿namespace BusinessLogic.Exceptions.ControllerExceptions;
+﻿namespace BusinessLogic.Exceptions.UserControllerExceptions;
 
 public class CannotCreateClientBeforeAdminException : Exception
 {

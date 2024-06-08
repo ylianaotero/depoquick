@@ -1,5 +1,6 @@
-﻿using BusinessLogic.Exceptions.ControllerExceptions;
-using BusinessLogic.Exceptions.RatingControllerExceptions;
+﻿using BusinessLogic.Exceptions.RatingControllerExceptions;
+using BusinessLogic.Exceptions.UserControllerExceptions;
+
 namespace BusinessLogic;
 using DepoQuick.Domain;
 

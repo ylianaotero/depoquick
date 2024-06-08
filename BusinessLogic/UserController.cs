@@ -1,5 +1,5 @@
 ﻿using System.Reflection.Metadata.Ecma335;
-using BusinessLogic.Exceptions.ControllerExceptions;
+using BusinessLogic.Exceptions.UserControllerExceptions;
 using DepoQuick.Domain;
 
 namespace BusinessLogic;

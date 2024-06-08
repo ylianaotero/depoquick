@@ -1,5 +1,4 @@
 ﻿using BusinessLogic;
-using BusinessLogic.Exceptions.ControllerExceptions;
 using DepoQuick.Domain;
 
 /*namespace DepoQuickTests;

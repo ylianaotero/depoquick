@@ -7,7 +7,7 @@
 
 @using DepoQuick.Domain
 @using BusinessLogic
-@using BusinessLogic.Exceptions.ControllerExceptions
+@using BusinessLogic.Exceptions.DepositControllerExceptions
 @using DepoQuick.Exceptions.DateRangeExceptions
 
 <html lang="es">
@@ -157,44 +157,6 @@
     _finalDate = DateTime.Today.Date;
     _client = (Client)Session.ActiveUser;
   }
-
-  /*
-   private void ShowAlert()
-  {
-    HideAllAlerts(); 
-    
-    if(IsAValidDate())
-    {
-      if(IsAValidDeposit())
-      {
-        if (IsAClient())
-        {
-          if (DepositIsAvailableInDateRange())
-          {
-            _showAlertPrice = true;
-          }
-          else
-          {
-            _showAlertUnavailableDeposit = true;
-          }
-        }
-        else
-        {
-          _showAlertAnAdministratorCantMakeAReservation = true;
-        }
-      }
-      else
-      {
-        _showAlertInvalidDeposit = true; 
-      }
-    }
-    else
-    {
-      _showAlertInvalidDate = true;
-    }
-
-  }
-   */
   
   private void ShowAlertCheckAvailability()
   {

@@ -53,7 +53,7 @@ public class Deposit
     private void ValidateName(string value)
     {
         bool nameOnlyContainsLetters = Regex.IsMatch(value, @"^[A-Za-z]+$");
-        if (!nameOnlyContainsLetters)
+        if (!nameOnlyContainsLetters || value == "" || value == null)
         {
             throw new DepositNameIsNotValidException(DepositNameIsNotValidMessage);
         }

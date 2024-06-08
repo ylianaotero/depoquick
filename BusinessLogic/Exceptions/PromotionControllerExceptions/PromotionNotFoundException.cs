@@ -1,4 +1,4 @@
-﻿namespace BusinessLogic.Exceptions.ControllerExceptions;
+﻿namespace BusinessLogic.Exceptions.PromotionControllerExceptions;
 
 public class PromotionNotFoundException : Exception
 {
