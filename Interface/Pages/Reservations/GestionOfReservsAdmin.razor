@@ -6,7 +6,6 @@
 @inject ReservationController ReservationController
 @inject PaymentController PaymentController
 @using BusinessLogic
-@using BusinessLogic.Exceptions.ControllerExceptions
 @using BusinessLogic.Exceptions.ReservationControllerExceptions
 @using DepoQuick.Domain
 @using DepoQuick.Exceptions.PaymentExceptions
@@ -157,7 +156,6 @@
 </html>
 
 @code {
- //   ReservationController _reservationController;
     
     private NavigationManager _navigationManager;
     
@@ -177,7 +175,6 @@
     {
         _context = DepoQuickContext;
         _session = Session; 
-      //  _reservationController = new ReservationController(_context, _session);
         _listOfReservations = ReservationController.GetReservations();
         _navigationManager = NavigationManager;
     

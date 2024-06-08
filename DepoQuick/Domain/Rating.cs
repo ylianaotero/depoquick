@@ -7,7 +7,6 @@ public class Rating
 {
     private const int MaxCharacters = 500;
     
-    
     [Key]
     public int Id { get; set; }
     public Reservation Reservation { get; set; }
@@ -37,17 +36,12 @@ public class Rating
     
     public Rating()
     {
-       // Id = s_lastId + 1;
-        //s_lastId++;
     }
     
     public Rating(int stars, String comment)
     {
         Stars = stars;
         Comment = comment; 
-        
-        //Id = s_lastId + 1;
-        //s_lastId++;
     }
 
     public void UpdateRating(int newStars, string newComment)
