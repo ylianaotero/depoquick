@@ -47,6 +47,20 @@ public class DepositController
         return deposit; 
     }
     
+    public Deposit GetDepositByName(String name)
+    {
+        if(!DepositExists(name)){
+            throw new DepositNotFoundException(DepositNotFoundExceptionMessage); 
+
+        }
+        return _depositRepository.GetAll().FirstOrDefault(d => d.Name == name);
+    }
+
+    public bool DepositExists(string name)
+    {
+        return _depositRepository.GetAll().Any(d => d.Name == name);
+    }
+
     public List<Deposit> GetDeposits()
     {
         List<Deposit> deposits = _depositRepository.GetAll();
@@ -97,7 +111,7 @@ public class DepositController
         
         return availableDeposits; 
     }
-
+    
     private bool DateIsAvailable(Deposit deposit, DateRange date)
     {
         List<DateRange> availableDates = deposit.AvailableDates;

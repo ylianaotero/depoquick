@@ -77,30 +77,46 @@
       <br>
     }
 
+    @if(_showAvailableDeposits)
+    {
+      <br>
+      <div class="alert alert-primary" role="alert">
+        <h4 class="alert-heading">Depósitos disponibles</h4>
+        <p>Los depósitos disponibles en el rango de fechas seleccionado son:</p>
+        <div class="mb-3">
+          <label for="deposit" class="form-label">Seleccionar depósito que desea reservar:</label>
+          <select class="form-select" id="deposit" name="deposit" @onchange="HandleDepositChange">
+            <option value=" ">Seleccionar depósito</option>
+            _availableDeposits = DepositController.GetAvailableDeposits(_date);
+            if(_availableDeposits.Count == 0)
+            {
+              <option value=" ">No hay depósitos disponibles</option>
+            }
+            @foreach (Deposit deposit in _availableDeposits)
+            {
+              <option value="@deposit.Id">Depósito @deposit.Id</option>
+              
+            }
+          </select>
+        </div>
+              <input @onclick="ShowAlertReservation" id="wantToMakeTheReservation" class="btn btn-primary" value="Reservar">
+        <hr>
+        <p class="mb-0">¡Selecciona un depósito para continuar con la reserva!</p>
+      </div>
+      <br>
+    }
 
     <form action="#" method="POST">
-      <div class="mb-3">
-        <label for="deposit" class="form-label">Seleccionar depósito que desea reservar:</label>
-        <select class="form-select" id="deposit" name="deposit" @onchange="HandleDepositChange">
-          <option value=" ">Seleccionar depósito</option>
-          @foreach (Deposit deposit in _listOfDeposits)
-          {
-            <option value="@deposit.Id">Depósito @deposit.Id</option>
-          }
-        </select>
-      </div>
-
       <div class="mb-3">
         <label for="initialDate" class="form-label">Desde:</label>
         <input type="date" class="form-control" id="initialDate" name="initialDate" @bind="_initialDate">
       </div>
-
+      
       <div class="mb-3">
         <label for="finalDate" class="form-label">Hasta:</label>
-        <input type="date" class="form-control"  id="finalDate" name="finalDate" @bind="_finalDate">
+        <input type="date" class="form-control" id="finalDate" name="finalDate" @bind="_finalDate">
       </div>
-      
-      <input @onclick="ShowAlert"  id="wantToMakeTheReservation" class="btn btn-primary" value="Reservar">
+      <input @onclick="ShowAlertCheckAvailability" class="btn btn-primary" value="Consultar Disponibilidad">
     </form>
   </body>
 </html>
@@ -111,13 +127,15 @@
 
   
   private List<Deposit> _listOfDeposits;
-
+  private List<Deposit> _availableDeposits;
+  
   private bool _showAlertPrice;
   private bool _showAlertInvalidDeposit; 
   private bool _showAlertInvalidDate;
   private bool _showAlertAnAdministratorCantMakeAReservation;
   private bool _showAlertReservationMade;
   private bool _showAlertUnavailableDeposit;
+  private bool _showAvailableDeposits;
   
   private Deposit _deposit; 
   private Client _client;
@@ -140,7 +158,8 @@
     _client = (Client)Session.ActiveUser;
   }
 
-  private void ShowAlert()
+  /*
+   private void ShowAlert()
   {
     HideAllAlerts(); 
     
@@ -174,6 +193,42 @@
       _showAlertInvalidDate = true;
     }
 
+  }
+   */
+  
+  private void ShowAlertCheckAvailability()
+  {
+    HideAllAlerts(); 
+    
+    if(IsAValidDate())
+    {
+      _showAvailableDeposits = true;
+    }
+    else
+    {
+      _showAlertInvalidDate = true;
+    }
+  }
+  
+  private void ShowAlertReservation()
+  {
+    HideAllAlerts(); 
+    
+    if(IsAValidDeposit())
+    {
+      if (IsAClient())
+      {
+        _showAlertPrice = true;
+      }
+      else
+      {
+        _showAlertAnAdministratorCantMakeAReservation = true;
+      }
+    }
+    else
+    {
+      _showAlertInvalidDeposit = true; 
+    }
   }
 
   private bool IsAClient()
@@ -216,6 +271,7 @@
     _showAlertAnAdministratorCantMakeAReservation = false;
     _showAlertReservationMade = false;
     _showAlertUnavailableDeposit = false;
+    _showAvailableDeposits = false;
   }
   
   private void HandleDepositChange(ChangeEventArgs args)

@@ -310,4 +310,9 @@ public class Deposit
         }
         return sum / Ratings.Count; 
     }
+
+    public bool Equals(Deposit deposit1, Deposit deposit2)
+    {
+        return deposit1.Name == deposit2.Name;
+    }
 }

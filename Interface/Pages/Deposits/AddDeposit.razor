@@ -1,6 +1,7 @@
 @page "/AddDeposit"
 @using BusinessLogic
 @using DepoQuick.Domain
+@using DepoQuick.Exceptions.DateRangeExceptions
 @inject Session Session
 @inject NavigationManager NavigationManager
 @inject DepoQuickContext DepoQuickContext
@@ -16,7 +17,38 @@
     <body>
         <h3>Agregar depósito</h3>
 
+    @if (_showAlertNewDeposit)
+    {
+      <br>
+       <div class="alert alert-primary" role="alert">
+        <h4 class="alert-heading">¿Estás seguro?</h4>
+        <p>Estas a punto de crear el nuevo deposito @_name para la fecha @_date</p>
+        <hr>
+        <input @onclick="AddNewDeposit" type="submit" class="btn btn-primary" value="Aceptar">
+      </div>
+      <br>
+    }
+    
+    @if (_showAlertInvalidDate)
+    {
+      <br>
+       <div class="alert alert-danger" role="alert">
+         ¡Fecha inválida, la fecha inicial debe ser anterior a la fecha final!
+       </div>
+      <br>
+    }
+    
     <form action="#" method="POST">
+        <div class="mb-3">
+           <label for="initialDate" class="form-label">Desde:</label>
+           <input type="date" class="form-control" id="initialDate" name="initialDate" @bind="_initialDate">
+        </div>
+      
+        <div class="mb-3">
+            <label for="finalDate" class="form-label">Hasta:</label>
+            <input type="date" class="form-control" id="finalDate" name="finalDate" @bind="_finalDate">
+        </div>
+        
         <div class="mb-3">
             <label for="area" class="form-label">Seleccione un area:</label>
             <br/>
@@ -41,10 +73,10 @@
             <label for="airConditioning" class="form-label">Climatización:</label>
             <input type="checkbox" @bind="_airConditioning"/>
         </div>
-        
+
         <label for="deposits" class="form-label">Promociones: </label>
         <div class="form-check">
-            <input class="form-check-input" type="checkbox" id="select-all" @onclick="() => SelectAllPromotions()" />
+            <input class="form-check-input" type="checkbox" id="select-all" @onclick="() => SelectAllPromotions()"/>
             <label class="form-check-label" for="select-all">
                 Selecccionar todo
             </label>
@@ -54,12 +86,12 @@
             <div class="form-check">
                 <input class="form-check-input" type="checkbox" id="@promotion.Label" @onclick="() => TogglePromotionSelection(promotion)" checked="@IsSelected(promotion)"/>
                 <label class="form-check-label" for="@promotion.Id">
-                    Promoción @promotion.Label - Descuento del @(promotion.DiscountRate*PercentageMultiplier)%
+                    Promoción @promotion.Label - Descuento del @(promotion.DiscountRate * PercentageMultiplier)%
                 </label>
             </div>
         }
         <br/>
-        <input @onclick="AddNewDeposit" id="addNewDeposit" class="btn btn-primary" value="Crear depósito">
+        <input @onclick="ShowAlert" id="addNewDeposit" class="btn btn-primary" value="Crear depósito">
         <input @onclick="GoToDepositsPage" id="cancelAddingDeposit" class="btn btn-primary" value="Cancelar">
     </form>
       </body>
@@ -71,11 +103,18 @@
     private string _name;
     private char _area;
     private string _size;
+    private DateRange _date;
     private bool _airConditioning;
     private List<Promotion> _promotions;
     private List<Promotion> _selectedPromotions;
     private bool _selectAllPromotions;
+
+    private bool _showAlertInvalidDate;
+    private bool _showAlertNewDeposit;
+    private bool _showAlertClientCanotCreateADeposit;
     
+    private DateTime _initialDate = DateTime.Today.Date;
+    private DateTime _finalDate = DateTime.Today.Date;
     
     protected override void OnInitialized()
     {
@@ -86,13 +125,75 @@
         _selectedPromotions = new List<Promotion>();
         _promotions = PromotionController.GetPromotions();
         _selectAllPromotions = false;
+        _initialDate = DateTime.Today.Date;
+        _finalDate = DateTime.Today.Date;
+    }
+
+    private void ShowAlert()
+    {
+        HideAllAlerts();
+        if (IsAnAdministrator())
+        {
+            if (IsAValidDate())
+            {
+                _showAlertNewDeposit = true;
+            }
+            else
+            {
+                _showAlertInvalidDate = true;
+            }
+        }
+        else
+        {
+            _showAlertClientCanotCreateADeposit = true;
+
+        }
+        
+    }
+
+    private void HideAllAlerts()
+    {
+        _showAlertClientCanotCreateADeposit = false;
+        _showAlertNewDeposit = false;
+        _showAlertInvalidDate = false;
+    }
+
+    private bool IsAnAdministrator()
+    {
+        return Session.ActiveUser.IsAdministrator;
+    }
+    
+    private bool IsAValidDate()
+    {
+        try
+        {
+            _date = new DateRange(_initialDate, _finalDate);
+            return true;
+        }
+        catch (InvalidDateRangeException invalidDateRangeException)
+        {
+            return false;
+        }
+        catch (EmptyDateRangeException emptyDateRangeException)
+        {
+            return false;
+        }
     }
     
     private void AddNewDeposit()
     {
-        Deposit newDeposit = new Deposit(_name,_area, _size, _airConditioning);
-        
-        DepositController.AddDeposit(newDeposit, _selectedPromotions);
+        _date = new DateRange(_initialDate, _finalDate);
+        if (DepositController.DepositExists(_name))
+        {
+            Deposit deposit = DepositController.GetDepositByName(_name);
+            DepositController.AddAvailabilityDate(deposit,_date); //Acá tengo que hacer el catch?
+        }
+        else
+        {
+            Deposit newDeposit = new Deposit(_name,_area, _size, _airConditioning);
+            DepositController.AddDeposit(newDeposit, _selectedPromotions);
+            DepositController.AddAvailabilityDate(newDeposit,_date);
+        }
 
         GoToDepositsPage();
     }

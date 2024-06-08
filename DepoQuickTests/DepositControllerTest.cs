@@ -276,6 +276,86 @@ public class DepositControllerTest
         DateRange newDateRange = new DateRange(DateTime.Now.AddDays(9), DateTime.Now.AddDays(11));
         _depositController.AddAvailabilityDate(newDeposit,newDateRange);
     }
+    
+    [TestMethod]
+    public void TestDepositExists()
+    {
+        _userController.RegisterAdministrator(AdminName, AdminEmail, AdminPassword, AdminPassword);
+        
+        _session.LoginUser(AdminEmail,AdminPassword);
+        
+        Deposit newDeposit = new Deposit(DepositValidName,DepositArea0, DepositSize0, DepositAirConditioning0);
+        
+        Promotion promotion = new Promotion();
+        promotion.Label = "promo";
+        List<Promotion> promotionsToAddToDeposit = new List<Promotion>(); 
+        promotionsToAddToDeposit.Add(promotion);
+          
+        _depositController.AddDeposit(newDeposit, promotionsToAddToDeposit);
+        
+        Assert.AreEqual(true, _depositController.DepositExists(newDeposit.Name));
+    }
+    
+    [TestMethod]
+    public void TestGetDepositByName()
+    {
+        _userController.RegisterAdministrator(AdminName, AdminEmail, AdminPassword, AdminPassword);
+        
+        _session.LoginUser(AdminEmail,AdminPassword);
+        
+        Deposit newDeposit = new Deposit(DepositValidName,DepositArea0, DepositSize0, DepositAirConditioning0);
+        
+        Promotion promotion = new Promotion();
+        promotion.Label = "promo";
+        List<Promotion> promotionsToAddToDeposit = new List<Promotion>(); 
+        promotionsToAddToDeposit.Add(promotion);
+          
+        _depositController.AddDeposit(newDeposit, promotionsToAddToDeposit);
+        
+        String depositName = _depositController.GetDepositByName(newDeposit.Name).Name;
+        
+        Assert.AreEqual(newDeposit.Name, depositName);
+    }
+    
+    [TestMethod]
+    [ExpectedException(typeof(DepositNotFoundException))]
+    public void TestCannotGetDepositByName()
+    {
+        _userController.RegisterAdministrator(AdminName, AdminEmail, AdminPassword, AdminPassword);
+        
+        _session.LoginUser(AdminEmail,AdminPassword);
+        
+        Deposit newDeposit = new Deposit(DepositValidName,DepositArea0, DepositSize0, DepositAirConditioning0);
+        
+        Promotion promotion = new Promotion();
+        promotion.Label = "promo";
+        List<Promotion> promotionsToAddToDeposit = new List<Promotion>(); 
+        promotionsToAddToDeposit.Add(promotion);
+          
+        _depositController.AddDeposit(newDeposit, promotionsToAddToDeposit);
+        
+        _depositController.DeleteDeposit(newDeposit.Id);
+        String depositName = _depositController.GetDepositByName(newDeposit.Name).Name;
+    }
+    
+    [TestMethod]
+    public void TestGetAvailableDeposits()
+    {
+        _userController.RegisterAdministrator(AdminName, AdminEmail, AdminPassword, AdminPassword);
+        
+        _session.LoginUser(AdminEmail,AdminPassword);
+        
+        Deposit newDeposit = new Deposit(DepositValidName,DepositArea0, DepositSize0, DepositAirConditioning0);
+        newDeposit.AvailableDates.Add(_validDateRange);
+        Promotion promotion = new Promotion();
+        promotion.Label = "promo";
+        List<Promotion> promotionsToAddToDeposit = new List<Promotion>(); 
+        promotionsToAddToDeposit.Add(promotion);
+          
+        _depositController.AddDeposit(newDeposit, promotionsToAddToDeposit);
+        
+        CollectionAssert.Contains(_depositController.AvailableDeposits(_validDateRange), newDeposit);
+    }
 }
 
 /*
