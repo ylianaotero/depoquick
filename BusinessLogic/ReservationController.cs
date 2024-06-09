@@ -31,7 +31,9 @@ public class ReservationController
     
     public void Add(Reservation reservation)
     {
+        reservation.RequestedAt = DateTime.Now;
         _reservationRepository.Add(reservation);
+
     }
     
     public Reservation Get(DateRange validDateRange)
@@ -39,8 +41,7 @@ public class ReservationController
         DateTime initialDate = validDateRange.InitialDate.Date;
         DateTime finalDate = validDateRange.FinalDate.Date;
         
-        Reservation reservation = _reservationRepository.GetBy(r => r.Date.InitialDate.Date == initialDate && 
-                                                                    r.Date.FinalDate.Date == finalDate).FirstOrDefault();
+        Reservation reservation = _reservationRepository.GetBy(r => r.Date.InitialDate.Date == initialDate && r.Date.FinalDate.Date == finalDate).FirstOrDefault();
 
         ReservationIsFound(reservation); 
         
@@ -111,6 +112,22 @@ public class ReservationController
             +reservation.Date.FinalDate.ToString("dd/MM/yyyy")+ MessageForAnRejectedReservation , DateTime.Now);
             
         UpdateReservation(reservation);
+    }
+    
+
+    public void AddPrice(Reservation reservation, int price)
+    {
+        reservation.Price = price;
+    }
+
+    public int GetPrice(Reservation reservation)
+    {
+        return reservation.Price;
+    }
+    
+    public bool PromotionHasBeenApplied(Reservation reservation)
+    {
+        return reservation.Deposit.Promotions.Any(promotion => promotion.ValidityDate.IsDateInRange(reservation.RequestedAt));
     }
     
     private void RestrictActionToAdministrator()

@@ -94,6 +94,7 @@ public class UserController
 
     public void Delete(User user)
     {
+        
         if (user == null)
         {
             throw new UserDoesNotExistException(UserDoesNotExistMessage);

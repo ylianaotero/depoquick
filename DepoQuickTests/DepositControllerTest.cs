@@ -363,30 +363,6 @@ public class DepositControllerTest
         CollectionAssert.Contains(_depositController.AvailableDeposits(_validDateRange), newDeposit);
     }
     
-    /*
-    [TestMethod]
-    [ExpectedException(typeof(DepositNameIsNotValidException))]
-    public void TestAddDepositWithNullName()
-    {
-        _userController.RegisterAdministrator(AdminName, AdminEmail, AdminPassword, AdminPassword);
-        
-        _session.LoginUser(AdminEmail,AdminPassword);
-        
-        Deposit newDeposit = new Deposit(null,DepositArea0, DepositSize0, DepositAirConditioning0);
-        
-        Promotion promotion = new Promotion();
-        promotion.Label = "promo";
-        List<Promotion> promotionsToAddToDeposit = new List<Promotion>(); 
-        promotionsToAddToDeposit.Add(promotion);
-          
-        _depositController.AddDeposit(newDeposit, promotionsToAddToDeposit);
-
-
-        CollectionAssert.Contains(_depositController.GetDeposits(), newDeposit);
-        CollectionAssert.Contains(_depositController.Get(newDeposit.Id).Promotions, promotion);
-    }
-    */
-    /*
     [TestMethod]
     [ExpectedException(typeof(DepositNameIsNotValidException))]
 
@@ -408,5 +384,30 @@ public class DepositControllerTest
 
         CollectionAssert.Contains(_depositController.GetDeposits(), newDeposit);
         CollectionAssert.Contains(_depositController.Get(newDeposit.Id).Promotions, promotion);
-    }*/
+    }
+    
+    [TestMethod]
+    [ExpectedException(typeof(DepositNameAlreadyExistsException))]
+    public void TestCannotAddDepositBecauseNameAlreadyExists()
+    {
+        _userController.RegisterAdministrator(AdminName, AdminEmail, AdminPassword, AdminPassword);
+        
+        _session.LoginUser(AdminEmail,AdminPassword);
+        
+        Deposit newDeposit = new Deposit(DepositValidName,DepositArea0, DepositSize0, DepositAirConditioning0);
+        Deposit newDeposit0 = new Deposit(DepositValidName,DepositArea0, DepositSize0, DepositAirConditioning0);
+        
+
+        Promotion promotion1 = new Promotion();
+        promotion1.Label = "promo"; 
+        Promotion promotion2 = new Promotion();
+        promotion2.Label = "promo"; 
+        List<Promotion> promotionsToAddToDeposit0 = new List<Promotion>();
+        promotionsToAddToDeposit0.Add(promotion1);
+        List<Promotion> promotionsToAddToDeposit1 = new List<Promotion>();
+        promotionsToAddToDeposit1.Add(promotion2);
+        
+        _depositController.AddDeposit(newDeposit, promotionsToAddToDeposit0);
+        _depositController.AddDeposit(newDeposit0, promotionsToAddToDeposit1);
+    }
 }

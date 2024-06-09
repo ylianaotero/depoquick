@@ -49,6 +49,7 @@
                 <th>Depósito</th>
                 <th>Desde</th>
                 <th>Hasta</th>
+                <th>Precio</th>
                 <th>Acciones</th>
                 <th>Comentario</th>
                 <th>Estado del Pago</th>
@@ -77,7 +78,7 @@
                     {
                         
                         <td>
-                            <button @onclick="() => ApproveReservation(reservation)" class="btn btn-success btn-sm">Aprobar</button>
+                            <button @onclick="() => ReservationController.ApproveReservation(reservation)" class="btn btn-success btn-sm">Aprobar</button>
                             <button @onclick="() =>  GoToRejectReservation(reservation.Id)" class="btn btn-danger btn-sm">Rechazar</button>
                         </td>
 

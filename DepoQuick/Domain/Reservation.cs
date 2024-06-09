@@ -23,6 +23,8 @@ public class Reservation
     public int Id { get; set; }
     
     public Deposit Deposit  { get; set; }
+    public int Price { get; set; }
+    public DateTime RequestedAt {get; set;}
     public Client Client { get; set; }
     public DateRange Date { get; set; }
     public int Status { get; set; }

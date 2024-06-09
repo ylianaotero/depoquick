@@ -20,14 +20,19 @@
 
     @if (_showAlertPrice)
     {
-      <br>
-       <div class="alert alert-primary" role="alert">
-        <h4 class="alert-heading">¿Estás seguro?</h4>
-        <p>Estas a punto de realizar la reserva del depósito @_deposit.Id que tiene un costo de: $ @_deposit.CalculatePrice(_date.NumberOfDays())</p>
-        <hr>
-        <input @onclick="AddReservation" type="submit" class="btn btn-primary" value="Aceptar">
-      </div>
-      <br>
+      {
+        <br>
+        <div class="alert alert-primary" role="alert">
+          <h4 class="alert-heading">¿Estás seguro?</h4>
+          @{
+            _price = _deposit.CalculatePrice(_date.NumberOfDays());
+          }
+          <p>Estas a punto de realizar la reserva del depósito @_deposit.Id que tiene un costo de: $ @_price</p>
+          <hr>
+          <input @onclick="() => AddReservation(_price)" type="submit" class="btn btn-primary" value="Aceptar">
+        </div>
+        <br>
+      }
     }
 
     @if (_showAlertReservationMade)
@@ -137,6 +142,7 @@
   private Deposit _deposit; 
   private Client _client;
   private DateRange _date;
+  private int _price;
 
   private DateTime _initialDate = DateTime.Today.Date;
   private DateTime _finalDate = DateTime.Today.Date;
@@ -261,5 +267,16 @@
       
       HideAllAlerts(); 
       _showAlertReservationMade = true; 
+  }
+  
+  private void AddReservation(int price)
+  {
+    Reservation newReservation = new Reservation(_deposit,  _client , _date); 
+      
+    ReservationController.AddPrice(newReservation, price);
+    ReservationController.Add(newReservation);
+      
+    HideAllAlerts(); 
+    _showAlertReservationMade = true; 
   }
 }

@@ -1,11 +1,14 @@
 ﻿using BusinessLogic;
+using BusinessLogic.Exceptions.UserControllerExceptions;
 using DepoQuick.Domain;
 
-/*namespace DepoQuickTests;
+namespace DepoQuickTests;
 
 [TestClass]
 public class SessionTest
 {
+    private DepoQuickContext _context;
+    private LogController _logController;
     private Session _session;
     private UserController _userController;
 
@@ -21,9 +24,10 @@ public class SessionTest
     [TestInitialize]
     public void Initialize()
     {
-        var context = TestContextFactory.CreateContext();
-        _userController = new UserController(context);
-        _session = new Session(_userController);
+        _context = TestContextFactory.CreateContext();
+        _userController = new UserController(new SqlRepository<User>(_context));
+        _logController = new LogController(new SqlRepository<LogEntry>(_context));
+        _session = new Session(_userController, _logController);
     }
 
     [TestMethod]
@@ -103,4 +107,4 @@ public class SessionTest
                                       now.Hour == log.Timestamp.Hour && now.Minute == log.Timestamp.Minute));
     }
 
-}*/
+}

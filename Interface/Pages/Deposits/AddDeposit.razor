@@ -168,7 +168,7 @@
     private bool _showAlertDepositIsAlreadyReserved;
     private bool _showAlertSomethingWentWrong;
     private bool _showAlerDepositNameIsNotValid;
-    
+
     private bool _addedDepositSuccessfully;
     
     private DateTime _initialDate;
@@ -190,6 +190,8 @@
     {
         HideAllAlerts();
         AddNewDeposit();
+        
+        if (DepositController.DepositExists(_name))
 
         if (_addedDepositSuccessfully)
         {
@@ -217,8 +219,11 @@
             _date = new DateRange(_initialDate, _finalDate);
             
             DepositController.AddDeposit(newDeposit, _selectedPromotions);
+
+            AddAvailabilityDate(newDeposit);
+
             DepositController.AddAvailabilityDate(newDeposit, _date);
-            
+
             _addedDepositSuccessfully = true;
         }
         catch (DepositNameIsNotValidException depositNameIsNotValidException)
@@ -232,6 +237,20 @@
         catch (ActionRestrictedToAdministratorException actionRestrictedToAdministratorException)
         {
             _showAlertClientCanotCreateADeposit = true;
+        }
+
+        catch (Exception e)
+        {
+            _showAlertSomethingWentWrong = true;
+        }
+    }
+    
+    private void AddAvailabilityDate(Deposit newDeposit)
+    {
+        try
+        {
+            _date = new DateRange(_initialDate, _finalDate);
+            DepositController.AddAvailabilityDate(newDeposit, _date);
         }
         catch (InvalidDateRangeException invalidDateRangeException)
         {
