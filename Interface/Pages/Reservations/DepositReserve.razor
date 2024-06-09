@@ -28,7 +28,7 @@
           @{
             _price = _deposit.CalculatePrice(_date.NumberOfDays());
           }
-          <p>Estas a punto de realizar la reserva del depósito @_deposit.Id que tiene un costo de: $ @_price</p>
+          <p>Estas a punto de realizar la reserva del depósito @_deposit.Name que tiene un costo de: $ @_price</p>
           <hr>
           <input @onclick="() => AddReservation(_price)" type="submit" class="btn btn-primary" value="Aceptar">
         </div>
@@ -101,7 +101,7 @@
             <option value=" ">Seleccionar depósito</option>
             @foreach (Deposit deposit in _availableDeposits)
             {
-              <option value="@deposit.Id">Depósito @deposit.Id</option>
+              <option value="@deposit.Id">Depósito @deposit.Name</option>
               
             }
           </select>
