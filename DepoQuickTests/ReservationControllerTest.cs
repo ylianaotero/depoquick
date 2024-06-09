@@ -120,6 +120,10 @@ namespace DepoQuickTests
             Reservation result = _reservationController.Get(reservation.Id);
             Assert.IsNotNull(result);
             Assert.AreEqual(reservation.Id, result.Id);
+            
+            DateTime now = DateTime.Now.AddSeconds(-DateTime.Now.Second);
+            Assert.IsTrue(now.Date == reservation.RequestedAt.Date && now.Hour == reservation.RequestedAt.Hour && now.Minute == reservation.RequestedAt.Minute);
+            Assert.IsTrue(!_reservationController.PromotionHasBeenApplied(reservation));
         }
         
         [TestMethod]
@@ -492,6 +496,24 @@ namespace DepoQuickTests
             CollectionAssert.DoesNotContain(_client.Notifications,notification);
         }
         
+        [TestMethod]
+        public void TestAddCostReservation()
+        {
+            _userController.RegisterClient(ClientName, ClientEmail, ClientPassword, ClientPassword);
+            _client = (Client)_userController.GetUserByEmail(ClientEmail);
 
+            Reservation reservation = new Reservation(_deposit0, _client, _validDateRange);
+            _reservationController.Add(reservation);
+
+            Reservation reservationSaved = _reservationController.Get(reservation.Id);
+
+            int expectedPrice = _deposit0.CalculatePrice(_validDateRange.NumberOfDays()); 
+    
+            _reservationController.AddPrice(reservation,expectedPrice );
+    
+            Assert.AreEqual(expectedPrice , _reservationController.GetPrice(reservationSaved));
+    
+    
+        }
     }
 }

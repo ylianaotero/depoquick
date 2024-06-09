@@ -31,7 +31,9 @@ public class ReservationController
     
     public void Add(Reservation reservation)
     {
+        reservation.RequestedAt = DateTime.Now;
         _reservationRepository.Add(reservation);
+
     }
     
     public Reservation Get(DateRange validDateRange)
@@ -104,6 +106,22 @@ public class ReservationController
         _notificationController.Notify(reservation.Client, reservation,"Su reserva del deposito "+reservation.Deposit.Id+" en las fechas "+reservation.Date.InitialDate.ToString("dd/MM/yyyy")+" a "+reservation.Date.FinalDate.ToString("dd/MM/yyyy")+ MessageForAnRejectedReservation , DateTime.Now);
             
         UpdateReservation(reservation);
+    }
+    
+
+    public void AddPrice(Reservation reservation, int price)
+    {
+        reservation.Price = price;
+    }
+
+    public int GetPrice(Reservation reservation)
+    {
+        return reservation.Price;
+    }
+    
+    public bool PromotionHasBeenApplied(Reservation reservation)
+    {
+        return reservation.Deposit.Promotions.Any(promotion => promotion.ValidityDate.IsDateInRange(reservation.RequestedAt));
     }
     
     private void ValidateActiveUser()

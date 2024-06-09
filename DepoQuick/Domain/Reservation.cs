@@ -10,10 +10,13 @@ public class Reservation
     public Deposit Deposit  { get; set; }
     
     public int ClientId { get; set; }
+    
+    public int Price { get; set; }
+    
+    public DateTime RequestedAt {get; set;}
     public Client Client { get; set; }
     public DateRange Date { get; set; }
     public int Status { get; set; }
-   // public Rating Rating { get; set; }
     
     private string _message;
     
