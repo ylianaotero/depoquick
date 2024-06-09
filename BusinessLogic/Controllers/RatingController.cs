@@ -1,4 +1,5 @@
-﻿using BusinessLogic.Exceptions.UserControllerExceptions;
+﻿using BusinessLogic.Exceptions.RatingControllerExceptions;
+using BusinessLogic.Exceptions.UserControllerExceptions;
 using DepoQuick.Domain;
 
 namespace BusinessLogic.Controllers;
@@ -7,6 +8,7 @@ public class RatingController
 {
     private const string BaseLogMessage = "Agregó valoración de la reserva ";
     private const string ActionRestrictedToClientExceptionMessage = "Solo el cliente puede realizar esta acción";
+    private const string RatingNotFoundExceptionMessage = "El rating no fue encontrado";
 
     private IRepository<Rating> _ratingRepository;
     private SessionController _sessionController;
@@ -53,11 +55,18 @@ public class RatingController
     public List<Rating> GetRatingsByDeposit(Deposit deposit)
     {
         return _ratingRepository.GetBy(r => r.Reservation.Deposit == deposit); 
+        
     }
     
     public Rating GetRatingByReservation(Reservation reservation)
     {
-        return _ratingRepository.GetBy(p => p.Reservation == reservation).FirstOrDefault();
+        Rating rating = _ratingRepository.GetBy(p => p.Reservation == reservation).FirstOrDefault();
+        if (rating == null)
+        {
+            throw new RatingNotFoundException(RatingNotFoundExceptionMessage); 
+        }
+
+        return rating; 
     }
     
     private void Add(Rating rating)
@@ -67,7 +76,7 @@ public class RatingController
     
     private void RestrictActionToClient()
     {
-        if (!(UserIsLogged() && !UserLoggedIsAClient()))
+        if ((UserIsLogged() && !UserLoggedIsAClient()))
         {
             throw new ActionRestrictedToClientException(ActionRestrictedToClientExceptionMessage); 
         }
