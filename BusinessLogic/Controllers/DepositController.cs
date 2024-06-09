@@ -121,37 +121,22 @@ public class DepositController
     
     private Deposit GetById(int depositId)
     {
-        Deposit deposit = new Deposit();
-        
         try
         {
-            deposit = _depositRepository.GetById(depositId);
+            Deposit deposit = _depositRepository.GetById(depositId);
+            return deposit;
         }
         catch (NullReferenceException e)
         {
             throw new DepositNotFoundException(DepositNotFoundExceptionMessage); 
         }
         
-        if (deposit == null)
-        {
-            throw new DepositNotFoundException(DepositNotFoundExceptionMessage); 
-        }
         
-        return deposit;
     }
     
     private Deposit GetBy(Func<Deposit, bool> predicate)
     {
-        Deposit deposit = new Deposit();
-        
-        try
-        {
-            deposit = _depositRepository.GetBy(predicate).FirstOrDefault();
-        }
-        catch (NullReferenceException e)
-        {
-            throw new DepositNotFoundException(DepositNotFoundExceptionMessage); 
-        }
+        Deposit deposit = _depositRepository.GetBy(predicate).FirstOrDefault();
         
         if (deposit == null)
         {
@@ -159,6 +144,7 @@ public class DepositController
         }
         
         return deposit;
+        
     }
     
     public void DisconnectPromotionsFromDeposit(Deposit deposit, List<Promotion> promotions)

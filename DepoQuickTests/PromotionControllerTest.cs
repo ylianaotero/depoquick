@@ -69,7 +69,7 @@ public class PromotionControllerTest
         _validDateRange = new DateRange(DateTime.Now.AddDays(5), DateTime.Now.AddDays(10));
         _expiredDateRange = new DateRange(DateTime.Now.AddDays(-10), DateTime.Now.AddDays(-5));
     }
-
+    
     [TestMethod]
     public void TestAddNewPromotion()
     {
@@ -365,4 +365,30 @@ public class PromotionControllerTest
        
         Assert.AreEqual(false,_promotionController.PromotionIsTiedToReservedDeposit(promotion));
     }
+    
+    [TestMethod]
+    public void TestPromotionIsNotTiedToReservedDepositBecauseIsRejected()
+    { 
+        _userController.RegisterClient(ClientName,ClientEmail,ClientPassword,ClientPassword);
+        _sessionController.LoginUser(AdminEmail,AdminPassword);
+        Promotion promotion = new Promotion();
+        promotion.DiscountRate = PromotionDiscountRate0;
+        promotion.Label = PromotionLabel0;
+        promotion.ValidityDate = _currentDateRange;
+        
+        List<Deposit> depositsToAddToPromotion = new List<Deposit>();
+        depositsToAddToPromotion.Add(_deposit0);
+
+        _promotionController.Add(promotion,depositsToAddToPromotion);
+        
+        _sessionController.LoginUser(ClientEmail,ClientPassword);
+        Client client = (Client)_userController.GetUserByEmail(ClientEmail);
+        Reservation reservation = new Reservation(_deposit0,client,_currentDateRange);
+        _reservationController.Add(reservation);
+        
+       
+        Assert.IsFalse(_promotionController.PromotionIsTiedToReservedDeposit(promotion));
+    }
+    
+
 }

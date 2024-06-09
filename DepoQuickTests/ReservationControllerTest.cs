@@ -124,7 +124,35 @@ namespace DepoQuickTests
             
             DateTime now = DateTime.Now.AddSeconds(-DateTime.Now.Second);
             Assert.IsTrue(now.Date == reservation.RequestedAt.Date && now.Hour == reservation.RequestedAt.Hour && now.Minute == reservation.RequestedAt.Minute);
-            Assert.IsTrue(!_reservationController.PromotionHasBeenApplied(reservation));
+            Assert.IsFalse(_reservationController.PromotionHasBeenApplied(reservation));
+        }
+        
+        [TestMethod]
+        public void TestAddAReservationWithPromotion()
+        {
+            _userController.RegisterClient(ClientName, ClientEmail, ClientPassword, ClientPassword);
+            _client = (Client)_userController.GetUserByEmail(ClientEmail);
+
+            Promotion newPromotion = new Promotion();
+            newPromotion.Label = "Label"; 
+            newPromotion.ValidityDate = _currentDateRange; 
+            List<Promotion> promotionsLinkedToDeposit = new List<Promotion>();
+            promotionsLinkedToDeposit.Add(newPromotion);
+        
+            _deposit0.AddPromotion(newPromotion);
+            
+            Reservation reservation = new Reservation(_deposit0, _client, _validDateRange);
+
+            
+            _reservationController.Add(reservation);
+
+            Reservation result = _reservationController.Get(reservation.Id);
+            Assert.IsNotNull(result);
+            Assert.AreEqual(reservation.Id, result.Id);
+            
+            DateTime now = DateTime.Now.AddSeconds(-DateTime.Now.Second);
+            Assert.IsTrue(now.Date == reservation.RequestedAt.Date && now.Hour == reservation.RequestedAt.Hour && now.Minute == reservation.RequestedAt.Minute);
+            Assert.IsTrue(_reservationController.PromotionHasBeenApplied(reservation));
         }
         
         [TestMethod]

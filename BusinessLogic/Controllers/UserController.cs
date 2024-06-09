@@ -92,37 +92,23 @@ public class UserController
     
     private User GetById(int userId)
     {
-        User reservation = new User();
         
         try
         {
-            reservation = _userRepository.GetById(userId);
+            User reservation = _userRepository.GetById(userId);
+            return reservation;
         }
         catch (NullReferenceException e)
         {
             throw new UserDoesNotExistException(UserDoesNotExistExceptionMessage); 
         }
         
-        if (reservation == null)
-        {
-            throw new UserDoesNotExistException(UserDoesNotExistExceptionMessage); 
-        }
-        
-        return reservation;
     }
     
     private User GetBy(Func<User, bool> predicate)
     {
-        User user = new User();
         
-        try
-        {
-            user = _userRepository.GetBy(predicate).FirstOrDefault();
-        }
-        catch (NullReferenceException e)
-        {
-            throw new UserDoesNotExistException(UserDoesNotExistExceptionMessage); 
-        }
+        User user = _userRepository.GetBy(predicate).FirstOrDefault();
         
         if (user == null)
         {

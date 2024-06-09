@@ -22,6 +22,7 @@ public class DepositControllerTest
     private SessionController _sessionController; 
     private DepoQuickContext _context;
     private DateRange _validDateRange;
+    private DateRange _validDateRange2;
 
     private const string DepositValidName = "Deposito";
     private const string DepositValidName2 = "DepositoCarrasco";
@@ -46,7 +47,7 @@ public class DepositControllerTest
     {
         _context = TestContextFactory.CreateContext();
         IRepository<User> _userRepository = new SqlRepository<User>(_context);
-        
+        _validDateRange2 = new DateRange(DateTime.Now.AddDays(11), DateTime.Now.AddDays(12));
         _validDateRange = new DateRange(DateTime.Now.AddDays(5), DateTime.Now.AddDays(10));
         _userController = new UserController(_userRepository);
         _logController = new LogController(new SqlRepository<LogEntry>(_context));
@@ -247,6 +248,39 @@ public class DepositControllerTest
         
         _depositController.AddAvailabilityDate(newDeposit,_validDateRange);
         _depositController.AddAvailabilityDate(newDeposit,_validDateRange);
+    }
+    
+    [TestMethod]
+    public void TestAddAvailabilityDate()
+    {
+        IRepository<Reservation> _reservationRepository = new SqlRepository<Reservation>(_context);
+        IRepository<Payment> _paymentRepository = new SqlRepository<Payment>(_context);
+        _paymentController = new PaymentController(_paymentRepository);
+        _notificationController = new NotificationController(new SqlRepository<Notification>(_context));
+        _reservationController = new ReservationController(_reservationRepository, _sessionController, _paymentController, _notificationController);
+        
+        _userController.RegisterAdministrator(AdminName, AdminEmail, AdminPassword, AdminPassword);
+        _userController.RegisterClient(ClientName,ClientEmail,ClientPassword,ClientPassword);
+        _sessionController.LoginUser(AdminEmail,AdminPassword);
+
+        Client client = (Client)_userController.GetUserByEmail(ClientEmail);
+        Deposit newDeposit = new Deposit(DepositValidName,DepositArea0, DepositSize0, DepositAirConditioning0);
+        
+        Promotion promotion1 = new Promotion();
+        promotion1.Label = "promo"; 
+       
+        List<Promotion> promotionsToAddToDeposit0 = new List<Promotion>();
+        promotionsToAddToDeposit0.Add(promotion1);
+        
+        _depositController.AddDeposit(newDeposit, promotionsToAddToDeposit0);
+        
+        _depositController.AddAvailabilityDate(newDeposit,_validDateRange2 );
+        
+        _depositController.AddAvailabilityDate(newDeposit,_validDateRange);
+        
+        Assert.IsTrue(newDeposit.AvailableDates.Contains(_validDateRange));
+
+        Assert.IsTrue(newDeposit.AvailableDates.Contains(_validDateRange2));
     }
     
     [TestMethod]

@@ -55,37 +55,21 @@ public class ReservationController
     
     private Reservation GetById(int reservationId)
     {
-        Reservation reservation = new Reservation();
-        
         try
         {
-            reservation = _reservationRepository.GetById(reservationId);
+            Reservation reservation = _reservationRepository.GetById(reservationId);
+            return reservation;
         }
         catch (NullReferenceException e)
         {
             throw new ReservationNotFoundException(ReservationNotFoundExceptionMessage); 
         }
-        
-        if (reservation == null)
-        {
-            throw new ReservationNotFoundException(ReservationNotFoundExceptionMessage); 
-        }
-        
-        return reservation;
     }
     
     private Reservation GetBy(Func<Reservation, bool> predicate)
     {
-        Reservation reservation = new Reservation();
+        Reservation reservation = _reservationRepository.GetBy(predicate).FirstOrDefault();
         
-        try
-        {
-            reservation = _reservationRepository.GetBy(predicate).FirstOrDefault();
-        }
-        catch (NullReferenceException e)
-        {
-            throw new ReservationNotFoundException(ReservationNotFoundExceptionMessage); 
-        }
         
         if (reservation == null)
         {
@@ -93,6 +77,7 @@ public class ReservationController
         }
         
         return reservation;
+        
     }
     
     public List<Reservation> GetReservations()

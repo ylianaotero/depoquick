@@ -88,23 +88,17 @@ public class PromotionController
     
     private Promotion GetById(int promotionId)
     {
-        Promotion promotion = new Promotion();
-        
         try
         {
-            promotion = _promotionRepository.GetById(promotionId);
+            Promotion promotion = _promotionRepository.GetById(promotionId);
+            return promotion;
         }
         catch (NullReferenceException e)
         {
             throw new PromotionNotFoundException(PromotionNotFoundExceptionMessage); 
         }
         
-        if (promotion == null)
-        {
-            throw new PromotionNotFoundException(PromotionNotFoundExceptionMessage); 
-        }
         
-        return promotion;
     }
     
     private void Delete(Promotion promotionToDelete)

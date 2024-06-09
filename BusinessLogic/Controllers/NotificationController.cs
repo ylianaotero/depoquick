@@ -35,13 +35,6 @@ public class NotificationController
 
     public void Delete(Notification notification)
     {
-        try
-        {
-            _notificationRepository.Delete(notification.Id);
-        }
-        catch (NullReferenceException e)
-        {
-            throw new ArgumentNullException();
-        }
+        _notificationRepository.Delete(notification.Id);
     }
 }

@@ -28,7 +28,7 @@ public class SqlRepository<T> : IRepository<T> where T : class
         T element = _entities.Find(id);
         
         LoadEntities(new List<T> {element});
-        
+                
         return element;
     }
     
