@@ -81,8 +81,6 @@ public class Deposit
     
     public Deposit()
     {
-       // Id = s_nextId; 
-       // s_nextId++; 
        AvailableDates = new List<DateRange>();
        Ratings = new List<Rating>();
        Promotions = new List<Promotion>(); 
@@ -95,9 +93,6 @@ public class Deposit
         ValidateArea(area);
         ValidateSize(size);
         
-       // Id = s_nextId; 
-       // s_nextId++; 
-
         Name = name;
         Area = char.ToUpper(area);
         Size = size.ToUpper();
@@ -282,7 +277,6 @@ public class Deposit
     }
     
     private bool TheSumOfTheDiscountsIsLessThan100(double discountOne, double discountTwo)
-
     {
         return (discountOne+discountTwo) <= 1; 
     }
@@ -309,10 +303,5 @@ public class Deposit
             sum += rating.Stars; 
         }
         return sum / Ratings.Count; 
-    }
-
-    public bool Equals(Deposit deposit1, Deposit deposit2)
-    {
-        return deposit1.Name == deposit2.Name;
     }
 }

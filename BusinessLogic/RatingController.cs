@@ -45,7 +45,7 @@ public class RatingController
         
         Deposit deposit = reservation.Deposit;
         deposit.AddRating(rating);
-        //    reservation.Rating = rating;
+     
         Add(rating);
         String logMessage = BaseLogMessage + reservation.Id;
         _logController.LogAction(activeUser, logMessage, DateTime.Now);
@@ -79,7 +79,7 @@ public class RatingController
         return _ratingRepository.GetBy(r => r.Reservation.Deposit == deposit); 
     }
     
-    private Rating GetRatingByReservation(Reservation reservation)
+    public Rating GetRatingByReservation(Reservation reservation)
     {
         return _ratingRepository.GetBy(p => p.Reservation == reservation).FirstOrDefault();
     }

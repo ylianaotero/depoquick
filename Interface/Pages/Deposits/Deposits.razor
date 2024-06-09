@@ -3,8 +3,6 @@
 @using DepoQuick.Domain
 @inject Session Session
 @inject NavigationManager NavigationManager
-@inject DepoQuickContext DepoQuickContext
-@inject PromotionController PromotionController
 @inject DepositController DepositController
 
 
@@ -143,8 +141,6 @@
         _loggedInUser = Session.ActiveUser;
 
         _listOfDeposits = DepositController.GetDeposits();
-        
-      //  PromotionController.DeleteAllExpiredPromotions();
 
         _depositToDelete = null;
         _depositToAddDate = null;
@@ -178,15 +174,6 @@
         }
     }
     
-    /*
-     * private void AttemptToAddDateToDeposit(Deposit deposit)
-    {
-        HideAllAlerts();
-        _depositToAddDate = deposit;
-        AddAvailabilityToDeposit(_depositToAddDate);
-    }
-     */
-    
     public void HideAllAlerts()
     {
         _showAlertDepositDeletedUnsuccessfully = false;
@@ -198,16 +185,15 @@
     private void DeleteDeposit()
     {
         HideAllAlerts();
-      /*  try
-        {*/
+        try
+        {
             int id = _depositToDelete.Id;
-             DepositController.DeleteDeposit(id);
+            DepositController.DeleteDeposit(id);
             _showAlertDepositDeletedSuccessfully = true;
-            /*  }
-              catch (Exception)
-              {
-                  _showAlertSomethingWentWrong = true;
-              }*/
+        } catch (Exception e)
+        {
+            _showAlertSomethingWentWrong = true;
+        }
     }
 
     private void AddAvailabilityToDeposit(Deposit deposit)

@@ -1,10 +1,9 @@
 @page "/EditRating/{Id:int}" 
 @using BusinessLogic
+@using BusinessLogic.Exceptions.UserControllerExceptions
 @using DepoQuick.Domain
-@inject Session Session
+@using DepoQuick.Exceptions.RatingException
 @inject NavigationManager NavigationManager
-@inject DepoQuickContext DepoQuickContext
-@inject ReservationController ReservationController
 @inject RatingController RatingController
 
 <html lang="es">
@@ -57,6 +56,11 @@
     Rating _ratingToEdit;
 
     private bool _showAlertComment;
+    private bool _showAlertStars;
+    private bool _showAlertActionRestrictedToClient;
+    private bool _showAlertSomethingWentWrong;
+    
+    private bool _reservationRatedSuccessfully;
     
     protected override void OnParametersSet()
     {
@@ -75,18 +79,38 @@
 
     private void AttemptToRate()
     {
-        ShowAlerts();
-        
-        if (IsAValidComment())
+        HideAllAlerts();
+        AddRating();
+
+        if (_reservationRatedSuccessfully)
         {
-            UpdateRating();
-        } 
+            GoToMyReservationsPage();
+        }
     }
     
-    private void UpdateRating()
+    private void AddRating()
     {
-        RatingController.UpdateRating(_ratingToEdit, _comment, _stars);
-        GoToMyReservationsPage();
+        try
+        {
+            RatingController.UpdateRating(_ratingToEdit, _comment, _stars);
+            _reservationRatedSuccessfully = true;
+        }
+        catch (InvalidStarsForRatingException invalidStarsForRatingException)
+        {
+            _showAlertStars = true;
+        }
+        catch (InvalidCommentForRatingException invalidCommentForRatingException)
+        {
+            _showAlertComment = true;
+        }
+        catch (ActionRestrictedToClientException actionRestrictedToClientException)
+        {
+            _showAlertActionRestrictedToClient = true;
+        }
+        catch (Exception e)
+        {
+            _showAlertSomethingWentWrong = true;
+        }
     }
     
     private void GoToMyReservationsPage()
@@ -94,23 +118,11 @@
         NavigationManager.NavigateTo("/GestionOfReservsClient");
     }
     
-    private void ShowAlerts()
-    {
-        HideAllAlerts();
-        
-        if (!IsAValidComment())
-        {
-            _showAlertComment = true;
-        } 
-    }
-    
     private void HideAllAlerts()
     {
         _showAlertComment = false;
-    }
-    
-    private bool IsAValidComment()
-    {
-        return !string.IsNullOrEmpty(_comment) && _comment.Length <= 500;
+        _showAlertStars = false;
+        _showAlertActionRestrictedToClient = false;
+        _showAlertSomethingWentWrong = false;
     }
 }

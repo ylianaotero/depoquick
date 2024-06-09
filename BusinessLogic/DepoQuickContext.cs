@@ -1,5 +1,6 @@
 using DepoQuick.Domain;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace BusinessLogic;
 
@@ -7,6 +8,20 @@ public class DepoQuickContext : DbContext
 {
     public bool UseInMemoryDatabase { get; set; }
     
+    public DbSet<User> Users { get; set; }
+    public DbSet<Administrator> Administrators { get; set; }
+    
+    public DbSet<Client> Clients { get; set; }
+    public DbSet<Reservation> Reservations { get; set; }
+    public DbSet<Promotion> Promotions { get; set; }
+    public DbSet<Deposit> Deposits { get; set; }
+    
+    public DbSet<Payment> Payments { get; set; }
+    
+    public DbSet<LogEntry> LogEntries { get; set; }
+    public DbSet<Rating> Ratings { get; set; }
+
+    public DbSet<Notification> Notifications { get; set; }
 
     public DepoQuickContext(DbContextOptions<DepoQuickContext> options, bool useInMemoryDatabase) : base(options)
     {
@@ -25,21 +40,6 @@ public class DepoQuickContext : DbContext
             this.Database.Migrate();   
         }
     }
-
-    public DbSet<User> Users { get; set; }
-    public DbSet<Administrator> Administrators { get; set; }
-    
-    public DbSet<Client> Clients { get; set; }
-    public DbSet<Reservation> Reservations { get; set; }
-    public DbSet<Promotion> Promotions { get; set; }
-    public DbSet<Deposit> Deposits { get; set; }
-    
-    public DbSet<Payment> Payments { get; set; }
-    
-    public DbSet<LogEntry> LogEntries { get; set; }
-    public DbSet<Rating> Ratings { get; set; }
-
-    public DbSet<Notification> Notifications { get; set; }
     
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
@@ -72,6 +72,12 @@ public class DepoQuickContext : DbContext
             .HasBaseType<User>()
             .HasMany(u => u.Notifications);
         
+        modelBuilder.Entity<Deposit>(entity =>
+        {
+            entity.ToTable("Deposits");
+            entity.HasMany(d => d.Promotions).WithMany(p => p.Deposits);
+        });
+        
         modelBuilder.Entity<Deposit>().HasMany<Rating>(d=>d.Ratings);
         modelBuilder.Entity<Deposit>().Property(d => d.Id).ValueGeneratedOnAdd();
         
@@ -82,8 +88,5 @@ public class DepoQuickContext : DbContext
         modelBuilder.Entity<Notification>().HasOne<Client>(n => n.Client);
          
         modelBuilder.Entity<Deposit>().OwnsMany(d => d.AvailableDates);
-        //  modelBuilder.Entity<Notification>().HasOne<Reservation>(p=>p.Reservation);
     }
-    
-    
 }

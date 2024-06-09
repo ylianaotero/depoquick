@@ -125,6 +125,9 @@
     private bool _showAlertLabelHasMoreThan20Characters;
     private bool _showAlertInvalidPercentage;
     
+    private bool _promotionDataUpdatedSuccessfully;
+    private bool _promotionDepositsUpdatedSuccessfully;
+    
     
     protected override void OnParametersSet()
     {
@@ -145,7 +148,11 @@
         HideAllAlerts();
         
         UpdatePromotion();
-        GoToPromotionsPage();
+        
+        if (_promotionDataUpdatedSuccessfully && _promotionDepositsUpdatedSuccessfully)
+        {
+            GoToPromotionsPage();
+        }
     }
     
     private void ToggleDepositSelection(Deposit deposit)
@@ -209,7 +216,11 @@
     {
         try
         {
+            _date = new DateRange(_startDate, _finalDate);
+            
             PromotionController.UpdatePromotionData(_promotionToEdit, _label, _discountRate / PercentageDivider, _date);
+            
+            _promotionDataUpdatedSuccessfully = true;
         }
         catch (ActionRestrictedToAdministratorException actionRestrictedToAdministratorException)
         {
@@ -227,6 +238,14 @@
         {
             _showAlertInvalidPercentage = true;
         }
+        catch (InvalidDateRangeException invalidDateRangeException)
+        {
+            _showAlertInvalidDateRange = true;
+        }
+        catch (EmptyDateRangeException emptyDateRangeException)
+        {
+            _showAlertEmptyDateRange = true;
+        }
         catch (Exception e)
         {
             _showAlertSomethingWentWrong = true;
@@ -238,6 +257,7 @@
         try
         {
             PromotionController.UpdatePromotionDeposits(_promotionToEdit, _selectedDeposits);
+            _promotionDepositsUpdatedSuccessfully = true;
         }
         catch (Exception e)
         {
@@ -249,7 +269,6 @@
     {
         NavigationManager.NavigateTo("/Promotions");
     }
-    
     
     private void HideAllAlerts()
     {

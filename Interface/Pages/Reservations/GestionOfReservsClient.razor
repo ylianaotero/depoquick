@@ -8,6 +8,7 @@
 @inject DepoQuickContext DepoQuickContext
 @inject ReservationController ReservationController
 @inject PaymentController PaymentController
+@inject RatingController RatingController
 
 <html lang="es">
   <head>
@@ -122,7 +123,7 @@
                             
                             @if (ReservationIsOver(reservation))
                             {
-                               // if (reservation.Rating == null)
+                                if (RatingController.GetRatingByReservation(reservation) == null)
                                 {
                                     <td>
                                         <div class="btn-group">
@@ -132,7 +133,7 @@
                                         </div>
                                     </td>
                                 }
-                               // else
+                                else
                                 {
                                     <td>
                                         <div class="btn-group">
@@ -207,8 +208,6 @@
         {
             return null;
         }
-        
-        
     }
     
     private bool ReservationIsOver(Reservation reservation)
@@ -240,7 +239,6 @@
         {
             _showAlertInvalidDeposit = true; 
         }
-        
     }
 
     private void AddPayment()

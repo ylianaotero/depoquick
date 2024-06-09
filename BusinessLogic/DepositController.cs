@@ -60,7 +60,7 @@ public class DepositController
     
     public List<Deposit> GetDepositsByPromotion(Promotion promotion)
     {
-        List<Deposit> deposits = _depositRepository.GetAll();
+        List<Deposit> deposits = GetDeposits();
         List<Deposit> depositsWithPromotion = new List<Deposit>();
         
         foreach (Deposit deposit in deposits)

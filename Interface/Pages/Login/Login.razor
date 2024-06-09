@@ -3,7 +3,6 @@
 @using BusinessLogic.Exceptions.UserControllerExceptions
 @inject Session Session
 @inject NavigationManager NavigationManager
-@inject DepoQuickContext DepoQuickContext
 
 <html lang="es" xmlns="http://www.w3.org/1999/html">
   <head>
@@ -76,8 +75,7 @@
     private String _password;
 
     
-    
-     protected override void OnInitialized()
+    protected override void OnInitialized()
     {
         HideAllAlerts();
     }
@@ -119,5 +117,4 @@
     {
         NavigationManager.NavigateTo("/", forceLoad:true);
     }
-    
 }

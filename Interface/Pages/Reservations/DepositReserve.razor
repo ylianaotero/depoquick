@@ -123,9 +123,6 @@
 
 
 @code {
-
-  
-  private List<Deposit> _listOfDeposits;
   private List<Deposit> _availableDeposits;
   
   private bool _showAlertPrice;
@@ -146,8 +143,6 @@
   
   protected override void OnInitialized()
   {
-   //_reservationController = new ReservationController(DepoQuickContext, Session);
-    _listOfDeposits = DepositController.GetDeposits(); 
     HideAllAlerts();
     
     _deposit = null; 
@@ -219,11 +214,6 @@
     }
   }
 
-  private bool DepositIsAvailableInDateRange()
-  {
-    return !_deposit.IsReserved(_date);
-  }
-
   private void HideAllAlerts()
   {
     _showAlertPrice = false;
@@ -277,5 +267,4 @@
       HideAllAlerts(); 
       _showAlertReservationMade = true; 
   }
-  
 }
