@@ -5,6 +5,7 @@
 @using DepoQuick.Exceptions.RatingException
 @inject NavigationManager NavigationManager
 @inject RatingController RatingController
+@inject ReservationController ReservationController
 
 <html lang="es">
     <head>
@@ -20,6 +21,24 @@
             <div class="alert alert-danger" role="alert">
                 El comentario debe tener entre 1 y 500 caracteres. Por favor inténtalo de nuevo.
             </div>
+        }
+        @if (_showAlertStars)
+        {
+        <div class="alert alert-danger" role="alert">
+            Debes seleccionar al menos una estrella. Por favor inténtalo de nuevo.
+        </div>
+        }
+        @if (_showAlertActionRestrictedToClient)
+        {
+        <div class="alert alert-danger" role="alert">
+            Esta acción está restringida a los clientes. Por favor inténtalo de nuevo.
+        </div>
+        }
+        @if (_showAlertSomethingWentWrong)
+        {
+        <div class="alert alert-danger" role="alert">
+            Algo salió mal. Por favor inténtalo de nuevo.
+        </div>
         }
 
         <form action="#" method="POST">
@@ -64,8 +83,8 @@
     
     protected override void OnParametersSet()
     {
-
-        _ratingToEdit = RatingController.Get(Id);
+        Reservation reservation = ReservationController.Get(Id);
+        _ratingToEdit = RatingController.GetRatingByReservation(reservation);
         _comment = _ratingToEdit.Comment;
         _stars = _ratingToEdit.Stars;
         

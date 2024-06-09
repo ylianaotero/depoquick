@@ -8,10 +8,10 @@ public class UserController
     private const string UserNotFoundExceptionMessage = "No se encontro usuario con los datos proporcionados";
     private const string UserAlreadyExistsExceptionMessage = "Ya existe un usuario registrado con ese email";
     private const string AdministratorAlreadyExistsExceptionMessage = "Ya existe un administrador registrado";
-    private const string CannotCreateClientBeforeAdminExceptionMessage = "No se puede registrar un cliente sin haber registrado un administrador previamente";
+    private const string CannotCreateClientBeforeAdminExceptionMessage = "No se puede registrar un cliente sin haber " +
+                                                                         "registrado un administrador previamente";
     private const string EmptyAdministratorExceptionMessage = "No hay ningún administrador registrado.";
     private const string UserDoesNotExistMessage = "El usuario no existe";
-
     
     private IRepository<User> _userRepository;
     
@@ -107,11 +107,6 @@ public class UserController
         }
 
         _userRepository.Delete(userToDelete.Id);
-    }
-    
-    public List<User> GetAll()
-    {
-        return _userRepository.GetAll();
     }
     
     private void Add(User newUser)

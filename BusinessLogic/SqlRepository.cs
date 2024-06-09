@@ -5,6 +5,8 @@ namespace BusinessLogic;
 
 public class SqlRepository<T> : IRepository<T> where T : class
 {
+    private const string ElementNotFoundExceptionMessage = "Elemento no encontrado";
+    
     private DepoQuickContext _database;
     private DbSet<T> _entities;
 
@@ -23,12 +25,20 @@ public class SqlRepository<T> : IRepository<T> where T : class
 
     public T? GetById(int id)
     {
-        return _entities.Find(id);
+        T element = _entities.Find(id);
+        
+        LoadEntities(new List<T> {element});
+        
+        return element;
     }
     
     public List<T> GetBy(Func<T, bool> predicate)
     {
-        return _entities.Where(predicate).ToList();
+        List<T> elements = _entities.Where(predicate).ToList();
+        
+        LoadEntities(elements);
+        
+        return elements;
     }
     
     public List<T> GetAll()
@@ -92,8 +102,9 @@ public class SqlRepository<T> : IRepository<T> where T : class
         
         if (existingElement == null)
         {
-            throw new ArgumentNullException( "Elemento no encontrado");
+            throw new ArgumentNullException( ElementNotFoundExceptionMessage);
         }
+        
         _entities.Remove(existingElement);
         
         _database.SaveChanges();

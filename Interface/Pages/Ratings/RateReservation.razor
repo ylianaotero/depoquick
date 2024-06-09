@@ -5,6 +5,7 @@
 @using DepoQuick.Exceptions.RatingException
 @inject NavigationManager NavigationManager
 @inject RatingController RatingController
+@inject ReservationController ReservationController
 
 <html lang="es">
     <head>
@@ -25,6 +26,18 @@
         {
             <div class="alert alert-danger" role="alert">
                 Debes seleccionar al menos una estrella. Por favor inténtalo de nuevo.
+            </div>
+        }
+        @if (_showAlertActionRestrictedToClient)
+        {
+            <div class="alert alert-danger" role="alert">
+                Esta acción está restringida a los clientes. Por favor inténtalo de nuevo.
+            </div>
+        }
+        @if (_showAlertSomethingWentWrong)
+        {
+            <div class="alert alert-danger" role="alert">
+                Algo salió mal. Por favor inténtalo de nuevo.
             </div>
         }
 
@@ -70,6 +83,8 @@
     
     protected override void OnParametersSet()
     {
+        _reservationToRate = ReservationController.Get(Id);
+            
         _comment = "";
         _stars = 0;
         

@@ -23,12 +23,9 @@ public class DepositController
     
     public void AddDeposit(Deposit deposit, List<Promotion> promotions)
     {
-        if (!(UserIsLogged() && UserLoggedIsAnAdministrator()))
-        {
-            throw new ActionRestrictedToAdministratorException(ActionRestrictedToAdministratorExceptionMessage); 
-
-        }
-        if(DepositExists(deposit.Name)){
+        RestrictActionToAdministrator();
+        
+        if (DepositExists(deposit.Name)){
             throw new DepositNameAlreadyExistsException(DepositAlreadyExistsMessage);
         }
         
@@ -53,8 +50,8 @@ public class DepositController
     {
         if(!DepositExists(name)){
             throw new DepositNotFoundException(DepositNotFoundExceptionMessage); 
-
         }
+        
         return _depositRepository.GetAll().FirstOrDefault(d => d.Name == name);
     }
     
@@ -88,10 +85,7 @@ public class DepositController
 
     public void DeleteDeposit(int id)
     {
-        if (!(UserIsLogged() && UserLoggedIsAnAdministrator()))
-        {
-            throw new ActionRestrictedToAdministratorException(ActionRestrictedToAdministratorExceptionMessage); 
-        }
+        RestrictActionToAdministrator();
         
         Deposit depositToDelete = Get(id);
             
@@ -193,6 +187,15 @@ public class DepositController
     {
         _depositRepository.Reload(depositToDelete);
         _depositRepository.Delete(depositToDelete.Id);
+    }
+    
+    private void RestrictActionToAdministrator()
+    {
+        if (!(UserIsLogged() && UserLoggedIsAnAdministrator()))
+        {
+            throw new ActionRestrictedToAdministratorException(ActionRestrictedToAdministratorExceptionMessage); 
+
+        }
     }
     
     private bool UserLoggedIsAnAdministrator()

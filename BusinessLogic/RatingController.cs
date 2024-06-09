@@ -1,5 +1,4 @@
-﻿using BusinessLogic.Exceptions.RatingControllerExceptions;
-using BusinessLogic.Exceptions.UserControllerExceptions;
+﻿using BusinessLogic.Exceptions.UserControllerExceptions;
 
 namespace BusinessLogic;
 using DepoQuick.Domain;
@@ -7,9 +6,7 @@ using DepoQuick.Domain;
 public class RatingController
 {
     private const string BaseLogMessage = "Agregó valoración de la reserva ";
-    private const string RatingNotFoundExceptionMessage = "No se encontro calificacion asociada a la reserva";
     private const string ActionRestrictedToClientExceptionMessage = "Solo el cliente puede realizar esta acción";
-    private const string ActionRestrictedToAdministratorExceptionMessage = "Solo el administrador puede realizar esta acción";
 
     private IRepository<Rating> _ratingRepository;
     private Session _session;
@@ -22,26 +19,13 @@ public class RatingController
         _logController = logController;
     }
     
-    public void DeleteByReservation(Reservation reservation)
-    {
-        Rating rating = GetRatingByReservation(reservation);
-        
-        if (rating == null)
-        {
-            throw new RatingNotFoundException(RatingNotFoundExceptionMessage); 
-        }
-        
-        Delete(rating.Id);
-    }
-    
     public void RateReservation(Reservation reservation, Rating rating)
     { 
         User activeUser = _session.ActiveUser;
 
-        if (activeUser.IsAdministrator)
-        {
-            throw new ActionRestrictedToClientException(ActionRestrictedToClientExceptionMessage);
-        }
+        RestrictActionToClient();
+        
+        rating.Reservation = reservation;
         
         Deposit deposit = reservation.Deposit;
         deposit.AddRating(rating);
@@ -53,10 +37,7 @@ public class RatingController
 
     public void UpdateRating(Rating rating, String message, int stars)
     {
-        if (!UserLoggedIsAnAdministrator())
-        {
-            throw new ActionRestrictedToAdministratorException(ActionRestrictedToAdministratorExceptionMessage);
-        }
+        RestrictActionToClient();
         
         rating.Comment = message;
         rating.Stars = stars;
@@ -64,11 +45,6 @@ public class RatingController
         _ratingRepository.Update(rating);
     }
     
-    public Rating Get(int id)
-    {
-        return _ratingRepository.GetById(id);
-    }
-
     public List<Rating> GetRatings()
     {
         return _ratingRepository.GetAll();
@@ -89,13 +65,21 @@ public class RatingController
         _ratingRepository.Add(rating);
     }
     
-    private void Delete(int ratingId)
+    private void RestrictActionToClient()
     {
-        _ratingRepository.Delete(ratingId);
+        if (!(UserIsLogged() && !UserLoggedIsAClient()))
+        {
+            throw new ActionRestrictedToClientException(ActionRestrictedToClientExceptionMessage); 
+        }
+    }
+
+    private bool UserIsLogged()
+    {
+        return _session.UserLoggedIn(); 
     }
     
-    private bool UserLoggedIsAnAdministrator()
+    private bool UserLoggedIsAClient()
     {
-        return _session.ActiveUser.IsAdministrator; 
+        return !_session.ActiveUser.IsAdministrator; 
     }
 }

@@ -50,9 +50,4 @@ public class Session
                 
         ActiveUser = user;
     }
-
-    public bool ActiveUserIsAdministrator()
-    {
-        return ActiveUser.IsAdministrator; 
-    }
 }
