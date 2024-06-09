@@ -6,6 +6,26 @@ namespace DepoQuickTests;
 [TestClass]
 public class RatingTest
 {
+    private const string DepositName = "Deposito";
+    private const string ClientName1 = "Maria Perez";
+    private const string ClientEmail1 = "maria@gmail.com";
+    private const string ClientPassword1 = "Mariaaa1.";
+    private const char DepositArea1 = 'A';
+    private const string DepositSize1 = "Pequeño";
+    private const bool DepositAirConditioning1 = true;
+
+    private Reservation _reservation; 
+    [TestInitialize]
+    public void Initialize()
+    {
+        Client client = new Client(ClientName1,ClientEmail1,ClientPassword1);
+        Deposit deposit = new Deposit(DepositName,DepositArea1, DepositSize1, DepositAirConditioning1);
+        DateTime dayIn = new DateTime(2024, 04, 07);
+        DateTime dayOut = new DateTime(2024, 04, 08);
+        DateRange stay = new DateRange(dayIn, dayOut);
+        _reservation = new Reservation(deposit,client,stay);
+    }
+    
     [TestMethod]
     public void TestRating()
     {
@@ -15,11 +35,14 @@ public class RatingTest
         Rating newRating = new Rating(); 
         newRating.Stars = stars;
         newRating.Comment = comment;
+        newRating.Id = 0;
+        newRating.Reservation = _reservation; 
         
         Assert.IsNotNull(newRating);
         Assert.AreEqual(stars, newRating.Stars);
         Assert.AreEqual(comment, newRating.Comment);
-        Assert.IsTrue(0 >= newRating.Id);
+        Assert.AreEqual(_reservation, newRating.Reservation);
+        Assert.IsTrue(0 == newRating.Id);
     }
     
     [TestMethod]

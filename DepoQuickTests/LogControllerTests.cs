@@ -35,6 +35,15 @@ public class LogControllerTests
     }
     
     [TestMethod]
+    public void TestLogsId()
+    {
+        LogEntry log = new LogEntry();
+        log.Id = 0;
+        
+        Assert.AreEqual(0,log.Id);
+    }
+    
+    [TestMethod]
     [ExpectedException(typeof(EmptyActionLogException))]
     public void TestEmptyActionLog()
     {

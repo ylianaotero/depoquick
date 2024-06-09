@@ -104,4 +104,53 @@ public class DateRangeTest
         
     }
     
+    [TestMethod]
+    public void TestDateRangeIsOverlapping()
+    {
+        DateTime dateFrom = new DateTime(2024, 4, 1).Date;
+        DateTime dateTo = new DateTime(2024,4,2).Date;
+        
+        DateTime dateFrom2 = new DateTime(2024, 4, 1).Date;
+        DateTime dateTo2 = new DateTime(2024,4,2).Date;
+        
+        DateRange date = new DateRange(dateFrom, dateTo);
+        DateRange date2 = new DateRange(dateFrom2, dateTo2);
+        
+        Assert.IsTrue(date.DateRangeIsOverlapping(date2));
+        
+    }
+    
+    [TestMethod]
+    public void TestDateRangeIsNoOverlapping()
+    {
+        DateTime dateFrom = new DateTime(2024, 4, 1).Date;
+        DateTime dateTo = new DateTime(2024,4,2).Date;
+        
+        DateTime dateFrom2 = new DateTime(2022, 4, 1).Date;
+        DateTime dateTo2 = new DateTime(2022,4,2).Date;
+        
+        DateRange date = new DateRange(dateFrom, dateTo);
+        DateRange date2 = new DateRange(dateFrom2, dateTo2);
+        
+        Assert.IsFalse(date.DateRangeIsOverlapping(date2));
+        
+    }
+    
+    [TestMethod]
+    public void TestDateRangeIsNoContained()
+    {
+        DateTime dateFrom = new DateTime(2024, 4, 1).Date;
+        DateTime dateTo = new DateTime(2024,4,2).Date;
+        
+        DateTime dateFrom2 = new DateTime(2022, 4, 1).Date;
+        DateTime dateTo2 = new DateTime(2022,4,2).Date;
+        
+        DateRange date = new DateRange(dateFrom, dateTo);
+        DateRange date2 = new DateRange(dateFrom2, dateTo2);
+        
+        Assert.IsFalse(date.Contains(date2));
+        
+    }
+    
+    
 }

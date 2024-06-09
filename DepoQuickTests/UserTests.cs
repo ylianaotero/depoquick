@@ -6,10 +6,25 @@ namespace DepoQuickTests;
 [TestClass]
 public class UserTests
 {
-    private User _user;
-    private string _name = "Juan Perez";
+    private User? _user;
+
+    private const string _name = "Juan Perez";
+    private string _nameWithInvalidCharacters = "Juan Pérez1";
+    
     private string _email = "nombre@dominio.es";
+    
+    private string _emailWithInvalidFormat = "nombre@dominio";
+    
+    
     private string _password = "Contrasena#1";
+    private string _password2 = "Contrasena#2";
+    private string _passwordWithoutSymbols = "Contrasena1";
+    private string _passwordWithoutDigits = "Contrasena#"; 
+    private string _passwordAllUpercase = "CONTRASENA#1";
+    private string _passwordAllLowercase = "contrasena#1";
+    private string _passwordWithLessThan8Characters = "Cont#1";
+    
+    private string _emptyString = "";
     
     [TestMethod]
     public void TestValidUserIsCreated()
@@ -33,34 +48,18 @@ public class UserTests
         _user.Name = _name;
         _user.Email = _email;
         _user.Password = _password;
+        _user.Id = 0; 
+        Assert.AreEqual(0, _user.Id);
         Assert.AreEqual(_name, _user.Name);
         Assert.AreEqual(_email, _user.Email);
         Assert.AreEqual(_password, _user.Password);
     }
 
-    /*[TestMethod]
-    public void TestTwoUsersHaveDifferentIDs()
-    {
-        User user1 = new User(_name, _email, _password);
-        User user2 = new User(_name, _email, _password);
-
-        Assert.AreNotEqual(user1.Id, user2.Id);
-    }
-
-    [TestMethod]
-    public void TestIDIsIncremental()
-    {
-        User user1 = new User(_name, _email, _password);
-        User user2 = new User(_name, _email, _password);
-
-        Assert.IsTrue(user1.Id < user2.Id);
-    }*/
-
     [TestMethod]
     [ExpectedException(typeof(EmptyUserNameException))]
     public void TestEmptyUserNameIsInvalid()
     {
-        string name = "";
+        string name = _emptyString;
         _user = new User(name, _email, _password);
     }
 
@@ -76,7 +75,7 @@ public class UserTests
     [ExpectedException(typeof(InvalidUserNameException))]
     public void TestUserNameWithInvalidCharactersIsInvalid()
     {
-        string name = "Juan Pérez1";
+        string name = _nameWithInvalidCharacters;
         _user = new User(name, _email, _password);
     }
 
@@ -84,7 +83,7 @@ public class UserTests
     [ExpectedException(typeof(EmptyUserEmailException))]
     public void TestEmptyUserEmailIsInvalid()
     {
-        string email = "";
+        string email = _emptyString;
         _user = new User(_name, email, _password);
     }
 
@@ -92,7 +91,7 @@ public class UserTests
     [ExpectedException(typeof(InvalidUserEmailException))]
     public void TestUserEmailWithInvalidFormatIsInvalid()
     {
-        string email = "nombre@dominio";
+        string email = _emailWithInvalidFormat;
         _user = new User(_name, email, _password);
     }
 
@@ -100,7 +99,7 @@ public class UserTests
     [ExpectedException(typeof(EmptyUserPasswordException))]
     public void TestEmptyUserPasswordIsInvalid()
     {
-        string password = "";
+        string password = _emptyString;
         _user = new User(_name, _email, password);
     }
 
@@ -108,7 +107,7 @@ public class UserTests
     [ExpectedException(typeof(PasswordTooShortException))]
     public void TestUserPasswordWithLessThan8CharactersIsInvalid()
     {
-        string password = "Cont#1";
+        string password = _passwordWithLessThan8Characters;
         _user = new User(_name, _email, password);
     }
 
@@ -116,7 +115,7 @@ public class UserTests
     [ExpectedException(typeof(InvalidUserPasswordException))]
     public void TestUserPasswordAllLowercaseIsInvalid()
     {
-        string password = "contrasena#1";
+        string password = _passwordAllLowercase;
         _user = new User(_name, _email, password);
     }
 
@@ -124,7 +123,7 @@ public class UserTests
     [ExpectedException(typeof(InvalidUserPasswordException))]
     public void TestUserPasswordAllUpercaseIsInvalid()
     {
-        string password = "CONTRASENA#1";
+        string password = _passwordAllUpercase;
         _user = new User(_name, _email, password);
     }
 
@@ -132,7 +131,7 @@ public class UserTests
     [ExpectedException(typeof(InvalidUserPasswordException))]
     public void TestUserPasswordWithoutDigitsIsInvalid()
     {
-        string password = "Contrasena#";
+        string password = _passwordWithoutDigits;
         _user = new User(_name, _email, password);
     }
 
@@ -140,7 +139,7 @@ public class UserTests
     [ExpectedException(typeof(InvalidUserPasswordException))]
     public void TestUserPasswordWithoutSymbolsIsInvalid()
     {
-        string password = "Contrasena1";
+        string password = _passwordWithoutSymbols;
         _user = new User(_name, _email, password);
     }
 
@@ -148,51 +147,19 @@ public class UserTests
     [ExpectedException(typeof(UserPasswordsDoNotMatchException))]
     public void TestUserPasswordAndConfirmationDoNotMatch()
     {
-        string password = "Contrasena#1";
-        string confirmation = "Contrasena#2";
+        string password = _password ;
+        string confirmation = _password2;
         User.ValidatePasswordConfirmation(password, confirmation);
     }
     
     [TestMethod]
     public void TestUserPasswordAndConfirmationMatch()
     {
-        string password = "Contrasena#1";
-        string confirmation = "Contrasena#1";
+        string password = _password ;
+        string confirmation = _password ;
         Assert.IsFalse(ThrowsException(() => User.ValidatePasswordConfirmation(password, confirmation)));
     }
-
-    /*
-    [TestMethod] //modificarlo pq es por tabla
-    public void TestValidActionGetsLogged()
-    {
-        User user = new User(_name, _email, _password);
-
-        string action = "Login";
-        DateTime timestamp = DateTime.Now;
-
-        user.LogAction(action, timestamp);
-        //verrrr
-        List<LogEntry> actionsLog = user.Logs;
-        
-        
-
-        Assert.AreEqual(action, actionsLog[0].Message);
-        Assert.AreEqual(timestamp, actionsLog[0].Timestamp);
-        Assert.AreEqual(user.Id, actionsLog[0].UserId);
-    }
-
-    [TestMethod]
-    [ExpectedException(typeof(EmptyActionLogException))]
-    public void TestEmptyActionIsInvalid()
-    {
-        User user = new User(_name, _email, _password);
-
-        string action = "";
-        DateTime timestamp = DateTime.Now;
-
-        user.LogAction(action, timestamp);
-    }
-    */
+    
     private bool ThrowsException(Action functionCall)
     {
         try

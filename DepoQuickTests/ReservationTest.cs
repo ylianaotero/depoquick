@@ -16,10 +16,10 @@ public class ReservationTest
     private const string DepositName = "Deposito";
     private const char DepositArea1 = 'A';
     private const string DepositSize1 = "Pequeño";
-    private const string DepositSize2 = "Mediano";
     private const string DepositSize3 = "Grande";
     private const bool DepositAirConditioning1 = true;
     private const bool DepositAirConditioning2 = false;
+    
     
     [TestMethod]
     public void TestCreateReservationAndSetProperties()
@@ -34,6 +34,7 @@ public class ReservationTest
         reservation.Client = client;
         reservation.Deposit = deposit;
         reservation.Date = stay;
+        reservation.Id = 0;
         
         Assert.AreEqual(client, reservation.Client);
         Assert.AreEqual(deposit, reservation.Deposit);
@@ -184,34 +185,4 @@ public class ReservationTest
         Assert.AreEqual(stay,reservation.Date);
     }
     
-    
-    /*[TestMethod]
-    public void TestTwoDepositsHaveDifferentIDs()
-    {
-        Client client = new Client(ClientName1,ClientEmail1,ClientPassword1);
-        Deposit deposit = new Deposit(DepositArea1, DepositSize1, DepositAirConditioning1);
-        DateTime dayIn = new DateTime(2024, 04, 07);
-        DateTime dayOut = new DateTime(2024, 04, 08);
-        DateRange stay = new DateRange(dayIn, dayOut);
-        
-        Reservation reservation1 = new Reservation(deposit, client, stay);
-        Reservation reservation2 = new Reservation(deposit, client, stay);
-
-        Assert.AreNotEqual(reservation1.Id, reservation2.Id);
-    }*/
-
-   /* [TestMethod]
-    public void TestIDIsIncremental()
-    {
-        Client client = new Client(ClientName1,ClientEmail1,ClientPassword1);
-        Deposit deposit = new Deposit(DepositArea1, DepositSize1, DepositAirConditioning1);
-        DateTime dayIn = new DateTime(2024, 04, 07);
-        DateTime dayOut = new DateTime(2024, 04, 08);
-        DateRange stay = new DateRange(dayIn, dayOut);
-        
-        Reservation reservation1 = new Reservation(deposit, client, stay);
-        Reservation reservation2 = new Reservation(deposit, client, stay);
-
-        Assert.IsTrue(reservation1.Id < reservation2.Id);
-    }*/
 }

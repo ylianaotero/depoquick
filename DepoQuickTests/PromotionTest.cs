@@ -48,6 +48,22 @@ public class PromotionTest
     }
     
     [TestMethod]
+    public void TestValidPromotionWithEmptyListOfDeposits()
+    {
+        Promotion newPromotion = new Promotion();
+        List<Deposit> emptyListOfDeposits = new List<Deposit>(); 
+        
+        newPromotion.Label = "label";
+        newPromotion.Id = 0;
+        newPromotion.Deposits = emptyListOfDeposits; 
+        
+        Assert.AreEqual("label", newPromotion.Label);
+        Assert.AreEqual(0, newPromotion.Id);
+        Assert.AreEqual(emptyListOfDeposits, newPromotion.Deposits);
+        
+    }
+    
+    [TestMethod]
     [ExpectedException(typeof(InvalidPercentageForPromotionException))] 
     public void TestPromotionWithLessThan5Percent()
     {
