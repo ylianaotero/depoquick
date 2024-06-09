@@ -1,13 +1,14 @@
 ﻿@page "/Home"
 @using BusinessLogic
+@using BusinessLogic.Controllers
 @using DepoQuick.Domain
-@inject Session Session
+@inject SessionController SessionController
 
 
 <div class="container-fluid mt-4">
     <div class="row">
         <div class="col">
-            @if (Session.UserLoggedIn())
+            @if (SessionController.UserLoggedIn())
             {
                 <h1 class="text-center" style="color: #0a53be"><strong>¡Bienvenido/a @_loggedUser.Name!</strong></h1>
                 @if (_loggedUserIsAdmin)
@@ -30,13 +31,11 @@
     
     protected override void OnInitialized()
     {
-        _loggedUser = Session.ActiveUser;
-        if (Session.UserLoggedIn())
+        _loggedUser = SessionController.ActiveUser;
+        if (SessionController.UserLoggedIn())
         {
             _loggedUserIsAdmin = _loggedUser.IsAdministrator; 
         }
         
     }
-    
-    
 }

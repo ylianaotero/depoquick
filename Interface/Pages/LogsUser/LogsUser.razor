@@ -1,8 +1,8 @@
 ﻿@page "/LogsUser"
 @using BusinessLogic
+@using BusinessLogic.Controllers
 @using DepoQuick.Domain
-@inject Session Session
-@inject DepoQuickContext DepoQuickContext
+@inject SessionController SessionController
 @inject UserController UserController
 @inject LogController LogController
 
@@ -39,16 +39,12 @@
 </html>
 
 @code {
-  //  private UserController _userController;
     private User _loggedInUser;
     private List<LogEntry> _logs;
     
     protected override void OnInitialized()
     {
-        //_userController = new UserController(DepoQuickContext);
-     //   SqlRepository<User> userRepository = new SqlRepository<User>(DepoQuickContext);
-       // _userController = new UserController(userRepository);
-        _loggedInUser = Session.ActiveUser;
+        _loggedInUser = SessionController.ActiveUser;
         _logs = LogController.GetAllLogs(_loggedInUser);
     }
     

@@ -1,9 +1,9 @@
 ﻿@page "/Login"
 @using BusinessLogic
-@using BusinessLogic.Exceptions.ControllerExceptions
-@inject Session Session
+@using BusinessLogic.Controllers
+@using BusinessLogic.Exceptions.UserControllerExceptions
+@inject SessionController SessionController
 @inject NavigationManager NavigationManager
-@inject DepoQuickContext DepoQuickContext
 
 <html lang="es" xmlns="http://www.w3.org/1999/html">
   <head>
@@ -76,8 +76,7 @@
     private String _password;
 
     
-    
-     protected override void OnInitialized()
+    protected override void OnInitialized()
     {
         HideAllAlerts();
     }
@@ -89,7 +88,7 @@
         
         try
         {
-            Session.LoginUser(_email, _password); 
+            SessionController.LoginUser(_email, _password); 
 
             GoHome(); 
         }
@@ -119,5 +118,4 @@
     {
         NavigationManager.NavigateTo("/", forceLoad:true);
     }
-    
 }

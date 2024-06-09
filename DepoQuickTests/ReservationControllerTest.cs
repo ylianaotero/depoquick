@@ -1,9 +1,11 @@
 ﻿using BusinessLogic;
-using BusinessLogic.Exceptions.ControllerExceptions;
 using DepoQuick.Domain;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
+using BusinessLogic.Controllers;
+using BusinessLogic.Exceptions.PaymentControllerExceptions;
 using BusinessLogic.Exceptions.ReservationControllerExceptions;
+using BusinessLogic.Exceptions.UserControllerExceptions;
 using DepoQuick.Exceptions.ReservationExceptions;
 
 namespace DepoQuickTests
@@ -18,7 +20,7 @@ namespace DepoQuickTests
         private PaymentController _paymentController;
         private UserController _userController;
         private DepoQuickContext _context;
-        private Session _session;
+        private SessionController _sessionController;
         private NotificationController _notificationController;
         
         private const string AdminName = "Administrator";
@@ -30,7 +32,8 @@ namespace DepoQuickTests
         private const string ClientName2 = "ClientDos";
         private const string ClientEmail2 = "client2@domain.com";
         private const string ClientPassword2 = "Password2#";
-     
+
+        private const string DepositName = "Deposito";
         private const char DepositArea0 = 'A';
         private const string DepositSize0 = "Pequeño";
         private const bool DepositAirConditioning0 = true;
@@ -70,7 +73,7 @@ namespace DepoQuickTests
             IRepository<User> _userRepository = new SqlRepository<User>(_context);
             _userController = new UserController(_userRepository);
             _logController = new LogController(new SqlRepository<LogEntry>(_context));
-            _session = new Session(_userController, _logController);
+            _sessionController = new SessionController(_userController, _logController);
             IRepository<Reservation> _reservationRepository = new SqlRepository<Reservation>(_context);
             
             
@@ -80,13 +83,13 @@ namespace DepoQuickTests
             _notificationController = new NotificationController(new SqlRepository<Notification>(_context));
 
 
-           _reservationController = new ReservationController(_reservationRepository,_session,_paymentController,_notificationController  );
+           _reservationController = new ReservationController(_reservationRepository,_sessionController,_paymentController,_notificationController  );
             
             _userController.RegisterAdministrator(AdminName, AdminEmail, AdminPassword, AdminPassword);
 
-            _deposit0 = new Deposit (DepositArea0,DepositSize0,DepositAirConditioning0);
-            _deposit1 = new Deposit(DepositArea1,DepositSize1,DepositAirConditioning1);
-            _deposit2 = new Deposit(DepositArea0,DepositSize1,DepositAirConditioning1);
+            _deposit0 = new Deposit (DepositName,DepositArea0,DepositSize0,DepositAirConditioning0);
+            _deposit1 = new Deposit(DepositName,DepositArea1,DepositSize1,DepositAirConditioning1);
+            _deposit2 = new Deposit(DepositName,DepositArea0,DepositSize1,DepositAirConditioning1);
             
             _currentDateRange = new DateRange(DateTime.Now, DateTime.Now.AddDays(10));
             _validDateRange = new DateRange(DateTime.Now.AddDays(5), DateTime.Now.AddDays(10));
@@ -118,6 +121,38 @@ namespace DepoQuickTests
             Reservation result = _reservationController.Get(reservation.Id);
             Assert.IsNotNull(result);
             Assert.AreEqual(reservation.Id, result.Id);
+            
+            DateTime now = DateTime.Now.AddSeconds(-DateTime.Now.Second);
+            Assert.IsTrue(now.Date == reservation.RequestedAt.Date && now.Hour == reservation.RequestedAt.Hour && now.Minute == reservation.RequestedAt.Minute);
+            Assert.IsFalse(_reservationController.PromotionHasBeenApplied(reservation));
+        }
+        
+        [TestMethod]
+        public void TestAddAReservationWithPromotion()
+        {
+            _userController.RegisterClient(ClientName, ClientEmail, ClientPassword, ClientPassword);
+            _client = (Client)_userController.GetUserByEmail(ClientEmail);
+
+            Promotion newPromotion = new Promotion();
+            newPromotion.Label = "Label"; 
+            newPromotion.ValidityDate = _currentDateRange; 
+            List<Promotion> promotionsLinkedToDeposit = new List<Promotion>();
+            promotionsLinkedToDeposit.Add(newPromotion);
+        
+            _deposit0.AddPromotion(newPromotion);
+            
+            Reservation reservation = new Reservation(_deposit0, _client, _validDateRange);
+
+            
+            _reservationController.Add(reservation);
+
+            Reservation result = _reservationController.Get(reservation.Id);
+            Assert.IsNotNull(result);
+            Assert.AreEqual(reservation.Id, result.Id);
+            
+            DateTime now = DateTime.Now.AddSeconds(-DateTime.Now.Second);
+            Assert.IsTrue(now.Date == reservation.RequestedAt.Date && now.Hour == reservation.RequestedAt.Hour && now.Minute == reservation.RequestedAt.Minute);
+            Assert.IsTrue(_reservationController.PromotionHasBeenApplied(reservation));
         }
         
         [TestMethod]
@@ -210,7 +245,7 @@ namespace DepoQuickTests
         {
             _userController.RegisterClient(ClientName, ClientEmail, ClientPassword, ClientPassword);
             _client = (Client)_userController.GetUserByEmail(ClientEmail);
-            _session.LoginUser(AdminEmail, AdminPassword);
+            _sessionController.LoginUser(AdminEmail, AdminPassword);
             var reservation = new Reservation(_deposit0, _client, _validDateRange);
             _reservationController.Add(reservation);
 
@@ -232,7 +267,7 @@ namespace DepoQuickTests
             _reservationController.Add(reservation);
             _reservationController.PayReservation(reservation);
             
-            _session.LoginUser(AdminEmail, AdminPassword);
+            _sessionController.LoginUser(AdminEmail, AdminPassword);
             
             string rejectionReason = "Precio demasiado elevado";
             _reservationController.RejectReservation(reservation, rejectionReason);
@@ -251,11 +286,11 @@ namespace DepoQuickTests
             _userController.RegisterClient(ClientName, ClientEmail, ClientPassword, ClientPassword);
             _client = (Client)_userController.GetUserByEmail(ClientEmail);
             
-            Deposit deposit = new Deposit(DepositArea0, DepositSize0, DepositAirConditioning0);
+            Deposit deposit = new Deposit(DepositName,DepositArea0, DepositSize0, DepositAirConditioning0);
             Reservation reservation = new Reservation(deposit, _client, _validDateRange);
             _reservationController.Add(reservation);
             
-            _session.LoginUser(ClientEmail, ClientPassword);
+            _sessionController.LoginUser(ClientEmail, ClientPassword);
 
            _reservationController.ApproveReservation(reservation);
         }
@@ -267,9 +302,9 @@ namespace DepoQuickTests
             _userController.RegisterClient(ClientName, ClientEmail, ClientPassword, ClientPassword);
             _client = (Client)_userController.GetUserByEmail(ClientEmail);
             
-            _session.LoginUser(ClientEmail, ClientPassword);
+            _sessionController.LoginUser(ClientEmail, ClientPassword);
             
-            Deposit deposit = new Deposit(DepositArea0, DepositSize0, DepositAirConditioning0);
+            Deposit deposit = new Deposit(DepositName,DepositArea0, DepositSize0, DepositAirConditioning0);
             Reservation reservation = new Reservation(deposit, _client, _validDateRange);
             _reservationController.Add(reservation);
             
@@ -283,7 +318,7 @@ namespace DepoQuickTests
         {
             String reason = "Esta reason es valida";
             
-            _session.LoginUser(AdminEmail,AdminPassword);
+            _sessionController.LoginUser(AdminEmail,AdminPassword);
             
             _reservationController.RejectReservation(null, reason);
             
@@ -297,12 +332,12 @@ namespace DepoQuickTests
             _userController.RegisterClient(ClientName, ClientEmail, ClientPassword, ClientPassword);
             _client = (Client)_userController.GetUserByEmail(ClientEmail);
             
-            Deposit deposit = new Deposit(DepositArea0, DepositSize0, DepositAirConditioning0);
+            Deposit deposit = new Deposit(DepositName,DepositArea0, DepositSize0, DepositAirConditioning0);
             Reservation reservation = new Reservation(deposit, _client, _validDateRange);
             
             _reservationController.Add(reservation);
             
-            _session.LoginUser(AdminEmail,AdminPassword);
+            _sessionController.LoginUser(AdminEmail,AdminPassword);
             
             _reservationController.RejectReservation(reservation, "");
         }
@@ -314,11 +349,11 @@ namespace DepoQuickTests
             _userController.RegisterClient(ClientName, ClientEmail, ClientPassword, ClientPassword);
             _client = (Client)_userController.GetUserByEmail(ClientEmail);
             
-            Deposit deposit = new Deposit(DepositArea0, DepositSize0, DepositAirConditioning0);
+            Deposit deposit = new Deposit(DepositName,DepositArea0, DepositSize0, DepositAirConditioning0);
             Reservation reservation = new Reservation(deposit, _client, _validDateRange);
             _reservationController.Add(reservation);
             
-            _session.LoginUser(AdminEmail,AdminPassword);
+            _sessionController.LoginUser(AdminEmail,AdminPassword);
             
             _reservationController.RejectReservation(reservation, null);
         }
@@ -411,7 +446,7 @@ namespace DepoQuickTests
             _userController.RegisterClient(ClientName, ClientEmail, ClientPassword, ClientPassword);
             _client = (Client)_userController.GetUserByEmail(ClientEmail);
             
-            _session.LoginUser(AdminEmail, AdminPassword);
+            _sessionController.LoginUser(AdminEmail, AdminPassword);
             
             Reservation reservation = new Reservation(_deposit0, _client, _currentDateRange);
             _reservationController.Add(reservation);
@@ -432,7 +467,7 @@ namespace DepoQuickTests
             _userController.RegisterClient(ClientName, ClientEmail, ClientPassword, ClientPassword);
             _client = (Client)_userController.GetUserByEmail(ClientEmail);
             
-            _session.LoginUser(AdminEmail, AdminPassword);
+            _sessionController.LoginUser(AdminEmail, AdminPassword);
             
             Reservation reservation = new Reservation(_deposit0, _client, _currentDateRange);
             _reservationController.Add(reservation);
@@ -446,7 +481,7 @@ namespace DepoQuickTests
         {
             _userController.RegisterClient(ClientName, ClientEmail, ClientPassword, ClientPassword);
             _client = (Client)_userController.GetUserByEmail(ClientEmail);
-            _session.LoginUser(AdminEmail, AdminPassword);
+            _sessionController.LoginUser(AdminEmail, AdminPassword);
             var reservation = new Reservation(_deposit0, _client, _validDateRange);
             _reservationController.Add(reservation);
 
@@ -476,7 +511,7 @@ namespace DepoQuickTests
             _reservationController.Add(reservation);
             _reservationController.PayReservation(reservation);
             
-            _session.LoginUser(AdminEmail, AdminPassword);
+            _sessionController.LoginUser(AdminEmail, AdminPassword);
             
             string rejectionReason = "Precio demasiado elevado";
             _reservationController.RejectReservation(reservation, rejectionReason);
@@ -490,6 +525,24 @@ namespace DepoQuickTests
             CollectionAssert.DoesNotContain(_client.Notifications,notification);
         }
         
+        [TestMethod]
+        public void TestAddCostReservation()
+        {
+            _userController.RegisterClient(ClientName, ClientEmail, ClientPassword, ClientPassword);
+            _client = (Client)_userController.GetUserByEmail(ClientEmail);
 
+            Reservation reservation = new Reservation(_deposit0, _client, _validDateRange);
+            _reservationController.Add(reservation);
+
+            Reservation reservationSaved = _reservationController.Get(reservation.Id);
+
+            int expectedPrice = _deposit0.CalculatePrice(_validDateRange.NumberOfDays()); 
+    
+            _reservationController.AddPrice(reservation,expectedPrice );
+    
+            Assert.AreEqual(expectedPrice , _reservationController.GetPrice(reservationSaved));
+    
+    
+        }
     }
 }

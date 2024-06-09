@@ -6,6 +6,7 @@ namespace DepoQuickTests;
 [TestClass]
 public class PaymentTest
 {
+    private const string DepositName = "Deposito";
     private const string ClientName1 = "Maria Perez";
     private const string ClientEmail1 = "maria@gmail.com";
     private const string ClientPassword1 = "Mariaaa1.";
@@ -19,7 +20,7 @@ public class PaymentTest
     public void Initialize()
     {
         Client client = new Client(ClientName1,ClientEmail1,ClientPassword1);
-        Deposit deposit = new Deposit(DepositArea1, DepositSize1, DepositAirConditioning1);
+        Deposit deposit = new Deposit(DepositName,DepositArea1, DepositSize1, DepositAirConditioning1);
         DateTime dayIn = new DateTime(2024, 04, 07);
         DateTime dayOut = new DateTime(2024, 04, 08);
         DateRange stay = new DateRange(dayIn, dayOut);

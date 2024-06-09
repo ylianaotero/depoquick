@@ -6,9 +6,14 @@ namespace DepoQuickTests;
 [TestClass]
 public class DepositTest
 {
+    private const string ClientName1 = "Maria Perez";
+    private const string ClientEmail1 = "maria@gmail.com";
+    private const string ClientPassword1 = "Mariaaa1.";
+    
     [TestMethod]
     public void TestDepositConstructor()
     {
+        string name = "Deposito";
         char area = 'A';
         String size = "Pequeño";
         bool airConditioning = true;
@@ -17,45 +22,49 @@ public class DepositTest
         newDeposit.Area = area;
         newDeposit.Size = size;
         newDeposit.AirConditioning = airConditioning;
+        newDeposit.Id = 0;
         
         Assert.IsNotNull(newDeposit);
         Assert.AreEqual(char.ToUpper(area), newDeposit.Area);
         Assert.AreEqual(size.ToUpper(), newDeposit.Size);
         Assert.AreEqual(airConditioning, newDeposit.AirConditioning);
+        Assert.AreEqual(0, newDeposit.Id);
     }
     
     [TestMethod]
     [ExpectedException(typeof(DepositWithInvalidAreaException))] 
     public void TestInvalidArea()
     {
+        string name = "Deposito";
         char area = 'R';
         String size = "Grande"; 
         bool airConditioning = true;
         
-
-        new Deposit(area, size, airConditioning);
+        new Deposit(name,area, size, airConditioning);
     }
     
     [TestMethod]
     [ExpectedException(typeof(DepositWithInvalidAreaException))] 
     public void TestInvalidSizeAndArea()
     {
+        string name = "Deposito";
         char area = 'l';
         String size = "Enorme";
         bool airConditioning = true;
         
         
-        new Deposit(area, size, airConditioning);
+        new Deposit(name,area, size, airConditioning);
     }
     
     [TestMethod]
     public void TestValidDeposit()
     {
+        string name = "Deposito";
         char area = 'a';
         String size = "Mediano";
         bool airConditioning = true;
         
-        Deposit newDeposit = new Deposit(area, size, airConditioning); 
+        Deposit newDeposit = new Deposit(name,area, size, airConditioning); 
         
         Assert.IsNotNull(newDeposit);
         Assert.AreEqual(char.ToUpper(area), newDeposit.Area);
@@ -67,17 +76,19 @@ public class DepositTest
     [ExpectedException(typeof(DepositWithInvalidSizeException))] 
     public void TestInvalidSize()
     {
+        string name = "Deposito";
         char area = 'A';
         String size = "Minusculo";
         bool airConditioning = true;
         
         
-        new Deposit(area, size, airConditioning);
+        new Deposit(name,area, size, airConditioning);
     }
     
     [TestMethod]
     public void TestAddRating()
     {
+        string name = "Deposito";
         int stars = 1;
         String comment = " "; 
         
@@ -88,7 +99,7 @@ public class DepositTest
         bool airConditioning = true;
         
         
-        Deposit newDeposit = new Deposit(area, size, airConditioning); 
+        Deposit newDeposit = new Deposit(name,area, size, airConditioning); 
         
         newDeposit.AddRating(newRating);
         
@@ -114,11 +125,12 @@ public class DepositTest
         newPromotion.ValidityDate = dateRange;
         newPromotion.Label = label;
         
+        string name = "Deposito";
         char area = 'A';
         String size = "Pequeño";
         bool airConditioning = true;
         
-        Deposit newDeposit = new Deposit(area, size, airConditioning); 
+        Deposit newDeposit = new Deposit(name,area, size, airConditioning); 
         
         newDeposit.AddPromotion(newPromotion);
         
@@ -132,11 +144,12 @@ public class DepositTest
     [TestMethod]
     public void TestCalculateSmallDepositPriceWithoutPromotionLessThan7DaysAndWithoutAirConditioning()
     {
+        string name = "Deposito";
         char area = 'A';
         String size = "Pequeño";
         bool airConditioning = false;
         
-        Deposit newDeposit = new Deposit(area, size, airConditioning);
+        Deposit newDeposit = new Deposit(name,area, size, airConditioning);
 
         int numberOfDays = 6;
 
@@ -151,11 +164,12 @@ public class DepositTest
     [TestMethod]
     public void TestCalculateMediumDepositPriceWithoutPromotionLessThan7DaysAndWithoutAirConditioning()
     {
+        string name = "Deposito";
         char area = 'A';
         String size = "Mediano";
         bool airConditioning = false;
         
-        Deposit newDeposit = new Deposit(area, size, airConditioning);
+        Deposit newDeposit = new Deposit(name,area, size, airConditioning);
 
         int numberOfDays = 6;
 
@@ -170,11 +184,12 @@ public class DepositTest
     [TestMethod]
     public void TestCalculateBigDepositPriceWithoutPromotionLessThan7DaysAndWithoutAirConditioning()
     {
+        string name = "Deposito";
         char area = 'A';
         String size = "Grande";
         bool airConditioning = false;
         
-        Deposit newDeposit = new Deposit(area, size, airConditioning);
+        Deposit newDeposit = new Deposit(name,area, size, airConditioning);
 
         int numberOfDays = 6;
 
@@ -189,12 +204,13 @@ public class DepositTest
     [TestMethod]
     public void TestCalculateBigDepositPriceWithoutPromotionFor7DaysAndWithoutAirConditioning()
     {
+        string name = "Deposito";
         char area = 'A';
         String size = "Grande";
         bool airConditioning = false;
         
         
-        Deposit newDeposit = new Deposit(area, size, airConditioning);
+        Deposit newDeposit = new Deposit(name,area, size, airConditioning);
 
         int numberOfDays = 7;
 
@@ -212,12 +228,13 @@ public class DepositTest
     [TestMethod]
     public void TestCalculateBigDepositPriceWithoutPromotionFor14DaysAndWithoutAirConditioning()
     {
+        string name = "Deposito";
         char area = 'A';
         String size = "Grande";
         bool airConditioning = false;
         
         
-        Deposit newDeposit = new Deposit(area, size, airConditioning);
+        Deposit newDeposit = new Deposit(name,area, size, airConditioning);
 
         int numberOfDays = 14;
 
@@ -235,12 +252,13 @@ public class DepositTest
     [TestMethod]
     public void TestCalculateBigDepositPriceWithoutPromotionForMoreThan14DaysAndWithoutAirConditioning()
     {
+        string name = "Deposito";
         char area = 'A';
         String size = "Grande";
         bool airConditioning = false;
         
         
-        Deposit newDeposit = new Deposit(area, size, airConditioning);
+        Deposit newDeposit = new Deposit(name,area, size, airConditioning);
 
         int numberOfDays = 15;
 
@@ -258,12 +276,13 @@ public class DepositTest
     [TestMethod]
     public void TestCalculateBigDepositPriceWithoutPromotionForMoreThan14DaysAndWithAirConditioning()
     {
+        string name = "Deposito";
         char area = 'A';
         String size = "Grande";
         bool airConditioning = true;
         
         
-        Deposit newDeposit = new Deposit(area, size, airConditioning);
+        Deposit newDeposit = new Deposit(name,area, size, airConditioning);
 
         int numberOfDays = 15;
 
@@ -298,12 +317,13 @@ public class DepositTest
         newPromotion.ValidityDate = dateRange;
         newPromotion.Label = label;
         
+        string name = "Deposito";
         char area = 'A';
         String size = "Grande";
         bool airConditioning = true;
         
         
-        Deposit newDeposit = new Deposit(area, size, airConditioning);
+        Deposit newDeposit = new Deposit(name,area, size, airConditioning);
         
         newDeposit.AddPromotion(newPromotion);
 
@@ -341,12 +361,13 @@ public class DepositTest
         newPromotion.ValidityDate = dateRange;
         newPromotion.Label = label;
         
+        string name = "Deposito";
         char area = 'A';
         String size = "Grande";
         bool airConditioning = true;
         
         
-        Deposit newDeposit = new Deposit(area, size, airConditioning);
+        Deposit newDeposit = new Deposit(name,area, size, airConditioning);
         
         newDeposit.AddPromotion(newPromotion);
 
@@ -393,12 +414,13 @@ public class DepositTest
         newPromotion2.ValidityDate = dateRange;
         newPromotion2.Label = label;
         
+        string name = "Deposito";
         char area = 'A';
         String size = "Grande";
         bool airConditioning = true;
         
         
-        Deposit newDeposit = new Deposit(area, size, airConditioning);
+        Deposit newDeposit = new Deposit(name,area, size, airConditioning);
         
         newDeposit.AddPromotion(newPromotion);
         newDeposit.AddPromotion(newPromotion2);
@@ -442,12 +464,13 @@ public class DepositTest
         newPromotion2.ValidityDate = dateRange;
         newPromotion2.Label = label;
         
+        string name = "Deposito";
         char area = 'A';
         String size = "Grande";
         bool airConditioning = true;
         
         
-        Deposit newDeposit = new Deposit(area, size, airConditioning);
+        Deposit newDeposit = new Deposit(name,area, size, airConditioning);
         
         newDeposit.AddPromotion(newPromotion);
         newDeposit.AddPromotion(newPromotion2);
@@ -462,12 +485,13 @@ public class DepositTest
     [TestMethod]
     public void TestRemovePromotionFromDeposit()
     {
+        string name = "Deposito";
         char area = 'a';
         String size = "Mediano";
         bool airConditioning = true;
         
         
-        Deposit newDeposit1 = new Deposit(area, size, airConditioning);
+        Deposit newDeposit1 = new Deposit(name,area, size, airConditioning);
         
         Promotion newPromotion = new Promotion();
         List<Promotion> promotionsLinkedToDeposit = new List<Promotion>();
@@ -479,196 +503,17 @@ public class DepositTest
         
         CollectionAssert.DoesNotContain(newDeposit1.Promotions, newPromotion);
     }
-
-    [TestMethod]
-    public void TestGetReservations()
-    {
-        char area = 'a';
-        String size = "Mediano";
-        bool airConditioning = true;
-        
-        
-        Deposit newDeposit = new Deposit(area, size, airConditioning);
-
-        Client client = new Client("Maria Perez", "mariaperez@gmail.com", "Contrasena1#");
-        
-        DateTime dayIn = new DateTime(2024, 04, 07);
-        DateTime dayOut = new DateTime(2024, 04, 08);
-        DateRange stay = new DateRange(dayIn, dayOut);
-        
-        Reservation reservation = new Reservation(newDeposit, client, stay);
-        
-        newDeposit.AddReservation(reservation);
-        
-        CollectionAssert.Contains(newDeposit.Reservations, reservation);
-    }
-
-
-    [TestMethod]
-    public void TestRemoveReservation()
-    {
-        char area = 'a';
-        String size = "Mediano";
-        bool airConditioning = true;
-        
-
-        Deposit newDeposit = new Deposit(area, size, airConditioning);
-
-        Client client = new Client("Maria Perez", "mariaperez@gmail.com", "Contrasena1#");
-
-        DateTime dayIn = new DateTime(2024, 04, 07);
-        DateTime dayOut = new DateTime(2024, 04, 08);
-        DateRange stay = new DateRange(dayIn, dayOut);
-
-        Reservation reservation = new Reservation(newDeposit, client, stay);
-
-        newDeposit.AddReservation(reservation);
-
-        newDeposit.RemoveReservation(reservation);
-
-        CollectionAssert.DoesNotContain(newDeposit.Reservations, reservation);
-    }
-
-    [TestMethod]
-    public void TestDepositIsReserved()
-    {
-        char area = 'a';
-        String size = "Mediano";
-        bool airConditioning = true;
-        
-
-        Deposit newDeposit = new Deposit(area, size, airConditioning);
-
-        Administrator admin = new Administrator("Juan Perez", "juanperez@gmail.com", "Contrasena1#");
-
-        Client client = new Client("Maria Perez", "mariaperez@gmail.com", "Contrasena1#");
-
-        DateTime expiredDayIn = new DateTime(2024, 04, 07);
-        DateTime expiredDayOut = new DateTime(2024, 04, 08);
-        DateRange expiredStay = new DateRange(expiredDayIn, expiredDayOut);
-
-        Reservation expiredReservation = new Reservation(newDeposit, client, expiredStay);
-
-        newDeposit.AddReservation(expiredReservation);
-        
-        Assert.IsFalse(newDeposit.IsReserved());
-        
-        DateTime dayIn = DateTime.Now;
-        DateTime dayOut = DateTime.Now.AddDays(10);
-        DateRange stay = new DateRange(dayIn, dayOut);
-        
-        Reservation reservation = new Reservation(newDeposit, client, stay);
-        
-        newDeposit.AddReservation(reservation);
-        
-        admin.ApproveReservation(reservation);
-        
-        Assert.IsTrue(newDeposit.IsReserved());
-    }
-
-    [TestMethod]
-    public void TestDepositIsReservedInDateRange()
-    {
-        char area = 'a';
-        String size = "Mediano";
-        bool airConditioning = true;
-        
-        Deposit newDeposit = new Deposit(area, size, airConditioning);
-
-        Client client = new Client("Maria Perez", "mariaperez@gmail.com", "Contrasena1#");
-
-        DateTime dayIn = DateTime.Now.AddDays(10);
-        DateTime dayOut = DateTime.Now.AddDays(20);
-        DateRange stay = new DateRange(dayIn, dayOut);
-
-        Reservation reservation = new Reservation(newDeposit, client, stay);
-
-        newDeposit.AddReservation(reservation);
-
-        Administrator admin = new Administrator("Juan Perez", "juanperez@gmail.com", "Contrasena1#");
-
-        admin.ApproveReservation(reservation);
-        Assert.IsFalse(newDeposit.IsReserved());
-        Assert.IsTrue(newDeposit.IsReserved(stay));
-    }
-
-    [TestMethod]
-    public void TestDepositIsNotReservedInDateRange()
-    {
-        char area = 'a';
-        String size = "Mediano";
-        bool airConditioning = true;
-
-        Deposit newDeposit = new Deposit(area, size, airConditioning);
-
-        Client client = new Client("Maria Perez", "mariaperez@gmail.com", "Contrasena1#");
-
-        DateTime dayIn = DateTime.Now.AddDays(10);
-        DateTime dayOut = DateTime.Now.AddDays(20);
-        DateRange stay = new DateRange(dayIn, dayOut);
-        
-        DateRange otherStay = new DateRange(DateTime.Now.AddDays(5), DateTime.Now.AddDays(8));
-
-        Reservation reservation = new Reservation(newDeposit, client, stay);
-
-        newDeposit.AddReservation(reservation);
-        
-        Administrator admin = new Administrator("Juan Perez", "juanperez@gmail.com", "Contrasena1#");
-        admin.ApproveReservation(reservation);
-
-        Assert.IsFalse(newDeposit.IsReserved(otherStay));
-    }
-
-    [TestMethod]
-    public void TestDepositHasUpcomingReservations()
-    {
-        char area = 'a';
-        String size = "Mediano";
-        bool airConditioning = true;
-
-        Deposit newDeposit = new Deposit(area, size, airConditioning);
-
-        Client client = new Client("Maria Perez", "mariaperez@gmail.com", "Contrasena1#");
-        
-        DateRange stay = new DateRange(DateTime.Now.AddDays(5), DateTime.Now.AddDays(8));
-        
-        Reservation reservation = new Reservation(newDeposit, client, stay);
-
-        newDeposit.AddReservation(reservation);
-        
-        Assert.IsTrue(newDeposit.HasUpcomingReservations());
-    }
-
-    [TestMethod]
-    public void TestDepositDoesNotHaveUpcomingReservations()
-    {
-        char area = 'a';
-        String size = "Mediano";
-        bool airConditioning = true;
-
-        Deposit newDeposit = new Deposit(area, size, airConditioning);
-
-        Client client = new Client("Maria Perez", "mariaperez@gmail.com", "Contrasena1#");
-
-        DateTime expiredDayIn = new DateTime(2024, 04, 07);
-        DateTime expiredDayOut = new DateTime(2024, 04, 08);
-        DateRange expiredStay = new DateRange(expiredDayIn, expiredDayOut);
-
-        Reservation expiredReservation = new Reservation(newDeposit, client, expiredStay);
-
-        newDeposit.AddReservation(expiredReservation);
-
-        Assert.IsFalse(newDeposit.HasUpcomingReservations());
-    }
+    
 
     [TestMethod]
     public void TestGetAverageRating()
     {
+        string name = "Deposito";
         char area = 'a';
         String size = "Mediano";
         bool airConditioning = true;
 
-        Deposit newDeposit = new Deposit(area, size, airConditioning);
+        Deposit newDeposit = new Deposit(name,area, size, airConditioning);
         
         Rating rating1 = new Rating(5, "Excelente");
         Rating rating2 = new Rating(3, "Regular");
@@ -690,13 +535,128 @@ public class DepositTest
     [TestMethod]
     public void TestGetAverageRatingWithNoRatings()
     {
+        string name = "Deposito";
         char area = 'a';
         String size = "Mediano";
         bool airConditioning = true;
 
-        Deposit newDeposit = new Deposit(area, size, airConditioning);
+        Deposit newDeposit = new Deposit(name,area, size, airConditioning);
         
         Assert.AreEqual(0, newDeposit.GetAverageRating());
     }
+    
+    [TestMethod]
+    public void TestDepositIsReserved()
+    {
+        string name = "Deposito";
+        char area = 'a';
+        String size = "Mediano";
+        bool airConditioning = true;
+        
+        Client client = new Client(ClientName1,ClientEmail1,ClientPassword1);
+        DateTime dayIn = DateTime.Now;
+        DateTime dayOut = new DateTime(2028, 04, 08);
+        DateRange stay = new DateRange(dayIn, dayOut);
+
+        Deposit newDeposit = new Deposit(name,area, size, airConditioning);
+        
+        Reservation _reservation = new Reservation(newDeposit,client,stay);
+
+        _reservation.Status = 1; 
+        
+        List<Reservation> listOfReservations = new List<Reservation>(); 
+        listOfReservations.Add(_reservation);
+
+        newDeposit.Reservations = listOfReservations; 
+        
+        Assert.IsTrue(newDeposit.IsReserved());
+    }
+    
+    [TestMethod]
+    public void TestDepositIsNotReserved()
+    {
+        string name = "Deposito";
+        char area = 'a';
+        String size = "Mediano";
+        bool airConditioning = true;
+        
+        Client client = new Client(ClientName1,ClientEmail1,ClientPassword1);
+        DateTime dayIn = DateTime.Now;
+        DateTime dayOut = new DateTime(2028, 04, 08);
+        DateRange stay = new DateRange(dayIn, dayOut);
+
+        Deposit newDeposit = new Deposit(name,area, size, airConditioning);
+        
+        Reservation _reservation = new Reservation(newDeposit,client,stay);
+
+        _reservation.Status = -1; 
+        
+        List<Reservation> listOfReservations = new List<Reservation>(); 
+        listOfReservations.Add(_reservation);
+
+        newDeposit.Reservations = listOfReservations; 
+        
+        Assert.IsFalse(newDeposit.IsReserved());
+    }
+    
+    [TestMethod]
+    public void TestDepositHasUppcomingReservations()
+    {
+        string name = "Deposito";
+        char area = 'a';
+        String size = "Mediano";
+        bool airConditioning = true;
+        
+        Client client = new Client(ClientName1,ClientEmail1,ClientPassword1);
+        DateTime dayIn = DateTime.Now.AddDays(7);
+        DateTime dayOut = new DateTime(2028, 04, 08);
+        DateRange stay = new DateRange(dayIn, dayOut);
+
+        Deposit newDeposit = new Deposit(name,area, size, airConditioning);
+        
+        Reservation _reservation = new Reservation(newDeposit,client,stay);
+
+        _reservation.Status = 1; 
+        
+        List<Reservation> listOfReservations = new List<Reservation>(); 
+        listOfReservations.Add(_reservation);
+
+        newDeposit.Reservations = listOfReservations; 
+        
+        Assert.IsTrue(newDeposit.HasUpcomingReservations());
+    }
+    
+    [TestMethod]
+    public void TestDepositHasNotUppcomingReservations()
+    {
+        string name = "Deposito";
+        char area = 'a';
+        String size = "Mediano";
+        bool airConditioning = true;
+        
+        Client client = new Client(ClientName1,ClientEmail1,ClientPassword1);
+        DateTime dayIn = new DateTime(2020, 04, 08);
+        DateTime dayOut = new DateTime(2028, 04, 08);
+        DateRange stay = new DateRange(dayIn, dayOut);
+
+        Deposit newDeposit = new Deposit(name,area, size, airConditioning);
+        
+        Reservation _reservation = new Reservation(newDeposit,client,stay);
+
+        _reservation.Status = 1; 
+        
+        List<Reservation> listOfReservations = new List<Reservation>(); 
+        listOfReservations.Add(_reservation);
+
+        newDeposit.Reservations = listOfReservations; 
+        
+        Assert.IsFalse(newDeposit.HasUpcomingReservations());
+    }
+
+    
+    
+    
+
+
 
 }

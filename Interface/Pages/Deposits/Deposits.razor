@@ -1,10 +1,9 @@
 @page "/Deposits"
 @using BusinessLogic
+@using BusinessLogic.Controllers
 @using DepoQuick.Domain
-@inject Session Session
+@inject SessionController SessionController
 @inject NavigationManager NavigationManager
-@inject DepoQuickContext DepoQuickContext
-@inject PromotionController PromotionController
 @inject DepositController DepositController
 
 
@@ -52,6 +51,7 @@
         <thead>
         <tr>
             <th>Depósito</th>
+            <th>Nombre</th>
             <th>Área</th>
             <th>Tamaño</th>
             <th>Climatización</th>
@@ -69,6 +69,7 @@
         {
             <tr>
                 <td>@deposit.Id</td>
+                <td>@deposit.Name</td>
                 <td>@deposit.Area</td>
                 <td>@deposit.Size</td>
                 <td>@BoolToString(deposit.AirConditioning)</td>
@@ -94,6 +95,13 @@
                 </td>
                 @if (_loggedInUser.IsAdministrator)
                 {
+                    <td>
+                        <div class="btn-group">
+                            <button class="btn btn-info" @onclick="(() => AddAvailabilityToDeposit(deposit))">Agregar fecha de disponibilidad
+                                <i class="oi oi-calendar"></i>
+                            </button>
+                        </div>
+                    </td>
                     <td>
                         <div class="btn-group">
                             <button class="btn btn-danger" @onclick="(() => AttemptToDeleteDeposit(deposit))">Eliminar
@@ -127,16 +135,16 @@
     private bool _showAlertSomethingWentWrong;
     
     private Deposit _depositToDelete;
+    private Deposit _depositToAddDate;
     
     protected override void OnInitialized()
     {
-        _loggedInUser = Session.ActiveUser;
+        _loggedInUser = SessionController.ActiveUser;
 
         _listOfDeposits = DepositController.GetDeposits();
-        
-        PromotionController.DeleteAllExpiredPromotions();
 
         _depositToDelete = null;
+        _depositToAddDate = null;
         
         HideAllAlerts();
     }
@@ -178,16 +186,20 @@
     private void DeleteDeposit()
     {
         HideAllAlerts();
-      /*  try
-        {*/
-            int id = _depositToDelete.Id;
-             DepositController.DeleteDeposit(id);
+        try
+        {
+            DepositController.DeleteDeposit(_depositToDelete);
             _showAlertDepositDeletedSuccessfully = true;
-            /*  }
-              catch (Exception)
-              {
-                  _showAlertSomethingWentWrong = true;
-              }*/
+        } catch (Exception e)
+        {
+            _showAlertSomethingWentWrong = true;
+        }
+    }
+
+    private void AddAvailabilityToDeposit(Deposit deposit)
+    {
+        int depositId = deposit.Id;
+        NavigationManager.NavigateTo($"/DepositAvailability/{depositId}");
     }
     
     private void GoToDepositRatingsPage(Deposit deposit)

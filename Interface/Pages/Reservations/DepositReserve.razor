@@ -1,13 +1,13 @@
 ﻿@page "/DepositReserve"
 
-@inject Session Session
-@inject DepoQuickContext DepoQuickContext
+@inject SessionController SessionController
 @inject DepositController DepositController
 @inject ReservationController ReservationController
 
 @using DepoQuick.Domain
 @using BusinessLogic
-@using BusinessLogic.Exceptions.ControllerExceptions
+@using BusinessLogic.Controllers
+@using BusinessLogic.Exceptions.DepositControllerExceptions
 @using DepoQuick.Exceptions.DateRangeExceptions
 
 <html lang="es">
@@ -21,14 +21,19 @@
 
     @if (_showAlertPrice)
     {
-      <br>
-       <div class="alert alert-primary" role="alert">
-        <h4 class="alert-heading">¿Estás seguro?</h4>
-        <p>Estas a punto de realizar la reserva del depósito @_deposit.Id que tiene un costo de: $ @_deposit.CalculatePrice(_date.NumberOfDays())</p>
-        <hr>
-        <input @onclick="AddReservation" type="submit" class="btn btn-primary" value="Aceptar">
-      </div>
-      <br>
+      {
+        <br>
+        <div class="alert alert-primary" role="alert">
+          <h4 class="alert-heading">¿Estás seguro?</h4>
+          @{
+            _price = _deposit.CalculatePrice(_date.NumberOfDays());
+          }
+          <p>Estas a punto de realizar la reserva del depósito @_deposit.Id que tiene un costo de: $ @_price</p>
+          <hr>
+          <input @onclick="() => AddReservation(_price)" type="submit" class="btn btn-primary" value="Aceptar">
+        </div>
+        <br>
+      }
     }
 
     @if (_showAlertReservationMade)
@@ -77,30 +82,41 @@
       <br>
     }
 
+    @if(_showAvailableDeposits)
+    {
+      <br>
+      <div class="alert alert-primary" role="alert">
+        <h4 class="alert-heading">Depósitos disponibles</h4>
+        <p>Los depósitos disponibles en el rango de fechas seleccionado son:</p>
+        <div class="mb-3">
+          <label for="deposit" class="form-label">Seleccionar depósito que desea reservar:</label>
+          <select class="form-select" id="deposit" name="deposit" @onchange="HandleDepositChange">
+            <option value=" ">Seleccionar depósito</option>
+            @foreach (Deposit deposit in _availableDeposits)
+            {
+              <option value="@deposit.Id">Depósito @deposit.Id</option>
+              
+            }
+          </select>
+        </div>
+              <input @onclick="ShowAlertReservation" id="wantToMakeTheReservation" class="btn btn-primary" value="Reservar">
+        <hr>
+        <p class="mb-0">¡Selecciona un depósito para continuar con la reserva!</p>
+      </div>
+      <br>
+    }
 
     <form action="#" method="POST">
-      <div class="mb-3">
-        <label for="deposit" class="form-label">Seleccionar depósito que desea reservar:</label>
-        <select class="form-select" id="deposit" name="deposit" @onchange="HandleDepositChange">
-          <option value=" ">Seleccionar depósito</option>
-          @foreach (Deposit deposit in _listOfDeposits)
-          {
-            <option value="@deposit.Id">Depósito @deposit.Id</option>
-          }
-        </select>
-      </div>
-
       <div class="mb-3">
         <label for="initialDate" class="form-label">Desde:</label>
         <input type="date" class="form-control" id="initialDate" name="initialDate" @bind="_initialDate">
       </div>
-
+      
       <div class="mb-3">
         <label for="finalDate" class="form-label">Hasta:</label>
-        <input type="date" class="form-control"  id="finalDate" name="finalDate" @bind="_finalDate">
+        <input type="date" class="form-control" id="finalDate" name="finalDate" @bind="_finalDate">
       </div>
-      
-      <input @onclick="ShowAlert"  id="wantToMakeTheReservation" class="btn btn-primary" value="Reservar">
+      <input @onclick="LoadAvailableDeposits" class="btn btn-primary" value="Consultar Disponibilidad">
     </form>
   </body>
 </html>
@@ -108,20 +124,22 @@
 
 
 @code {
-
+  private List<Deposit> _availableDeposits;
   
-  private List<Deposit> _listOfDeposits;
-
   private bool _showAlertPrice;
   private bool _showAlertInvalidDeposit; 
   private bool _showAlertInvalidDate;
   private bool _showAlertAnAdministratorCantMakeAReservation;
   private bool _showAlertReservationMade;
   private bool _showAlertUnavailableDeposit;
+  private bool _showAlertSomethingWentWrong;
+  
+  private bool _showAvailableDeposits;
   
   private Deposit _deposit; 
   private Client _client;
   private DateRange _date;
+  private int _price;
 
   private DateTime _initialDate = DateTime.Today.Date;
   private DateTime _finalDate = DateTime.Today.Date;
@@ -129,83 +147,70 @@
   
   protected override void OnInitialized()
   {
-   //_reservationController = new ReservationController(DepoQuickContext, Session);
-    _listOfDeposits = DepositController.GetDeposits(); 
     HideAllAlerts();
     
     _deposit = null; 
 
     _initialDate = DateTime.Today.Date;
     _finalDate = DateTime.Today.Date;
-    _client = (Client)Session.ActiveUser;
-  }
+    _client = (Client)SessionController.ActiveUser;
 
-  private void ShowAlert()
+  }
+  
+  private void LoadAvailableDeposits()
+  {
+    HideAllAlerts();
+    
+    try
+    {
+      _date = new DateRange(_initialDate, _finalDate);
+      _availableDeposits = DepositController.AvailableDeposits(_date);
+      _showAvailableDeposits = true;
+    }
+    catch (InvalidDateRangeException invalidDateRangeException)
+    {
+      _showAlertInvalidDate = true;
+    }
+    catch (EmptyDateRangeException emptyDateRangeException)
+    {
+      _showAlertInvalidDate = true;
+    }
+    catch (Exception e)
+    {
+      _showAlertSomethingWentWrong = true;
+    }
+  }
+  
+  
+  private void ShowAlertReservation()
   {
     HideAllAlerts(); 
     
-    if(IsAValidDate())
+    if(IsAValidDeposit())
     {
-      if(IsAValidDeposit())
+      if (IsAClient())
       {
-        if (IsAClient())
-        {
-          if (DepositIsAvailableInDateRange())
-          {
-            _showAlertPrice = true;
-          }
-          else
-          {
-            _showAlertUnavailableDeposit = true;
-          }
-        }
-        else
-        {
-          _showAlertAnAdministratorCantMakeAReservation = true;
-        }
+        _showAlertPrice = true;
       }
       else
       {
-        _showAlertInvalidDeposit = true; 
+        _showAlertAnAdministratorCantMakeAReservation = true;
       }
     }
     else
     {
-      _showAlertInvalidDate = true;
+      _showAlertInvalidDeposit = true; 
     }
-
   }
 
   private bool IsAClient()
   {
-    return !Session.ActiveUser.IsAdministrator; 
+    return !SessionController.ActiveUser.IsAdministrator; 
   }
 
   private bool IsAValidDeposit()
   {
     return _deposit != null; 
-  }
-
-  private bool IsAValidDate()
-  {
-    try
-    {
-      _date = new DateRange(_initialDate, _finalDate);
-      return true;
-    }
-    catch (InvalidDateRangeException invalidDateRangeException)
-    {
-      return false;
-    }
-    catch (EmptyDateRangeException emptyDateRangeException)
-    {
-      return false;
-    }
-  }
-
-  private bool DepositIsAvailableInDateRange()
-  {
-    return !_deposit.IsReserved(_date);
   }
 
   private void HideAllAlerts()
@@ -261,4 +266,15 @@
       _showAlertReservationMade = true; 
   }
   
+  private void AddReservation(int price)
+  {
+    Reservation newReservation = new Reservation(_deposit,  _client , _date); 
+      
+    ReservationController.AddPrice(newReservation, price);
+    ReservationController.Add(newReservation);
+      
+    HideAllAlerts(); 
+    _showAlertReservationMade = true; 
+    _showAvailableDeposits = false; 
+  }
 }

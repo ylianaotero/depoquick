@@ -1,10 +1,8 @@
 ﻿@page "/"
 @using BusinessLogic
-@using BusinessLogic.Exceptions.ControllerExceptions
-@using DepoQuick.Domain
+@using BusinessLogic.Controllers
+@using BusinessLogic.Exceptions.UserControllerExceptions
 @inject NavigationManager NavigationManager
-@inject Session Session
-@inject DepoQuickContext DepoQuickContext
 @inject UserController UserController
 
 
@@ -70,14 +68,6 @@
 </html>
 
 @code {
-
-   // private UserController _userController; 
-    
-    protected override void OnInitialized()
-    {
-        //_userController = new UserController(DepoQuickContext);
-        
-    }
     
     private void RegisterUser()
     {
@@ -101,5 +91,4 @@
             return false; 
         }
     }
-    
 }

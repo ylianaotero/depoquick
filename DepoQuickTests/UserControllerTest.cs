@@ -1,5 +1,6 @@
 ﻿using BusinessLogic;
-using BusinessLogic.Exceptions.ControllerExceptions;
+using BusinessLogic.Controllers;
+using BusinessLogic.Exceptions.UserControllerExceptions;
 using DepoQuick.Domain;
 using DepoQuick.Exceptions.UserExceptions;
 
@@ -10,7 +11,7 @@ public class UserControllerTests
 {
     private UserController _userController;
     private LogController _logController;
-    private Session _session;
+    private SessionController _sessionController;
     
     private const string AdminName = "Administrator";
     private const string AdminEmail = "administrator@domain.com";
@@ -34,7 +35,7 @@ public class UserControllerTests
         _userController = new UserController(userRepository);
         _logController = new LogController(logRepository);
         
-        _session = new Session(_userController, _logController);
+        _sessionController = new SessionController(_userController, _logController);
     }
     
     [TestMethod]
@@ -99,11 +100,8 @@ public class UserControllerTests
 
         User newUser = _userController.GetUserByEmail(AdminEmail);
         int id = newUser.Id;
-
-        _userController.Delete(newUser);
-        _userController.Get(id);
-        //_userController.Get(InvalidId);
-
+        
+        _userController.Get(InvalidId);
     }
     
     [TestMethod]
@@ -113,37 +111,8 @@ public class UserControllerTests
         _userController.RegisterAdministrator(AdminName, AdminEmail, AdminPassword, AdminPassword);
 
         User newUser = _userController.GetUserByEmail(AdminEmail);
-        //int id = newUser.Id;
-
-        _userController.Delete(newUser);
-        _userController.GetUserByEmail(AdminEmail);
-    }
-
-    [TestMethod]
-    public void TestRemoveUser()
-    {
-        _userController.RegisterAdministrator(AdminName, AdminEmail, AdminPassword, AdminPassword);
-        _userController.RegisterClient(ClientName, ClientEmail, ClientPassword, ClientPassword);
-
-        User newUser = _userController.GetUserByEmail(ClientEmail);
-        //int id = newUser.Id;
-
-        _userController.Delete(newUser);
-    }
-    
-    [TestMethod]
-    [ExpectedException(typeof(UserDoesNotExistException))]
-    public void TestCannotRemoveUser()
-    {
-        _userController.RegisterAdministrator(AdminName, AdminEmail, AdminPassword, AdminPassword);
-        _userController.RegisterClient(ClientName, ClientEmail, ClientPassword, ClientPassword);
-
-        User newUser = _userController.GetUserByEmail(ClientEmail);
-        //int id = newUser.Id;
-
-        _userController.Delete(newUser);
-        _userController.Delete(newUser);
-        //_userController.GetUserByEmail(InvalidEmail);
+        
+        _userController.GetUserByEmail(ClientEmail);
     }
     
     [TestMethod]
@@ -171,11 +140,10 @@ public class UserControllerTests
     {
         _userController.RegisterAdministrator(AdminName, AdminEmail, AdminPassword, AdminPassword);
         _userController.RegisterClient(ClientName, ClientEmail, ClientPassword, ClientPassword);
-        _session.LoginUser(ClientEmail,ClientPassword);
-        _session.LogoutUser();
-        _session.LoginUser(ClientEmail,ClientPassword);
-        _logController.GetLogs(_userController.GetUserByEmail(ClientEmail), _session.ActiveUser);
-        //_userController.GetLogs(_userController.Get(ClientEmail), _session.ActiveUser);
+        _sessionController.LoginUser(ClientEmail,ClientPassword);
+        _sessionController.LogoutUser();
+        _sessionController.LoginUser(ClientEmail,ClientPassword);
+        _logController.GetLogs(_userController.GetUserByEmail(ClientEmail), _sessionController.ActiveUser);
     }
     
     [TestMethod]
@@ -184,11 +152,10 @@ public class UserControllerTests
         _userController.RegisterAdministrator(AdminName, AdminEmail, AdminPassword, AdminPassword);
         _userController.RegisterClient(ClientName, ClientEmail, ClientPassword, ClientPassword);
         DateTime now = DateTime.Now.AddSeconds(-DateTime.Now.Second);
-        _session.LoginUser(AdminEmail,AdminPassword);
-        _session.LogoutUser();
-        _session.LoginUser(AdminEmail,AdminPassword);
-        List<LogEntry> logs = _logController.GetLogs(_userController.GetUserByEmail(AdminEmail), _session.ActiveUser);
-        //List<LogEntry> logs = _userController.GetLogs(_userController.Get(AdminEmail), _session.ActiveUser);
+        _sessionController.LoginUser(AdminEmail,AdminPassword);
+        _sessionController.LogoutUser();
+        _sessionController.LoginUser(AdminEmail,AdminPassword);
+        List<LogEntry> logs = _logController.GetLogs(_userController.GetUserByEmail(AdminEmail), _sessionController.ActiveUser);
         
         Assert.AreEqual(3,logs.Count);
         Assert.AreEqual(logs[0].Message , UserLogInLogMessage);
@@ -203,33 +170,22 @@ public class UserControllerTests
     public void TestEmptyActionLog()
     {
         _userController.RegisterAdministrator(AdminName, AdminEmail, AdminPassword, AdminPassword);
-        _session.LoginUser(AdminEmail,AdminPassword);
-        _session.LogoutUser();
-        _session.LoginUser(AdminEmail,AdminPassword);
+        _sessionController.LoginUser(AdminEmail,AdminPassword);
+        _sessionController.LogoutUser();
+        _sessionController.LoginUser(AdminEmail,AdminPassword);
         _logController.LogAction(_userController.GetUserByEmail(AdminEmail),"",DateTime.Now);
-        //_userController.LogAction(_userController.Get(AdminEmail),"",DateTime.Now);
     }
-
-    /*
-    [TestMethod]
-    public void TestGetListOfUsers()
-    {
-        _userController.RegisterAdministrator(AdminName, AdminEmail, AdminPassword, AdminPassword);
-        _userController.RegisterClient(ClientName, ClientEmail, ClientPassword, ClientPassword);
-        List<User> users = _userController.GetAll();
-        Assert.AreEqual(2,users.Count);
-    }*/
 
     [TestMethod]
     public void TestGetListOfAllLogs()
     {
         _userController.RegisterAdministrator(AdminName, AdminEmail, AdminPassword, AdminPassword);
         _userController.RegisterClient(ClientName, ClientEmail, ClientPassword, ClientPassword);
-        _session.LoginUser(ClientEmail,ClientPassword);
-        _session.LogoutUser();
-        _session.LoginUser(AdminEmail,AdminPassword);
+        _sessionController.LoginUser(ClientEmail,ClientPassword);
+        _sessionController.LogoutUser();
+        _sessionController.LoginUser(AdminEmail,AdminPassword);
         
-        List<LogEntry> logs = _logController.GetAllLogs(_session.ActiveUser);
+        List<LogEntry> logs = _logController.GetAllLogs(_sessionController.ActiveUser);
         
         Assert.AreEqual(3,logs.Count);
     }
@@ -240,10 +196,10 @@ public class UserControllerTests
     {
         _userController.RegisterAdministrator(AdminName, AdminEmail, AdminPassword, AdminPassword);
         _userController.RegisterClient(ClientName, ClientEmail, ClientPassword, ClientPassword);
-        _session.LoginUser(AdminEmail,AdminPassword);
-        _session.LogoutUser();
-        _session.LoginUser(ClientEmail,ClientPassword);
+        _sessionController.LoginUser(AdminEmail,AdminPassword);
+        _sessionController.LogoutUser();
+        _sessionController.LoginUser(ClientEmail,ClientPassword);
         
-        List<LogEntry> logs = _logController.GetAllLogs(_session.ActiveUser);
+        List<LogEntry> logs = _logController.GetAllLogs(_sessionController.ActiveUser);
     }
 }

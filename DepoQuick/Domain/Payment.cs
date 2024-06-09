@@ -1,11 +1,14 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
 using DepoQuick.Exceptions.PaymentExceptions;
 
 namespace DepoQuick.Domain;
 
 public class Payment
 {
+    private const string InitialStatus = "reservado";
+    private const string CapturedStatus = "capturado";
+    private const string CannotCapturePaymentMessage = "No se puede capturar un pago no asociado con una reserva";
+    
     [Key]
     public int Id { get; set; }
     
@@ -15,24 +18,16 @@ public class Payment
 
     public Payment()
     {
-        Status = "reservado";
+        Status = InitialStatus;
     }
 
     public void Capture()
     {
-        if (ThereIsAReservationAssociated())
+        if (Reservation == null)
         {
-            throw new CannotCapturePaymentIfDoesNotHaveAnAssociatedReservation(
-                "No se puede capturar un pago no asociado con una reserva"); 
+            throw new CannotCapturePaymentIfDoesNotHaveAnAssociatedReservation(CannotCapturePaymentMessage); 
         }
-        else
-        {
-            Status = "capturado";
-        }
-    }
-
-    private bool ThereIsAReservationAssociated()
-    {
-        return this.Reservation == null; 
+       
+        Status = CapturedStatus;
     }
 }

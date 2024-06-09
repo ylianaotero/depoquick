@@ -1,29 +1,13 @@
-using Microsoft.EntityFrameworkCore;
 using DepoQuick.Domain;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
+
+namespace BusinessLogic;
 
 public class DepoQuickContext : DbContext
 {
     public bool UseInMemoryDatabase { get; set; }
     
-
-    public DepoQuickContext(DbContextOptions<DepoQuickContext> options, bool useInMemoryDatabase) : base(options)
-    {
-        UseInMemoryDatabase = useInMemoryDatabase;
-        if (!UseInMemoryDatabase)
-        {
-            this.Database.Migrate();   
-        }
-    }
-
-    public DepoQuickContext()
-    {
-        UseInMemoryDatabase = false;
-        if (!UseInMemoryDatabase)
-        {
-            this.Database.Migrate();   
-        }
-    }
-
     public DbSet<User> Users { get; set; }
     public DbSet<Administrator> Administrators { get; set; }
     
@@ -38,6 +22,25 @@ public class DepoQuickContext : DbContext
     public DbSet<Rating> Ratings { get; set; }
 
     public DbSet<Notification> Notifications { get; set; }
+
+    public DepoQuickContext(DbContextOptions<DepoQuickContext> options, bool useInMemoryDatabase) : base(options)
+    {
+        UseInMemoryDatabase = useInMemoryDatabase;
+        if (!UseInMemoryDatabase)
+        {
+            this.Database.Migrate();   
+        }
+    }
+    
+
+    public DepoQuickContext()
+    {
+        UseInMemoryDatabase = false;
+        if (!UseInMemoryDatabase)
+        {
+            this.Database.Migrate();   
+        }
+    }
     
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
@@ -70,21 +73,21 @@ public class DepoQuickContext : DbContext
             .HasBaseType<User>()
             .HasMany(u => u.Notifications);
         
+        modelBuilder.Entity<Deposit>(entity =>
+        {
+            entity.ToTable("Deposits");
+            entity.HasMany(d => d.Promotions).WithMany(p => p.Deposits);
+        });
+        
         modelBuilder.Entity<Deposit>().HasMany<Rating>(d=>d.Ratings);
         modelBuilder.Entity<Deposit>().Property(d => d.Id).ValueGeneratedOnAdd();
         
         modelBuilder.Entity<Rating>().HasOne<Reservation>(r=>r.Reservation);
         
         modelBuilder.Entity<Payment>().HasOne<Reservation>(p=>p.Reservation);
-        
-        modelBuilder.Entity<Notification>().HasOne<Client>(n=>n.Client);
-        
-        
-        
-        
-        
-      //  modelBuilder.Entity<Notification>().HasOne<Reservation>(p=>p.Reservation);
+
+        modelBuilder.Entity<Notification>().HasOne<Client>(n => n.Client);
+         
+        modelBuilder.Entity<Deposit>().OwnsMany(d => d.AvailableDates);
     }
-    
-    
 }

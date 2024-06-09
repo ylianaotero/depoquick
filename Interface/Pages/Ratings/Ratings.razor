@@ -1,7 +1,8 @@
 @page "/Ratings"
 @using BusinessLogic
+@using BusinessLogic.Controllers
 @using DepoQuick.Domain
-@inject Session Session
+@inject SessionController SessionController
 @inject RatingController RatingController
 
 <html lang="es">
@@ -28,7 +29,7 @@
         @foreach (Rating rating in _listOfRatings)
         {
             <tr>
-                <td>@rating.Reservation.Deposit.Id</td>
+                <td>@rating.Reservation.Deposit.Name (@rating.Reservation.Deposit.Id)</td>
                 <td>@rating.Reservation.Id</td>
                 <td>@rating.Reservation.Client.Name</td>
                 <td>@rating.Stars</td>
@@ -46,7 +47,7 @@
     
     protected override void OnInitialized()
     {
-        _loggedInUser = Session.ActiveUser;
+        _loggedInUser = SessionController.ActiveUser;
         _listOfRatings = RatingController.GetRatings();
     }
 }

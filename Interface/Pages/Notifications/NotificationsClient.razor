@@ -1,7 +1,8 @@
 ﻿@page "/NotificationsClient"
 @using BusinessLogic
+@using BusinessLogic.Controllers
 @using DepoQuick.Domain
-@inject Session Session
+@inject SessionController SessionController
 @inject NotificationController NotificationController
 
 
@@ -58,7 +59,7 @@
     
     protected override void OnInitialized()
     {
-        _loggedInUser = Session.ActiveUser;
+        _loggedInUser = SessionController.ActiveUser;
         _notifications = NotificationController.GetNotifications((Client)_loggedInUser);
         HideAllAlerts();
     }
@@ -81,7 +82,4 @@
             _showAlertInvalidNotification = true; 
         }
     }
-    
-    
-    
 }

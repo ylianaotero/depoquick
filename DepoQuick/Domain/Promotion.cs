@@ -4,15 +4,23 @@ using DepoQuick.Exceptions.PromotionExceptions;
 namespace DepoQuick.Domain;
 public class Promotion
 {
+    private const string PromotionWithEmptyLabelMessage = "La etiqueta no debe ser vacia";
+    private const string PromotionLabelHasMoreThanMaxCharactersMessage = "La etiqueta no debe ser de largo mayor a 20 caracteres";
+    private const string InvalidPercentageForPromotionMessage = "El porcentaje no es valido, debe estar entre 0.05 y 0.75";
+    
+    private const double MinimumDiscountRate = 0.05;
+    private const double MaximumDiscountRate = 0.75;
+    private const int MaximumLabelLength = 20;
     
     [Key]
     public int Id { get; set; }
     
     public DateRange ValidityDate { get; set; }
-    public List<Deposit> Deposits { get; set; }
     
     private String _label;
     private Double _discountRate;
+    
+    public List<Deposit> Deposits { get; set; }
     
     public String Label
     {
@@ -34,23 +42,24 @@ public class Promotion
         }
     }
     
-    public Promotion()
+    public Promotion() {}
+    
+    public bool IsCurrentlyAvailable()
     {
-        Deposits = new List<Deposit>();
+        return ValidityDate.GetInitialDate() <= DateTime.Now.AddDays(1) 
+               && ValidityDate.GetFinalDate() >= DateTime.Now.AddDays(-1);
     }
     
     private void ValidateLabel(String label)
     {
         if (LabelIsEmpty(label))
         {
-            throw new PromotionWithEmptyLabelException("La etiqueta no debe ser vacia");
+            throw new PromotionWithEmptyLabelException(PromotionWithEmptyLabelMessage);
         }
-        else
+        
+        if (LabelHasMoreThanMaxCharacters(label))
         {
-            if (LabelHasMoreThan20Characters(label))
-            {
-                throw new PromotionLabelHasMoreThan20CharactersException("La etiqueta no debe ser de largo mayor a 20 caracteres");
-            }
+            throw new PromotionLabelHasMoreThan20CharactersException(PromotionLabelHasMoreThanMaxCharactersMessage);
         }
     }
 
@@ -59,36 +68,21 @@ public class Promotion
         return string.IsNullOrWhiteSpace(label);
     }
 
-    private bool LabelHasMoreThan20Characters(String label)
+    private bool LabelHasMoreThanMaxCharacters(String label)
     {
-        return label.Length > 20;
+        return label.Length > MaximumLabelLength;
     }
     
     private void ValidateDiscountRate(double percent)
     {
-        if (!ItsBetween5And75Percent(percent))
+        if (!IsBetweenMinAndMaxPercentage(percent))
         {
-            throw new InvalidPercentageForPromotionException("El porcentaje no es valido, debe estar entre 0.05 y 0.75");
+            throw new InvalidPercentageForPromotionException(InvalidPercentageForPromotionMessage);
         }
     }
 
-    private bool ItsBetween5And75Percent(double number)
+    private bool IsBetweenMinAndMaxPercentage(double number)
     {
-        return number >= 0.05 && number <= 0.75; 
-    }
-    
-    public void AddDeposit(Deposit deposit)
-    {
-        Deposits.Add(deposit);
-    }
-    
-    public void RemoveDeposit(Deposit deposit)
-    {
-        Deposits.Remove(deposit);
-    }
-    
-    public bool IsCurrentlyAvailable()
-    {
-        return ValidityDate.GetInitialDate() <= DateTime.Now.AddDays(1) && ValidityDate.GetFinalDate() >= DateTime.Now.AddDays(-1);
+        return number >= MinimumDiscountRate && number <= MaximumDiscountRate;
     }
 }

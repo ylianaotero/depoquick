@@ -6,15 +6,4 @@ public class Administrator : User
     {
         this.IsAdministrator = true;
     }
-    
-    public void ApproveReservation(Reservation reservation)
-    {
-        reservation.Status = 1;
-    }
-    
-    public void RejectReservation(Reservation reservation, string reason)
-    {
-        reservation.Status = -1;
-        reservation.Message = reason;
-    }
 }

@@ -1,7 +1,8 @@
 ﻿@page "/GestionOfReservs"
-@inject Session Session
+@inject SessionController SessionController
 @inject NavigationManager NavigationManager
 @using BusinessLogic
+@using BusinessLogic.Controllers
 
 @code {
     
@@ -22,7 +23,7 @@
 
     private bool UserIsAdministrator()
     {
-        return Session.ActiveUser.IsAdministrator;
+        return SessionController.ActiveUser.IsAdministrator;
     }
 
     private void GoToGestionOfReservsForAdmins()
@@ -34,5 +35,4 @@
     {
         _navigationManager.NavigateTo("/GestionOfReservsClient");
     }
-    
 }

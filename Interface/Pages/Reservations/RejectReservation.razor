@@ -1,15 +1,12 @@
 ﻿@page "/Reject/{id:int}"
-@inject Session Session
-@inject DepoQuickContext DepoQuickContext
 @inject NavigationManager NavigationManager
 @inject ReservationController ReservationController
-
 @using BusinessLogic
-@using BusinessLogic.Exceptions.ControllerExceptions
+@using BusinessLogic.Controllers
+@using BusinessLogic.Exceptions.ReservationControllerExceptions
+@using BusinessLogic.Exceptions.UserControllerExceptions
 @using DepoQuick.Domain
 @using DepoQuick.Exceptions.ReservationExceptions
-@using Microsoft.EntityFrameworkCore.Diagnostics
-@using SQLitePCL
 
 <html lang="es">
   <head>
@@ -76,7 +73,6 @@
 @code {
     private NavigationManager _navigationManager;
     
-   // private ReservationController _reservationController;
     private Reservation _currentReservation; 
 
     private String _comment;
@@ -92,7 +88,6 @@
 
     protected override void OnInitialized()
     {
-    //    _reservationController = new ReservationController(DepoQuickContext,Session);
         _navigationManager = NavigationManager;
         HideAllAlerts(); 
     }
@@ -103,7 +98,6 @@
         _showAlertInvalidComment = false;
         _showAlertAdminNotFound = false; 
         _showAlertEmptyComment = false; 
-
     }
     
     private void RejectTheReservation()
@@ -142,6 +136,5 @@
     {
         _navigationManager.NavigateTo("/GestionOfReservsAdmin");
     }
-    
 }
     

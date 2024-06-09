@@ -12,10 +12,6 @@ public class Notification
     
     public Client Client { get; set; }
     
-   // public Reservation Reservation { get; set; }
-    
-  //  public int ReservationId { get; set; }
-    
     public Notification()
     {
         Timestamp = DateTime.Now;

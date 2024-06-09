@@ -1,15 +1,15 @@
 ﻿@page "/GestionOfReservsClient"
 @using BusinessLogic
-@using BusinessLogic.Exceptions.ControllerExceptions
-@using BusinessLogic.Exceptions.ReservationControllerExceptions
+@using BusinessLogic.Controllers
+@using BusinessLogic.Exceptions.DepositControllerExceptions
+@using BusinessLogic.Exceptions.PaymentControllerExceptions
 @using DepoQuick.Domain
-@inject Session Session
+@inject SessionController SessionController
 @inject NavigationManager NavigationManager
 @inject DepoQuickContext DepoQuickContext
 @inject ReservationController ReservationController
-@inject DepositController DepositController
-@inject UserController UserController
 @inject PaymentController PaymentController
+@inject RatingController RatingController
 
 <html lang="es">
   <head>
@@ -19,7 +19,7 @@
 
     <body>
 
-        <h3>¡Hola, @_client.Name! Aquí puedes revisar tus reservaciones.</h3>
+        <h3>¡Hola, @_client.Name! Aquí puedes revisar tus reservas.</h3>
     
             @if (_showAlertPrice)
             {
@@ -124,7 +124,7 @@
                             
                             @if (ReservationIsOver(reservation))
                             {
-                               // if (reservation.Rating == null)
+                                if (RatingController.GetRatingByReservation(reservation) == null)
                                 {
                                     <td>
                                         <div class="btn-group">
@@ -134,7 +134,7 @@
                                         </div>
                                     </td>
                                 }
-                               // else
+                                else
                                 {
                                     <td>
                                         <div class="btn-group">
@@ -181,11 +181,11 @@
     
     private UserController _userController;
     
-    private Session _session;
+    private SessionController _sessionController;
     
     protected override void OnInitialized()
     {
-        _client = (Client)Session.ActiveUser;
+        _client = (Client)SessionController.ActiveUser;
         
         _listOfReservations = ReservationController.GetReservationsByUserId(_client.Id);
         
@@ -209,8 +209,6 @@
         {
             return null;
         }
-        
-        
     }
     
     private bool ReservationIsOver(Reservation reservation)
@@ -242,7 +240,6 @@
         {
             _showAlertInvalidDeposit = true; 
         }
-        
     }
 
     private void AddPayment()

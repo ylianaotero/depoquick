@@ -1,16 +1,26 @@
 using System.ComponentModel.DataAnnotations;
 using System.Text.RegularExpressions;
 using DepoQuick.Exceptions.UserExceptions;
-using Microsoft.EntityFrameworkCore;
 
 namespace DepoQuick.Domain;
 
 public class User
 {
+    private const string EmptyUserNameMessage = "El nombre no puede estar vacío";
+    private const string UserNameTooLongMessage = "El nombre no puede tener más de 100 caracteres";
+    private const string InvalidUserNameMessage = "El nombre solo puede contener letras y espacios";
+
+    private const string EmptyUserEmailMessage = "El correo electrónico no puede estar vacío";
+    private const string InvalidUserEmailMessage = "El formato del correo electrónico no es válido";
+    
+    private const string EmptyUserPasswordMessage = "La contraseña no puede estar vacía";
+    private const string PasswordTooShortMessage = "La contraseña debe tener al menos 8 caracteres";
+    private const string InvalidUserPasswordMessage = "La contraseña debe contener al menos un símbolo (#@$.,%), " +
+                                                      "una letra minúscula, una letra mayúscula y un dígito";
+    private const string PasswordsDoNotMatchMessage = "Las contraseñas no coinciden";
+
     private const int MaxNameLength = 100;
     private const int MinPasswordLength = 8;
-    
-    //private static int s_lastId = 0;
     
     [Key]
     public int Id { get; set; }
@@ -58,12 +68,8 @@ public class User
         private init => _logs = value;
     }
     
-    
     public User()
     {
-    //    Id = s_lastId + 1;
-       // s_lastId = Id;
-        
         Logs = new();
     }
     
@@ -78,26 +84,31 @@ public class User
         Password = password;
 
         Logs = new();
-
-      //  Id = s_lastId + 1;
-       // s_lastId = Id;
+    }
+    
+    public static void ValidatePasswordConfirmation(string password, string passwordConfirmation)
+    {
+        if (string.Compare(password,passwordConfirmation) != 0)
+        {
+            throw new UserPasswordsDoNotMatchException(PasswordsDoNotMatchMessage);
+        }
     }
     
     private void ValidateName(string name)
     {
         if (string.IsNullOrEmpty(name))
         {
-            throw new EmptyUserNameException("El nombre no puede estar vacío.");
+            throw new EmptyUserNameException(EmptyUserNameMessage);
         }
         
         if (name.Length > MaxNameLength)
         {
-            throw new UserNameTooLongException("El nombre no puede tener más de " + MaxNameLength + " caracteres.");
+            throw new UserNameTooLongException(UserNameTooLongMessage);
         }
         
         if (!Regex.IsMatch(name, @"^[a-zA-Z\s]+$"))
         {
-            throw new InvalidUserNameException("El nombre solo puede contener letras y espacios.");
+            throw new InvalidUserNameException(InvalidUserNameMessage);
         }
     }
     
@@ -105,14 +116,14 @@ public class User
     {
         if (string.IsNullOrEmpty(email))
         {
-            throw new EmptyUserEmailException("El correo electrónico no puede estar vacío.");
+            throw new EmptyUserEmailException(EmptyUserEmailMessage);
         }
         
         string pattern = @"^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$";
         
         if (!Regex.IsMatch(email, pattern))
         {
-            throw new InvalidUserEmailException("El formato del correo electrónico no es válido.");
+            throw new InvalidUserEmailException(InvalidUserEmailMessage);
         }
     }
     
@@ -120,47 +131,17 @@ public class User
     {
         if (string.IsNullOrEmpty(password))
         {
-            throw new EmptyUserPasswordException("La contraseña no puede estar vacía.");
+            throw new EmptyUserPasswordException(EmptyUserPasswordMessage);
         }
         
         if (password.Length < MinPasswordLength)
         {
-            throw new PasswordTooShortException("La contraseña debe tener al menos " + " caracteres.");
+            throw new PasswordTooShortException(PasswordTooShortMessage);
         }
         
         if (!Regex.IsMatch(password, @"^(?=.*[#@$.,%])(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$"))
         {
-            throw new InvalidUserPasswordException("La contraseña debe contener al menos un símbolo (#@$.,%), una letra minúscula, una letra mayúscula y un dígito.");
-        }
-    }
-    
-    public static void ValidatePasswordConfirmation(string password, string passwordConfirmation)
-    {
-        if (string.Compare(password,passwordConfirmation) != 0)
-        {
-            throw new UserPasswordsDoNotMatchException("Las contraseñas no coinciden.");
-        }
-    }
-    //cambiar el nombre
-    public LogEntry LogAction(string message, DateTime timestamp)
-    {
-        if (string.IsNullOrEmpty(message))
-        {
-            throw new EmptyActionLogException("El mensaje no puede estar vacío.");
-        }
-        else
-        {
-            LogEntry log = new()
-            {
-                Message = message,
-                Timestamp = timestamp,
-                UserId = Id
-            };
-
-            return log; 
-
-
-            //Logs.Add(log);
+            throw new InvalidUserPasswordException(InvalidUserPasswordMessage);
         }
     }
 }
