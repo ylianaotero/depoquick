@@ -5,7 +5,7 @@ namespace BusinessLogic;
 
 public class UserController
 {
-    private const string UserNotFoundExceptionMessage = "No se encontro usuario con los datos proporcionados";
+    private const string UserDoesNotExistExceptionMessage = "No se encontro usuario con los datos proporcionados";
     private const string UserAlreadyExistsExceptionMessage = "Ya existe un usuario registrado con ese email";
     private const string AdministratorAlreadyExistsExceptionMessage = "Ya existe un administrador registrado";
     private const string CannotCreateClientBeforeAdminExceptionMessage = "No se puede registrar un cliente sin haber " +
@@ -22,35 +22,16 @@ public class UserController
 
     public User Get(int userId)
     {
-        User user = _userRepository.GetById(userId);
-        if (user == null)
-        {
-            throw new UserDoesNotExistException(UserNotFoundExceptionMessage);
-        }
+        User user = GetById(userId);
         
         return user;
     }
     
     public User GetUserByEmail(string email)
     {
-        User user = _userRepository.GetBy(u => u.Email == email).FirstOrDefault();
-        if (user == null)
-        {
-            throw new UserDoesNotExistException(UserNotFoundExceptionMessage);
-        }
+        User user = GetBy(u => u.Email == email);
         
         return user;
-    }
-    
-    public bool UserExists(string email)
-    {
-        User user = _userRepository.GetBy(u => u.Email == email).FirstOrDefault();
-        if (user == null)
-        {
-            return false;
-        }
-        
-        return true;
     }
 
     public void RegisterAdministrator(string adminName, string adminEmail, string adminPassword, string passwordValidation)
@@ -74,40 +55,82 @@ public class UserController
         }
         
         User.ValidatePasswordConfirmation(clientPassword,clientPasswordValidation);
+        
         if (UserExists(clientEmail))
         {
             throw new UserAlreadyExistsException(UserAlreadyExistsExceptionMessage);
         }
+        
         Client client = new Client(clientName, clientEmail, clientPassword);
         Add(client);
     }
     
     public Administrator GetAdministrator()
     {
-        Administrator admin  = _userRepository.GetBy(u => u.IsAdministrator).FirstOrDefault() as Administrator;
-        if (admin == null)
+        try
+        {
+            Administrator admin = GetBy(u => u.IsAdministrator) as Administrator;
+            return admin;
+        }
+        catch (UserDoesNotExistException e)
         {
             throw new EmptyAdministratorException(EmptyAdministratorExceptionMessage);
         }
-        return admin;
     }
-
-    public void Delete(User user)
+    
+    public bool UserExists(string email)
     {
+        try
+        {
+            User user = GetBy(u => u.Email == email);
+            return true;
+        }
+        catch (UserDoesNotExistException e)
+        {
+            return false;
+        }
+    }
+    
+    private User GetById(int userId)
+    {
+        User reservation = new User();
+        
+        try
+        {
+            reservation = _userRepository.GetById(userId);
+        }
+        catch (NullReferenceException e)
+        {
+            throw new UserDoesNotExistException(UserDoesNotExistExceptionMessage); 
+        }
+        
+        if (reservation == null)
+        {
+            throw new UserDoesNotExistException(UserDoesNotExistExceptionMessage); 
+        }
+        
+        return reservation;
+    }
+    
+    private User GetBy(Func<User, bool> predicate)
+    {
+        User user = new User();
+        
+        try
+        {
+            user = _userRepository.GetBy(predicate).FirstOrDefault();
+        }
+        catch (NullReferenceException e)
+        {
+            throw new UserDoesNotExistException(UserDoesNotExistExceptionMessage); 
+        }
         
         if (user == null)
         {
-            throw new UserDoesNotExistException(UserDoesNotExistMessage);
+            throw new UserDoesNotExistException(UserDoesNotExistExceptionMessage); 
         }
-
-        _userRepository.Reload(user);
-        User userToDelete = _userRepository.GetById(user.Id);
-        if (userToDelete == null)
-        {
-            throw new UserDoesNotExistException(UserDoesNotExistMessage);
-        }
-
-        _userRepository.Delete(userToDelete.Id);
+        
+        return user;
     }
     
     private void Add(User newUser)

@@ -8,8 +8,8 @@ public class Promotion
     private const string PromotionLabelHasMoreThanMaxCharactersMessage = "La etiqueta no debe ser de largo mayor a 20 caracteres";
     private const string InvalidPercentageForPromotionMessage = "El porcentaje no es valido, debe estar entre 0.05 y 0.75";
     
-    private const int MinimumDiscountRate = 5;
-    private const int MaximumDiscountRate = 75;
+    private const double MinimumDiscountRate = 0.05;
+    private const double MaximumDiscountRate = 0.75;
     private const int MaximumLabelLength = 20;
     
     [Key]

@@ -68,14 +68,7 @@ public class PromotionController
     
     public Promotion Get(int promotionId)
     {
-        Promotion promotion = _promotionRepository.GetById(promotionId);
-        
-        if (promotion == null)
-        {
-            throw new PromotionNotFoundException(PromotionNotFoundExceptionMessage); 
-        }
-        
-        return promotion; 
+        return GetById(promotionId);
     }
     
     public bool PromotionIsTiedToReservedDeposit(Promotion promotion)
@@ -91,6 +84,27 @@ public class PromotionController
         }
         
         return false;
+    }
+    
+    private Promotion GetById(int promotionId)
+    {
+        Promotion promotion = new Promotion();
+        
+        try
+        {
+            promotion = _promotionRepository.GetById(promotionId);
+        }
+        catch (NullReferenceException e)
+        {
+            throw new PromotionNotFoundException(PromotionNotFoundExceptionMessage); 
+        }
+        
+        if (promotion == null)
+        {
+            throw new PromotionNotFoundException(PromotionNotFoundExceptionMessage); 
+        }
+        
+        return promotion;
     }
     
     private void Delete(Promotion promotionToDelete)

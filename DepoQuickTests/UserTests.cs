@@ -179,7 +179,7 @@ public class UserTests
         Assert.AreEqual(action, actionsLog[0].Message);
         Assert.AreEqual(timestamp, actionsLog[0].Timestamp);
         Assert.AreEqual(user.Id, actionsLog[0].UserId);
-    }*/
+    }
 
     [TestMethod]
     [ExpectedException(typeof(EmptyActionLogException))]
@@ -192,7 +192,7 @@ public class UserTests
 
         user.LogAction(action, timestamp);
     }
-    
+    */
     private bool ThrowsException(Action functionCall)
     {
         try

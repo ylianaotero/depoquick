@@ -36,23 +36,12 @@ public class DepositController
     
     public Deposit Get(int id)
     {
-        Deposit deposit = _depositRepository.GetById(id);
-        
-        if (deposit == null)
-        {
-            throw new DepositNotFoundException(DepositNotFoundExceptionMessage); 
-        }
-        
-        return deposit; 
+        return GetById(id); 
     }
     
     public Deposit GetDepositByName(String name)
     {
-        if(!DepositExists(name)){
-            throw new DepositNotFoundException(DepositNotFoundExceptionMessage); 
-        }
-        
-        return _depositRepository.GetAll().FirstOrDefault(d => d.Name == name);
+        return GetBy(d => d.Name == name);
     }
     
     public List<Deposit> GetDepositsByPromotion(Promotion promotion)
@@ -87,7 +76,7 @@ public class DepositController
     {
         RestrictActionToAdministrator();
         
-        Deposit depositToDelete = Get(id);
+        Deposit depositToDelete = GetById(id);
             
         _depositRepository.Reload(depositToDelete);
             
@@ -130,6 +119,48 @@ public class DepositController
                 _depositRepository.Update(deposit);
             }
         }
+    }
+    
+    private Deposit GetById(int depositId)
+    {
+        Deposit deposit = new Deposit();
+        
+        try
+        {
+            deposit = _depositRepository.GetById(depositId);
+        }
+        catch (NullReferenceException e)
+        {
+            throw new DepositNotFoundException(DepositNotFoundExceptionMessage); 
+        }
+        
+        if (deposit == null)
+        {
+            throw new DepositNotFoundException(DepositNotFoundExceptionMessage); 
+        }
+        
+        return deposit;
+    }
+    
+    private Deposit GetBy(Func<Deposit, bool> predicate)
+    {
+        Deposit deposit = new Deposit();
+        
+        try
+        {
+            deposit = _depositRepository.GetBy(predicate).FirstOrDefault();
+        }
+        catch (NullReferenceException e)
+        {
+            throw new DepositNotFoundException(DepositNotFoundExceptionMessage); 
+        }
+        
+        if (deposit == null)
+        {
+            throw new DepositNotFoundException(DepositNotFoundExceptionMessage); 
+        }
+        
+        return deposit;
     }
     
     public void DisconnectPromotionsFromDeposit(Deposit deposit, List<Promotion> promotions)

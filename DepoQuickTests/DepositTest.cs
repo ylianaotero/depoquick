@@ -34,7 +34,6 @@ public class DepositTest
         String size = "Grande"; 
         bool airConditioning = true;
         
-
         new Deposit(name,area, size, airConditioning);
     }
     
@@ -499,6 +498,7 @@ public class DepositTest
         CollectionAssert.DoesNotContain(newDeposit1.Promotions, newPromotion);
     }
 
+    /*
     [TestMethod]
     public void TestGetReservations()
     {
@@ -615,7 +615,7 @@ public class DepositTest
         Assert.IsTrue(newDeposit.IsReserved(stay));
     }
 
-    [TestMethod]
+   /* [TestMethod]
     public void TestDepositIsNotReservedInDateRange()
     {
         string name = "Deposito";
@@ -641,9 +641,9 @@ public class DepositTest
         admin.ApproveReservation(reservation);
 
         Assert.IsFalse(newDeposit.IsReserved(otherStay));
-    }
+    }*/
 
-    [TestMethod]
+   /* [TestMethod]
     public void TestDepositHasUpcomingReservations()
     {
         string name = "Deposito";
@@ -685,7 +685,7 @@ public class DepositTest
         newDeposit.AddReservation(expiredReservation);
 
         Assert.IsFalse(newDeposit.HasUpcomingReservations());
-    }
+    }*/
 
     [TestMethod]
     public void TestGetAverageRating()

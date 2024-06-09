@@ -41,30 +41,59 @@ public class ReservationController
         DateTime initialDate = validDateRange.InitialDate.Date;
         DateTime finalDate = validDateRange.FinalDate.Date;
         
-        Reservation reservation = _reservationRepository.GetBy(r => r.Date.InitialDate.Date == initialDate && r.Date.FinalDate.Date == finalDate).FirstOrDefault();
-
-        ReservationIsFound(reservation); 
+        Reservation reservation = GetBy(r => r.Date.InitialDate.Date == initialDate && r.Date.FinalDate.Date == finalDate);
         
         return reservation;
     }
     
     public Reservation Get(int reservationId)
     {
-        Reservation reservation = _reservationRepository.GetById(reservationId);
-
-        ReservationIsFound(reservation); 
+        Reservation reservation = GetById(reservationId);
         
         return reservation;
     }
-
-    private void ReservationIsFound(Reservation reservation)
+    
+    private Reservation GetById(int reservationId)
     {
+        Reservation reservation = new Reservation();
+        
+        try
+        {
+            reservation = _reservationRepository.GetById(reservationId);
+        }
+        catch (NullReferenceException e)
+        {
+            throw new ReservationNotFoundException(ReservationNotFoundExceptionMessage); 
+        }
+        
         if (reservation == null)
         {
-            throw new ReservationNotFoundException(ReservationNotFoundExceptionMessage);
+            throw new ReservationNotFoundException(ReservationNotFoundExceptionMessage); 
         }
+        
+        return reservation;
     }
     
+    private Reservation GetBy(Func<Reservation, bool> predicate)
+    {
+        Reservation reservation = new Reservation();
+        
+        try
+        {
+            reservation = _reservationRepository.GetBy(predicate).FirstOrDefault();
+        }
+        catch (NullReferenceException e)
+        {
+            throw new ReservationNotFoundException(ReservationNotFoundExceptionMessage); 
+        }
+        
+        if (reservation == null)
+        {
+            throw new ReservationNotFoundException(ReservationNotFoundExceptionMessage); 
+        }
+        
+        return reservation;
+    }
     
     public List<Reservation> GetReservations()
     {

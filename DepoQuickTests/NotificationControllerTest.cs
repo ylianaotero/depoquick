@@ -123,8 +123,6 @@ public class NotificationControllerTest
         }; 
         
         _notificationController.Delete(notification);
-        
-        
     }
     
     

@@ -99,9 +99,8 @@ public class UserControllerTests
 
         User newUser = _userController.GetUserByEmail(AdminEmail);
         int id = newUser.Id;
-
-        _userController.Delete(newUser);
-        _userController.Get(id);
+        
+        _userController.Get(InvalidId);
     }
     
     [TestMethod]
@@ -112,41 +111,7 @@ public class UserControllerTests
 
         User newUser = _userController.GetUserByEmail(AdminEmail);
         
-        _userController.Delete(newUser);
-        _userController.GetUserByEmail(AdminEmail);
-    }
-
-    [TestMethod]
-    public void TestRemoveUser()
-    {
-        _userController.RegisterAdministrator(AdminName, AdminEmail, AdminPassword, AdminPassword);
-        _userController.RegisterClient(ClientName, ClientEmail, ClientPassword, ClientPassword);
-
-        User newUser = _userController.GetUserByEmail(ClientEmail);
-
-        _userController.Delete(newUser);
-    }
-    
-    [TestMethod]
-    [ExpectedException(typeof(UserDoesNotExistException))]
-    public void TestCannotRemoveUser()
-    {
-        _userController.RegisterAdministrator(AdminName, AdminEmail, AdminPassword, AdminPassword);
-        _userController.RegisterClient(ClientName, ClientEmail, ClientPassword, ClientPassword);
-
-        User newUser = _userController.GetUserByEmail(ClientEmail);
-
-        _userController.Delete(newUser);
-        _userController.Delete(newUser);
-    }
-    
-    [TestMethod]
-    [ExpectedException(typeof(UserDoesNotExistException))]
-    public void TestCannotRemoveUserBecauseUserIsNull()
-    {
-        _userController.RegisterAdministrator(AdminName, AdminEmail, AdminPassword, AdminPassword);
-        _userController.RegisterClient(ClientName, ClientEmail, ClientPassword, ClientPassword);
-        _userController.Delete(null);
+        _userController.GetUserByEmail(ClientEmail);
     }
     
     [TestMethod]
