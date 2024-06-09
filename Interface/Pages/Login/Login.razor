@@ -1,7 +1,8 @@
 ﻿@page "/Login"
 @using BusinessLogic
+@using BusinessLogic.Controllers
 @using BusinessLogic.Exceptions.UserControllerExceptions
-@inject Session Session
+@inject SessionController SessionController
 @inject NavigationManager NavigationManager
 
 <html lang="es" xmlns="http://www.w3.org/1999/html">
@@ -87,7 +88,7 @@
         
         try
         {
-            Session.LoginUser(_email, _password); 
+            SessionController.LoginUser(_email, _password); 
 
             GoHome(); 
         }

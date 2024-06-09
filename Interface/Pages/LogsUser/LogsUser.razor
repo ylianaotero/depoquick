@@ -1,7 +1,8 @@
 ﻿@page "/LogsUser"
 @using BusinessLogic
+@using BusinessLogic.Controllers
 @using DepoQuick.Domain
-@inject Session Session
+@inject SessionController SessionController
 @inject UserController UserController
 @inject LogController LogController
 
@@ -43,7 +44,7 @@
     
     protected override void OnInitialized()
     {
-        _loggedInUser = Session.ActiveUser;
+        _loggedInUser = SessionController.ActiveUser;
         _logs = LogController.GetAllLogs(_loggedInUser);
     }
     

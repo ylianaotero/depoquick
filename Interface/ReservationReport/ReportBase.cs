@@ -1,9 +1,9 @@
 ﻿using System.Text;
+using BusinessLogic.Controllers;
 using BusinessLogic.Exceptions.PaymentControllerExceptions;
-using BusinessLogic.Exceptions.ReservationControllerExceptions;
 using DepoQuick.Domain;
 
-namespace BusinessLogic.ReservationReport
+namespace Interface.ReservationReport
 {
     public abstract class ReportBase : IReport
     {

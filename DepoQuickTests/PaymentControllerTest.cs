@@ -1,4 +1,5 @@
 ﻿using BusinessLogic;
+using BusinessLogic.Controllers;
 using BusinessLogic.Exceptions.PaymentControllerExceptions;
 using DepoQuick.Domain;
 using DepoQuick.Exceptions.PaymentExceptions;
@@ -16,7 +17,7 @@ public class PaymentControllerTest
     private NotificationController _notificationController;
     private PromotionController _promotionController;
     private DepositController _depositController;
-    private Session _session;
+    private SessionController _sessionController;
     
     private DateRange _currentDateRange;
     private Reservation _reservation;
@@ -43,12 +44,12 @@ public class PaymentControllerTest
         _context = TestContextFactory.CreateContext();
         _userController = new UserController(new SqlRepository<User>(_context));
         _logController = new LogController(new SqlRepository<LogEntry>(_context));
-        _session = new Session(_userController, _logController);
+        _sessionController = new SessionController(_userController, _logController);
         _paymentController = new PaymentController(new SqlRepository<Payment>(_context));
         _notificationController = new NotificationController(new SqlRepository<Notification>(_context));
-        _depositController = new DepositController(new SqlRepository<Deposit>(_context),_session);
-        _reservationController = new ReservationController(new SqlRepository<Reservation>(_context),_session,_paymentController,_notificationController);
-        _promotionController = new PromotionController(new SqlRepository<Promotion>(_context),_session,_depositController);
+        _depositController = new DepositController(new SqlRepository<Deposit>(_context),_sessionController);
+        _reservationController = new ReservationController(new SqlRepository<Reservation>(_context),_sessionController,_paymentController,_notificationController);
+        _promotionController = new PromotionController(new SqlRepository<Promotion>(_context),_sessionController,_depositController);
         
         _userController.RegisterAdministrator(AdminName,AdminEmail,AdminPassword,AdminPassword);
         Client client = new Client(ClientName1,ClientEmail1,ClientPassword1);

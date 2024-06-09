@@ -1,9 +1,9 @@
 ﻿using BusinessLogic.Exceptions.UserControllerExceptions;
 using DepoQuick.Domain;
 
-namespace BusinessLogic;
+namespace BusinessLogic.Controllers;
 
-public class Session
+public class SessionController
 {
     private const string LogInMessage = "Ingresó al sistema";
     private const string LogOutMessage = "Cerró sesión";
@@ -15,7 +15,7 @@ public class Session
     private LogController _logController;
     public User ActiveUser { get; set; }
     
-    public Session(UserController userController, LogController logController)
+    public SessionController(UserController userController, LogController logController)
     {
         _userController = userController;
         _logController = logController;

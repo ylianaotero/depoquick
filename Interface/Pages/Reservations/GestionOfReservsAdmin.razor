@@ -1,11 +1,12 @@
 ﻿@page "/GestionOfReservsAdmin"
 
-@inject Session Session
+@inject SessionController SessionController
 @inject DepoQuickContext DepoQuickContext
 @inject NavigationManager NavigationManager
 @inject ReservationController ReservationController
 @inject PaymentController PaymentController
 @using BusinessLogic
+@using BusinessLogic.Controllers
 @using BusinessLogic.Exceptions.PaymentControllerExceptions
 @using DepoQuick.Domain
 @using DepoQuick.Exceptions.PaymentExceptions
@@ -160,7 +161,7 @@
     
     private NavigationManager _navigationManager;
     
-    Session _session;
+    SessionController _sessionController;
 
     DepoQuickContext _context; 
     private List<Reservation> _listOfReservations;
@@ -175,7 +176,7 @@
     protected override void OnInitialized()
     {
         _context = DepoQuickContext;
-        _session = Session; 
+        _sessionController = SessionController; 
         _listOfReservations = ReservationController.GetReservations();
         _navigationManager = NavigationManager;
     

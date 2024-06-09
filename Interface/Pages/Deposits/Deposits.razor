@@ -1,7 +1,8 @@
 @page "/Deposits"
 @using BusinessLogic
+@using BusinessLogic.Controllers
 @using DepoQuick.Domain
-@inject Session Session
+@inject SessionController SessionController
 @inject NavigationManager NavigationManager
 @inject DepositController DepositController
 
@@ -138,7 +139,7 @@
     
     protected override void OnInitialized()
     {
-        _loggedInUser = Session.ActiveUser;
+        _loggedInUser = SessionController.ActiveUser;
 
         _listOfDeposits = DepositController.GetDeposits();
 

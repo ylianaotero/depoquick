@@ -1,9 +1,10 @@
 ﻿@page "/GestionOfReservsClient"
 @using BusinessLogic
+@using BusinessLogic.Controllers
 @using BusinessLogic.Exceptions.DepositControllerExceptions
 @using BusinessLogic.Exceptions.PaymentControllerExceptions
 @using DepoQuick.Domain
-@inject Session Session
+@inject SessionController SessionController
 @inject NavigationManager NavigationManager
 @inject DepoQuickContext DepoQuickContext
 @inject ReservationController ReservationController
@@ -180,11 +181,11 @@
     
     private UserController _userController;
     
-    private Session _session;
+    private SessionController _sessionController;
     
     protected override void OnInitialized()
     {
-        _client = (Client)Session.ActiveUser;
+        _client = (Client)SessionController.ActiveUser;
         
         _listOfReservations = ReservationController.GetReservationsByUserId(_client.Id);
         

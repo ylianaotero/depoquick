@@ -2,7 +2,7 @@
 using BusinessLogic.Exceptions.UserControllerExceptions;
 using DepoQuick.Domain;
 
-namespace BusinessLogic;
+namespace BusinessLogic.Controllers;
 
 public class DepositController
 {
@@ -13,12 +13,12 @@ public class DepositController
     private const string DepositAlreadyExistsMessage = "Ya existe un deposito con ese nombre";
     
     private IRepository<Deposit> _depositRepository;
-    private Session _session;
+    private SessionController _sessionController;
     
-    public DepositController(IRepository<Deposit> depositRepository, Session session)
+    public DepositController(IRepository<Deposit> depositRepository, SessionController sessionController)
     {
         _depositRepository = depositRepository;
-        _session = session; 
+        _sessionController = sessionController; 
     }
     
     public void AddDeposit(Deposit deposit, List<Promotion> promotions)
@@ -201,11 +201,11 @@ public class DepositController
     
     private bool UserLoggedIsAnAdministrator()
     {
-        return _session.ActiveUser.IsAdministrator; 
+        return _sessionController.ActiveUser.IsAdministrator; 
     }
     
     private bool UserIsLogged()
     {
-        return _session.UserLoggedIn(); 
+        return _sessionController.UserLoggedIn(); 
     }
 }

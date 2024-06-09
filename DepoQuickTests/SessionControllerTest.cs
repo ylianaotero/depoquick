@@ -1,15 +1,16 @@
 ﻿using BusinessLogic;
+using BusinessLogic.Controllers;
 using BusinessLogic.Exceptions.UserControllerExceptions;
 using DepoQuick.Domain;
 
 namespace DepoQuickTests;
 
 [TestClass]
-public class SessionTest
+public class SessionControllerTest
 {
     private DepoQuickContext _context;
     private LogController _logController;
-    private Session _session;
+    private SessionController _sessionController;
     private UserController _userController;
 
     private const string AdminName = "Administrator";
@@ -27,25 +28,25 @@ public class SessionTest
         _context = TestContextFactory.CreateContext();
         _userController = new UserController(new SqlRepository<User>(_context));
         _logController = new LogController(new SqlRepository<LogEntry>(_context));
-        _session = new Session(_userController, _logController);
+        _sessionController = new SessionController(_userController, _logController);
     }
 
     [TestMethod]
     public void TestUserLoggedIn()
     {
         _userController.RegisterAdministrator(AdminName, AdminEmail, AdminPassword, AdminPassword);
-        _session.LoginUser(AdminEmail, AdminPassword);
+        _sessionController.LoginUser(AdminEmail, AdminPassword);
 
-        Assert.AreEqual(true, _session.UserLoggedIn());
+        Assert.AreEqual(true, _sessionController.UserLoggedIn());
     }
     
     [TestMethod]
     public void TestLoginValidAdministrator()
     {
         _userController.RegisterAdministrator(AdminName, AdminEmail, AdminPassword, AdminPassword);
-        _session.LoginUser(AdminEmail, AdminPassword);
+        _sessionController.LoginUser(AdminEmail, AdminPassword);
          
-        Assert.AreEqual(_userController.GetAdministrator(), _session.ActiveUser);
+        Assert.AreEqual(_userController.GetAdministrator(), _sessionController.ActiveUser);
     }
     
     [TestMethod]
@@ -54,7 +55,7 @@ public class SessionTest
     {
         _userController.RegisterAdministrator(AdminName, AdminEmail, AdminPassword, AdminPassword);
  
-        _session.LoginUser(ClientEmail,ClientPassword);
+        _sessionController.LoginUser(ClientEmail,ClientPassword);
     }
     
     [TestMethod]
@@ -63,28 +64,28 @@ public class SessionTest
     {
         _userController.RegisterAdministrator(AdminName, AdminEmail, AdminPassword, AdminPassword);
  
-        _session.LoginUser(AdminEmail,ClientPassword);
+        _sessionController.LoginUser(AdminEmail,ClientPassword);
     }
     
     [TestMethod]
     public void TestLogoutUser()
     {
         _userController.RegisterAdministrator(AdminName, AdminEmail, AdminPassword, AdminPassword);
-        _session.LoginUser(AdminEmail, AdminPassword);
+        _sessionController.LoginUser(AdminEmail, AdminPassword);
         
-        _session.LogoutUser();
+        _sessionController.LogoutUser();
          
-        Assert.AreEqual(null, _session.ActiveUser);
+        Assert.AreEqual(null, _sessionController.ActiveUser);
     }
     
     [TestMethod]
     public void TestValidUserLogInLogin()
     {
         _userController.RegisterAdministrator(AdminName, AdminEmail, AdminPassword, AdminPassword);
-        _session.LoginUser(AdminEmail, AdminPassword);
+        _sessionController.LoginUser(AdminEmail, AdminPassword);
         
         DateTime now = DateTime.Now.AddSeconds(-DateTime.Now.Second);
-        List<LogEntry> logs = _session.ActiveUser.Logs;
+        List<LogEntry> logs = _sessionController.ActiveUser.Logs;
          
         Assert.IsTrue(logs.Any(log => log.Message == UserLogInLogMessage));
         Assert.IsTrue(logs.Any(log => now.Date == log.Timestamp.Date 
@@ -95,11 +96,11 @@ public class SessionTest
     public void TestValidLogInLogout()
     {
         _userController.RegisterAdministrator(AdminName, AdminEmail, AdminPassword, AdminPassword);
-        _session.LoginUser(AdminEmail, AdminPassword);
+        _sessionController.LoginUser(AdminEmail, AdminPassword);
 
 
-        List<LogEntry> logs = _session.ActiveUser.Logs;
-        _session.LogoutUser();
+        List<LogEntry> logs = _sessionController.ActiveUser.Logs;
+        _sessionController.LogoutUser();
         DateTime now = DateTime.Now.AddSeconds(-DateTime.Now.Second);
          
         Assert.IsTrue(logs.Any(log => log.Message == UserLogOutLogMessage));

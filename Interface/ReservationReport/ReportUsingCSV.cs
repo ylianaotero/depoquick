@@ -1,6 +1,7 @@
-﻿using DepoQuick.Domain;
+﻿using BusinessLogic.Controllers;
+using DepoQuick.Domain;
 
-namespace BusinessLogic.ReservationReport
+namespace Interface.ReservationReport
 {
     public class ReportUsingCSV : ReportBase
     {

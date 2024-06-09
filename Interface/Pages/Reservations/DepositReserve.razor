@@ -1,11 +1,12 @@
 ﻿@page "/DepositReserve"
 
-@inject Session Session
+@inject SessionController SessionController
 @inject DepositController DepositController
 @inject ReservationController ReservationController
 
 @using DepoQuick.Domain
 @using BusinessLogic
+@using BusinessLogic.Controllers
 @using BusinessLogic.Exceptions.DepositControllerExceptions
 @using DepoQuick.Exceptions.DateRangeExceptions
 
@@ -156,7 +157,7 @@
 
     _initialDate = DateTime.Today.Date;
     _finalDate = DateTime.Today.Date;
-    _client = (Client)Session.ActiveUser;
+    _client = (Client)SessionController.ActiveUser;
    // _availableDeposits = new List<Deposit>();
   }
   
@@ -208,7 +209,7 @@
 
   private bool IsAClient()
   {
-    return !Session.ActiveUser.IsAdministrator; 
+    return !SessionController.ActiveUser.IsAdministrator; 
   }
 
   private bool IsAValidDeposit()

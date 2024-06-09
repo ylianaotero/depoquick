@@ -1,6 +1,7 @@
-﻿using DepoQuick.Domain;
+﻿using BusinessLogic.Controllers;
+using DepoQuick.Domain;
 
-namespace BusinessLogic.ReservationReport
+namespace Interface.ReservationReport
 {
     public class ReportUsingTXT : ReportBase
     {
@@ -29,7 +30,6 @@ namespace BusinessLogic.ReservationReport
                 reserv.Price, 
                 promotionHasBeenApplied, 
                 paymentStatus);
-
         }
     }
 }

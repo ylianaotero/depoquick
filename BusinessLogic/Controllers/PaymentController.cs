@@ -1,7 +1,7 @@
 using BusinessLogic.Exceptions.PaymentControllerExceptions;
 using DepoQuick.Domain;
 
-namespace BusinessLogic;
+namespace BusinessLogic.Controllers;
 
 public class PaymentController
 {

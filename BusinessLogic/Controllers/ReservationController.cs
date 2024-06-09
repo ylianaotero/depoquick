@@ -2,7 +2,7 @@
 using BusinessLogic.Exceptions.UserControllerExceptions;
 using DepoQuick.Domain;
 
-namespace BusinessLogic;
+namespace BusinessLogic.Controllers;
 
 public class ReservationController
 {
@@ -18,15 +18,15 @@ public class ReservationController
     
     private PaymentController _paymentController;
     
-    private Session _session;
+    private SessionController _sessionController;
     
-    public ReservationController(IRepository<Reservation> reservationRepository, Session session,
+    public ReservationController(IRepository<Reservation> reservationRepository, SessionController sessionController,
                                 PaymentController paymentController, NotificationController notificationController)
     {
         _reservationRepository = reservationRepository;
         _paymentController = paymentController;
         _notificationController = notificationController; 
-        _session = session;
+        _sessionController = sessionController;
     }
     
     public void Add(Reservation reservation)
@@ -141,12 +141,12 @@ public class ReservationController
     
     private bool UserLoggedIsAnAdministrator()
     {
-        return _session.ActiveUser.IsAdministrator; 
+        return _sessionController.ActiveUser.IsAdministrator; 
     }
     
     private bool UserIsLogged()
     {
-        return _session.UserLoggedIn(); 
+        return _sessionController.UserLoggedIn(); 
     }
     
     private void ValidateExistanceOfReservation(Reservation reservation)
