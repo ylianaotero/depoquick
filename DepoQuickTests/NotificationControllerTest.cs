@@ -1,4 +1,5 @@
 ﻿using BusinessLogic;
+using BusinessLogic.Controllers;
 using DepoQuick.Domain;
 
 namespace DepoQuickTests;
@@ -16,7 +17,7 @@ public class NotificationControllerTest
     private NotificationController _notificationController;
     private UserController _userController;
     private ReservationController _reservationController; 
-    private Session _session;
+    private SessionController _sessionController;
     
     private const string AdminName = "Administrator";
     private const string AdminEmail = "administrator@domain.com";
@@ -43,7 +44,7 @@ public class NotificationControllerTest
         
         LogController _logController = new LogController(new SqlRepository<LogEntry>(context));
         
-        _session = new Session(_userController, _logController);
+        _sessionController = new SessionController(_userController, _logController);
         
         IRepository<Reservation> _reservationRepository = new SqlRepository<Reservation>(context);
             
@@ -52,7 +53,7 @@ public class NotificationControllerTest
         
         _notificationController = new NotificationController(new SqlRepository<Notification>(context));
         
-        _reservationController = new ReservationController(_reservationRepository,_session,_paymentController,_notificationController );
+        _reservationController = new ReservationController(_reservationRepository,_sessionController,_paymentController,_notificationController );
 
         
         _userController.RegisterAdministrator(AdminName, AdminEmail, AdminPassword, AdminPassword);

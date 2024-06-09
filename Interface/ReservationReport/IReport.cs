@@ -1,6 +1,4 @@
-﻿using DepoQuick.Domain;
-
-namespace BusinessLogic.ReservationReport;
+﻿namespace Interface.ReservationReport;
 
 
 public interface IReport

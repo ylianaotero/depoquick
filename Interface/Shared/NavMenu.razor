@@ -1,5 +1,6 @@
 ﻿@using BusinessLogic
-@inject Session Session
+@using BusinessLogic.Controllers
+@inject SessionController SessionController
 @inject NavigationManager NavigationManager
 @inject DepoQuickContext DepoQuickContext
 
@@ -111,19 +112,19 @@
 
     private bool UserLoggedIn()
     {
-        return Session.UserLoggedIn();
+        return SessionController.UserLoggedIn();
     }
 
     private void Logout()
     {
         
-        Session.LogoutUser();
+        SessionController.LogoutUser();
         
         NavigationManager.NavigateTo("/",forceLoad:true);
     }
 
     private bool IsAdministrator()
     {
-        return Session.ActiveUser.IsAdministrator;
+        return SessionController.ActiveUser.IsAdministrator;
     }
 }

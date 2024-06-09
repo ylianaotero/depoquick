@@ -2,7 +2,7 @@ using BusinessLogic.Exceptions.PromotionControllerExceptions;
 using BusinessLogic.Exceptions.UserControllerExceptions;
 using DepoQuick.Domain;
 
-namespace BusinessLogic;
+namespace BusinessLogic.Controllers;
 
 public class PromotionController
 {
@@ -11,13 +11,13 @@ public class PromotionController
     
     private DepositController _depositController;
     private IRepository<Promotion> _promotionRepository;
-    private Session _session;
+    private SessionController _sessionController;
 
-    public PromotionController(IRepository<Promotion> promotionRepository, Session session, DepositController depositController)
+    public PromotionController(IRepository<Promotion> promotionRepository, SessionController sessionController, DepositController depositController)
     {
         _depositController = depositController;
         _promotionRepository = promotionRepository;
-        _session = session;
+        _sessionController = sessionController;
     }
     
     public void Add(Promotion promotion, List<Deposit> deposits)
@@ -137,12 +137,12 @@ public class PromotionController
     
     private bool UserIsLogged()
     {
-        return _session.UserLoggedIn(); 
+        return _sessionController.UserLoggedIn(); 
     }
     
     private bool UserLoggedIsAnAdministrator()
     {
-        return _session.ActiveUser.IsAdministrator; 
+        return _sessionController.ActiveUser.IsAdministrator; 
     }
     
     private void RemovePromotionFromDepositsNotInList(Promotion promotion, List<Deposit> deposits)

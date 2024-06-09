@@ -1,9 +1,10 @@
 ﻿@page "/Register"
 @using BusinessLogic
+@using BusinessLogic.Controllers
 @using BusinessLogic.Exceptions.UserControllerExceptions
 @using DepoQuick.Domain
 @using DepoQuick.Exceptions.UserExceptions
-@inject Session Session
+@inject SessionController SessionController
 @inject NavigationManager NavigationManager
 @inject UserController UserController
 
@@ -21,7 +22,7 @@
 
                 @if (UserLoggedIn())
                 {
-                    if (Session.ActiveUser.IsAdministrator)
+                    if (SessionController.ActiveUser.IsAdministrator)
                     {
                         <h3 class="text-center" style="color: #0a53be">Registrar cliente</h3>
                         <p class="lead text-center">Aquí puedes registrar un cliente, como administrador, ingresando toda la información necesaria.</p>
@@ -163,7 +164,7 @@
                             <div class="text-center">
                                 @if (UserLoggedIn())
                                 {
-                                    if (Session.ActiveUser.IsAdministrator)
+                                    if (SessionController.ActiveUser.IsAdministrator)
                                     {
                                         <button type="button" class="btn btn-primary mr-2" @onclick="TryToRegister">Registrar cliente</button>
                                     }
@@ -219,7 +220,7 @@
     
     private bool UserLoggedIn()
     {
-        return Session.UserLoggedIn();
+        return SessionController.UserLoggedIn();
     }
     
     private void TryToRegister()

@@ -1,4 +1,5 @@
 using BusinessLogic;
+using BusinessLogic.Controllers;
 using DepoQuick.Domain;
 using Interface.Data;
 using Microsoft.EntityFrameworkCore;
@@ -23,30 +24,30 @@ UserController userController = new UserController(userRepository);
 SqlRepository<LogEntry> logRepository = new SqlRepository<LogEntry>(context);
 LogController logController = new LogController(logRepository);
 
-Session session = new Session(userController, logController);
+SessionController sessionController = new SessionController(userController, logController);
 
 SqlRepository<Payment> paymentRepository = new SqlRepository<Payment>(context);
 PaymentController paymentController = new PaymentController(paymentRepository);
 
 SqlRepository<Deposit> depositRepository = new SqlRepository<Deposit>(context);
 SqlRepository<Promotion> promotionRepository = new SqlRepository<Promotion>(context);
-DepositController depositController = new DepositController(depositRepository, session);
-PromotionController promotionController = new PromotionController(promotionRepository, session, depositController);
+DepositController depositController = new DepositController(depositRepository, sessionController);
+PromotionController promotionController = new PromotionController(promotionRepository, sessionController, depositController);
 
 
 SqlRepository<Notification> notificationRepository = new SqlRepository<Notification>(context);
 NotificationController notificationController = new NotificationController(notificationRepository );
 
 SqlRepository<Reservation> reservationRepository = new SqlRepository<Reservation>(context);
-ReservationController reservationController = new ReservationController(reservationRepository, session, paymentController,notificationController);
+ReservationController reservationController = new ReservationController(reservationRepository, sessionController, paymentController,notificationController);
 
 
 
 SqlRepository<Rating> ratingRepository = new SqlRepository<Rating>(context);
-RatingController ratingController = new RatingController(ratingRepository, session, logController);
+RatingController ratingController = new RatingController(ratingRepository, sessionController, logController);
 
 
-builder.Services.AddSingleton<Session>(session);
+builder.Services.AddSingleton<SessionController>(sessionController);
 builder.Services.AddSingleton<UserController>(userController);
 builder.Services.AddSingleton<LogController>(logController);
 builder.Services.AddSingleton<ReservationController>(reservationController);

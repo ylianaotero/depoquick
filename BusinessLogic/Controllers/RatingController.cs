@@ -1,7 +1,7 @@
 ﻿using BusinessLogic.Exceptions.UserControllerExceptions;
-
-namespace BusinessLogic;
 using DepoQuick.Domain;
+
+namespace BusinessLogic.Controllers;
 
 public class RatingController
 {
@@ -9,19 +9,19 @@ public class RatingController
     private const string ActionRestrictedToClientExceptionMessage = "Solo el cliente puede realizar esta acción";
 
     private IRepository<Rating> _ratingRepository;
-    private Session _session;
+    private SessionController _sessionController;
     private LogController _logController;
     
-    public RatingController(IRepository<Rating> ratingRepository,Session session, LogController logController)
+    public RatingController(IRepository<Rating> ratingRepository,SessionController sessionController, LogController logController)
     {
         _ratingRepository = ratingRepository;
-        _session = session;
+        _sessionController = sessionController;
         _logController = logController;
     }
     
     public void RateReservation(Reservation reservation, Rating rating)
     { 
-        User activeUser = _session.ActiveUser;
+        User activeUser = _sessionController.ActiveUser;
 
         RestrictActionToClient();
         
@@ -75,11 +75,11 @@ public class RatingController
 
     private bool UserIsLogged()
     {
-        return _session.UserLoggedIn(); 
+        return _sessionController.UserLoggedIn(); 
     }
     
     private bool UserLoggedIsAClient()
     {
-        return !_session.ActiveUser.IsAdministrator; 
+        return !_sessionController.ActiveUser.IsAdministrator; 
     }
 }

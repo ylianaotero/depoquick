@@ -1,6 +1,6 @@
 ﻿using DepoQuick.Domain;
 
-namespace BusinessLogic;
+namespace BusinessLogic.Controllers;
 
 public class NotificationController
 {

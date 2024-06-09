@@ -1,4 +1,5 @@
 ﻿using BusinessLogic;
+using BusinessLogic.Controllers;
 using BusinessLogic.Exceptions.PromotionControllerExceptions;
 using BusinessLogic.Exceptions.UserControllerExceptions;
 using DepoQuick.Domain;
@@ -9,7 +10,7 @@ public class PromotionControllerTest
 {
     private PromotionController _promotionController;
     private UserController _userController;
-    private Session _session;
+    private SessionController _sessionController;
     private ReservationController _reservationController;
     private PaymentController _paymentController;
     private NotificationController _notificationController;
@@ -47,17 +48,17 @@ public class PromotionControllerTest
         
         _userController = new UserController(_userRepository);
         _logController = new LogController(new SqlRepository<LogEntry>(_context));
-        _session = new Session(_userController, _logController);
+        _sessionController = new SessionController(_userController, _logController);
 
-        _depositController = new DepositController(new SqlRepository<Deposit>(_context), _session);
+        _depositController = new DepositController(new SqlRepository<Deposit>(_context), _sessionController);
             
-        _promotionController = new PromotionController(new SqlRepository<Promotion>(_context), _session, _depositController);
+        _promotionController = new PromotionController(new SqlRepository<Promotion>(_context), _sessionController, _depositController);
         
         _paymentController = new PaymentController(new SqlRepository<Payment>(_context));
         
         _notificationController = new NotificationController(new SqlRepository<Notification>(_context));
         
-        _reservationController = new ReservationController(new SqlRepository<Reservation>(_context), _session,_paymentController, _notificationController);
+        _reservationController = new ReservationController(new SqlRepository<Reservation>(_context), _sessionController,_paymentController, _notificationController);
 
         _userController.RegisterAdministrator(AdminName, AdminEmail, AdminPassword, AdminPassword);
 
@@ -72,7 +73,7 @@ public class PromotionControllerTest
     [TestMethod]
     public void TestAddNewPromotion()
     {
-        _session.LoginUser(AdminEmail, AdminPassword);
+        _sessionController.LoginUser(AdminEmail, AdminPassword);
 
         Promotion promotion = new Promotion();
         promotion.DiscountRate = PromotionDiscountRate0;
@@ -98,7 +99,7 @@ public class PromotionControllerTest
     public void TestClientCannotAddPromotion()
     {
         _userController.RegisterClient(ClientName, ClientEmail, ClientPassword, ClientPassword);
-        _session.LoginUser(ClientEmail, ClientPassword);
+        _sessionController.LoginUser(ClientEmail, ClientPassword);
 
         Promotion promotion = new Promotion();
         promotion.DiscountRate = PromotionDiscountRate0;
@@ -114,7 +115,7 @@ public class PromotionControllerTest
     [TestMethod]
     public void TestSearchForAPromotionById()
     {
-        _session.LoginUser(AdminEmail, AdminPassword);
+        _sessionController.LoginUser(AdminEmail, AdminPassword);
         Promotion promotion1 = new Promotion();
         Promotion promotion2 = new Promotion();
         promotion1.DiscountRate = PromotionDiscountRate0;
@@ -140,7 +141,7 @@ public class PromotionControllerTest
     [ExpectedException(typeof(PromotionNotFoundException))]
     public void TestSearchForAPromotionUsingAnInvalidId()
     {
-        _session.LoginUser(AdminEmail, AdminPassword);
+        _sessionController.LoginUser(AdminEmail, AdminPassword);
         Promotion promotion1 = new Promotion();
         Promotion promotion2 = new Promotion();
         promotion1.DiscountRate = PromotionDiscountRate0;
@@ -165,7 +166,7 @@ public class PromotionControllerTest
     [TestMethod]
     public void TestUpdatePromotion()
     {
-        _session.LoginUser(AdminEmail, AdminPassword);
+        _sessionController.LoginUser(AdminEmail, AdminPassword);
         Promotion promotion1 = new Promotion();
         promotion1.DiscountRate = PromotionDiscountRate0;
         promotion1.Label = PromotionLabel0;
@@ -204,7 +205,7 @@ public class PromotionControllerTest
     public void TestClientCannotUpdatePromotionData()
     {
         _userController.RegisterClient(ClientName, ClientEmail, ClientPassword, ClientPassword);
-        _session.LoginUser(AdminEmail, AdminPassword);
+        _sessionController.LoginUser(AdminEmail, AdminPassword);
         Promotion promotion1 = new Promotion();
         promotion1.DiscountRate = PromotionDiscountRate0;
         promotion1.Label = PromotionLabel0;
@@ -226,8 +227,8 @@ public class PromotionControllerTest
         double newDiscountRate = PromotionDiscountRate0;
         DateRange newDateRange = _currentDateRange;
 
-        _session.LogoutUser();
-        _session.LoginUser(ClientEmail, ClientPassword);
+        _sessionController.LogoutUser();
+        _sessionController.LoginUser(ClientEmail, ClientPassword);
         _promotionController.UpdatePromotionData(promotion1, newLabel, newDiscountRate, newDateRange);
     }
 
@@ -236,7 +237,7 @@ public class PromotionControllerTest
     public void TestClientCannotUpdatePromotion()
     {
         _userController.RegisterClient(ClientName, ClientEmail, ClientPassword, ClientPassword);
-        _session.LoginUser(AdminEmail, AdminPassword);
+        _sessionController.LoginUser(AdminEmail, AdminPassword);
 
         Promotion promotion1 = new Promotion();
         promotion1.DiscountRate = PromotionDiscountRate0;
@@ -255,8 +256,8 @@ public class PromotionControllerTest
         _context.Deposits.Add(deposit1);
         newDepositsToAddPromotion.Add(deposit1);
 
-        _session.LogoutUser();
-        _session.LoginUser(ClientEmail, ClientPassword);
+        _sessionController.LogoutUser();
+        _sessionController.LoginUser(ClientEmail, ClientPassword);
         _promotionController.UpdatePromotionDeposits(promotion1, newDepositsToAddPromotion);
     }
     
@@ -264,7 +265,7 @@ public class PromotionControllerTest
     [ExpectedException(typeof(PromotionNotFoundException))]
     public void TestDeletePromotion()
     {
-        _session.LoginUser(AdminEmail,AdminPassword);
+        _sessionController.LoginUser(AdminEmail,AdminPassword);
         Promotion promotion = new Promotion();
         promotion.DiscountRate = PromotionDiscountRate0;
         promotion.Label = PromotionLabel0;
@@ -284,7 +285,7 @@ public class PromotionControllerTest
     [TestMethod]
     public void TestDeletePromotionRemovesPromotionFromRelatedDeposits()
     { 
-        _session.LoginUser(AdminEmail,AdminPassword);
+        _sessionController.LoginUser(AdminEmail,AdminPassword);
         Promotion promotion = new Promotion();
         promotion.DiscountRate = PromotionDiscountRate0;
         promotion.Label = PromotionLabel0;
@@ -304,7 +305,7 @@ public class PromotionControllerTest
     public void TestClientCannotDeletePromotion()
     {
         _userController.RegisterClient(ClientName,ClientEmail,ClientPassword,ClientPassword);
-        _session.LoginUser(AdminEmail,AdminPassword);
+        _sessionController.LoginUser(AdminEmail,AdminPassword);
         Promotion promotion = new Promotion();
         promotion.DiscountRate = PromotionDiscountRate0;
         promotion.Label = PromotionLabel0;
@@ -317,8 +318,8 @@ public class PromotionControllerTest
         //depositsToAddToPromotion.Add(deposit0);
         _promotionController.Add(promotion,depositsToAddToPromotion);
      
-        _session.LogoutUser();
-        _session.LoginUser(ClientEmail,ClientPassword);
+        _sessionController.LogoutUser();
+        _sessionController.LoginUser(ClientEmail,ClientPassword);
         _promotionController.Delete(promotion.Id);
  
         CollectionAssert.DoesNotContain(_deposit0.Promotions, promotion);
@@ -328,7 +329,7 @@ public class PromotionControllerTest
     public void TestPromotionIsTiedToReservedDeposit()
     { 
         _userController.RegisterClient(ClientName,ClientEmail,ClientPassword,ClientPassword);
-        _session.LoginUser(AdminEmail,AdminPassword);
+        _sessionController.LoginUser(AdminEmail,AdminPassword);
         Promotion promotion = new Promotion();
         promotion.DiscountRate = PromotionDiscountRate0;
         promotion.Label = PromotionLabel0;
@@ -338,7 +339,7 @@ public class PromotionControllerTest
         depositsToAddToPromotion.Add(_deposit0);
         _promotionController.Add(promotion,depositsToAddToPromotion);
         
-        _session.LoginUser(ClientEmail,ClientPassword);
+        _sessionController.LoginUser(ClientEmail,ClientPassword);
         Client client = (Client)_userController.GetUserByEmail(ClientEmail);
         Reservation reservation = new Reservation(_deposit0,client,_currentDateRange);
         _reservationController.Add(reservation);
@@ -346,7 +347,7 @@ public class PromotionControllerTest
         _paymentController.Add(payment);
         _reservationController.PayReservation(reservation);
         
-        _session.LoginUser(AdminEmail,AdminPassword);
+        _sessionController.LoginUser(AdminEmail,AdminPassword);
         _reservationController.ApproveReservation(reservation);
        
         Assert.AreEqual(true,_promotionController.PromotionIsTiedToReservedDeposit(promotion));
@@ -356,7 +357,7 @@ public class PromotionControllerTest
     public void TestPromotionIsNotTiedToReservedDeposit()
     { 
         _userController.RegisterClient(ClientName,ClientEmail,ClientPassword,ClientPassword);
-        _session.LoginUser(AdminEmail,AdminPassword);
+        _sessionController.LoginUser(AdminEmail,AdminPassword);
         Promotion promotion = new Promotion();
         promotion.DiscountRate = PromotionDiscountRate0;
         promotion.Label = PromotionLabel0;

@@ -1,5 +1,6 @@
 ﻿using System.Threading.Channels;
 using BusinessLogic;
+using BusinessLogic.Controllers;
 using BusinessLogic.Exceptions.DepositControllerExceptions;
 using BusinessLogic.Exceptions.UserControllerExceptions;
 using DepoQuick.Domain;
@@ -18,7 +19,7 @@ public class DepositControllerTest
     private PaymentController _paymentController;
     private NotificationController _notificationController;
     private ReservationController _reservationController;
-    private Session _session; 
+    private SessionController _sessionController; 
     private DepoQuickContext _context;
     private DateRange _validDateRange;
 
@@ -49,8 +50,8 @@ public class DepositControllerTest
         _validDateRange = new DateRange(DateTime.Now.AddDays(5), DateTime.Now.AddDays(10));
         _userController = new UserController(_userRepository);
         _logController = new LogController(new SqlRepository<LogEntry>(_context));
-        _session = new Session(_userController, _logController);
-        _depositController = new DepositController(new SqlRepository<Deposit>(_context), _session);
+        _sessionController = new SessionController(_userController, _logController);
+        _depositController = new DepositController(new SqlRepository<Deposit>(_context), _sessionController);
     }
     
     [TestMethod]
@@ -58,7 +59,7 @@ public class DepositControllerTest
     {
         _userController.RegisterAdministrator(AdminName, AdminEmail, AdminPassword, AdminPassword);
         
-        _session.LoginUser(AdminEmail,AdminPassword);
+        _sessionController.LoginUser(AdminEmail,AdminPassword);
         
         Deposit newDeposit = new Deposit(DepositValidName,DepositArea0, DepositSize0, DepositAirConditioning0);
         
@@ -82,7 +83,7 @@ public class DepositControllerTest
         
         _userController.RegisterClient(ClientName,ClientEmail,ClientPassword,ClientPassword);
         
-        _session.LoginUser(ClientEmail,ClientPassword);
+        _sessionController.LoginUser(ClientEmail,ClientPassword);
         
         Deposit newDeposit = new Deposit(DepositValidName,DepositArea0, DepositSize0, DepositAirConditioning0);
         
@@ -98,7 +99,7 @@ public class DepositControllerTest
     {
         _userController.RegisterAdministrator(AdminName, AdminEmail, AdminPassword, AdminPassword);
         
-        _session.LoginUser(AdminEmail,AdminPassword);
+        _sessionController.LoginUser(AdminEmail,AdminPassword);
         
         Deposit newDeposit = new Deposit(DepositValidName,DepositArea0, DepositSize0, DepositAirConditioning0);
         Deposit newDeposit0 = new Deposit(DepositValidName2,DepositArea0, DepositSize0, DepositAirConditioning0);
@@ -128,7 +129,7 @@ public class DepositControllerTest
     {
         _userController.RegisterAdministrator(AdminName, AdminEmail, AdminPassword, AdminPassword);
         
-        _session.LoginUser(AdminEmail,AdminPassword);
+        _sessionController.LoginUser(AdminEmail,AdminPassword);
         
         Deposit newDeposit = new Deposit(DepositValidName,DepositArea0, DepositSize0, DepositAirConditioning0);
         Deposit newDeposit0 = new Deposit(DepositValidName2,DepositArea0, DepositSize0, DepositAirConditioning0);
@@ -149,7 +150,7 @@ public class DepositControllerTest
     {
         _userController.RegisterAdministrator(AdminName, AdminEmail, AdminPassword, AdminPassword);
         
-        _session.LoginUser(AdminEmail,AdminPassword);
+        _sessionController.LoginUser(AdminEmail,AdminPassword);
         
         Deposit newDeposit = new Deposit(DepositValidName,DepositArea0, DepositSize0, DepositAirConditioning0);
         Deposit newDeposit0 = new Deposit(DepositValidName2,DepositArea0, DepositSize0, DepositAirConditioning0);
@@ -172,7 +173,7 @@ public class DepositControllerTest
     {
         _userController.RegisterAdministrator(AdminName, AdminEmail, AdminPassword, AdminPassword);
         
-        _session.LoginUser(AdminEmail,AdminPassword);
+        _sessionController.LoginUser(AdminEmail,AdminPassword);
         
         Deposit newDeposit = new Deposit(DepositValidName,DepositArea0, DepositSize0, DepositAirConditioning0);
         Deposit newDeposit0 = new Deposit(DepositValidName2,DepositArea0, DepositSize0, DepositAirConditioning0);
@@ -183,11 +184,11 @@ public class DepositControllerTest
         _depositController.AddDeposit(newDeposit, promotionsToAddToDeposit);
         _depositController.AddDeposit(newDeposit0, promotionsToAddToDeposit);
         
-        _session.LogoutUser();
+        _sessionController.LogoutUser();
         
         _userController.RegisterClient(ClientName,ClientEmail,ClientPassword,ClientPassword);
         
-        _session.LoginUser(ClientEmail,ClientPassword);
+        _sessionController.LoginUser(ClientEmail,ClientPassword);
         
         _depositController.DeleteDeposit(newDeposit.Id);
          
@@ -198,7 +199,7 @@ public class DepositControllerTest
     {
         _userController.RegisterAdministrator(AdminName, AdminEmail, AdminPassword, AdminPassword);
         
-        _session.LoginUser(AdminEmail,AdminPassword);
+        _sessionController.LoginUser(AdminEmail,AdminPassword);
         
         Deposit newDeposit = new Deposit(DepositValidName,DepositArea0, DepositSize0, DepositAirConditioning0);
         Deposit newDeposit0 = new Deposit(DepositValidName2,DepositArea0, DepositSize0, DepositAirConditioning0);
@@ -232,7 +233,7 @@ public class DepositControllerTest
     {
         _userController.RegisterAdministrator(AdminName, AdminEmail, AdminPassword, AdminPassword);
         
-        _session.LoginUser(AdminEmail,AdminPassword);
+        _sessionController.LoginUser(AdminEmail,AdminPassword);
         
         Deposit newDeposit = new Deposit(DepositValidName,DepositArea0, DepositSize0, DepositAirConditioning0);
         
@@ -256,11 +257,11 @@ public class DepositControllerTest
         IRepository<Payment> _paymentRepository = new SqlRepository<Payment>(_context);
         _paymentController = new PaymentController(_paymentRepository);
         _notificationController = new NotificationController(new SqlRepository<Notification>(_context));
-        _reservationController = new ReservationController(_reservationRepository, _session, _paymentController, _notificationController);
+        _reservationController = new ReservationController(_reservationRepository, _sessionController, _paymentController, _notificationController);
         
         _userController.RegisterAdministrator(AdminName, AdminEmail, AdminPassword, AdminPassword);
         _userController.RegisterClient(ClientName,ClientEmail,ClientPassword,ClientPassword);
-        _session.LoginUser(AdminEmail,AdminPassword);
+        _sessionController.LoginUser(AdminEmail,AdminPassword);
 
         Client client = (Client)_userController.GetUserByEmail(ClientEmail);
         Deposit newDeposit = new Deposit(DepositValidName,DepositArea0, DepositSize0, DepositAirConditioning0);
@@ -288,7 +289,7 @@ public class DepositControllerTest
     {
         _userController.RegisterAdministrator(AdminName, AdminEmail, AdminPassword, AdminPassword);
         
-        _session.LoginUser(AdminEmail,AdminPassword);
+        _sessionController.LoginUser(AdminEmail,AdminPassword);
         
         Deposit newDeposit = new Deposit(DepositValidName,DepositArea0, DepositSize0, DepositAirConditioning0);
         
@@ -307,7 +308,7 @@ public class DepositControllerTest
     {
         _userController.RegisterAdministrator(AdminName, AdminEmail, AdminPassword, AdminPassword);
         
-        _session.LoginUser(AdminEmail,AdminPassword);
+        _sessionController.LoginUser(AdminEmail,AdminPassword);
         
         Deposit newDeposit = new Deposit(DepositValidName,DepositArea0, DepositSize0, DepositAirConditioning0);
         
@@ -329,7 +330,7 @@ public class DepositControllerTest
     {
         _userController.RegisterAdministrator(AdminName, AdminEmail, AdminPassword, AdminPassword);
         
-        _session.LoginUser(AdminEmail,AdminPassword);
+        _sessionController.LoginUser(AdminEmail,AdminPassword);
         
         Deposit newDeposit = new Deposit(DepositValidName,DepositArea0, DepositSize0, DepositAirConditioning0);
         
@@ -349,7 +350,7 @@ public class DepositControllerTest
     {
         _userController.RegisterAdministrator(AdminName, AdminEmail, AdminPassword, AdminPassword);
         
-        _session.LoginUser(AdminEmail,AdminPassword);
+        _sessionController.LoginUser(AdminEmail,AdminPassword);
         
         Deposit newDeposit = new Deposit(DepositValidName,DepositArea0, DepositSize0, DepositAirConditioning0);
         newDeposit.AvailableDates.Add(_validDateRange);
@@ -370,7 +371,7 @@ public class DepositControllerTest
     {
         _userController.RegisterAdministrator(AdminName, AdminEmail, AdminPassword, AdminPassword);
         
-        _session.LoginUser(AdminEmail,AdminPassword);
+        _sessionController.LoginUser(AdminEmail,AdminPassword);
         
         Deposit newDeposit = new Deposit("",DepositArea0, DepositSize0, DepositAirConditioning0);
         
@@ -392,7 +393,7 @@ public class DepositControllerTest
     {
         _userController.RegisterAdministrator(AdminName, AdminEmail, AdminPassword, AdminPassword);
         
-        _session.LoginUser(AdminEmail,AdminPassword);
+        _sessionController.LoginUser(AdminEmail,AdminPassword);
         
         Deposit newDeposit = new Deposit(DepositValidName,DepositArea0, DepositSize0, DepositAirConditioning0);
         Deposit newDeposit0 = new Deposit(DepositValidName,DepositArea0, DepositSize0, DepositAirConditioning0);

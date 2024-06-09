@@ -1,7 +1,8 @@
 using BusinessLogic.Exceptions.UserControllerExceptions;
 using DepoQuick.Domain;
 using DepoQuick.Exceptions.UserExceptions;
-namespace BusinessLogic;
+
+namespace BusinessLogic.Controllers;
 
 public class LogController
 {
