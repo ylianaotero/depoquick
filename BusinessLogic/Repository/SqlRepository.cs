@@ -98,7 +98,7 @@ public class SqlRepository<T> : IRepository<T> where T : class
 
     public void Delete(int id)
     {
-        T existingElement = GetById(id);
+        T existingElement = GetTById(id);
         
         if (existingElement == null)
         {
@@ -113,5 +113,12 @@ public class SqlRepository<T> : IRepository<T> where T : class
     public void Reload(T element)
     {
         _database.Entry(element).Reload();
+    }
+
+    private T GetTById(int id)
+    {
+        T element = _entities.Find(id);
+
+        return element;
     }
 }

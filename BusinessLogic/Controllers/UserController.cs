@@ -11,7 +11,6 @@ public class UserController
     private const string CannotCreateClientBeforeAdminExceptionMessage = "No se puede registrar un cliente sin haber " +
                                                                          "registrado un administrador previamente";
     private const string EmptyAdministratorExceptionMessage = "No hay ningún administrador registrado.";
-    private const string UserDoesNotExistMessage = "El usuario no existe";
     
     private IRepository<User> _userRepository;
     

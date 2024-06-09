@@ -72,11 +72,9 @@ public class DepositController
         return deposits; 
     }
 
-    public void DeleteDeposit(int id)
+    public void DeleteDeposit(Deposit depositToDelete)
     {
         RestrictActionToAdministrator();
-        
-        Deposit depositToDelete = GetById(id);
             
         _depositRepository.Reload(depositToDelete);
             

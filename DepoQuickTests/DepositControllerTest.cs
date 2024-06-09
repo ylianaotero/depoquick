@@ -163,7 +163,7 @@ public class DepositControllerTest
         
         int id = newDeposit0.Id;
 
-        _depositController.DeleteDeposit(id);
+        _depositController.DeleteDeposit(newDeposit0);
         _depositController.Get(id);
     }
     
@@ -190,7 +190,7 @@ public class DepositControllerTest
         
         _sessionController.LoginUser(ClientEmail,ClientPassword);
         
-        _depositController.DeleteDeposit(newDeposit.Id);
+        _depositController.DeleteDeposit(newDeposit);
          
     }
     
@@ -219,7 +219,7 @@ public class DepositControllerTest
         
         int id = newDeposit0.Id;
 
-        _depositController.DeleteDeposit(id);
+        _depositController.DeleteDeposit(newDeposit0);
         
         List<Deposit> deposits = _depositController.GetDepositsByPromotion(promotion2);
 
@@ -341,7 +341,7 @@ public class DepositControllerTest
           
         _depositController.AddDeposit(newDeposit, promotionsToAddToDeposit);
         
-        _depositController.DeleteDeposit(newDeposit.Id);
+        _depositController.DeleteDeposit(newDeposit);
         String depositName = _depositController.GetDepositByName(newDeposit.Name).Name;
     }
     

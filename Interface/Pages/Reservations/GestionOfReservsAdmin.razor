@@ -1,11 +1,7 @@
 ﻿@page "/GestionOfReservsAdmin"
-
-@inject SessionController SessionController
-@inject DepoQuickContext DepoQuickContext
 @inject NavigationManager NavigationManager
 @inject ReservationController ReservationController
 @inject PaymentController PaymentController
-@using BusinessLogic
 @using BusinessLogic.Controllers
 @using BusinessLogic.Exceptions.PaymentControllerExceptions
 @using DepoQuick.Domain
@@ -60,18 +56,11 @@
             @foreach (Reservation reservation in _listOfReservations)
             {
                 <tr>
-                    @{
-                        int clientId = DepoQuickContext.Entry(reservation).Property<int>("ClientId").CurrentValue;
-                        string clientName = DepoQuickContext.Clients.Find(clientId).Name;
-                        
-                        int depositId = DepoQuickContext.Entry(reservation).Property<int>("DepositId").CurrentValue;
-                    }
-
-                    <td>@clientName</td>
-                    <td>Depósito @depositId</td>
+                    <td>@reservation.Client.Name</td>
+                    <td>@reservation.Deposit.Name</td>
                     <td>@reservation.Date.GetInitialDate().ToString("dd/MM/yyyy")</td>
                     <td>@reservation.Date.GetFinalDate().ToString("dd/MM/yyyy")</td>
-                    
+                    <td>@reservation.Price</td>
                     @{
                         GetPayment(reservation);
                     }
@@ -79,7 +68,7 @@
                     {
                         
                         <td>
-                            <button @onclick="() => ReservationController.ApproveReservation(reservation)" class="btn btn-success btn-sm">Aprobar</button>
+                            <button @onclick="() => ApproveReservation(reservation)" class="btn btn-success btn-sm">Aprobar</button>
                             <button @onclick="() =>  GoToRejectReservation(reservation.Id)" class="btn btn-danger btn-sm">Rechazar</button>
                         </td>
 
@@ -87,7 +76,6 @@
                     }
                     else
                     {
-                        
                         @if (reservation.Status == 1)
                         {
                             <td>
@@ -161,9 +149,6 @@
     
     private NavigationManager _navigationManager;
     
-    SessionController _sessionController;
-
-    DepoQuickContext _context; 
     private List<Reservation> _listOfReservations;
 
     private bool _showAlertReservationNotFound; 
@@ -175,8 +160,6 @@
     
     protected override void OnInitialized()
     {
-        _context = DepoQuickContext;
-        _sessionController = SessionController; 
         _listOfReservations = ReservationController.GetReservations();
         _navigationManager = NavigationManager;
     
@@ -220,6 +203,5 @@
     private void GoToRejectReservation(int id)
     {
         _navigationManager.NavigateTo("/Reject/" + id);
-        
     }
 }

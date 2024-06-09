@@ -188,8 +188,7 @@
         HideAllAlerts();
         try
         {
-            int id = _depositToDelete.Id;
-            DepositController.DeleteDeposit(id);
+            DepositController.DeleteDeposit(_depositToDelete);
             _showAlertDepositDeletedSuccessfully = true;
         } catch (Exception e)
         {
