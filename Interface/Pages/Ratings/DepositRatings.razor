@@ -1,7 +1,8 @@
 @page "/DepositRatings/{Id:int}" 
-@using BusinessLogic
+
 @using BusinessLogic.Controllers
 @using DepoQuick.Domain
+
 @inject DepositController DepositController
 @inject RatingController RatingController
 
@@ -46,7 +47,6 @@
     
     private Deposit _deposit;
     private List<Rating> _ratings;
-    
     
     protected override void OnParametersSet()
     {

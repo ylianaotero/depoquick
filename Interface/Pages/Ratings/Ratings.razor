@@ -1,7 +1,8 @@
 @page "/Ratings"
-@using BusinessLogic
+
 @using BusinessLogic.Controllers
 @using DepoQuick.Domain
+
 @inject SessionController SessionController
 @inject RatingController RatingController
 
@@ -29,7 +30,14 @@
         @foreach (Rating rating in _listOfRatings)
         {
             <tr>
-                <td>@rating.Reservation.Deposit.Name (@rating.Reservation.Deposit.Id)</td>
+                @if (rating.Reservation.Deposit != null)
+                {
+                    <td>@rating.Reservation.Deposit.Name (@rating.Reservation.Deposit.Id)</td>
+                }
+                else
+                {
+                    <td>Depósito eliminado</td>
+                }
                 <td>@rating.Reservation.Id</td>
                 <td>@rating.Reservation.Client.Name</td>
                 <td>@rating.Stars</td>

@@ -44,37 +44,22 @@ public class DateRange
     
     public bool DateRangeIsOverlapping(DateRange dateRange)
     {
-        if (IsDateInRange(dateRange.InitialDate) || IsDateInRange(dateRange.FinalDate))
-        {
-            return true;
-        }
-
-        return false;
+        return IsDateInRange(dateRange.InitialDate) || IsDateInRange(dateRange.FinalDate);
     }
 
     public bool IsDateInRange(DateTime date)
     {
-        if (date >= InitialDate && date <= FinalDate)
-        {
-            return true;
-        }
-
-        return false;
+        return date >= InitialDate && date <= FinalDate;
     }
 
     public bool Contains(DateRange dateRange)
     {
-        if (IsDateInRange(dateRange.InitialDate) || IsDateInRange(dateRange.FinalDate))
-        {
-            return true;
-        }
-
-        return false;
+        return IsDateInRange(dateRange.InitialDate) || IsDateInRange(dateRange.FinalDate);
     }
 
     private void ValidateDateRange(DateTime initialDate, DateTime finalDate)
     {
-        if (TheTwoDatesAreEmpty(initialDate, finalDate) || InitialDateIsEmpty(initialDate) || FinalDateIsEmpty(finalDate))
+        if (!(DateIsNotEmpty(initialDate) && DateIsNotEmpty(finalDate)))
         {
             throw new EmptyDateRangeException(EmptyDateRangeMessage);
         }
@@ -85,53 +70,13 @@ public class DateRange
         }
     }
 
-    private bool TheTwoDatesAreEmpty(DateTime initialDate, DateTime finalDate)
-    {
-        if (!DateIsNotEmpty(initialDate) && !DateIsNotEmpty(finalDate))
-        {
-            return true;
-        }
-
-        return false;
-    }
-
-    private bool InitialDateIsEmpty(DateTime initialDate)
-    {
-        if (!DateIsNotEmpty(initialDate))
-        {
-            return true;
-        }
-
-        return false;
-    }
-
-    private bool FinalDateIsEmpty(DateTime finalDate)
-    {
-        if (!DateIsNotEmpty(finalDate))
-        {
-            return true;
-        }
-
-        return false;
-    }
-
     private bool DateIsNotEmpty(DateTime date)
     {
-        if (date != DateTime.MinValue)
-        {
-            return true;
-        }
-        
-        return false;
+        return date != DateTime.MinValue;
     }
 
     private bool EndDateIsLater(DateTime initialDate, DateTime finalDate)
     {
-        if (initialDate.Date < finalDate.Date)
-        {
-            return true;
-        }
-        
-        return false;
+      return initialDate.Date < finalDate.Date;
     }
 }

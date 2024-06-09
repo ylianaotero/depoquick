@@ -1,7 +1,9 @@
 ﻿@page "/NotificationsClient"
-@using BusinessLogic
+
 @using BusinessLogic.Controllers
 @using DepoQuick.Domain
+
+@inject NavigationManager NavigationManager
 @inject SessionController SessionController
 @inject NotificationController NotificationController
 
@@ -59,14 +61,22 @@
     
     protected override void OnInitialized()
     {
-        _loggedInUser = SessionController.ActiveUser;
-        _notifications = NotificationController.GetNotifications((Client)_loggedInUser);
-        HideAllAlerts();
+        if (SessionController.ActiveUser.IsAdministrator)
+        {
+            GoToHomePage();
+        }
+        else
+        {
+            InitializeVariables();
+
+            HideAllAlerts();
+        }
     }
     
-    private void HideAllAlerts()
+    private void InitializeVariables()
     {
-        _showAlertInvalidNotification = false; 
+        _loggedInUser = SessionController.ActiveUser;
+        _notifications = NotificationController.GetNotifications((Client)_loggedInUser);
     }
 
     private void DeleteNotification(Notification notification)
@@ -74,6 +84,7 @@
         try
         {
             HideAllAlerts();
+            
             NotificationController.Delete(notification); 
             _notifications.Remove(notification);
         }
@@ -81,5 +92,15 @@
         {
             _showAlertInvalidNotification = true; 
         }
+    }
+
+    private void HideAllAlerts()
+    {
+        _showAlertInvalidNotification = false; 
+    }
+    
+    private void GoToHomePage()
+    {
+        NavigationManager.NavigateTo($"../Home");
     }
 }

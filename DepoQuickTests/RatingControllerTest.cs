@@ -1,6 +1,5 @@
 ﻿using BusinessLogic;
 using BusinessLogic.Controllers;
-using BusinessLogic.Exceptions.RatingControllerExceptions;
 using BusinessLogic.Exceptions.UserControllerExceptions;
 using DepoQuick.Domain;
 
@@ -191,7 +190,6 @@ public class RatingControllerTest
     
     
     [TestMethod]
-    [ExpectedException(typeof(RatingNotFoundException))]
     public void TestRatingNotFound()
     {
         _sessionController.LoginUser(ClientEmail, ClientPassword);
@@ -200,8 +198,8 @@ public class RatingControllerTest
     
         _reservationController.Add(reservation1);
 
-        _ratingController.GetRatingByReservation(reservation1); 
-
-
+        Rating rating = _ratingController.GetRatingByReservation(reservation1); 
+        
+        Assert.IsNull(rating);
     }
 }

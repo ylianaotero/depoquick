@@ -1,7 +1,8 @@
 ﻿@page "/Login"
-@using BusinessLogic
+
 @using BusinessLogic.Controllers
 @using BusinessLogic.Exceptions.UserControllerExceptions
+
 @inject SessionController SessionController
 @inject NavigationManager NavigationManager
 
@@ -57,7 +58,7 @@
 
                             <div class="text-center">
                                 <button type="button" class="btn btn-primary mr-2" @onclick="LoginUser">Ingresar</button>
-                                <button type="button" class="btn btn-primary" @onclick="GoToIndex">Cancelar</button>
+                                <button type="button" class="btn btn-primary" @onclick="GoToIndexPage">Cancelar</button>
                             </div>
 
                         </form>
@@ -81,7 +82,6 @@
         HideAllAlerts();
     }
     
-    
     private void LoginUser()
     {
         HideAllAlerts();
@@ -90,7 +90,7 @@
         {
             SessionController.LoginUser(_email, _password); 
 
-            GoHome(); 
+            GoToHomePage(); 
         }
         catch (UserDoesNotExistException userDoesNotExistException)
         {
@@ -109,12 +109,12 @@
         _showAlertInvalidPassword = false;
     }
     
-    private void GoHome()
+    private void GoToHomePage()
     {
         NavigationManager.NavigateTo("/Home", forceLoad:true);
     }
     
-    private void GoToIndex()
+    private void GoToIndexPage()
     {
         NavigationManager.NavigateTo("/", forceLoad:true);
     }

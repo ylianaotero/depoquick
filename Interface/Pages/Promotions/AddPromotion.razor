@@ -1,10 +1,12 @@
 @page "/AddPromotion"
-@using BusinessLogic
+
 @using BusinessLogic.Controllers
 @using BusinessLogic.Exceptions.UserControllerExceptions
 @using DepoQuick.Domain
 @using DepoQuick.Exceptions.DateRangeExceptions
 @using DepoQuick.Exceptions.PromotionExceptions
+
+@inject SessionController SessionController
 @inject NavigationManager NavigationManager
 @inject PromotionController PromotionController
 @inject DepositController DepositController
@@ -106,7 +108,6 @@
 
 @code {
     private const double PercentageDivider = 100.0;
-    private DepoQuickContext _context;
     
     private string _label;
     private double _discountRate;
@@ -130,44 +131,26 @@
 
     protected override void OnInitialized()
     {
+        if (!SessionController.ActiveUser.IsAdministrator)
+        {
+            GoToHomePage();
+        }
+        else
+        {
+            InitializeVariables();
+
+            HideAllAlerts();
+        }
+    }
+    
+    private void InitializeVariables()
+    {
         _startDate = DateTime.Now;
         _finalDate = DateTime.Now;
         _deposits = DepositController.GetDeposits();
         _selectedDeposits = new List<Deposit>();
         _selectAllDeposits = false;
-        HideAllAlerts();
     }
-    
-    void ToggleDepositSelection(Deposit deposit)
-    {
-        if (_selectedDeposits.Contains(deposit))
-        {
-            _selectedDeposits.Remove(deposit);
-        }
-        else
-        {
-            _selectedDeposits.Add(deposit);
-        }
-    }
-    
-
-    bool IsSelected(Deposit deposit)
-    {
-        return _selectedDeposits.Contains(deposit);
-    }
-
-    void SelectAllDeposits()
-    {
-        _selectAllDeposits = !_selectAllDeposits;
-        if (_selectAllDeposits)
-        {
-            _selectedDeposits = new List<Deposit>(_deposits);
-        }
-        else
-        {
-            _selectedDeposits.Clear();
-        }
-    }   
 
     private void AttemptToAddNewPromotion()
     {
@@ -232,10 +215,36 @@
         PromotionController.Add(newPromotion, _selectedDeposits);
     }
     
-    private void GoToPromotionsPage()
+    private void ToggleDepositSelection(Deposit deposit)
     {
-        NavigationManager.NavigateTo("/Promotions");
+        if (_selectedDeposits.Contains(deposit))
+        {
+            _selectedDeposits.Remove(deposit);
+        }
+        else
+        {
+            _selectedDeposits.Add(deposit);
+        }
     }
+
+    private bool IsSelected(Deposit deposit)
+    {
+        return _selectedDeposits.Contains(deposit);
+    }
+
+    private void SelectAllDeposits()
+    {
+        _selectAllDeposits = !_selectAllDeposits;
+        
+        if (_selectAllDeposits)
+        {
+            _selectedDeposits = new List<Deposit>(_deposits);
+        }
+        else
+        {
+            _selectedDeposits.Clear();
+        }
+    }  
     
     private void HideAllAlerts()
     {
@@ -246,5 +255,15 @@
         _showAlertEmptyLabel = false;
         _showAlertLabelHasMoreThan20Characters = false;
         _showAlertInvalidPercentage = false;
+    }
+    
+    private void GoToPromotionsPage()
+    {
+        NavigationManager.NavigateTo("/Promotions");
+    }
+    
+    private void GoToHomePage()
+    {
+        NavigationManager.NavigateTo($"../Home");
     }
 }

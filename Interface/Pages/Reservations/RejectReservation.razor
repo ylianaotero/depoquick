@@ -1,12 +1,14 @@
 ﻿@page "/Reject/{id:int}"
-@inject NavigationManager NavigationManager
-@inject ReservationController ReservationController
-@using BusinessLogic
+
 @using BusinessLogic.Controllers
 @using BusinessLogic.Exceptions.ReservationControllerExceptions
 @using BusinessLogic.Exceptions.UserControllerExceptions
 @using DepoQuick.Domain
 @using DepoQuick.Exceptions.ReservationExceptions
+
+@inject SessionController SessionController
+@inject NavigationManager NavigationManager
+@inject ReservationController ReservationController
 
 <html lang="es">
   <head>
@@ -15,7 +17,7 @@
   </head>
 
     <body>
-        <h3>Rechazar reservación</h3>
+        <h3>Rechazar reserva</h3>
 
         @if (_showAlertReservationNotFound)
         {
@@ -65,16 +67,16 @@
             </div>
         </form>
         <button @onclick="() => RejectTheReservation()" class="btn btn-danger btn-sm">Rechazar</button>
-        <button @onclick="() => CancelRejection()" class="btn btn-primary btn-sm">Cancelar</button>
+        <button @onclick="() => GoToGestionOfReservsAdmin()" class="btn btn-primary btn-sm">Cancelar</button>
     </body>
 </html>
 
 
 @code {
-    private NavigationManager _navigationManager;
+    [Parameter]
+    public int Id { get; set; }
     
     private Reservation _currentReservation; 
-
     private String _comment;
     
     private bool _showAlertReservationNotFound; 
@@ -82,32 +84,28 @@
     private bool _showAlertEmptyComment;
     private bool _showAlertAdminNotFound; 
     
-    [Parameter]
-    public int Id { get; set; }
-    
-
     protected override void OnInitialized()
     {
-        _navigationManager = NavigationManager;
-        HideAllAlerts(); 
-    }
-    
-    private void HideAllAlerts()
-    {
-        _showAlertReservationNotFound = false; 
-        _showAlertInvalidComment = false;
-        _showAlertAdminNotFound = false; 
-        _showAlertEmptyComment = false; 
+        if (!SessionController.ActiveUser.IsAdministrator)
+        {
+            GoToHomePage();
+        }
+        else
+        {
+            HideAllAlerts();
+        }
     }
     
     private void RejectTheReservation()
     {
         HideAllAlerts(); 
+        
         try
         {
             _currentReservation = ReservationController.Get(Id);
             ReservationController.RejectReservation(_currentReservation, _comment);
-            _navigationManager.NavigateTo("/GestionOfReservsAdmin");
+            
+            GoToGestionOfReservsAdmin();
         }
         catch (ReservationNotFoundException exceptionReservationNotFound)
         {
@@ -132,9 +130,22 @@
         }
     }
     
-    private void CancelRejection()
+    private void HideAllAlerts()
     {
-        _navigationManager.NavigateTo("/GestionOfReservsAdmin");
+        _showAlertReservationNotFound = false; 
+        _showAlertInvalidComment = false;
+        _showAlertAdminNotFound = false; 
+        _showAlertEmptyComment = false; 
+    }
+    
+    private void GoToGestionOfReservsAdmin()
+    {
+        NavigationManager.NavigateTo("/GestionOfReservsAdmin");
+    }
+    
+    private void GoToHomePage()
+    {
+        NavigationManager.NavigateTo($"../Home");
     }
 }
     

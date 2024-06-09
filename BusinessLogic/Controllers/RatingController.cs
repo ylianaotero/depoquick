@@ -1,5 +1,4 @@
-﻿using BusinessLogic.Exceptions.RatingControllerExceptions;
-using BusinessLogic.Exceptions.UserControllerExceptions;
+﻿using BusinessLogic.Exceptions.UserControllerExceptions;
 using DepoQuick.Domain;
 
 namespace BusinessLogic.Controllers;
@@ -8,7 +7,6 @@ public class RatingController
 {
     private const string BaseLogMessage = "Agregó valoración de la reserva ";
     private const string ActionRestrictedToClientExceptionMessage = "Solo el cliente puede realizar esta acción";
-    private const string RatingNotFoundExceptionMessage = "El rating no fue encontrado";
 
     private IRepository<Rating> _ratingRepository;
     private SessionController _sessionController;
@@ -61,10 +59,6 @@ public class RatingController
     public Rating GetRatingByReservation(Reservation reservation)
     {
         Rating rating = _ratingRepository.GetBy(p => p.Reservation == reservation).FirstOrDefault();
-        if (rating == null)
-        {
-            throw new RatingNotFoundException(RatingNotFoundExceptionMessage); 
-        }
 
         return rating; 
     }

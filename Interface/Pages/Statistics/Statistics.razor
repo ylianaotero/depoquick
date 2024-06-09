@@ -1,8 +1,11 @@
 ﻿@page "/Statistics"
-@using BusinessLogic
+
 @using BusinessLogic.Controllers
 @using DepoQuick.Domain
 @using DepoQuick.Exceptions.DateRangeExceptions
+
+@inject NavigationManager NavigationManager
+@inject SessionController SessionController
 @inject ReservationController ReservationController
 
 <html lang="es">
@@ -45,7 +48,7 @@
             <input type="date" class="form-control" id="finalDate" name="finalDate" @bind="_finalDate">
         </div>
 
-        <input @onclick="showStatistics" id="wantToMakeTheReservation" class="btn btn-primary" value="Ver estadísticas">
+        <input @onclick="ShowStatistics" id="wantToMakeTheReservation" class="btn btn-primary" value="Ver estadísticas">
     </form>
 
     @if (_showMoneyStatistics)
@@ -100,23 +103,33 @@
     
     private List<char> _labels;
     private List<int> _data;
-    private List<int> _moneyEarnedByAreaOnSelectedDate; 
-    
-    private DateRange _date;
+    private List<int> _moneyEarnedByAreaOnSelectedDate;
     
     private bool _showAlertInvalidDate;
     private bool _showMoneyStatistics;
 
-    private DateTime _initialDate = DateTime.Today.Date;
-    private DateTime _finalDate = DateTime.Today.Date;
+    private DateRange _date;
+    private DateTime _initialDate;
+    private DateTime _finalDate;
 
     protected override void OnInitialized()
     {
-        _listOfReservations = ReservationController.GetReservations(); 
-        _labels =  new List<char> { 'A', 'B', 'C', 'D', 'E' };
-        HideAllAlerts();
-        InitializeData(); 
-        _moneyEarnedByAreaOnSelectedDate = InitializeListWithZeros(_labels.Count);
+        if (!SessionController.ActiveUser.IsAdministrator)
+        {
+            GoToHomePage();
+        }
+        else
+        {
+            _listOfReservations = ReservationController.GetReservations(); 
+            _labels =  new List<char> { 'A', 'B', 'C', 'D', 'E' };
+            _initialDate = DateTime.Today.Date;
+            _finalDate = DateTime.Today.Date;
+            
+            HideAllAlerts();
+            InitializeData(); 
+            
+            _moneyEarnedByAreaOnSelectedDate = InitializeListWithZeros(_labels.Count);
+        }
     }
 
     private void InitializeData()
@@ -137,9 +150,7 @@
                         IncrementElement(_data, index);
                     }
                 }
-                
             }
-
         }
     }
 
@@ -179,9 +190,10 @@
         _showMoneyStatistics = false; 
     }
 
-    private void showStatistics()
+    private void ShowStatistics()
     {
         HideAllAlerts(); 
+        
         if (IsAValidDate())
         {
             InitializeMoneyData(); 
@@ -213,20 +225,8 @@
                         IncrementValue(_moneyEarnedByAreaOnSelectedDate, index,reservation.Deposit.CalculatePrice(numberOfDays));
                     }
                 }
-                
             }
-
         }
-    }
-
-    private void IncrementValue(List<int> list, int index, int value)
-    {
-        list[index] += value; 
-    }
-
-    private bool DateIsWithinTheSelectedDateRange(DateRange dateRange)
-    {
-        return dateRange.GetInitialDate() >= _initialDate && dateRange.GetFinalDate() <= _finalDate; 
     }
     
     private bool IsAValidDate()
@@ -246,6 +246,16 @@
         }
     }
     
+    private void IncrementValue(List<int> list, int index, int value)
+    {
+        list[index] += value; 
+    }
+
+    private bool DateIsWithinTheSelectedDateRange(DateRange dateRange)
+    {
+        return dateRange.GetInitialDate() >= _initialDate && dateRange.GetFinalDate() <= _finalDate; 
+    }
+
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
@@ -253,6 +263,10 @@
             await JSRuntime.InvokeVoidAsync("createBarChart", _labels, _data);
         }
     }
-
+    
+    private void GoToHomePage()
+    {
+        NavigationManager.NavigateTo($"../Home");
+    }
 }
 

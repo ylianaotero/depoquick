@@ -1,7 +1,9 @@
 ﻿@page "/LogsUser"
-@using BusinessLogic
+
 @using BusinessLogic.Controllers
 @using DepoQuick.Domain
+
+@inject NavigationManager NavigationManager
 @inject SessionController SessionController
 @inject UserController UserController
 @inject LogController LogController
@@ -44,6 +46,18 @@
     
     protected override void OnInitialized()
     {
+        if (!SessionController.ActiveUser.IsAdministrator)
+        {
+            GoToHomePage();
+        }
+        else
+        {
+            InitializeVariables();
+        }
+    }
+
+    private void InitializeVariables()
+    {
         _loggedInUser = SessionController.ActiveUser;
         _logs = LogController.GetAllLogs(_loggedInUser);
     }
@@ -51,5 +65,10 @@
     private User UserFromLog(LogEntry log)
     {
         return UserController.Get(log.UserId);
+    }
+    
+    private void GoToHomePage()
+    {
+        NavigationManager.NavigateTo($"../Home");
     }
 }
