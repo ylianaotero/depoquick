@@ -13,7 +13,7 @@ public class LogEntry
 
     public DateTime Timestamp { get; init; }
     
-    [ForeignKey("UserId")]  //Deberia SER USER!!
+    [ForeignKey("UserId")]
     public int UserId { get; init; }
     
 }

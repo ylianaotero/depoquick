@@ -5,15 +5,27 @@ namespace DepoQuick.Domain;
 
 public class Reservation
 {
+    private const string ReservationWithEmptyMessage = "El mensaje no debe ser vacio";
+    private const string ReservationMessageHasMoreThan300Characters = "El mensaje no debe tener un largo mayor a 300 caracteres";
+    
+    
+    private const int ReservationAccepted = 1;
+    private const int ReservationPending = 0;
+    private const int ReservationRejected = -1;
+    
+    private const int MinimumMessageLength = 1;
+    private const int MaximumMessageLength = 300;
+    
+    private const string DefaultMessage = "-";
+    
+    
+    [Key]
     public int Id { get; set; }
     
     public Deposit Deposit  { get; set; }
-    
-    public int ClientId { get; set; }
     public Client Client { get; set; }
     public DateRange Date { get; set; }
     public int Status { get; set; }
-   // public Rating Rating { get; set; }
     
     private string _message;
     
@@ -29,41 +41,38 @@ public class Reservation
     
     public Reservation()
     {
-       Message = "-";
+        Message = DefaultMessage;
         
-        Status = 0;
+        Status = ReservationPending;
     }
-
-    //ver
+    
     public Reservation(Deposit deposit, Client client, DateRange date)
     {
         Deposit = deposit;
         
         Client = client;
         Date = date;
-        
-        Message = "-";
-        Status = 0;
+
+        Message = DefaultMessage;
+        Status = ReservationPending;
     }
 
     private void ValidateMessage(string expectedMessage)
     {
         if (MessageIsEmpty(expectedMessage))
         {
-            throw new ReservationWithEmptyMessageException("El mensaje no debe ser vacio");
+            throw new ReservationWithEmptyMessageException(ReservationWithEmptyMessage);
         }
-        else
+        
+        if (MessageHasMoreThanMaxCharacters(expectedMessage))
         {
-            if (MessageHasMoreThan300Characters(expectedMessage))
-            {
-                throw new ReservationMessageHasMoreThan300CharactersException("El mensaje no debe tener un largo mayor a 300 caracteres");
-            }
+            throw new ReservationMessageHasMoreThan300CharactersException(ReservationMessageHasMoreThan300Characters);
         }
     }
 
-    private bool MessageHasMoreThan300Characters(string expectedMessage)
+    private bool MessageHasMoreThanMaxCharacters(string expectedMessage)
     {
-        return expectedMessage.Length > 300;
+        return expectedMessage.Length > MaximumMessageLength;
     }
 
     private bool MessageIsEmpty(string expectedMessage)

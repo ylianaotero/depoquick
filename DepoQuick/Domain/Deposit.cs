@@ -7,8 +7,10 @@ namespace DepoQuick.Domain;
 
 public class Deposit
 {
-
     private const string DepositNameIsNotValidMessage = "El nombre del depósito no es válido";
+    private const string DepositWithInvalidAreaMessage = "El área del depósito no es válida";
+    private const string DepositWithInvalidSizeMessage = "El tamaño del depósito no es válido";
+    
     private const int AdditionalPriceForAirConditioning = 20;
     
     private const int PriceForSmallDeposit = 50;
@@ -25,6 +27,11 @@ public class Deposit
     private const String SmallSize = "PEQUEÑO"; 
     private const String MediumSize = "MEDIANO";
     private const String BigSize = "GRANDE";   
+    
+    private const int ReservationAccepted = 1;
+    private const int ReservationRejected = -1;
+    
+    public static readonly char[] PossibleAreas = { 'A', 'B', 'C', 'D', 'E' };
 
     [Key]
     public int Id { get; set; }
@@ -104,101 +111,9 @@ public class Deposit
         AvailableDates = new List<DateRange>();
     }
 
-    private void ValidateArea(Char area)
-    {
-        List<Char> possibleAreas = new List<char> { 'A', 'B', 'C', 'D', 'E' };
-        if (!possibleAreas.Contains(char.ToUpper(area)))
-        {
-            throw new DepositWithInvalidAreaException("Area no válida (Debe ser A, B, C, D o E)");
-        }
-    }
-
-    private void ValidateSize(String size)
-    {
-        List<String> possibleSize = new List<String> {SmallSize,MediumSize,BigSize};
-        if (!possibleSize.Contains(size.ToUpper()))
-        {
-            throw new DepositWithInvalidSizeException("Tamaño no válido (Puede ser Pequeño, Mediano o Grande)");
-        }
-    }
-    
-    public void AddPromotion(Promotion promotion)
-    {
-        Promotions.Add(promotion);
-    }
-    
-    public void RemovePromotion(Promotion promotion)
-    {
-        Promotions.Remove(promotion);
-    }
-
-    public bool IsReserved()
-    {
-        foreach (var reservation in Reservations)
-        {
-            bool isAccepted = reservation.Status == 1;
-            DateRange dateRange = reservation.Date;
-            if (isAccepted && dateRange.IsDateInRange(DateTime.Now))
-            {
-                return true; 
-            }
-        }
-        return false;
-    }
-    
-    public bool IsReserved(DateRange dateRange)
-    {
-        foreach (var reservation in Reservations)
-        {
-            bool isAccepted = reservation.Status == 1;
-            DateRange reservationDateRange = reservation.Date;
-            
-            if (isAccepted && reservationDateRange.DateRangeIsOverlapping(dateRange))
-            {
-                return true; 
-            }
-        }
-        return false;
-    }
-
-    public bool HasUpcomingReservations()
-    {
-        foreach (var reservation in Reservations)
-        {
-            bool isAcceptedOrPending = reservation.Status != -1;
-            DateTime reservationInitialDate = reservation.Date.GetInitialDate();
-            
-            if (isAcceptedOrPending && reservationInitialDate > DateTime.Now)
-            {
-                return true; 
-            }
-        }
-        return false;
-    }
-    
-    public void AddRating(Rating rating)
-    {
-        Ratings.Add(rating);
-    }
-    
-    public void RemoveRating(Rating rating)
-    {
-        Ratings.Remove(rating);
-    }
-
-    public void AddDateRange(DateRange dateRange)
-    {
-        AvailableDates.Add(dateRange);
-    }
-    
-    public void RemoveDateRange(DateRange dateRange)
-    {
-        AvailableDates.Remove(dateRange);
-    }
-
     public int CalculatePrice(int numberOfDays)
     {
-        int basePrice = Multiply(PriceAccordingToSize(), numberOfDays);
+        int basePrice = PriceAccordingToSize() * numberOfDays;
         
         int priceWithIncreaseForAirConditioning =
             ApplyIncreaseForAirConditioning(basePrice, numberOfDays);
@@ -212,10 +127,99 @@ public class Deposit
         
         return finalPrice; 
     }
-
-    private int Multiply(int numberOne, int numberTwo)
+    
+    public bool IsReserved()
     {
-        return numberOne * numberTwo; 
+        foreach (var reservation in Reservations)
+        {
+            bool isAccepted = reservation.Status == ReservationAccepted;
+            DateRange dateRange = reservation.Date;
+                
+            if (isAccepted && dateRange.IsDateInRange(DateTime.Now))
+            {
+                return true; 
+            }
+        }
+        return false;
+    }
+    
+    public bool IsReserved(DateRange dateRange)
+    {
+        foreach (var reservation in Reservations)
+        {
+            bool isAccepted = reservation.Status == ReservationAccepted;
+            DateRange reservationDateRange = reservation.Date;
+            
+            if (isAccepted && reservationDateRange.DateRangeIsOverlapping(dateRange))
+            {
+                return true; 
+            }
+        }
+        return false;
+    }
+    
+    public bool HasUpcomingReservations()
+    {
+        foreach (var reservation in Reservations)
+        {
+            bool isAcceptedOrPending = reservation.Status != ReservationRejected;
+            DateTime reservationInitialDate = reservation.Date.GetInitialDate();
+            
+            if (isAcceptedOrPending && reservationInitialDate > DateTime.Now)
+            {
+                return true; 
+            }
+        }
+        return false;
+    }
+    
+    public double GetAverageRating()
+    {
+        if (Ratings.Count == 0)
+        {
+            return 0; 
+        }
+        
+        double sum = 0; 
+        
+        foreach (var rating in Ratings)
+        {
+            sum += rating.Stars; 
+        }
+        
+        return sum / Ratings.Count; 
+    }
+    
+    public void AddRating(Rating rating)
+    {
+        Ratings.Add(rating);
+    }
+    
+    public void AddPromotion(Promotion promotion)
+    {
+        Promotions.Add(promotion);
+    }
+    
+    public void RemovePromotion(Promotion promotion)
+    {
+        Promotions.Remove(promotion);
+    }
+    
+    private void ValidateArea(Char area)
+    {
+        if (!PossibleAreas.Contains(char.ToUpper(area)))
+        {
+            throw new DepositWithInvalidAreaException(DepositWithInvalidAreaMessage);
+        }
+    }
+
+    private void ValidateSize(String size)
+    {
+        List<String> possibleSize = new List<String> {SmallSize,MediumSize,BigSize};
+        if (!possibleSize.Contains(size.ToUpper()))
+        {
+            throw new DepositWithInvalidSizeException(DepositWithInvalidSizeMessage);
+        }
     }
 
     private int PriceAccordingToSize()
@@ -229,7 +233,6 @@ public class Deposit
             default:
                 return PriceForSmallDeposit;
         }
-        
     }
 
     private int ApplyDiscount(int price, double discount)
@@ -244,10 +247,12 @@ public class Deposit
         {
             discount =  DiscountForLongStay;
         }
+        
         if (numberOfDays > NumberOfDaysForVeryLongStays)
         {
             discount = DiscountForVeryLongStay;
         }
+        
         return discount; 
     }
 
@@ -255,7 +260,7 @@ public class Deposit
     {
         if (AirConditioning)
         {
-            price += (Multiply(numberOfDays, AdditionalPriceForAirConditioning)); 
+            price += numberOfDays * AdditionalPriceForAirConditioning;
         }
 
         return price; 
@@ -267,7 +272,8 @@ public class Deposit
         double discount = discountAccordingToNumberOfDays; 
         foreach (Promotion promotion in listOfPromotion)
         {
-            if (promotion.IsCurrentlyAvailable() && TheSumOfTheDiscountsIsLessThan100(discount, promotion.DiscountRate))
+            if (promotion.IsCurrentlyAvailable() 
+                && TheSumOfTheDiscountsIsLessThan100(discount, promotion.DiscountRate))
             {
                 discount +=  promotion.DiscountRate; 
             }
@@ -279,29 +285,5 @@ public class Deposit
     private bool TheSumOfTheDiscountsIsLessThan100(double discountOne, double discountTwo)
     {
         return (discountOne+discountTwo) <= 1; 
-    }
-    
-    public void AddReservation(Reservation reservation)
-    {
-        Reservations.Add(reservation);
-    }
-    
-    public void RemoveReservation(Reservation reservation)
-    {
-        Reservations.Remove(reservation);
-    }
-    
-    public double GetAverageRating()
-    {
-        if (Ratings.Count == 0)
-        {
-            return 0; 
-        }
-        double sum = 0; 
-        foreach (var rating in Ratings)
-        {
-            sum += rating.Stars; 
-        }
-        return sum / Ratings.Count; 
     }
 }

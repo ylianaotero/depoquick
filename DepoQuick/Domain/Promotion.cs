@@ -4,6 +4,13 @@ using DepoQuick.Exceptions.PromotionExceptions;
 namespace DepoQuick.Domain;
 public class Promotion
 {
+    private const string PromotionWithEmptyLabelMessage = "La etiqueta no debe ser vacia";
+    private const string PromotionLabelHasMoreThanMaxCharactersMessage = "La etiqueta no debe ser de largo mayor a 20 caracteres";
+    private const string InvalidPercentageForPromotionMessage = "El porcentaje no es valido, debe estar entre 0.05 y 0.75";
+    
+    private const int MinimumDiscountRate = 5;
+    private const int MaximumDiscountRate = 75;
+    private const int MaximumLabelLength = 20;
     
     [Key]
     public int Id { get; set; }
@@ -35,21 +42,24 @@ public class Promotion
         }
     }
     
-    public Promotion()
+    public Promotion() {}
+    
+    public bool IsCurrentlyAvailable()
     {
-      
+        return ValidityDate.GetInitialDate() <= DateTime.Now.AddDays(1) 
+               && ValidityDate.GetFinalDate() >= DateTime.Now.AddDays(-1);
     }
     
     private void ValidateLabel(String label)
     {
         if (LabelIsEmpty(label))
         {
-            throw new PromotionWithEmptyLabelException("La etiqueta no debe ser vacia");
+            throw new PromotionWithEmptyLabelException(PromotionWithEmptyLabelMessage);
         }
         
-        if (LabelHasMoreThan20Characters(label))
+        if (LabelHasMoreThanMaxCharacters(label))
         {
-            throw new PromotionLabelHasMoreThan20CharactersException("La etiqueta no debe ser de largo mayor a 20 caracteres");
+            throw new PromotionLabelHasMoreThan20CharactersException(PromotionLabelHasMoreThanMaxCharactersMessage);
         }
     }
 
@@ -58,26 +68,21 @@ public class Promotion
         return string.IsNullOrWhiteSpace(label);
     }
 
-    private bool LabelHasMoreThan20Characters(String label)
+    private bool LabelHasMoreThanMaxCharacters(String label)
     {
-        return label.Length > 20;
+        return label.Length > MaximumLabelLength;
     }
     
     private void ValidateDiscountRate(double percent)
     {
-        if (!ItsBetween5And75Percent(percent))
+        if (!IsBetweenMinAndMaxPercentage(percent))
         {
-            throw new InvalidPercentageForPromotionException("El porcentaje no es valido, debe estar entre 0.05 y 0.75");
+            throw new InvalidPercentageForPromotionException(InvalidPercentageForPromotionMessage);
         }
     }
 
-    private bool ItsBetween5And75Percent(double number)
+    private bool IsBetweenMinAndMaxPercentage(double number)
     {
-        return number >= 0.05 && number <= 0.75; 
-    }
-    
-    public bool IsCurrentlyAvailable()
-    {
-        return ValidityDate.GetInitialDate() <= DateTime.Now.AddDays(1) && ValidityDate.GetFinalDate() >= DateTime.Now.AddDays(-1);
+        return number >= MinimumDiscountRate && number <= MaximumDiscountRate;
     }
 }

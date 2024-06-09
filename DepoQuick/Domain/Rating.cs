@@ -5,8 +5,14 @@ namespace DepoQuick.Domain;
 
 public class Rating
 {
+    private const string InvalidStarsMessage = "Número de estrellas no válido, debe estar entre 1 y 5";
+    private const string InvalidCommentMessage = "Comentario no válido, debe tener entre 1 y 500 caracteres";
+    
     private const int MaxCharacters = 500;
     private const int MinCharacters = 1;
+    
+    private const int MinStars = 1;
+    private const int MaxStars = 5;
     
     [Key]
     public int Id { get; set; }
@@ -35,9 +41,7 @@ public class Rating
         }
     }
     
-    public Rating()
-    {
-    }
+    public Rating() {}
     
     public Rating(int stars, String comment)
     {
@@ -53,22 +57,22 @@ public class Rating
     
     private void ValidateStars(int stars)
     {
-        if (!StarsAreBetween1And5(stars))
+        if (!StarsAreBetweenMinAndMax(stars))
         {
-            throw new InvalidStarsForRatingException("Estrellas no válida, debe estar entre 1 y 5");
+            throw new InvalidStarsForRatingException(InvalidStarsMessage);
         }
     }
     
-    private bool StarsAreBetween1And5(int stars)
+    private bool StarsAreBetweenMinAndMax(int stars)
     {
-        return 0 < stars && 6 > stars; 
+        return MinStars <= stars && MaxStars >= stars; 
     }
     
     private void ValidateComment(String comment)
     {
         if (CommentHasMoreThanMaxCharacters(comment) || CommentHasLessThanMinCharacters(comment))
         {
-            throw new InvalidCommentForRatingException("Comentario no valido, debe tener menos de 500 caracteres");
+            throw new InvalidCommentForRatingException(InvalidCommentMessage);
         }
     }
     
