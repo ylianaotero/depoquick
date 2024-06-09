@@ -92,10 +92,6 @@
           <label for="deposit" class="form-label">Seleccionar depósito que desea reservar:</label>
           <select class="form-select" id="deposit" name="deposit" @onchange="HandleDepositChange">
             <option value=" ">Seleccionar depósito</option>
-            if(@_availableDeposits.Count == 0)
-            {
-              <option value=" ">No hay depósitos disponibles</option>
-            }
             @foreach (Deposit deposit in _availableDeposits)
             {
               <option value="@deposit.Id">Depósito @deposit.Id</option>
@@ -158,7 +154,7 @@
     _initialDate = DateTime.Today.Date;
     _finalDate = DateTime.Today.Date;
     _client = (Client)SessionController.ActiveUser;
-   // _availableDeposits = new List<Deposit>();
+
   }
   
   private void LoadAvailableDeposits()
@@ -279,5 +275,6 @@
       
     HideAllAlerts(); 
     _showAlertReservationMade = true; 
+    _showAvailableDeposits = false; 
   }
 }
