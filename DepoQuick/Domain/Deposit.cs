@@ -53,7 +53,7 @@ public class Deposit
     private void ValidateName(string value)
     {
         bool nameOnlyContainsLetters = Regex.IsMatch(value, @"^[A-Za-z]+$");
-        if (!nameOnlyContainsLetters || value == "" || value == null)
+        if (!nameOnlyContainsLetters || string.IsNullOrWhiteSpace(value))
         {
             throw new DepositNameIsNotValidException(DepositNameIsNotValidMessage);
         }
@@ -81,8 +81,6 @@ public class Deposit
     
     public Deposit()
     {
-       // Id = s_nextId; 
-       // s_nextId++; 
        AvailableDates = new List<DateRange>();
        Ratings = new List<Rating>();
        Promotions = new List<Promotion>(); 
@@ -94,9 +92,6 @@ public class Deposit
         ValidateName(name);
         ValidateArea(area);
         ValidateSize(size);
-        
-       // Id = s_nextId; 
-       // s_nextId++; 
 
         Name = name;
         Area = char.ToUpper(area);
@@ -309,10 +304,5 @@ public class Deposit
             sum += rating.Stars; 
         }
         return sum / Ratings.Count; 
-    }
-
-    public bool Equals(Deposit deposit1, Deposit deposit2)
-    {
-        return deposit1.Name == deposit2.Name;
     }
 }

@@ -30,9 +30,6 @@ public class PaymentController
         {
             return; 
         }
-        
-        
-        
     }
     
     public void CapturePayment(Reservation reservation)

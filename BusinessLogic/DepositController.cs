@@ -152,16 +152,17 @@ public class DepositController
     
     private bool DateIsAvailable(Deposit deposit, DateRange date)
     {
+        bool isAvailable = false;
         List<DateRange> availableDates = deposit.AvailableDates;
         foreach (DateRange depositDate in availableDates)
         {
             if (depositDate.Contains(date))
             {
-                return true;
+                 isAvailable = true;
             }
         }
-
-        return false;
+        
+        return isAvailable;
     }
 
     private void ValidateDepositIsNotReserved(Deposit deposit, DateRange date)

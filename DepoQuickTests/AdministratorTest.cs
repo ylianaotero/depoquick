@@ -3,7 +3,7 @@ using DepoQuick.Domain;
 namespace DepoQuickTests;
 
 [TestClass]
-public class AdministratorTests
+public class AdministratorTest
 {
     private Administrator _admin;
     private Client _client;

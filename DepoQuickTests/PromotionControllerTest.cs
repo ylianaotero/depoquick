@@ -11,6 +11,8 @@ public class PromotionControllerTest
     private UserController _userController;
     private Session _session;
     private ReservationController _reservationController;
+    private PaymentController _paymentController;
+    private NotificationController _notificationController;
     private DepositController _depositController;
     private DepoQuickContext _context;
     private LogController _logController;
@@ -50,6 +52,12 @@ public class PromotionControllerTest
         _depositController = new DepositController(new SqlRepository<Deposit>(_context), _session);
             
         _promotionController = new PromotionController(new SqlRepository<Promotion>(_context), _session, _depositController);
+        
+        _paymentController = new PaymentController(new SqlRepository<Payment>(_context));
+        
+        _notificationController = new NotificationController(new SqlRepository<Notification>(_context));
+        
+        _reservationController = new ReservationController(new SqlRepository<Reservation>(_context), _session,_paymentController, _notificationController);
 
         _userController.RegisterAdministrator(AdminName, AdminEmail, AdminPassword, AdminPassword);
 
@@ -284,9 +292,6 @@ public class PromotionControllerTest
         
         
         List<Deposit> depositsToAddToPromotion = new List<Deposit>();
-        Deposit deposit0 = new Deposit(DepositName,DepositArea0, DepositSize0, DepositAirConditioning0);
-        _context.Deposits.Add(deposit0);
-        depositsToAddToPromotion.Add(deposit0);
         _promotionController.Add(promotion,depositsToAddToPromotion);
         
         _promotionController.Delete(promotion.Id);
@@ -307,9 +312,9 @@ public class PromotionControllerTest
         
         
         List<Deposit> depositsToAddToPromotion = new List<Deposit>();
-        Deposit deposit0 = new Deposit(DepositName,DepositArea0, DepositSize0, DepositAirConditioning0);
-        _context.Deposits.Add(deposit0);
-        depositsToAddToPromotion.Add(deposit0);
+        //Deposit deposit0 = new Deposit(DepositName,DepositArea0, DepositSize0, DepositAirConditioning0);
+        //_context.Deposits.Add(deposit0);
+        //depositsToAddToPromotion.Add(deposit0);
         _promotionController.Add(promotion,depositsToAddToPromotion);
      
         _session.LogoutUser();
@@ -317,5 +322,46 @@ public class PromotionControllerTest
         _promotionController.Delete(promotion.Id);
  
         CollectionAssert.DoesNotContain(_deposit0.Promotions, promotion);
+    }
+    
+    [TestMethod]
+    public void TestPromotionIsTiedToReservedDeposit()
+    { 
+        _userController.RegisterClient(ClientName,ClientEmail,ClientPassword,ClientPassword);
+        _session.LoginUser(AdminEmail,AdminPassword);
+        Promotion promotion = new Promotion();
+        promotion.DiscountRate = PromotionDiscountRate0;
+        promotion.Label = PromotionLabel0;
+        promotion.ValidityDate = _currentDateRange;
+        
+        List<Deposit> depositsToAddToPromotion = new List<Deposit>();
+        depositsToAddToPromotion.Add(_deposit0);
+        _promotionController.Add(promotion,depositsToAddToPromotion);
+        
+        _session.LoginUser(ClientEmail,ClientPassword);
+        Client client = (Client)_userController.GetUserByEmail(ClientEmail);
+        Reservation reservation = new Reservation(_deposit0,client,_currentDateRange);
+        _reservationController.Add(reservation);
+        Payment payment = new Payment();
+        _paymentController.Add(payment);
+        _reservationController.PayReservation(reservation);
+        
+        _session.LoginUser(AdminEmail,AdminPassword);
+        _reservationController.ApproveReservation(reservation);
+       
+        Assert.AreEqual(true,_promotionController.PromotionIsTiedToReservedDeposit(promotion));
+    }
+    
+    [TestMethod]
+    public void TestPromotionIsNotTiedToReservedDeposit()
+    { 
+        _userController.RegisterClient(ClientName,ClientEmail,ClientPassword,ClientPassword);
+        _session.LoginUser(AdminEmail,AdminPassword);
+        Promotion promotion = new Promotion();
+        promotion.DiscountRate = PromotionDiscountRate0;
+        promotion.Label = PromotionLabel0;
+        promotion.ValidityDate = _currentDateRange;
+       
+        Assert.AreEqual(false,_promotionController.PromotionIsTiedToReservedDeposit(promotion));
     }
 }
