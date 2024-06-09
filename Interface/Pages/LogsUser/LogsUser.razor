@@ -2,7 +2,6 @@
 @using BusinessLogic
 @using DepoQuick.Domain
 @inject Session Session
-@inject DepoQuickContext DepoQuickContext
 @inject UserController UserController
 @inject LogController LogController
 
@@ -39,15 +38,11 @@
 </html>
 
 @code {
-  //  private UserController _userController;
     private User _loggedInUser;
     private List<LogEntry> _logs;
     
     protected override void OnInitialized()
     {
-        //_userController = new UserController(DepoQuickContext);
-     //   SqlRepository<User> userRepository = new SqlRepository<User>(DepoQuickContext);
-       // _userController = new UserController(userRepository);
         _loggedInUser = Session.ActiveUser;
         _logs = LogController.GetAllLogs(_loggedInUser);
     }

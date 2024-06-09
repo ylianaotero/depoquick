@@ -81,7 +81,7 @@ public class ReservationController
     
     public void ApproveReservation(Reservation reservation)
     {
-        ValidateActiveUser(); 
+        RestrictActionToAdministrator(); 
         
         ValidateExistanceOfReservation(reservation); 
         
@@ -89,21 +89,27 @@ public class ReservationController
             
         reservation.Status = 1;
         
-        _notificationController.Notify(reservation.Client, reservation, "Su reserva del deposito "+reservation.Deposit.Id+" en las fechas "+reservation.Date.InitialDate.ToString("dd/MM/yyyy")+" a "+reservation.Date.FinalDate.ToString("dd/MM/yyyy") +MessageForAnApprovedReservation , DateTime.Now);
+        _notificationController.Notify(reservation.Client, reservation, 
+            "Su reserva del deposito "+reservation.Deposit.Id+" en las fechas "
+            +reservation.Date.InitialDate.ToString("dd/MM/yyyy")+" a "
+            +reservation.Date.FinalDate.ToString("dd/MM/yyyy") +MessageForAnApprovedReservation , DateTime.Now);
             
         UpdateReservation(reservation);
     }
 
     public void RejectReservation(Reservation reservation, string reason)
     {
-        ValidateActiveUser();
+        RestrictActionToAdministrator();
 
         ValidateExistanceOfReservation(reservation); 
         
         reservation.Message = reason;
         reservation.Status = -1;
         
-        _notificationController.Notify(reservation.Client, reservation,"Su reserva del deposito "+reservation.Deposit.Id+" en las fechas "+reservation.Date.InitialDate.ToString("dd/MM/yyyy")+" a "+reservation.Date.FinalDate.ToString("dd/MM/yyyy")+ MessageForAnRejectedReservation , DateTime.Now);
+        _notificationController.Notify(reservation.Client, reservation,
+            "Su reserva del deposito "+reservation.Deposit.Id+" en las fechas "
+            +reservation.Date.InitialDate.ToString("dd/MM/yyyy")+" a "
+            +reservation.Date.FinalDate.ToString("dd/MM/yyyy")+ MessageForAnRejectedReservation , DateTime.Now);
             
         UpdateReservation(reservation);
     }
@@ -124,12 +130,23 @@ public class ReservationController
         return reservation.Deposit.Promotions.Any(promotion => promotion.ValidityDate.IsDateInRange(reservation.RequestedAt));
     }
     
-    private void ValidateActiveUser()
+    private void RestrictActionToAdministrator()
     {
-        if (!_session.ActiveUserIsAdministrator())
+        if (!(UserIsLogged() && UserLoggedIsAnAdministrator()))
         {
-            throw new ActionRestrictedToAdministratorException(ActionRestrictedToAdministratorExceptionMessage);
+            throw new ActionRestrictedToAdministratorException(ActionRestrictedToAdministratorExceptionMessage); 
+
         }
+    }
+    
+    private bool UserLoggedIsAnAdministrator()
+    {
+        return _session.ActiveUser.IsAdministrator; 
+    }
+    
+    private bool UserIsLogged()
+    {
+        return _session.UserLoggedIn(); 
     }
     
     private void ValidateExistanceOfReservation(Reservation reservation)
@@ -161,6 +178,4 @@ public class ReservationController
         payment.Reservation = reservation; 
         _paymentController.Add(payment); 
     }
-    
-
 }

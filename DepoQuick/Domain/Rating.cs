@@ -6,6 +6,7 @@ namespace DepoQuick.Domain;
 public class Rating
 {
     private const int MaxCharacters = 500;
+    private const int MinCharacters = 1;
     
     [Key]
     public int Id { get; set; }
@@ -65,14 +66,19 @@ public class Rating
     
     private void ValidateComment(String comment)
     {
-        if (CommentHasMoreThan500Characters(comment))
+        if (CommentHasMoreThanMaxCharacters(comment) || CommentHasLessThanMinCharacters(comment))
         {
             throw new InvalidCommentForRatingException("Comentario no valido, debe tener menos de 500 caracteres");
         }
     }
     
-    private bool CommentHasMoreThan500Characters(String comment)
+    private bool CommentHasMoreThanMaxCharacters(String comment)
     {
         return comment.Length > MaxCharacters; 
+    }
+    
+    private bool CommentHasLessThanMinCharacters(String comment)
+    {
+        return comment.Length < MinCharacters;
     }
 }

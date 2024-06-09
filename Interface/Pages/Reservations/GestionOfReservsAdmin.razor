@@ -78,7 +78,7 @@
                     {
                         
                         <td>
-                            <button @onclick="() => ApproveReservation(reservation)" class="btn btn-success btn-sm">Aprobar</button>
+                            <button @onclick="() => ReservationController.ApproveReservation(reservation)" class="btn btn-success btn-sm">Aprobar</button>
                             <button @onclick="() =>  GoToRejectReservation(reservation.Id)" class="btn btn-danger btn-sm">Rechazar</button>
                         </td>
 
@@ -186,7 +186,6 @@
     {
         _showAlertReservationNotFound = false;
         _showAlertPaymentNotFound = false; 
-
     }
     
     private void GetPayment(Reservation reservation)
@@ -199,7 +198,7 @@
         {
             _paymentOfReservation = null; 
         }
-        }
+    }
 
     private void ApproveReservation(Reservation reservation)
     {
@@ -215,7 +214,6 @@
         {
             _showAlertReservationNotFound = true;
         }
-        
     }
 
     private void GoToRejectReservation(int id)

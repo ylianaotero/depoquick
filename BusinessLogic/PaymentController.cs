@@ -19,19 +19,6 @@ public class PaymentController
         _paymentRepository.Add(payment);
     }
     
-    public void DeleteByReservation(Reservation reservation)
-    {
-        try
-        {
-            Payment payment = Get(reservation);
-            Delete(payment.Id);
-        }
-        catch (PaymentNotFoundException paymentNotFoundException)
-        {
-            return; 
-        }
-    }
-    
     public void CapturePayment(Reservation reservation)
     {
         Payment payment = Get(reservation);
@@ -50,11 +37,6 @@ public class PaymentController
         }
         
         return payment; 
-    }
-    
-    private void Delete(int paymentId)
-    {
-        _paymentRepository.Delete(paymentId);
     }
     
     private void Update(Payment payment)

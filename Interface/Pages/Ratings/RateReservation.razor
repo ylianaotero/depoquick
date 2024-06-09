@@ -1,8 +1,11 @@
 @page "/RateReservation/{Id:int}" 
 @using BusinessLogic
+@using BusinessLogic.Exceptions.UserControllerExceptions
 @using DepoQuick.Domain
+@using DepoQuick.Exceptions.RatingException
 @inject NavigationManager NavigationManager
 @inject RatingController RatingController
+@inject ReservationController ReservationController
 
 <html lang="es">
     <head>
@@ -23,6 +26,18 @@
         {
             <div class="alert alert-danger" role="alert">
                 Debes seleccionar al menos una estrella. Por favor inténtalo de nuevo.
+            </div>
+        }
+        @if (_showAlertActionRestrictedToClient)
+        {
+            <div class="alert alert-danger" role="alert">
+                Esta acción está restringida a los clientes. Por favor inténtalo de nuevo.
+            </div>
+        }
+        @if (_showAlertSomethingWentWrong)
+        {
+            <div class="alert alert-danger" role="alert">
+                Algo salió mal. Por favor inténtalo de nuevo.
             </div>
         }
 
@@ -61,9 +76,15 @@
 
     private bool _showAlertComment;
     private bool _showAlertStars;
+    private bool _showAlertActionRestrictedToClient;
+    private bool _showAlertSomethingWentWrong;
+    
+    private bool _reservationRatedSuccessfully;
     
     protected override void OnParametersSet()
     {
+        _reservationToRate = ReservationController.Get(Id);
+            
         _comment = "";
         _stars = 0;
         
@@ -77,19 +98,39 @@
 
     private void AttemptToRate()
     {
-        ShowAlerts();
-        
-        if (IsAValidComment() && IsAValidNumberOfStars())
+        HideAllAlerts();
+        AddRating();
+
+        if (_reservationRatedSuccessfully)
         {
-            AddRating();
-        } 
+            GoToMyReservationsPage();
+        }
     }
     
     private void AddRating()
     {
-        Rating rating = new Rating(_stars, _comment);
-        RatingController.RateReservation(_reservationToRate, rating);
-        GoToMyReservationsPage();
+        try
+        {
+            Rating rating = new Rating(_stars, _comment);
+            RatingController.RateReservation(_reservationToRate, rating);
+            _reservationRatedSuccessfully = true;
+        }
+        catch (InvalidStarsForRatingException invalidStarsForRatingException)
+        {
+            _showAlertStars = true;
+        }
+        catch (InvalidCommentForRatingException invalidCommentForRatingException)
+        {
+            _showAlertComment = true;
+        }
+        catch (ActionRestrictedToClientException actionRestrictedToClientException)
+        {
+            _showAlertActionRestrictedToClient = true;
+        }
+        catch (Exception e)
+        {
+            _showAlertSomethingWentWrong = true;
+        }
     }
     
     private void GoToMyReservationsPage()
@@ -97,32 +138,11 @@
         NavigationManager.NavigateTo("../GestionOfReservsClient");
     }
     
-    private void ShowAlerts()
-    {
-        HideAllAlerts();
-        
-        if (!IsAValidComment())
-        {
-            _showAlertComment = true;
-        } else if (!IsAValidNumberOfStars())
-        {
-            _showAlertStars = true;
-        }
-    }
-    
     private void HideAllAlerts()
     {
         _showAlertComment = false;
         _showAlertStars = false;
-    }
-    
-    private bool IsAValidComment()
-    {
-        return !string.IsNullOrEmpty(_comment) && _comment.Length <= 500;
-    }
-    
-    private bool IsAValidNumberOfStars()
-    {
-        return _stars > 0 && _stars <= 5;
+        _showAlertActionRestrictedToClient = false;
+        _showAlertSomethingWentWrong = false;
     }
 }

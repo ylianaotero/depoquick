@@ -28,7 +28,7 @@
         @foreach (Rating rating in _listOfRatings)
         {
             <tr>
-                <td>@rating.Reservation.Deposit.Id</td>
+                <td>@rating.Reservation.Deposit.Name (@rating.Reservation.Deposit.Id)</td>
                 <td>@rating.Reservation.Id</td>
                 <td>@rating.Reservation.Client.Name</td>
                 <td>@rating.Stars</td>

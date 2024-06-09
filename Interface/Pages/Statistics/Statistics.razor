@@ -2,8 +2,6 @@
 @using BusinessLogic
 @using DepoQuick.Domain
 @using DepoQuick.Exceptions.DateRangeExceptions
-@inject Session Session
-@inject DepoQuickContext DepoQuickContext
 @inject ReservationController ReservationController
 
 <html lang="es">
@@ -94,7 +92,6 @@
 
 
 @code {
-   // private ReservationController _reservationController;
     private List<Reservation> _listOfReservations;
     
     [Inject]
@@ -114,7 +111,6 @@
 
     protected override void OnInitialized()
     {
-      //  _reservationController = new ReservationController(DepoQuickContext, Session);
         _listOfReservations = ReservationController.GetReservations(); 
         _labels =  new List<char> { 'A', 'B', 'C', 'D', 'E' };
         HideAllAlerts();
@@ -248,7 +244,6 @@
             return false;
         }
     }
-    
     
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {

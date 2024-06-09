@@ -5,9 +5,7 @@
 @using DepoQuick.Domain
 @using DepoQuick.Exceptions.DateRangeExceptions
 @using DepoQuick.Exceptions.DepositExceptions
-@inject Session Session
 @inject NavigationManager NavigationManager
-@inject DepoQuickContext DepoQuickContext
 @inject PromotionController PromotionController
 @inject DepositController DepositController
 
@@ -170,6 +168,8 @@
     private bool _showAlertDepositIsAlreadyReserved;
     private bool _showAlertSomethingWentWrong;
     private bool _showAlerDepositNameIsNotValid;
+
+    private bool _addedDepositSuccessfully;
     
     private DateTime _initialDate;
     private DateTime _finalDate;
@@ -190,8 +190,10 @@
     {
         HideAllAlerts();
         AddNewDeposit();
-
+        
         if (DepositController.DepositExists(_name))
+
+        if (_addedDepositSuccessfully)
         {
             GoToDepositsPage();
         }
@@ -214,8 +216,15 @@
         try
         {
             Deposit newDeposit = new Deposit(_name, _area, _size, _airConditioning);
+            _date = new DateRange(_initialDate, _finalDate);
+            
             DepositController.AddDeposit(newDeposit, _selectedPromotions);
+
             AddAvailabilityDate(newDeposit);
+
+            DepositController.AddAvailabilityDate(newDeposit, _date);
+
+            _addedDepositSuccessfully = true;
         }
         catch (DepositNameIsNotValidException depositNameIsNotValidException)
         {
@@ -229,6 +238,7 @@
         {
             _showAlertClientCanotCreateADeposit = true;
         }
+
         catch (Exception e)
         {
             _showAlertSomethingWentWrong = true;

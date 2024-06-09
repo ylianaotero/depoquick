@@ -91,8 +91,7 @@
           <label for="deposit" class="form-label">Seleccionar depósito que desea reservar:</label>
           <select class="form-select" id="deposit" name="deposit" @onchange="HandleDepositChange">
             <option value=" ">Seleccionar depósito</option>
-            _availableDeposits = DepositController.GetAvailableDeposits(_date);
-            if(_availableDeposits.Count == 0)
+            if(@_availableDeposits.Count == 0)
             {
               <option value=" ">No hay depósitos disponibles</option>
             }
@@ -120,7 +119,7 @@
         <label for="finalDate" class="form-label">Hasta:</label>
         <input type="date" class="form-control" id="finalDate" name="finalDate" @bind="_finalDate">
       </div>
-      <input @onclick="ShowAlertCheckAvailability" class="btn btn-primary" value="Consultar Disponibilidad">
+      <input @onclick="LoadAvailableDeposits" class="btn btn-primary" value="Consultar Disponibilidad">
     </form>
   </body>
 </html>
@@ -128,9 +127,6 @@
 
 
 @code {
-
-  
-  private List<Deposit> _listOfDeposits;
   private List<Deposit> _availableDeposits;
   
   private bool _showAlertPrice;
@@ -139,6 +135,8 @@
   private bool _showAlertAnAdministratorCantMakeAReservation;
   private bool _showAlertReservationMade;
   private bool _showAlertUnavailableDeposit;
+  private bool _showAlertSomethingWentWrong;
+  
   private bool _showAvailableDeposits;
   
   private Deposit _deposit; 
@@ -152,8 +150,6 @@
   
   protected override void OnInitialized()
   {
-   //_reservationController = new ReservationController(DepoQuickContext, Session);
-    _listOfDeposits = DepositController.GetDeposits(); 
     HideAllAlerts();
     
     _deposit = null; 
@@ -161,21 +157,33 @@
     _initialDate = DateTime.Today.Date;
     _finalDate = DateTime.Today.Date;
     _client = (Client)Session.ActiveUser;
+   // _availableDeposits = new List<Deposit>();
   }
   
-  private void ShowAlertCheckAvailability()
+  private void LoadAvailableDeposits()
   {
-    HideAllAlerts(); 
+    HideAllAlerts();
     
-    if(IsAValidDate())
+    try
     {
+      _date = new DateRange(_initialDate, _finalDate);
+      _availableDeposits = DepositController.AvailableDeposits(_date);
       _showAvailableDeposits = true;
     }
-    else
+    catch (InvalidDateRangeException invalidDateRangeException)
     {
       _showAlertInvalidDate = true;
     }
+    catch (EmptyDateRangeException emptyDateRangeException)
+    {
+      _showAlertInvalidDate = true;
+    }
+    catch (Exception e)
+    {
+      _showAlertSomethingWentWrong = true;
+    }
   }
+  
   
   private void ShowAlertReservation()
   {
@@ -208,28 +216,6 @@
     return _deposit != null; 
   }
 
-  private bool IsAValidDate()
-  {
-    try
-    {
-      _date = new DateRange(_initialDate, _finalDate);
-      return true;
-    }
-    catch (InvalidDateRangeException invalidDateRangeException)
-    {
-      return false;
-    }
-    catch (EmptyDateRangeException emptyDateRangeException)
-    {
-      return false;
-    }
-  }
-
-  private bool DepositIsAvailableInDateRange()
-  {
-    return !_deposit.IsReserved(_date);
-  }
-
   private void HideAllAlerts()
   {
     _showAlertPrice = false;
@@ -238,7 +224,6 @@
     _showAlertAnAdministratorCantMakeAReservation = false;
     _showAlertReservationMade = false;
     _showAlertUnavailableDeposit = false;
-    _showAvailableDeposits = false;
   }
   
   private void HandleDepositChange(ChangeEventArgs args)

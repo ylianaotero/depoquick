@@ -92,15 +92,6 @@ public class PromotionController
         
         return false;
     }
-
-    private void RestrictActionToAdministrator()
-    {
-        if (!(UserIsLogged() && UserLoggedIsAnAdministrator()))
-        {
-            throw new ActionRestrictedToAdministratorException(ActionRestrictedToAdministratorExceptionMessage); 
-
-        }
-    }
     
     private void Delete(Promotion promotionToDelete)
     {
@@ -119,6 +110,15 @@ public class PromotionController
     private void Add(Promotion promotion)
     {
         _promotionRepository.Add(promotion);
+    }
+    
+    private void RestrictActionToAdministrator()
+    {
+        if (!(UserIsLogged() && UserLoggedIsAnAdministrator()))
+        {
+            throw new ActionRestrictedToAdministratorException(ActionRestrictedToAdministratorExceptionMessage); 
+
+        }
     }
     
     private bool UserIsLogged()

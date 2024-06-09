@@ -1,5 +1,6 @@
 @page "/AddPromotion"
 @using BusinessLogic
+@using BusinessLogic.Exceptions.UserControllerExceptions
 @using DepoQuick.Domain
 @using DepoQuick.Exceptions.DateRangeExceptions
 @using DepoQuick.Exceptions.PromotionExceptions
@@ -121,6 +122,8 @@
     private bool _showAlertEmptyLabel;
     private bool _showAlertLabelHasMoreThan20Characters;
     private bool _showAlertInvalidPercentage;
+
+    private bool _depositCreatedSuccessfully;
     
     private bool _selectAllDeposits;
 
@@ -170,15 +173,57 @@
         HideAllAlerts();
         
         AddNewPromotion();
-        GoToPromotionsPage();
+
+        if (_depositCreatedSuccessfully)
+        {
+            GoToPromotionsPage();
+        }
     }
-    
+
     private void AddNewPromotion()
     {
-        _date = new DateRange(_startDate, _finalDate); 
-        
+        try
+        {
+            CreatePromotion();
+            
+            _depositCreatedSuccessfully = true;
+        }
+        catch (ActionRestrictedToAdministratorException actionRestrictedToAdministratorException)
+        {
+            _showAlertActionRestrictedToAdministrator = true;
+        }
+        catch (PromotionWithEmptyLabelException emptyLabelException)
+        {
+            _showAlertEmptyLabel = true;
+        }
+        catch (PromotionLabelHasMoreThan20CharactersException labelHasMoreThan20CharactersException)
+        {
+            _showAlertLabelHasMoreThan20Characters = true;
+        }
+        catch (InvalidPercentageForPromotionException invalidPercentageForPromotionException)
+        {
+            _showAlertInvalidPercentage = true;
+        }
+        catch (InvalidDateRangeException invalidDateRangeException)
+        {
+            _showAlertInvalidDateRange = true;
+        }
+        catch (EmptyDateRangeException emptyDateRangeException)
+        {
+            _showAlertEmptyDateRange = true;
+        }
+        catch (Exception e)
+        {
+            _showAlertSomethingWentWrong = true;
+        }
+    }
+    
+    private void CreatePromotion()
+    {
         Promotion newPromotion = new Promotion();
-        
+            
+        _date = new DateRange(_startDate, _finalDate);
+            
         newPromotion.Label = _label;
         newPromotion.DiscountRate = _discountRate/PercentageDivider;
         newPromotion.ValidityDate = _date;

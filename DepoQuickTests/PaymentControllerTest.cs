@@ -61,34 +61,4 @@ public class PaymentControllerTest
         _deposit0 = new Deposit(DepositName,DepositArea0, DepositSize0, DepositAirConditioning0);
         _currentDateRange = new DateRange(DateTime.Now, DateTime.Now.AddDays(10));
     }
-    
-    [TestMethod]
-    [ExpectedException(typeof(PaymentNotFoundException))]
-    public void TestDeleteByReservation()
-    { 
-        _userController.RegisterClient(ClientName1,ClientEmail1,ClientPassword1,ClientPassword1);
-        _session.LoginUser(AdminEmail,AdminPassword);
-        Promotion promotion = new Promotion();
-        promotion.DiscountRate = PromotionDiscountRate0;
-        promotion.Label = PromotionLabel0;
-        promotion.ValidityDate = _currentDateRange;
-        
-        List<Deposit> depositsToAddToPromotion = new List<Deposit>();
-        depositsToAddToPromotion.Add(_deposit0);
-        _promotionController.Add(promotion,depositsToAddToPromotion);
-        
-        _session.LoginUser(ClientEmail1,ClientPassword1);
-        Client client = (Client)_userController.GetUserByEmail(ClientEmail1);
-        Reservation reservation = new Reservation(_deposit0,client,_currentDateRange);
-        _reservationController.Add(reservation);
-        Payment payment = new Payment();
-        _paymentController.Add(payment);
-        _reservationController.PayReservation(reservation);
-        
-        _session.LoginUser(AdminEmail,AdminPassword);
-        _reservationController.ApproveReservation(reservation);
-
-        _paymentController.DeleteByReservation(reservation);
-        Payment paymentDeleted = _paymentController.Get(reservation);
-    }
 }

@@ -13,6 +13,8 @@ public class Promotion
     private String _label;
     private Double _discountRate;
     
+    public List<Deposit> Deposits { get; set; }
+    
     public String Label
     {
         get => _label;
@@ -44,12 +46,10 @@ public class Promotion
         {
             throw new PromotionWithEmptyLabelException("La etiqueta no debe ser vacia");
         }
-        else
+        
+        if (LabelHasMoreThan20Characters(label))
         {
-            if (LabelHasMoreThan20Characters(label))
-            {
-                throw new PromotionLabelHasMoreThan20CharactersException("La etiqueta no debe ser de largo mayor a 20 caracteres");
-            }
+            throw new PromotionLabelHasMoreThan20CharactersException("La etiqueta no debe ser de largo mayor a 20 caracteres");
         }
     }
 

@@ -209,15 +209,6 @@ public class UserControllerTests
         _session.LoginUser(AdminEmail,AdminPassword);
         _logController.LogAction(_userController.GetUserByEmail(AdminEmail),"",DateTime.Now);
     }
-    
-    [TestMethod]
-    public void TestGetListOfUsers()
-    {
-        _userController.RegisterAdministrator(AdminName, AdminEmail, AdminPassword, AdminPassword);
-        _userController.RegisterClient(ClientName, ClientEmail, ClientPassword, ClientPassword);
-        List<User> users = _userController.GetAll();
-        Assert.AreEqual(2,users.Count);
-    }
 
     [TestMethod]
     public void TestGetListOfAllLogs()

@@ -92,7 +92,7 @@ public class Deposit
         ValidateName(name);
         ValidateArea(area);
         ValidateSize(size);
-
+        
         Name = name;
         Area = char.ToUpper(area);
         Size = size.ToUpper();
@@ -277,7 +277,6 @@ public class Deposit
     }
     
     private bool TheSumOfTheDiscountsIsLessThan100(double discountOne, double discountTwo)
-
     {
         return (discountOne+discountTwo) <= 1; 
     }
