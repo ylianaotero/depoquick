@@ -1,14 +1,14 @@
 ﻿@page "/DepositReserve"
 
-@inject SessionController SessionController
-@inject DepositController DepositController
-@inject ReservationController ReservationController
-
 @using DepoQuick.Domain
-@using BusinessLogic
 @using BusinessLogic.Controllers
 @using BusinessLogic.Exceptions.DepositControllerExceptions
 @using DepoQuick.Exceptions.DateRangeExceptions
+
+@inject SessionController SessionController
+@inject DepositController DepositController
+@inject ReservationController ReservationController
+@inject NavigationManager NavigationManager
 
 <html lang="es">
   <head>
@@ -82,6 +82,13 @@
       <br>
     }
 
+    @if (_showAlertSomethingWentWrong)
+    {
+    <div class="alert alert-danger" role="alert">
+      ¡Algo salió mal!
+    </div>
+    }
+
     @if(_showAvailableDeposits)
     {
       <br>
@@ -121,8 +128,6 @@
   </body>
 </html>
 
-
-
 @code {
   private List<Deposit> _availableDeposits;
   
@@ -141,20 +146,26 @@
   private DateRange _date;
   private int _price;
 
-  private DateTime _initialDate = DateTime.Today.Date;
-  private DateTime _finalDate = DateTime.Today.Date;
-  
+  private DateTime _initialDate;
+  private DateTime _finalDate;
   
   protected override void OnInitialized()
   {
-    HideAllAlerts();
+    if (!IsAClient())
+    {
+      GoToHomePage();
+    }
+    else
+    {
+      _deposit = null; 
+
+      _initialDate = DateTime.Today.Date;
+      _finalDate = DateTime.Today.Date;
+      _client = (Client)SessionController.ActiveUser;
+      
+      HideAllAlerts();
+    }
     
-    _deposit = null; 
-
-    _initialDate = DateTime.Today.Date;
-    _finalDate = DateTime.Today.Date;
-    _client = (Client)SessionController.ActiveUser;
-
   }
   
   private void LoadAvailableDeposits()
@@ -212,16 +223,6 @@
   {
     return _deposit != null; 
   }
-
-  private void HideAllAlerts()
-  {
-    _showAlertPrice = false;
-    _showAlertInvalidDeposit = false; 
-    _showAlertInvalidDate = false;
-    _showAlertAnAdministratorCantMakeAReservation = false;
-    _showAlertReservationMade = false;
-    _showAlertUnavailableDeposit = false;
-  }
   
   private void HandleDepositChange(ChangeEventArgs args)
   {
@@ -241,6 +242,7 @@
   private void SaveDepositInformation(ChangeEventArgs args)
   {
     int id = int.Parse(args.Value.ToString());
+    
     try
     {
       _deposit = DepositController.Get(id);
@@ -255,16 +257,6 @@
   {
     return !string.IsNullOrEmpty(args.Value.ToString()) && int.TryParse(args.Value.ToString(), out int id); 
   }
-
-  private void AddReservation()
-  {
-      Reservation newReservation = new Reservation(_deposit,  _client , _date); 
-      
-      ReservationController.Add(newReservation);
-      
-      HideAllAlerts(); 
-      _showAlertReservationMade = true; 
-  }
   
   private void AddReservation(int price)
   {
@@ -276,5 +268,21 @@
     HideAllAlerts(); 
     _showAlertReservationMade = true; 
     _showAvailableDeposits = false; 
+  }
+  
+  private void HideAllAlerts()
+  {
+    _showAlertPrice = false;
+    _showAlertInvalidDeposit = false; 
+    _showAlertInvalidDate = false;
+    _showAlertAnAdministratorCantMakeAReservation = false;
+    _showAlertReservationMade = false;
+    _showAlertUnavailableDeposit = false;
+    _showAlertSomethingWentWrong = false;
+  }
+  
+  private void GoToHomePage()
+  {
+    NavigationManager.NavigateTo($"../Home");
   }
 }

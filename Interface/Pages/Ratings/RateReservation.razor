@@ -1,9 +1,10 @@
-@page "/RateReservation/{Id:int}" 
-@using BusinessLogic
+@page "/RateReservation/{Id:int}"
 @using BusinessLogic.Controllers
 @using BusinessLogic.Exceptions.UserControllerExceptions
 @using DepoQuick.Domain
 @using DepoQuick.Exceptions.RatingException
+
+@inject SessionController SessionController
 @inject NavigationManager NavigationManager
 @inject RatingController RatingController
 @inject ReservationController ReservationController
@@ -85,16 +86,26 @@
     protected override void OnParametersSet()
     {
         _reservationToRate = ReservationController.Get(Id);
-            
-        _comment = "";
-        _stars = 0;
+        
+        if (SessionController.ActiveUser.IsAdministrator 
+            || SessionController.ActiveUser != _reservationToRate.Client)
+        {
+            GoToHomePage();
+        }
+        else
+        {
+            InitializeVariables();
+
+            HideAllAlerts();
+        }
         
         HideAllAlerts();
     }
     
-    private void UpdateStars(string value)
+    private void InitializeVariables()
     {
-        _stars = int.Parse(value);
+        _comment = "";
+        _stars = 0;
     }
 
     private void AttemptToRate()
@@ -139,11 +150,21 @@
         NavigationManager.NavigateTo("../GestionOfReservsClient");
     }
     
+    private void GoToHomePage()
+    {
+        NavigationManager.NavigateTo($"../Home");
+    }
+    
     private void HideAllAlerts()
     {
         _showAlertComment = false;
         _showAlertStars = false;
         _showAlertActionRestrictedToClient = false;
         _showAlertSomethingWentWrong = false;
+    }
+    
+    private void UpdateStars(string value)
+    {
+        _stars = int.Parse(value);
     }
 }

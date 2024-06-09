@@ -1,11 +1,12 @@
 ﻿@page "/DepositAvailability/{Id:int}" 
 
-@using BusinessLogic
 @using BusinessLogic.Controllers
 @using BusinessLogic.Exceptions.DepositControllerExceptions
 @using BusinessLogic.Exceptions.UserControllerExceptions
 @using DepoQuick.Domain
 @using DepoQuick.Exceptions.DateRangeExceptions
+
+@inject SessionController SessionController
 @inject NavigationManager NavigationManager
 @inject DepositController DepositController
 
@@ -64,8 +65,8 @@
             <thead>
             <tr>
                 <th>Deposito</th>
-                <th>Inicio de reserva</th>
-                <th>Fin de reserva</th>
+                <th>Inicio</th>
+                <th>Fin</th>
             </tr>
             </thead>
 
@@ -100,7 +101,6 @@
     [Parameter] public int Id { get; set; }
     private DateRange _date;
     private Deposit _deposit;
-    private List<Rating> _ratings;
     private List<DateRange> _availableDates;
     private DateTime _initialDate;
     private DateTime _finalDate;
@@ -114,6 +114,18 @@
     private bool _availabilityDateAddedSuccessfully;
     
     protected override void OnParametersSet()
+    {
+        if (!SessionController.ActiveUser.IsAdministrator)
+        {
+            GoToHomePage();
+        }
+        else
+        {
+            InitializeVariables();
+        }
+    }
+
+    private void InitializeVariables()
     {
         _deposit = DepositController.Get(Id);
         _availableDates = DepositController.Get(Id).AvailableDates;
@@ -137,6 +149,8 @@
 
     private void AddAvailabilityToDeposit()
     {
+        HideAllAlerts();
+        
         try
         {
             _date = new DateRange(_initialDate, _finalDate);
@@ -170,8 +184,22 @@
         }
     }
     
+    private void HideAllAlerts()
+    {
+        _showAlertInvalidDate = false;
+        _showAlertActionRestrictedToAdministrator = false;
+        _showAlertDepositDateIsAlreadyReserved = false;
+        _showAlertDepositDateIsOverlapping = false;
+        _showAlertSomethingWentWrong = false;
+    }
+    
     private void GoToDepositsPage()
     {
         NavigationManager.NavigateTo("/Deposits");
+    }
+    
+    private void GoToHomePage()
+    {
+        NavigationManager.NavigateTo($"../Home");
     }
 }

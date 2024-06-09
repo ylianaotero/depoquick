@@ -1,13 +1,15 @@
 ﻿@page "/GestionOfReservsAdmin"
-@inject NavigationManager NavigationManager
-@inject ReservationController ReservationController
-@inject PaymentController PaymentController
+
 @using BusinessLogic.Controllers
 @using BusinessLogic.Exceptions.PaymentControllerExceptions
 @using BusinessLogic.ReservationReport
 @using DepoQuick.Domain
 @using DepoQuick.Exceptions.PaymentExceptions
 
+@inject SessionController SessionController
+@inject NavigationManager NavigationManager
+@inject ReservationController ReservationController
+@inject PaymentController PaymentController
 
 <html lang="es">
 <head>
@@ -37,7 +39,25 @@
                     
         </div>
         <br>
-                    
+    }
+
+    @if (_showAlertDepositIsNotAvailable)
+    {
+        <br>
+        <div class="alert alert-danger" role="alert">
+            "Lo sentimos, no es posible aprobar la reserva porque el depósito ya está reservado en esa fecha."
+        </div>
+        <br>
+    }
+    
+    @if (_showAlertPaymentNotFound)
+    {
+    <br>
+    <div class="alert alert-danger" role="alert">
+        "Lo sentimos, no encontramos ningún pago realizado para esa reservacion. No podemos aprobar ni rechazar. ¡Por favor, inténtalo de nuevo!"
+
+    </div>
+    <br>
     }
         
         
@@ -59,7 +79,14 @@
         {
             <tr>
                 <td>@reservation.Client.Name</td>
-                <td>@reservation.Deposit.Name</td>
+                @if (reservation.Deposit != null)
+                {
+                    <td>@reservation.Deposit.Name (@reservation.Deposit.Id)</td>
+                }
+                else
+                {
+                    <td>Depósito eliminado</td>
+                }
                 <td>@reservation.Date.GetInitialDate().ToString("dd/MM/yyyy")</td>
                 <td>@reservation.Date.GetFinalDate().ToString("dd/MM/yyyy")</td>
                 <td>@reservation.Price</td>
@@ -70,7 +97,7 @@
                 {
                                 
                     <td>
-                        <button @onclick="() => ApproveReservation(reservation)" class="btn btn-success btn-sm">Aprobar</button>
+                        <button @onclick="() => AttemptToApproveReservation(reservation)" class="btn btn-success btn-sm">Aprobar</button>
                         <button @onclick="() =>  GoToRejectReservation(reservation.Id)" class="btn btn-danger btn-sm">Rechazar</button>
                     </td>
         
@@ -178,47 +205,48 @@
 
 
 @code {
-    
-    private NavigationManager _navigationManager;
-    
     private List<Reservation> _listOfReservations;
-
-    private bool _showAlertReservationNotFound; 
-    private bool _showAlertPaymentNotFound; 
-    
     private Payment _paymentOfReservation;
-
-    private String _comment; 
     
-    private string _selectedFormat = "CSV";
+    private bool _showAlertReservationNotFound; 
+    private bool _showAlertPaymentNotFound;
+    private bool _showAlertDepositIsNotAvailable;
+    private bool _reportIsGenerated; 
+    
+    private String _comment; 
+    private string _selectedFormat;
     private string _urlReport;
     private string _report;
-
-    private bool _reportIsGenerated; 
     
     protected override void OnInitialized()
     {
-        _listOfReservations = ReservationController.GetReservations();
-        _navigationManager = NavigationManager;
-    
-        HideAllAlerts(); 
+        if (!SessionController.ActiveUser.IsAdministrator)
+        {
+            GoToHomePage();
+        }
+        else
+        {
+            InitializeVariables();
+
+            HideAllAlerts();
+        }
     }
 
-    private void HideAllAlerts()
+    private void InitializeVariables()
     {
-        _showAlertReservationNotFound = false;
-        _showAlertPaymentNotFound = false; 
+        _listOfReservations = ReservationController.GetReservations();
+        _selectedFormat = "CSV";
     }
-    
-    private void GetPayment(Reservation reservation)
+
+    private void AttemptToApproveReservation(Reservation reservation)
     {
-        try
+        if (reservation.Deposit.IsReserved(reservation.Date))
         {
-            _paymentOfReservation = PaymentController.Get(reservation);
+            _showAlertDepositIsNotAvailable = true;
         }
-        catch (PaymentNotFoundException paymentNotFoundException)
+        else 
         {
-            _paymentOfReservation = null; 
+            ApproveReservation(reservation);
         }
     }
 
@@ -238,22 +266,43 @@
         }
     }
     
+    private void GetPayment(Reservation reservation)
+    {
+        try
+        {
+            _paymentOfReservation = PaymentController.Get(reservation);
+        }
+        catch (PaymentNotFoundException paymentNotFoundException)
+        {
+            _paymentOfReservation = null; 
+        }
+    }
+    
     private void GenerateReport()
     {
         if (_selectedFormat == "TXT")
         {
-            ReportUsingTXT reportService = new ReportUsingTXT(ReservationController,PaymentController);
+            ReportUsingTXT reportService = new ReportUsingTXT(ReservationController, PaymentController);
             _report = reportService.GenerateReport(); 
         }
         else
         {
-            ReportUsingCSV reportService = new ReportUsingCSV(ReservationController,PaymentController);
+            ReportUsingCSV reportService = new ReportUsingCSV(ReservationController, PaymentController);
             _report = reportService.GenerateReport(); 
         }
+        
         var bytes = System.Text.Encoding.UTF8.GetBytes(_report);
         var base64 = Convert.ToBase64String(bytes);
+        
         _urlReport = $"data:text/plain;base64,{base64}";
         _reportIsGenerated = true; 
+    }
+    
+    private void HideAllAlerts()
+    {
+        _showAlertReservationNotFound = false;
+        _showAlertPaymentNotFound = false; 
+        _showAlertDepositIsNotAvailable = false;
     }
     
     private void OnFormatChanged(ChangeEventArgs e)
@@ -262,9 +311,13 @@
         _reportIsGenerated = false;
     }
     
+    private void GoToHomePage()
+    {
+        NavigationManager.NavigateTo($"../Home");
+    }
 
     private void GoToRejectReservation(int id)
     {
-        _navigationManager.NavigateTo("/Reject/" + id);
+        NavigationManager.NavigateTo("/Reject/" + id);
     }
 }

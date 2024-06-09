@@ -1,8 +1,9 @@
 @page "/Promotions"
-@using BusinessLogic
+
 @using BusinessLogic.Controllers
 @using BusinessLogic.Exceptions.UserControllerExceptions
 @using DepoQuick.Domain
+
 @inject SessionController SessionController
 @inject NavigationManager NavigationManager
 @inject PromotionController PromotionController
@@ -129,22 +130,16 @@
     
     protected override void OnInitialized()
     {
-        
+        InitializeVariables();
+        HideAllAlerts();
+    }
+    
+    private void InitializeVariables()
+    {
         _loggedInUser = SessionController.ActiveUser;        
         _promotionToDelete = null;
         
         _listOfPromotions = PromotionController.GetPromotions();
-        HideAllAlerts();
-    }
-    
-    private string BoolToString(bool value)
-    {
-        return value ? "Si" : "No";
-    }
-    
-    private void GoToAddPromotionPage()
-    {
-        NavigationManager.NavigateTo("/AddPromotion");
     }
 
     private void AttemptToDeletePromotion(Promotion promotion)
@@ -189,6 +184,16 @@
         _showAlertPromotionDeletedSuccessfully = false;
         _showAlertAboutToDeletePromotion = false;
         _showAlertSomethingWentWrong = false;
+    }
+    
+    private string BoolToString(bool value)
+    {
+        return value ? "Si" : "No";
+    }
+    
+    private void GoToAddPromotionPage()
+    {
+        NavigationManager.NavigateTo("/AddPromotion");
     }
     
     private void GoToEditPromotionPage(Promotion promotion)

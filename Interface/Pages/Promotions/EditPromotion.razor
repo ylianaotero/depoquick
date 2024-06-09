@@ -1,13 +1,16 @@
 @page "/EditPromotion/{Id:int}" 
-@using BusinessLogic
+
 @using BusinessLogic.Controllers
 @using BusinessLogic.Exceptions.UserControllerExceptions
 @using DepoQuick.Domain
 @using DepoQuick.Exceptions.DateRangeExceptions
 @using DepoQuick.Exceptions.PromotionExceptions
+
+@inject SessionController SessionController
 @inject PromotionController PromotionController
 @inject NavigationManager NavigationManager
 @inject DepositController DepositController
+
 <html lang="es">
   <head>
       <meta charset="utf-8"/>
@@ -129,8 +132,21 @@
     private bool _promotionDataUpdatedSuccessfully;
     private bool _promotionDepositsUpdatedSuccessfully;
     
-    
     protected override void OnParametersSet()
+    {
+        if (!SessionController.ActiveUser.IsAdministrator)
+        {
+            GoToHomePage();
+        }
+        else
+        {
+            InitializeVariables();
+
+            HideAllAlerts();
+        }
+    }
+    
+    private void InitializeVariables()
     {
         _promotionToEdit = PromotionController.Get(Id);
         _startDate = _promotionToEdit.ValidityDate.GetInitialDate();
@@ -140,8 +156,6 @@
         _deposits = DepositController.GetDeposits();
         _selectedDeposits = new List<Deposit>();
         _selectAllDeposits = false;
-        
-        HideAllAlerts();
     }
 
     private void AttemptToEditPromotion()
@@ -155,36 +169,6 @@
             GoToPromotionsPage();
         }
     }
-    
-    private void ToggleDepositSelection(Deposit deposit)
-    {
-        if (_selectedDeposits.Contains(deposit))
-        {
-            _selectedDeposits.Remove(deposit);
-        }
-        else
-        {
-            _selectedDeposits.Add(deposit);
-        }
-    }
-    
-    private bool IsSelected(Deposit deposit)
-    {
-        return _selectedDeposits.Contains(deposit);
-    }
-
-    private void SelectAllDeposits()
-    {
-        _selectAllDeposits = !_selectAllDeposits;
-        if (_selectAllDeposits)
-        {
-            _selectedDeposits = new List<Deposit>(_deposits);
-        }
-        else
-        {
-            _selectedDeposits.Clear();
-        }
-    }  
     
     private void UpdatePromotion()
     {
@@ -264,6 +248,41 @@
         {
             _showAlertSomethingWentWrong = true;
         }
+    }
+    
+    private void ToggleDepositSelection(Deposit deposit)
+    {
+        if (_selectedDeposits.Contains(deposit))
+        {
+            _selectedDeposits.Remove(deposit);
+        }
+        else
+        {
+            _selectedDeposits.Add(deposit);
+        }
+    }
+    
+    private bool IsSelected(Deposit deposit)
+    {
+        return _selectedDeposits.Contains(deposit);
+    }
+
+    private void SelectAllDeposits()
+    {
+        _selectAllDeposits = !_selectAllDeposits;
+        if (_selectAllDeposits)
+        {
+            _selectedDeposits = new List<Deposit>(_deposits);
+        }
+        else
+        {
+            _selectedDeposits.Clear();
+        }
+    } 
+    
+    private void GoToHomePage()
+    {
+        NavigationManager.NavigateTo($"../Home");
     }
     
     private void GoToPromotionsPage()

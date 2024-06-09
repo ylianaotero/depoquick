@@ -61,10 +61,6 @@ public class RatingController
     public Rating GetRatingByReservation(Reservation reservation)
     {
         Rating rating = _ratingRepository.GetBy(p => p.Reservation == reservation).FirstOrDefault();
-        if (rating == null)
-        {
-            throw new RatingNotFoundException(RatingNotFoundExceptionMessage); 
-        }
 
         return rating; 
     }
