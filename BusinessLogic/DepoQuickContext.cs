@@ -31,6 +31,7 @@ public class DepoQuickContext : DbContext
             this.Database.Migrate();   
         }
     }
+    
 
     public DepoQuickContext()
     {

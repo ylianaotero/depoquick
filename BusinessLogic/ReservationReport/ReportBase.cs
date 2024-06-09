@@ -1,11 +1,12 @@
-﻿using System.Text;
+using System.Text;
 using BusinessLogic.Controllers;
 using BusinessLogic.Exceptions.PaymentControllerExceptions;
+using BusinessLogic.Exceptions.ReservationControllerExceptions;
 using DepoQuick.Domain;
 
-namespace Interface.ReservationReport
+namespace BusinessLogic.ReservationReport
 {
-    public abstract class ReportBase : IReport
+    public abstract class ReportBase
     {
         private const string BasePaymentStatus = "No pagado";
         
@@ -28,27 +29,14 @@ namespace Interface.ReservationReport
 
             return stringBuilder.ToString();
         }
-
-        private List<Reservation> GetListOfReservations()
+        
+        protected List<Reservation> GetListOfReservations()
         {
             return _reservationController.GetReservations(); 
         }
+        
 
-        private StringBuilder GenerateReportInStringBuilder(StringBuilder stringBuilder, List<Reservation> reservations)
-        {
-            stringBuilder.AppendLine(GetHeader());
-            foreach (var reserv in reservations)
-            {
-                string paymentStatus = GetPaymentStatus(reserv);
-                bool promotionHasBeenApplied = PromotionHasBeenApplied(reserv); 
-                
-                stringBuilder.AppendLine(FormatReservation(reserv, paymentStatus, promotionHasBeenApplied));
-            }
-
-            return stringBuilder; 
-        }
-
-        private string GetPaymentStatus(Reservation reserv)
+        protected string GetPaymentStatus(Reservation reserv)
         {
             try
             {
@@ -60,10 +48,13 @@ namespace Interface.ReservationReport
             }
         }
 
-        private bool PromotionHasBeenApplied(Reservation reserv)
+        protected bool PromotionHasBeenApplied(Reservation reserv)
         {
             return _reservationController.PromotionHasBeenApplied(reserv);
         }
+        
+        protected abstract StringBuilder GenerateReportInStringBuilder(StringBuilder stringBuilder,
+            List<Reservation> reservations); 
 
         protected abstract string GetHeader();
 

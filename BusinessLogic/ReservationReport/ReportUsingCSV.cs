@@ -1,13 +1,28 @@
-﻿using BusinessLogic.Controllers;
+using System.Text;
+using BusinessLogic.Controllers;
 using DepoQuick.Domain;
 
-namespace Interface.ReservationReport
+namespace BusinessLogic.ReservationReport
 {
     public class ReportUsingCSV : ReportBase
     {
         public ReportUsingCSV(ReservationController reservationController, PaymentController paymentController)
             : base(reservationController, paymentController)
         {
+        }
+        
+        protected override StringBuilder GenerateReportInStringBuilder(StringBuilder stringBuilder, List<Reservation> reservations)
+        {
+            stringBuilder.AppendLine(GetHeader());
+            foreach (var reserv in reservations)
+            {
+                string paymentStatus = GetPaymentStatus(reserv);
+                bool promotionHasBeenApplied = PromotionHasBeenApplied(reserv); 
+                
+                stringBuilder.AppendLine(FormatReservation(reserv, paymentStatus, promotionHasBeenApplied));
+            }
+
+            return stringBuilder; 
         }
 
         protected override string GetHeader()

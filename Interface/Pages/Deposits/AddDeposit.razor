@@ -169,8 +169,6 @@
     private bool _showAlertDepositIsAlreadyReserved;
     private bool _showAlertSomethingWentWrong;
     private bool _showAlerDepositNameIsNotValid;
-
-    private bool _addedDepositSuccessfully;
     
     private DateTime _initialDate;
     private DateTime _finalDate;
@@ -191,13 +189,6 @@
     {
         HideAllAlerts();
         AddNewDeposit();
-        
-        if (DepositController.DepositExists(_name))
-
-        if (_addedDepositSuccessfully)
-        {
-            GoToDepositsPage();
-        }
     }
     
     private void HideAllAlerts()
@@ -216,16 +207,22 @@
     {
         try
         {
-            Deposit newDeposit = new Deposit(_name, _area, _size, _airConditioning);
-            _date = new DateRange(_initialDate, _finalDate);
-            
-            DepositController.AddDeposit(newDeposit, _selectedPromotions);
+            if (DepositController.DepositExists(_name) || String.IsNullOrWhiteSpace(_name))
+            {
+                _showAlerDepositNameIsNotValid = true;
+            }
+            else
+            {
+                Deposit newDeposit = new Deposit(_name, _area, _size, _airConditioning);
 
-            AddAvailabilityDate(newDeposit);
+                _date = new DateRange(_initialDate, _finalDate);
 
-            DepositController.AddAvailabilityDate(newDeposit, _date);
+                DepositController.AddDeposit(newDeposit, _selectedPromotions);
 
-            _addedDepositSuccessfully = true;
+                AddAvailabilityDate(newDeposit);
+
+                GoToDepositsPage(); 
+            }
         }
         catch (DepositNameIsNotValidException depositNameIsNotValidException)
         {
@@ -239,11 +236,22 @@
         {
             _showAlertClientCanotCreateADeposit = true;
         }
-
-       /* catch (Exception e)
+        catch (InvalidDateRangeException invalidDateRangeException)
+        {
+            _showAlertInvalidDateRange = true;
+        }
+        catch (DepositWithInvalidAreaException depositWithInvalidAreaException)
         {
             _showAlertSomethingWentWrong = true;
-        }*/
+        }
+        catch (DepositWithInvalidSizeException depositWithInvalidSizeException)
+        {
+            _showAlertSomethingWentWrong = true;
+        }
+        catch (EmptyDateRangeException emptyDateRangeException)
+        {
+            _showAlertEmptyDateRange = true;
+        }
     }
     
     private void AddAvailabilityDate(Deposit newDeposit)
