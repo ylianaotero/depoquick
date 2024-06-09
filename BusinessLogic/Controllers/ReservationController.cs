@@ -9,8 +9,8 @@ public class ReservationController
     private const string ReservationNotFoundExceptionMessage = "No se encontró la reserva";
     private const string ActionRestrictedToAdministratorExceptionMessage = "Solo el administrador puede realizar esta acción";
     
-    private const string MessageForAnApprovedReservation = " ha sido aprobada";
-    private const string MessageForAnRejectedReservation = " ha sido rechazada";
+    private const string MessageForAnApprovedReservation = " ha sido aprobada. ¡Gracias por confiar en nosotros!";
+    private const string MessageForAnRejectedReservation = " ha sido rechazada. Si pagaste, te devolveremos el dinero a tu cuenta.";
     
     private NotificationController _notificationController;
     
