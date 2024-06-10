@@ -115,13 +115,6 @@ public class PromotionController
         _promotionRepository.Reload(promotionToDelete);
     }
     
-    private void ConectPromotionToDeposits(Promotion promotion,List<Deposit> deposits)
-    {
-        foreach (Deposit deposit in deposits)
-        {
-            deposit.AddPromotion(promotion);
-        }
-    }
     
     private void Add(Promotion promotion)
     {
