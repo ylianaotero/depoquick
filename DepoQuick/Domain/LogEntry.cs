@@ -5,15 +5,12 @@ namespace DepoQuick.Domain;
 
 public class LogEntry
 {
-    private static int s_lastId = 0;
-    
     [Key]
     public int Id { get; set; }
     public string Message { get; init; }
 
     public DateTime Timestamp { get; init; }
     
-    [ForeignKey("UserId")]
     public int UserId { get; init; }
     
 }
