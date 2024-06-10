@@ -1,6 +1,7 @@
--- DROP SCHEMA dbo;
+CREATE DATABASE depoquick;
 
-CREATE SCHEMA dbo;
+-- DROP SCHEMA dbo;
+--CREATE SCHEMA dbo;
 -- depoquick.dbo.Deposits definition
 
 -- Drop table
@@ -49,19 +50,6 @@ CREATE TABLE depoquick.dbo.Users (
 );
 
 
--- depoquick.dbo.[__EFMigrationsHistory] definition
-
--- Drop table
-
--- DROP TABLE depoquick.dbo.[__EFMigrationsHistory];
-
-CREATE TABLE depoquick.dbo.[__EFMigrationsHistory] (
-                                                       MigrationId nvarchar(150) COLLATE SQL_Latin1_General_CP1_CI_AS NOT NULL,
-    ProductVersion nvarchar(32) COLLATE SQL_Latin1_General_CP1_CI_AS NOT NULL,
-    CONSTRAINT PK___EFMigrationsHistory PRIMARY KEY (MigrationId)
-    );
-
-
 -- depoquick.dbo.Administrators definition
 
 -- Drop table
@@ -101,9 +89,6 @@ CREATE TABLE depoquick.dbo.DepositPromotion (
                                                 CONSTRAINT FK_DepositPromotion_Deposits_DepositsId FOREIGN KEY (DepositsId) REFERENCES depoquick.dbo.Deposits(Id) ON DELETE CASCADE,
                                                 CONSTRAINT FK_DepositPromotion_Promotions_PromotionsId FOREIGN KEY (PromotionsId) REFERENCES depoquick.dbo.Promotions(Id) ON DELETE CASCADE
 );
-CREATE NONCLUSTERED INDEX IX_DepositPromotion_PromotionsId ON dbo.DepositPromotion (  PromotionsId ASC  )  
-	 WITH (  PAD_INDEX = OFF ,FILLFACTOR = 100  ,SORT_IN_TEMPDB = OFF , IGNORE_DUP_KEY = OFF , STATISTICS_NORECOMPUTE = OFF , ONLINE = OFF , ALLOW_ROW_LOCKS = ON , ALLOW_PAGE_LOCKS = ON  )
-	 ON [PRIMARY ] ;
 
 
 -- depoquick.dbo.Deposits_AvailableDates definition
@@ -136,10 +121,6 @@ CREATE TABLE depoquick.dbo.LogEntries (
                                           CONSTRAINT PK_LogEntries PRIMARY KEY (Id),
                                           CONSTRAINT FK_LogEntries_Users_UserId FOREIGN KEY (UserId) REFERENCES depoquick.dbo.Users(Id) ON DELETE CASCADE
 );
-CREATE NONCLUSTERED INDEX IX_LogEntries_UserId ON dbo.LogEntries (  UserId ASC  )  
-	 WITH (  PAD_INDEX = OFF ,FILLFACTOR = 100  ,SORT_IN_TEMPDB = OFF , IGNORE_DUP_KEY = OFF , STATISTICS_NORECOMPUTE = OFF , ONLINE = OFF , ALLOW_ROW_LOCKS = ON , ALLOW_PAGE_LOCKS = ON  )
-	 ON [PRIMARY ] ;
-
 
 -- depoquick.dbo.Notifications definition
 
@@ -155,9 +136,6 @@ CREATE TABLE depoquick.dbo.Notifications (
                                              CONSTRAINT PK_Notifications PRIMARY KEY (Id),
                                              CONSTRAINT FK_Notifications_Clients_ClientId FOREIGN KEY (ClientId) REFERENCES depoquick.dbo.Clients(Id) ON DELETE CASCADE
 );
-CREATE NONCLUSTERED INDEX IX_Notifications_ClientId ON dbo.Notifications (  ClientId ASC  )  
-	 WITH (  PAD_INDEX = OFF ,FILLFACTOR = 100  ,SORT_IN_TEMPDB = OFF , IGNORE_DUP_KEY = OFF , STATISTICS_NORECOMPUTE = OFF , ONLINE = OFF , ALLOW_ROW_LOCKS = ON , ALLOW_PAGE_LOCKS = ON  )
-	 ON [PRIMARY ] ;
 
 
 -- depoquick.dbo.Reservations definition
@@ -180,12 +158,6 @@ CREATE TABLE depoquick.dbo.Reservations (
                                             CONSTRAINT FK_Reservations_Clients_ClientId FOREIGN KEY (ClientId) REFERENCES depoquick.dbo.Clients(Id) ON DELETE CASCADE,
                                             CONSTRAINT FK_Reservations_Deposits_DepositId FOREIGN KEY (DepositId) REFERENCES depoquick.dbo.Deposits(Id) ON DELETE CASCADE
 );
-CREATE NONCLUSTERED INDEX IX_Reservations_ClientId ON dbo.Reservations (  ClientId ASC  )  
-	 WITH (  PAD_INDEX = OFF ,FILLFACTOR = 100  ,SORT_IN_TEMPDB = OFF , IGNORE_DUP_KEY = OFF , STATISTICS_NORECOMPUTE = OFF , ONLINE = OFF , ALLOW_ROW_LOCKS = ON , ALLOW_PAGE_LOCKS = ON  )
-	 ON [PRIMARY ] ;
- CREATE NONCLUSTERED INDEX IX_Reservations_DepositId ON dbo.Reservations (  DepositId ASC  )  
-	 WITH (  PAD_INDEX = OFF ,FILLFACTOR = 100  ,SORT_IN_TEMPDB = OFF , IGNORE_DUP_KEY = OFF , STATISTICS_NORECOMPUTE = OFF , ONLINE = OFF , ALLOW_ROW_LOCKS = ON , ALLOW_PAGE_LOCKS = ON  )
-	 ON [PRIMARY ] ;
 
 
 -- depoquick.dbo.Payments definition
@@ -201,9 +173,6 @@ CREATE TABLE depoquick.dbo.Payments (
                                         CONSTRAINT PK_Payments PRIMARY KEY (Id),
                                         CONSTRAINT FK_Payments_Reservations_ReservationId FOREIGN KEY (ReservationId) REFERENCES depoquick.dbo.Reservations(Id) ON DELETE CASCADE
 );
-CREATE NONCLUSTERED INDEX IX_Payments_ReservationId ON dbo.Payments (  ReservationId ASC  )  
-	 WITH (  PAD_INDEX = OFF ,FILLFACTOR = 100  ,SORT_IN_TEMPDB = OFF , IGNORE_DUP_KEY = OFF , STATISTICS_NORECOMPUTE = OFF , ONLINE = OFF , ALLOW_ROW_LOCKS = ON , ALLOW_PAGE_LOCKS = ON  )
-	 ON [PRIMARY ] ;
 
 
 -- depoquick.dbo.Ratings definition
@@ -222,9 +191,3 @@ CREATE TABLE depoquick.dbo.Ratings (
                                        CONSTRAINT FK_Ratings_Deposits_DepositId FOREIGN KEY (DepositId) REFERENCES depoquick.dbo.Deposits(Id),
                                        CONSTRAINT FK_Ratings_Reservations_ReservationId FOREIGN KEY (ReservationId) REFERENCES depoquick.dbo.Reservations(Id) ON DELETE CASCADE
 );
-CREATE NONCLUSTERED INDEX IX_Ratings_DepositId ON dbo.Ratings (  DepositId ASC  )  
-	 WITH (  PAD_INDEX = OFF ,FILLFACTOR = 100  ,SORT_IN_TEMPDB = OFF , IGNORE_DUP_KEY = OFF , STATISTICS_NORECOMPUTE = OFF , ONLINE = OFF , ALLOW_ROW_LOCKS = ON , ALLOW_PAGE_LOCKS = ON  )
-	 ON [PRIMARY ] ;
- CREATE NONCLUSTERED INDEX IX_Ratings_ReservationId ON dbo.Ratings (  ReservationId ASC  )  
-	 WITH (  PAD_INDEX = OFF ,FILLFACTOR = 100  ,SORT_IN_TEMPDB = OFF , IGNORE_DUP_KEY = OFF , STATISTICS_NORECOMPUTE = OFF , ONLINE = OFF , ALLOW_ROW_LOCKS = ON , ALLOW_PAGE_LOCKS = ON  )
-	 ON [PRIMARY ] ;

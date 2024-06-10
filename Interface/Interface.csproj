@@ -38,4 +38,22 @@
       <_ContentIncludedByDefault Remove="Pages\Payments\GestionOfPaymentsClient.razor" />
     </ItemGroup>
 
+    <ItemGroup>
+      <Content Update="appsettings.json">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </Content>
+      <Content Update="Pages\_Host.cshtml">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </Content>
+      <Content Update="Pages\_Layout.cshtml">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </Content>
+      <Content Update="Pages\Index.razor">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </Content>
+      <Content Update="_Imports.razor">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </Content>
+    </ItemGroup>
+
 </Project>
