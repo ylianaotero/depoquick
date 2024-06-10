@@ -25,19 +25,11 @@ public class DepoQuickContext : DbContext
     public DepoQuickContext(DbContextOptions<DepoQuickContext> options, bool useInMemoryDatabase) : base(options)
     {
         UseInMemoryDatabase = useInMemoryDatabase;
-        if (!UseInMemoryDatabase)
-        {
-         //   this.Database.Migrate();   
-        }
     }
     
     public DepoQuickContext()
     {
         UseInMemoryDatabase = false;
-        if (!UseInMemoryDatabase)
-        {
-          //  this.Database.Migrate();   
-        }
     }
     
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
