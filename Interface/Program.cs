@@ -6,17 +6,13 @@ using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
 builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor();
 builder.Services.AddSingleton<WeatherForecastService>();
 
-//DbContextOptionsBuilder<DepoQuickContext> optionsBuilder = new DbContextOptionsBuilder<DepoQuickContext>();
-//optionsBuilder.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
-//DepoQuickContext context = new DepoQuickContext(optionsBuilder.Options, false);
-
-builder.Services.AddDbContext<DepoQuickContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
-DepoQuickContext context = builder.Configuration.Get<DepoQuickContext>();
+DbContextOptionsBuilder<DepoQuickContext> optionsBuilder = new DbContextOptionsBuilder<DepoQuickContext>();
+optionsBuilder.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
+DepoQuickContext context = new DepoQuickContext(optionsBuilder.Options, false);
 
 SqlRepository<User> userRepository = new SqlRepository<User>(context);
 UserController userController = new UserController(userRepository);
