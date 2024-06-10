@@ -27,7 +27,7 @@ public class DepoQuickContext : DbContext
         UseInMemoryDatabase = useInMemoryDatabase;
         if (!UseInMemoryDatabase)
         {
-            this.Database.Migrate();   
+         //   this.Database.Migrate();   
         }
     }
     
@@ -36,7 +36,7 @@ public class DepoQuickContext : DbContext
         UseInMemoryDatabase = false;
         if (!UseInMemoryDatabase)
         {
-            this.Database.Migrate();   
+          //  this.Database.Migrate();   
         }
     }
     
