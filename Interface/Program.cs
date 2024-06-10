@@ -10,6 +10,8 @@ builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor();
 builder.Services.AddSingleton<WeatherForecastService>();
 
+builder.Configuration.AddJsonFile(Path.Combine(AppContext.BaseDirectory, "appsettings.json"), optional: false, reloadOnChange: true);
+
 DbContextOptionsBuilder<DepoQuickContext> optionsBuilder = new DbContextOptionsBuilder<DepoQuickContext>();
 optionsBuilder.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
 DepoQuickContext context = new DepoQuickContext(optionsBuilder.Options, false);
