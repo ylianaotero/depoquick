@@ -1,5 +1,6 @@
--- DROP SCHEMA dbo;
+CREATE DATABASE IF NOT EXISTS depoquick;
 
+-- DROP SCHEMA dbo;
 CREATE SCHEMA dbo;
 -- depoquick.dbo.Deposits definition
 
