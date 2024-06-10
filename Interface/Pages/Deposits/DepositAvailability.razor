@@ -1,0 +1,205 @@
+﻿@page "/DepositAvailability/{Id:int}" 
+
+@using BusinessLogic.Controllers
+@using BusinessLogic.Exceptions.DepositControllerExceptions
+@using BusinessLogic.Exceptions.UserControllerExceptions
+@using DepoQuick.Domain
+@using DepoQuick.Exceptions.DateRangeExceptions
+
+@inject SessionController SessionController
+@inject NavigationManager NavigationManager
+@inject DepositController DepositController
+
+<html lang="es">
+<head>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+</head>
+    <body>
+         @if (_showAlertInvalidDate)
+        {
+          <br>
+           <div class="alert alert-danger" role="alert">
+             ¡Fecha inválida, la fecha inicial debe ser anterior a la fecha final!
+           </div>
+          <br>
+        }
+         
+        @if (_showAlertDepositDateIsOverlapping)
+        {
+          <br>
+           <div class="alert alert-danger" role="alert">
+             ¡La fecha de disponibilidad se superpone con otra fecha de disponibilidad!
+           </div>
+          <br>
+        }
+        
+        @if (_showAlertDepositDateIsAlreadyReserved)
+        {
+            <br>
+            <div class="alert alert-danger" role="alert">
+                ¡Ya existe una fecha para la cual el depósito fue reservado!
+            </div>
+            <br>
+        }
+
+         @if (_showAlertActionRestrictedToAdministrator)
+         {
+         <div class="alert alert-danger" role="alert">
+             ¡Unicamente el administrador puede agregar fechas de disponiblidad!
+         </div>
+         }
+
+        @if (_showAlertSomethingWentWrong)
+         {
+         <div class="alert alert-danger" role="alert">
+             ¡Algo salió mal!
+         </div>
+         }
+         
+         
+         
+         <h3>Fechas disponibles para el depósito @_deposit.Id. :</h3>
+
+        <table class="table table-striped table-hover">
+            <thead>
+            <tr>
+                <th>Deposito</th>
+                <th>Inicio</th>
+                <th>Fin</th>
+            </tr>
+            </thead>
+
+            <tbody>
+            @foreach (DateRange date in _availableDates)
+            {
+
+                <tr>
+                    <td>@DepositController.Get(Id).Name</td>
+                    <td>@date.InitialDate.ToString("dd/MM/yyyy")</td>
+                    <td>@date.FinalDate.ToString("dd/MM/yyyy")</td>
+                </tr>
+            }
+            </tbody>
+        </table>
+        <p>Ingrese las fechas en las que desea que el deposito esté disponible. Luego podrá agregar más fechas de disponibilidad.</p>
+        <div class="mb-3">
+            <label for="initialDate" class="form-label">Fecha de comienzo de disponibilidad:</label>
+            <input type="date" class="form-control" id="initialDate" name="initialDate" @bind="_initialDate">
+        </div>
+
+        <div class="mb-3">
+            <label for="finalDate" class="form-label">Fecha de fin de disponibilidad:</label>
+            <input type="date" class="form-control" id="finalDate" name="finalDate" @bind="_finalDate">
+        </div>
+        <input @onclick="ShowAlertCheckAvailability" class="btn btn-primary" value="Agregar disponibilidad">
+
+    </body>
+</html>
+
+@code {
+    [Parameter] public int Id { get; set; }
+    private DateRange _date;
+    private Deposit _deposit;
+    private List<DateRange> _availableDates;
+    private DateTime _initialDate;
+    private DateTime _finalDate;
+    
+    private bool _showAlertInvalidDate;
+    private bool _showAlertDepositDateIsOverlapping;
+    private bool _showAlertDepositDateIsAlreadyReserved;
+    private bool _showAlertActionRestrictedToAdministrator;
+    private bool _showAlertSomethingWentWrong;
+    
+    private bool _availabilityDateAddedSuccessfully;
+    
+    protected override void OnParametersSet()
+    {
+        if (!SessionController.ActiveUser.IsAdministrator)
+        {
+            GoToHomePage();
+        }
+        else
+        {
+            InitializeVariables();
+        }
+    }
+
+    private void InitializeVariables()
+    {
+        _deposit = DepositController.Get(Id);
+        _availableDates = DepositController.Get(Id).AvailableDates;
+        _showAlertInvalidDate = false;
+        _showAlertDepositDateIsOverlapping = false;
+        _showAlertDepositDateIsAlreadyReserved = false;
+        
+        _initialDate = DateTime.Now;
+        _finalDate = DateTime.Now;
+    }
+
+    private void ShowAlertCheckAvailability()
+    {
+        AddAvailabilityToDeposit();
+        
+        if (_availabilityDateAddedSuccessfully)
+        {
+            GoToDepositsPage();
+        }
+    }
+
+    private void AddAvailabilityToDeposit()
+    {
+        HideAllAlerts();
+        
+        try
+        {
+            _date = new DateRange(_initialDate, _finalDate);
+            DepositController.AddAvailabilityDate(_deposit, _date);
+
+            _availabilityDateAddedSuccessfully = true;
+        }
+        catch (InvalidDateRangeException invalidDateRangeException)
+        {
+            _showAlertInvalidDate = true;
+        }
+        catch (EmptyDateRangeException emptyDateRangeException)
+        {
+            _showAlertInvalidDate = true;
+        }
+        catch (DepositDateIsOverlappingException depositDateIsOverlappingException)
+        {
+            _showAlertDepositDateIsOverlapping = true;
+        }
+        catch (DepositDateIsAlreadyReservedException depositDateIsAlreadyReservedException)
+        {
+            _showAlertDepositDateIsAlreadyReserved = true;
+        }
+        catch (ActionRestrictedToAdministratorException actionRestrictedToAdministratorException)
+        {
+            _showAlertActionRestrictedToAdministrator = true;
+        }
+        catch (Exception e)
+        {
+            _showAlertSomethingWentWrong = true;
+        }
+    }
+    
+    private void HideAllAlerts()
+    {
+        _showAlertInvalidDate = false;
+        _showAlertActionRestrictedToAdministrator = false;
+        _showAlertDepositDateIsAlreadyReserved = false;
+        _showAlertDepositDateIsOverlapping = false;
+        _showAlertSomethingWentWrong = false;
+    }
+    
+    private void GoToDepositsPage()
+    {
+        NavigationManager.NavigateTo("/Deposits");
+    }
+    
+    private void GoToHomePage()
+    {
+        NavigationManager.NavigateTo($"../Home");
+    }
+}

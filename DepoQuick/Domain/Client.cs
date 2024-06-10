@@ -2,22 +2,21 @@ namespace DepoQuick.Domain;
 
 public class Client : User
 {
-    List<Reservation> _reservations;
+    public List<Reservation> Reservations { get; set; }
+    
+    private List<Notification> _notifications;
+    
     public Client(string name, string email, string password) : base(name, email, password)
     {
-        this.SetIsAdministrator(false);
-        _reservations = new List<Reservation>();
-    }
-    
-    public List<Reservation> GetReservations()
-    {
-        return _reservations;
+        this.IsAdministrator = false;
+        Reservations = new List<Reservation>();
+        Notifications= new();
     }
 
-    public void AddReservation(Reservation reservation)
+    public List<Notification> Notifications
     {
-        _reservations.Add(reservation);
-        reservation.GetDeposit().AddReservation(reservation);
+        get => _notifications;
+        private init => _notifications = value;
     }
 }
 

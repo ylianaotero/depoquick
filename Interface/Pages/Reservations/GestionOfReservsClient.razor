@@ -1,8 +1,15 @@
 ﻿@page "/GestionOfReservsClient"
-@using BusinessLogic
+
+@using BusinessLogic.Controllers
+@using BusinessLogic.Exceptions.DepositControllerExceptions
+@using BusinessLogic.Exceptions.PaymentControllerExceptions
 @using DepoQuick.Domain
-@inject MemoryDataBase MemoryDataBase
+
+@inject SessionController SessionController
 @inject NavigationManager NavigationManager
+@inject ReservationController ReservationController
+@inject PaymentController PaymentController
+@inject RatingController RatingController
 
 <html lang="es">
   <head>
@@ -10,111 +17,240 @@
       <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
   </head>
 
-    <body>
+<body>
 
-        <h3>¡Hola, @_client.GetName()! Aquí puedes revisar tus reservaciones.</h3>
+<h3>¡Hola, @_client.Name! Aquí puedes revisar tus reservas.</h3>
 
-        <table class="table">
-                <thead>
-                    <tr>
-                        <th>Depósito</th>
-                        <th>Desde</th>
-                        <th>Hasta</th>
-                        <th>Estado</th>
-                        <th>Comentario</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach (Reservation reservation in _listOfReservations)
+@if (_showAlertPrice)
+{
+    <br>
+    <div class="alert alert-primary" role="alert">
+        <h4 class="alert-heading">¿Estás seguro?</h4>
+        <p>Estas a punto de realizar el pago de la reserva</p>
+        <hr>
+        <input @onclick="AddPayment" type="submit" class="btn btn-primary" value="Aceptar">
+    </div>
+    <br>
+}
+
+@if (_showAlertInvalidDeposit)
+{
+    <br>
+    <div class="alert alert-danger" role="alert">
+        ¡Error, no se encuentra el deposito de la reservacion, intente de nuevo!
+    </div>
+    <br>
+
+}
+
+<table class="table">
+    <thead>
+    <tr>
+        <th>Depósito</th>
+        <th>Desde</th>
+        <th>Hasta</th>
+        <th>Estado</th>
+        <th>Comentario</th>
+        <th>Estado del Pago</th>
+    </tr>
+    </thead>
+    <tbody>
+    @foreach (Reservation reservation in _listOfReservations)
+    {
+        <tr>
+            @if (reservation.Deposit != null)
+            {
+                <td>@reservation.Deposit.Name (@reservation.Deposit.Id)</td>
+            }
+            else
+            {
+                <td>Depósito eliminado</td>
+            }
+            <td>@reservation.Date.GetInitialDate().ToString("dd/MM/yyyy")</td>
+            <td>@reservation.Date.GetFinalDate().ToString("dd/MM/yyyy")</td>
+            @if (reservation.Status == 0)
+            {
+                <td>
+                    <button class="btn btn-secondary btn-sm">En espera</button>
+                </td>
+                <td>-</td>
+            }
+            else if (reservation.Status == 1)
+            {
+                <td>
+                    <button class="btn btn-success btn-sm">Aprobada</button>
+                </td>
+                <td>-</td>
+            }
+            else
+            {
+                {
+                    <td>
+                        <button class="btn btn-danger btn-sm">Rechazada</button>
+                    </td>
+                    <td>@reservation.Message</td>
+                    <td>
+                        <button class="btn btn-danger btn-sm">Rechazada</button>
+                    </td>
+                }
+            }
+            @{
+                _paymentOfReservation = GetPayment(reservation);
+            }
+            @if (reservation.Status != -1)
+            {
+                @if (_paymentOfReservation != null)
+                {
+                    @if (_paymentOfReservation.Status == "reservado")
                     {
-                        <tr>
-                            <td>Depósito @reservation.GetDeposit().GetId()</td>
-                            <td>@reservation.GetDateRange().GetInitialDate().ToString("dd/MM/yyyy")</td>
-                            <td>@reservation.GetDateRange().GetFinalDate().ToString("dd/MM/yyyy")</td>
-                            @if (reservation.GetState() == 0)
-                            {
-                                <td>
-                                    <button class="btn btn-secondary btn-sm">En espera</button>
-                                </td>
-                                <td>-</td>
-                            }
-                            else if (reservation.GetState() == 1)
-                            {
-                                <td>
-                                    <button class="btn btn-success btn-sm">Aprobada</button>
-                                </td>
-                                <td>-</td>
-                            } else {
-                                {
-                                    <td>
-                                        <button class="btn btn-danger btn-sm">Rechazada</button>
-                                    </td>
-                                    <td>@reservation.GetMessage()</td>
-                                }
-                            }
-                            @if (ReservationIsOver(reservation))
-                            {
-                                if (reservation.GetRating() == null)
-                                {
-                                    <td>
-                                        <div class="btn-group">
-                                            <button class="btn btn-primary btn-sm" @onclick="(() => GoToAddRatingPage(reservation))">Añadir valoración
-                                                <i class="fa fa-star"></i>
-                                            </button>
-                                        </div>
-                                    </td>
-                                }
-                                else
-                                {
-                                    <td>
-                                        <div class="btn-group">
-                                            <button class="btn btn-primary btn-sm" @onclick="(() => GoToEditRatingPage(reservation))">Editar valoración
-                                                <i class="fa fa-star"></i>
-                                            </button>
-                                        </div>
-                                    </td>
-                                }
-                                
-                            }
-                            
-                        </tr>
+                        <td>
+                            <button class="btn btn-secondary btn-sm">Pago reservado</button>
+                        </td>
+
                     }
-                </tbody>
-            </table>
-    </body>
+                    else
+                    {
+                        @if (_paymentOfReservation.Status == "capturado")
+                        {
+                            <td>
+                                <button class="btn btn-success btn-sm">Pago Capturado</button>
+                            </td>
+
+                        }
+                    }
+                }
+                else
+                {
+                    <td>
+                        <input @onclick="() => ShowAlert(reservation)" id="wantToMakeThePayment" class="btn btn-primary" value="Pagar">
+                    </td>
+                }
+
+            }
+
+            @if (ReservationIsOver(reservation))
+            {
+                if (RatingController.GetRatingByReservation(reservation) == null)
+                {
+                    <td>
+                        <div class="btn-group">
+                            <button class="btn btn-primary btn-sm" @onclick="(() => GoToAddRatingPage(reservation))">Añadir valoración
+                                <i class="fa fa-star"></i>
+                            </button>
+                        </div>
+                    </td>
+                }
+                else
+                {
+                    <td>
+                        <div class="btn-group">
+                            <button class="btn btn-primary btn-sm" @onclick="(() => GoToEditRatingPage(reservation))">Editar valoración
+                                <i class="fa fa-star"></i>
+                            </button>
+                        </div>
+                    </td>
+                }
+
+            }
+
+        </tr>
+    }
+    </tbody>
+</table>
+</body>
 </html>
 
 
 
 
 @code {
-    private Controller _controller;
     private List<Reservation> _listOfReservations;
-    private Client _client; 
+    private Client _client;
+    private Reservation _reservation;
+    private Payment _paymentOfReservation;
+
+    private bool _showAlertPrice;
+    private bool _showAlertInvalidDeposit;
     
     protected override void OnInitialized()
     {
-        _controller = new Controller(MemoryDataBase);
-        
-        _client = (Client)_controller.GetActiveUser();
+        if (SessionController.ActiveUser.IsAdministrator)
+        {
+            GoToHomePage();
+        }
+        else
+        {
+            InitializeVariables();
 
-        _listOfReservations = _client.GetReservations(); 
+            HideAllAlerts();
+        }
+    }
+
+    private void InitializeVariables()
+    {
+        _client = (Client)SessionController.ActiveUser;
+        _listOfReservations = ReservationController.GetReservationsByUserId(_client.Id);
+    }
+    
+    private Payment GetPayment(Reservation reservation)
+    {
+        HideAllAlerts(); 
+        
+        try
+        {
+            return PaymentController.Get(reservation);
+        }
+        catch (PaymentNotFoundException paymentNotFoundException)
+        {
+            return null;
+        }
+    }
+    
+    private void ShowAlert(Reservation reservation)
+    {
+        HideAllAlerts();
+        
+        try
+        {
+            _reservation = reservation; 
+            _showAlertPrice = true;
+        }
+        catch (DepositNotFoundException depositNotFoundException)
+        {
+            _showAlertInvalidDeposit = true; 
+        }
+    }
+    
+    private void HideAllAlerts()
+    {
+        _showAlertPrice = false;
+        _showAlertInvalidDeposit = false; 
     }
     
     private bool ReservationIsOver(Reservation reservation)
     {
-        return reservation.GetState() == 1 && reservation.GetDateRange().GetFinalDate() < DateTime.Now;
+        return reservation.Status == 1 && reservation.Date.GetFinalDate() < DateTime.Now;
+    }
+    
+    private void GoToHomePage()
+    {
+        NavigationManager.NavigateTo($"../Home");
     }
     
     private void GoToAddRatingPage(Reservation reservation)
     {
-        int reservationId = reservation.GetId();
+        int reservationId = reservation.Id;
         NavigationManager.NavigateTo($"../RateReservation/{reservationId}");
     }
     
     private void GoToEditRatingPage(Reservation reservation)
     {
-        int reservationId = reservation.GetId();
+        int reservationId = reservation.Id;
         NavigationManager.NavigateTo($"../EditRating/{reservationId}");
+    }
+
+    private void AddPayment()
+    {
+        ReservationController.PayReservation(_reservation);
     }
 }

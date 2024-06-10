@@ -1,8 +1,12 @@
 @page "/Deposits"
-@using BusinessLogic
+
+@using BusinessLogic.Controllers
 @using DepoQuick.Domain
-@inject MemoryDataBase MemoryDataBase
+
+@inject SessionController SessionController
 @inject NavigationManager NavigationManager
+@inject DepositController DepositController
+
 
 <html lang="es">
     <head>
@@ -11,7 +15,7 @@
     </head>
 
     <body>
-        <h3>¡Hola, @_loggedInUser.GetName()! Aquí puedes encontrar nuestros depósitos.</h3>
+        <h3>¡Hola, @_loggedInUser.Name! Aquí puedes encontrar nuestros depósitos.</h3>
 
     @if (_showAlertDepositDeletedSuccessfully)
     {
@@ -48,12 +52,13 @@
         <thead>
         <tr>
             <th>Depósito</th>
+            <th>Nombre</th>
             <th>Área</th>
             <th>Tamaño</th>
             <th>Climatización</th>
             <th>Promociones actuales</th>
             <th>Reservado</th>
-            @if (_loggedInUser.IsAdministrator())
+            @if (_loggedInUser.IsAdministrator)
             {
                 <th>Con reservas próximas</th>
             }
@@ -64,21 +69,22 @@
         @foreach (Deposit deposit in _listOfDeposits)
         {
             <tr>
-                <td>@deposit.GetId()</td>
-                <td>@deposit.GetArea()</td>
-                <td>@deposit.GetSize()</td>
-                <td>@BoolToString(deposit.GetAirConditioning())</td>
+                <td>@deposit.Id</td>
+                <td>@deposit.Name</td>
+                <td>@deposit.Area</td>
+                <td>@deposit.Size</td>
+                <td>@BoolToString(deposit.AirConditioning)</td>
                 <td>
-                    @foreach (var promotion in deposit.GetPromotions())
+                    @foreach (var promotion in deposit.Promotions)
                     {
                         if (promotion.IsCurrentlyAvailable())
                         {
-                            <p>@promotion.GetLabel() - @(promotion.GetDiscountRate() * PercentageMultiplier)%</p>
+                            <p>@promotion.Label - @(promotion.DiscountRate * PercentageMultiplier)%</p>
                         }
                     }
                 </td>
                 <td>@BoolToString(deposit.IsReserved())</td>
-                @if (_loggedInUser.IsAdministrator())
+                @if (_loggedInUser.IsAdministrator)
                 {
                     <td>@BoolToString(deposit.HasUpcomingReservations())</td>
                 }
@@ -88,8 +94,15 @@
                         </button>
                     </div>
                 </td>
-                @if (_loggedInUser.IsAdministrator())
+                @if (_loggedInUser.IsAdministrator)
                 {
+                    <td>
+                        <div class="btn-group">
+                            <button class="btn btn-info" @onclick="(() => GoToAddAvailabilityPage(deposit))">Agregar fecha de disponibilidad
+                                <i class="oi oi-calendar"></i>
+                            </button>
+                        </div>
+                    </td>
                     <td>
                         <div class="btn-group">
                             <button class="btn btn-danger" @onclick="(() => AttemptToDeleteDeposit(deposit))">Eliminar
@@ -104,7 +117,7 @@
         
     </table>
     
-    @if (_loggedInUser.IsAdministrator())
+    @if (_loggedInUser.IsAdministrator)
     {
         <button class="btn btn-primary" @onclick="GoToAddDepositPage">Crear depósito</button>
     }
@@ -113,7 +126,7 @@
 
 @code {
     private const double PercentageMultiplier = 100.0;
-    private Controller _controller;
+    
     private List<Deposit> _listOfDeposits;
     private User _loggedInUser;
 
@@ -126,26 +139,21 @@
     
     protected override void OnInitialized()
     {
-        _controller = new Controller(MemoryDataBase);
-        _loggedInUser = _controller.GetActiveUser();
 
-        _listOfDeposits = _controller.GetDeposits();
         
-        _controller.DeleteAllExpiredPromotions();
+        
+        InitializeVariables();
 
-        _depositToDelete = null;
-        
         HideAllAlerts();
     }
     
-    private string BoolToString(bool value)
+    private void InitializeVariables()
     {
-        return value ? "Si" : "No";
-    }
+        _loggedInUser = SessionController.ActiveUser;
 
-    private void GoToAddDepositPage()
-    {
-        NavigationManager.NavigateTo("/AddDeposit");
+        _listOfDeposits = DepositController.GetDeposits();
+        
+        _depositToDelete = null;
     }
     
     private void AttemptToDeleteDeposit(Deposit deposit)
@@ -163,6 +171,20 @@
             _showAlertAboutToDeleteDeposit = true;
         }
     }
+
+    private void DeleteDeposit()
+    {
+        HideAllAlerts();
+        
+        try
+        {
+            DepositController.DeleteDeposit(_depositToDelete);
+            _showAlertDepositDeletedSuccessfully = true;
+        } catch (Exception e)
+        {
+            _showAlertSomethingWentWrong = true;
+        }
+    }
     
     public void HideAllAlerts()
     {
@@ -171,25 +193,26 @@
         _showAlertAboutToDeleteDeposit = false;
         _showAlertSomethingWentWrong = false;
     }
-
-    private void DeleteDeposit()
+    
+    private string BoolToString(bool value)
     {
-        HideAllAlerts();
-        try
-        {
-            int id = _depositToDelete.GetId();
-            _controller.DeleteDeposit(id);
-            _showAlertDepositDeletedSuccessfully = true;
-        }
-        catch (Exception)
-        {
-            _showAlertSomethingWentWrong = true;
-        }
+        return value ? "Si" : "No";
+    }
+
+    private void GoToAddDepositPage()
+    {
+        NavigationManager.NavigateTo("/AddDeposit");
+    }
+
+    private void GoToAddAvailabilityPage(Deposit deposit)
+    {
+        int depositId = deposit.Id;
+        NavigationManager.NavigateTo($"/DepositAvailability/{depositId}");
     }
     
     private void GoToDepositRatingsPage(Deposit deposit)
     {
-        int depositId = deposit.GetId();
+        int depositId = deposit.Id;
         NavigationManager.NavigateTo($"/DepositRatings/{depositId}");
     }
 }

@@ -1,8 +1,7 @@
 ﻿@using BusinessLogic
-@using DepoQuick.Domain
-@inject MemoryDataBase MemoryDataBase
+@using BusinessLogic.Controllers
+@inject SessionController SessionController
 @inject NavigationManager NavigationManager
-
 
 <div class="top-row ps-3 navbar navbar-dark">
     <div class="container-fluid">
@@ -60,6 +59,12 @@
                         <span class="oi oi-plus" aria-hidden="true"></span> Reservar
                     </NavLink>
                 </div>
+                
+                <div class="nav-item px-3">
+                    <NavLink class="nav-link" href="NotificationsClient">
+                        <span class="oi oi-spreadsheet" aria-hidden="true"></span> Notificaciones
+                    </NavLink>
+                </div>
             }
             
             <div class="nav-item px-3">
@@ -67,7 +72,6 @@
                     <span class="oi oi-list-rich" aria-hidden="true"></span> Gestión de reservas
                 </NavLink>
             </div>
-            
             
             <div class="nav-item px-3">
                 <NavLink class="nav-link" href="Deposits">
@@ -93,7 +97,6 @@
 
 @code {
     private bool collapseNavMenu;
-    private Controller _controller;
     private string? NavMenuCssClass => collapseNavMenu ? "collapse" : null;
     
     private void ToggleNavMenu()
@@ -103,25 +106,24 @@
     
     protected override void OnInitialized()
     { 
-        _controller = new Controller(MemoryDataBase);
         collapseNavMenu = false;
     }
 
     private bool UserLoggedIn()
     {
-        return _controller.UserLoggedIn();
+        return SessionController.UserLoggedIn();
     }
 
     private void Logout()
     {
         
-        _controller.LogoutUser();
+        SessionController.LogoutUser();
         
         NavigationManager.NavigateTo("/",forceLoad:true);
     }
 
     private bool IsAdministrator()
     {
-        return _controller.GetActiveUser().IsAdministrator();
+        return SessionController.ActiveUser.IsAdministrator;
     }
 }

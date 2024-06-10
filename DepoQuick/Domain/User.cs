@@ -1,3 +1,4 @@
+using System.ComponentModel.DataAnnotations;
 using System.Text.RegularExpressions;
 using DepoQuick.Exceptions.UserExceptions;
 
@@ -5,20 +6,72 @@ namespace DepoQuick.Domain;
 
 public class User
 {
+    private const string EmptyUserNameMessage = "El nombre no puede estar vacío";
+    private const string UserNameTooLongMessage = "El nombre no puede tener más de 100 caracteres";
+    private const string InvalidUserNameMessage = "El nombre solo puede contener letras y espacios";
+
+    private const string EmptyUserEmailMessage = "El correo electrónico no puede estar vacío";
+    private const string InvalidUserEmailMessage = "El formato del correo electrónico no es válido";
+    
+    private const string EmptyUserPasswordMessage = "La contraseña no puede estar vacía";
+    private const string PasswordTooShortMessage = "La contraseña debe tener al menos 8 caracteres";
+    private const string InvalidUserPasswordMessage = "La contraseña debe contener al menos un símbolo (#@$.,%), " +
+                                                      "una letra minúscula, una letra mayúscula y un dígito";
+    private const string PasswordsDoNotMatchMessage = "Las contraseñas no coinciden";
+
     private const int MaxNameLength = 100;
     private const int MinPasswordLength = 8;
     
-    private static int s_lastId = 0;
+    [Key]
+    public int Id { get; set; }
     
-    private int _id;
-    
-    private bool _isAdministrator; 
-    
+    public bool IsAdministrator { get; protected init; }
+
     private string _name;
     private string _email;
     private string _password;
-    private List<(string, DateTime)> _logs;
     
+    private List<LogEntry> _logs;
+    
+    
+    public string Name
+    {
+        get => _name;
+        set
+        {
+            ValidateName(value);
+            _name = value;
+        }
+    }
+
+    public string Email { 
+        get => _email;
+        set
+        {
+            ValidateEmail(value);
+            _email = value; 
+        } 
+    }
+    
+    public string Password { 
+        get => _password;
+        set
+        {
+            ValidatePassword(value);
+            _password = value;
+        }
+    }
+    
+    public List<LogEntry> Logs
+    {
+        get => _logs;
+        private init => _logs = value;
+    }
+    
+    public User()
+    {
+        Logs = new();
+    }
     
     public User(string name, string email, string password)
     {
@@ -26,31 +79,36 @@ public class User
         ValidateEmail(email);
         ValidatePassword(password);
         
-        _name = name;
-        _email = email;
-        _password = password;
+        Name = name;
+        Email = email;
+        Password = password;
 
-        _logs = new();
-
-        _id = s_lastId + 1;
-        s_lastId = _id;
+        Logs = new();
+    }
+    
+    public static void ValidatePasswordConfirmation(string password, string passwordConfirmation)
+    {
+        if (string.Compare(password,passwordConfirmation) != 0)
+        {
+            throw new UserPasswordsDoNotMatchException(PasswordsDoNotMatchMessage);
+        }
     }
     
     private void ValidateName(string name)
     {
         if (string.IsNullOrEmpty(name))
         {
-            throw new EmptyUserNameException("El nombre no puede estar vacío.");
+            throw new EmptyUserNameException(EmptyUserNameMessage);
         }
         
         if (name.Length > MaxNameLength)
         {
-            throw new UserNameTooLongException("El nombre no puede tener más de " + MaxNameLength + " caracteres.");
+            throw new UserNameTooLongException(UserNameTooLongMessage);
         }
         
         if (!Regex.IsMatch(name, @"^[a-zA-Z\s]+$"))
         {
-            throw new InvalidUserNameException("El nombre solo puede contener letras y espacios.");
+            throw new InvalidUserNameException(InvalidUserNameMessage);
         }
     }
     
@@ -58,14 +116,14 @@ public class User
     {
         if (string.IsNullOrEmpty(email))
         {
-            throw new EmptyUserEmailException("El correo electrónico no puede estar vacío.");
+            throw new EmptyUserEmailException(EmptyUserEmailMessage);
         }
         
         string pattern = @"^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$";
         
         if (!Regex.IsMatch(email, pattern))
         {
-            throw new InvalidUserEmailException("El formato del correo electrónico no es válido.");
+            throw new InvalidUserEmailException(InvalidUserEmailMessage);
         }
     }
     
@@ -73,74 +131,17 @@ public class User
     {
         if (string.IsNullOrEmpty(password))
         {
-            throw new EmptyUserPasswordException("La contraseña no puede estar vacía.");
+            throw new EmptyUserPasswordException(EmptyUserPasswordMessage);
         }
         
         if (password.Length < MinPasswordLength)
         {
-            throw new PasswordTooShortException("La contraseña debe tener al menos " + " caracteres.");
+            throw new PasswordTooShortException(PasswordTooShortMessage);
         }
         
         if (!Regex.IsMatch(password, @"^(?=.*[#@$.,%])(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$"))
         {
-            throw new InvalidUserPasswordException("La contraseña debe contener al menos un símbolo (#@$.,%), una letra minúscula, una letra mayúscula y un dígito.");
+            throw new InvalidUserPasswordException(InvalidUserPasswordMessage);
         }
     }
-    
-    public static void ValidatePasswordConfirmation(string password, string passwordConfirmation)
-    {
-        if (string.Compare(password,passwordConfirmation) != 0)
-        {
-            throw new UserPasswordsDoNotMatchException("Las contraseñas no coinciden.");
-        }
-    }
-    
-    public void LogAction(string message, DateTime timestamp)
-    {
-        if (string.IsNullOrEmpty(message))
-        {
-            throw new EmptyActionLogException("El mensaje no puede estar vacío.");
-        }
-        else
-        {
-            _logs.Add((message, timestamp));
-        }
-    }
-    
-    public List<(string, DateTime)> GetLogs()
-    {
-        return _logs;
-    }
-    
-    public bool IsAdministrator()
-    {
-        return _isAdministrator; 
-    }
-
-    public void SetIsAdministrator(bool isAdministrator)
-    {
-        _isAdministrator = isAdministrator; 
-    }
-
-    
-    public string GetName()
-    {
-        return _name;
-    }
-    
-    public string GetEmail()
-    {
-        return _email;
-    }
-    
-    public string GetPassword()
-    {
-        return _password;
-    }
-    
-    public int GetId()
-    {
-        return _id;
-    }
-    
 }

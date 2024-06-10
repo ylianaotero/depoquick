@@ -1,134 +1,82 @@
-﻿using DepoQuick.Exceptions.DateRangeExceptions;
+﻿using System.ComponentModel.DataAnnotations.Schema;
+using DepoQuick.Exceptions.DateRangeExceptions;
 
 namespace DepoQuick.Domain;
 
+[ComplexType]
 public class DateRange
 {
-    private DateTime _initialDate;
-    private DateTime _finalDate;
+    private const string EmptyDateRangeMessage = "Las fechas no pueden ser vacias";
+    private const string InvalidDateRangeMessage = "La fecha final debe ser posterior a fecha inicial";
     
+    public DateTime InitialDate { get; private set; }
+    public DateTime FinalDate { get; private set; }
+
+    public DateRange()
+    {
+        InitialDate = DateTime.MinValue;
+        FinalDate = DateTime.Now.Date;
+    }
+
     public DateRange(DateTime initialDate, DateTime finalDate)
     {
-        if (DatesAreValid(initialDate, finalDate))
-        {
-            _initialDate = initialDate;
-            _finalDate = finalDate;
-        }
+        ValidateDateRange(initialDate, finalDate);
+        InitialDate = initialDate;
+        FinalDate = finalDate;
     }
-    
+
     public DateTime GetInitialDate()
     {
-        return _initialDate;
+        return InitialDate;
     }
-    
+
     public DateTime GetFinalDate()
     {
-        return _finalDate;
+        return FinalDate;
     }
-    
+
     public int NumberOfDays()
     {
-        TimeSpan difference = _finalDate - _initialDate;
+        TimeSpan difference = FinalDate - InitialDate;
         int numberOfDays = difference.Days;
         return numberOfDays;
     }
     
-    private bool DatesAreValid(DateTime initialDate, DateTime finalDate)
+    public bool DateRangeIsOverlapping(DateRange dateRange)
     {
-        if (TheTwoDatesAreEmpty(initialDate,finalDate))
-        {
-            throw new EmptyDateRangeException ("Ambas fechas vacias, no se puede");
-        }
-        if (InitialDateIsEmpty(initialDate))
-        {
-            throw new EmptyDateRangeException ("Fecha inicial vacia, no se puede");
-        }
+        return IsDateInRange(dateRange.InitialDate) || IsDateInRange(dateRange.FinalDate);
+    }
 
-        if (FinalDateIsEmpty(finalDate))
+    public bool IsDateInRange(DateTime date)
+    {
+        return date >= InitialDate && date <= FinalDate;
+    }
+
+    public bool Contains(DateRange dateRange)
+    {
+        return IsDateInRange(dateRange.InitialDate) || IsDateInRange(dateRange.FinalDate);
+    }
+
+    private void ValidateDateRange(DateTime initialDate, DateTime finalDate)
+    {
+        if (!(DateIsNotEmpty(initialDate) && DateIsNotEmpty(finalDate)))
         {
-            throw new EmptyDateRangeException ("Fecha final vacia, no se puede");
+            throw new EmptyDateRangeException(EmptyDateRangeMessage);
         }
 
         if (!EndDateIsLater(initialDate, finalDate))
         {
-            throw new InvalidDateRangeException("Rango de fechas no valido, fecha final debe ser posterior a fecha inicial");
+            throw new InvalidDateRangeException(InvalidDateRangeMessage);
         }
-
-        return true; 
-
-
-    }
-
-    private bool TheTwoDatesAreEmpty(DateTime initialDate, DateTime finalDate)
-    {
-        if (!DateIsNotEmpty(initialDate) && !DateIsNotEmpty(finalDate))
-        {
-            return true; 
-        }
-        return false; 
-    }
-
-    private bool InitialDateIsEmpty(DateTime initialDate)
-    {
-        if (!DateIsNotEmpty(initialDate))
-        {
-            return true; 
-        }
-
-        return false; 
-    }
-    
-    private bool FinalDateIsEmpty(DateTime finalDate)
-    {
-        if (!DateIsNotEmpty(finalDate))
-        {
-            return true; 
-        }
-
-        return false; 
     }
 
     private bool DateIsNotEmpty(DateTime date)
     {
-        if (date != DateTime.MinValue)
-        {
-            return true; 
-        }
-        else
-        {
-            return false;
-        }
+        return date != DateTime.MinValue;
     }
 
     private bool EndDateIsLater(DateTime initialDate, DateTime finalDate)
     {
-        if (initialDate.Date < finalDate.Date)
-        {
-            return true;
-        }
-        else
-        {
-            return false;
-        }
+      return initialDate.Date < finalDate.Date;
     }
-    
-    public bool DateRangeIsOverlapping(DateRange dateRange)
-    {
-        if (IsDateInRange(dateRange.GetInitialDate()) || IsDateInRange(dateRange.GetFinalDate()))
-        {
-            return true; 
-        }
-        return false; 
-    }
-    
-    public bool IsDateInRange(DateTime date)
-    {
-        if (date >= _initialDate && date <= _finalDate)
-        {
-            return true; 
-        }
-        return false; 
-    }
-    
-    
 }

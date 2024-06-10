@@ -1,8 +1,13 @@
-@page "/RateReservation/{Id:int}" 
-@using BusinessLogic
+@page "/RateReservation/{Id:int}"
+@using BusinessLogic.Controllers
+@using BusinessLogic.Exceptions.UserControllerExceptions
 @using DepoQuick.Domain
-@inject MemoryDataBase MemoryDataBase
+@using DepoQuick.Exceptions.RatingException
+
+@inject SessionController SessionController
 @inject NavigationManager NavigationManager
+@inject RatingController RatingController
+@inject ReservationController ReservationController
 
 <html lang="es">
     <head>
@@ -23,6 +28,18 @@
         {
             <div class="alert alert-danger" role="alert">
                 Debes seleccionar al menos una estrella. Por favor inténtalo de nuevo.
+            </div>
+        }
+        @if (_showAlertActionRestrictedToClient)
+        {
+            <div class="alert alert-danger" role="alert">
+                Esta acción está restringida a los clientes. Por favor inténtalo de nuevo.
+            </div>
+        }
+        @if (_showAlertSomethingWentWrong)
+        {
+            <div class="alert alert-danger" role="alert">
+                Algo salió mal. Por favor inténtalo de nuevo.
             </div>
         }
 
@@ -54,45 +71,78 @@
 
 @code {
     [Parameter] public int Id { get; set; }
-
-    private Controller _controller;
+    
     private Reservation _reservationToRate;
     private string _comment;
     private int _stars;
 
     private bool _showAlertComment;
     private bool _showAlertStars;
+    private bool _showAlertActionRestrictedToClient;
+    private bool _showAlertSomethingWentWrong;
+    
+    private bool _reservationRatedSuccessfully;
     
     protected override void OnParametersSet()
     {
-        _controller = new Controller(MemoryDataBase);
-        _reservationToRate = _controller.GetReservation(Id);
-        _comment = "";
-        _stars = 0;
+        _reservationToRate = ReservationController.Get(Id);
+        
+        if (SessionController.ActiveUser.IsAdministrator 
+            || SessionController.ActiveUser != _reservationToRate.Client)
+        {
+            GoToHomePage();
+        }
+        else
+        {
+            InitializeVariables();
+
+            HideAllAlerts();
+        }
         
         HideAllAlerts();
     }
     
-    private void UpdateStars(string value)
+    private void InitializeVariables()
     {
-        _stars = int.Parse(value);
+        _comment = "";
+        _stars = 0;
     }
 
     private void AttemptToRate()
     {
-        ShowAlerts();
-        
-        if (IsAValidComment() && IsAValidNumberOfStars())
+        HideAllAlerts();
+        AddRating();
+
+        if (_reservationRatedSuccessfully)
         {
-            AddRating();
-        } 
+            GoToMyReservationsPage();
+        }
     }
     
     private void AddRating()
     {
-        Rating rating = new Rating(_stars, _comment);
-        _controller.RateReservation(_reservationToRate, rating);
-        GoToMyReservationsPage();
+        try
+        {
+            Rating rating = new Rating(_stars, _comment);
+            RatingController.RateReservation(_reservationToRate, rating);
+            _reservationRatedSuccessfully = true;
+        }
+        catch (InvalidStarsForRatingException invalidStarsForRatingException)
+        {
+            _showAlertStars = true;
+        }
+        catch (InvalidCommentForRatingException invalidCommentForRatingException)
+        {
+            _showAlertComment = true;
+        }
+        catch (ActionRestrictedToClientException actionRestrictedToClientException)
+        {
+            _showAlertActionRestrictedToClient = true;
+        }
+        catch (Exception e)
+        {
+            _showAlertSomethingWentWrong = true;
+        }
     }
     
     private void GoToMyReservationsPage()
@@ -100,32 +150,21 @@
         NavigationManager.NavigateTo("../GestionOfReservsClient");
     }
     
-    private void ShowAlerts()
+    private void GoToHomePage()
     {
-        HideAllAlerts();
-        
-        if (!IsAValidComment())
-        {
-            _showAlertComment = true;
-        } else if (!IsAValidNumberOfStars())
-        {
-            _showAlertStars = true;
-        }
+        NavigationManager.NavigateTo($"../Home");
     }
     
     private void HideAllAlerts()
     {
         _showAlertComment = false;
         _showAlertStars = false;
+        _showAlertActionRestrictedToClient = false;
+        _showAlertSomethingWentWrong = false;
     }
     
-    private bool IsAValidComment()
+    private void UpdateStars(string value)
     {
-        return !string.IsNullOrEmpty(_comment) && _comment.Length <= 500;
-    }
-    
-    private bool IsAValidNumberOfStars()
-    {
-        return _stars > 0 && _stars <= 5;
+        _stars = int.Parse(value);
     }
 }

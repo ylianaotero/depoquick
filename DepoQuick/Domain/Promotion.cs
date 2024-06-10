@@ -1,47 +1,69 @@
-﻿using DepoQuick.Exceptions.PromotionExceptions;
+﻿using System.ComponentModel.DataAnnotations;
+using DepoQuick.Exceptions.PromotionExceptions;
 
 namespace DepoQuick.Domain;
 public class Promotion
 {
-    private static int s_lastId = 0;
+    private const string PromotionWithEmptyLabelMessage = "La etiqueta no debe ser vacia";
+    private const string PromotionLabelHasMoreThanMaxCharactersMessage = "La etiqueta no debe ser de largo mayor a 20 caracteres";
+    private const string InvalidPercentageForPromotionMessage = "El porcentaje no es valido, debe estar entre 0.05 y 0.75";
     
-    private int _id;
+    private const double MinimumDiscountRate = 0.05;
+    private const double MaximumDiscountRate = 0.75;
+    private const int MaximumLabelLength = 20;
+    
+    [Key]
+    public int Id { get; set; }
+    
+    public DateRange ValidityDate { get; set; }
     
     private String _label;
     private Double _discountRate;
-    private DateRange _validityDate;
     
-    private List<Deposit> _deposits;
+    public List<Deposit> Deposits { get; set; }
     
-    public Promotion()
+    public String Label
     {
-        _id = s_lastId++;
-        _deposits = new List<Deposit>();
-    }
-
-    public void SetLabel(String label)
-    {
-        if(LabelIsValid(label))
+        get => _label;
+        set
         {
-            _label = label; 
+            ValidateLabel(value);
+            _label = value;
         }
     }
+
+    public Double DiscountRate
+    {
+        get => _discountRate;
+        set
+        {
+            ValidateDiscountRate(value);
+            _discountRate = value;
+        }
+    }
+
+    public Promotion()
+    {
+        this.Deposits = new List<Deposit>(); 
+    }
     
-    private bool LabelIsValid(String label)
+    public bool IsCurrentlyAvailable()
+    {
+        return ValidityDate.GetInitialDate() <= DateTime.Now.AddDays(1) 
+               && ValidityDate.GetFinalDate() >= DateTime.Now.AddDays(-1);
+    }
+    
+    private void ValidateLabel(String label)
     {
         if (LabelIsEmpty(label))
         {
-            throw new PromotionWithEmptyLabelException("La etiqueta no debe ser vacia");
+            throw new PromotionWithEmptyLabelException(PromotionWithEmptyLabelMessage);
         }
-        else
+        
+        if (LabelHasMoreThanMaxCharacters(label))
         {
-            if (LabelHasMoreThan20Characters(label))
-            {
-                throw new PromotionLabelHasMoreThan20CharactersException("La etiqueta no debe ser de largo mayor a 20 caracteres");
-            }
+            throw new PromotionLabelHasMoreThan20CharactersException(PromotionLabelHasMoreThanMaxCharactersMessage);
         }
-
-        return true; 
     }
 
     private bool LabelIsEmpty(String label)
@@ -49,79 +71,21 @@ public class Promotion
         return string.IsNullOrWhiteSpace(label);
     }
 
-    private bool LabelHasMoreThan20Characters(String label)
+    private bool LabelHasMoreThanMaxCharacters(String label)
     {
-        return label.Length > 20;
+        return label.Length > MaximumLabelLength;
     }
     
-    public String GetLabel()
+    private void ValidateDiscountRate(double percent)
     {
-        return _label; 
-    }
-
-    public void SetDiscountRate(Double discountRate)
-    {
-        if(PercentageIsValid(discountRate))
+        if (!IsBetweenMinAndMaxPercentage(percent))
         {
-            _discountRate = discountRate; 
-        }
-    }
-    
-
-    private bool PercentageIsValid(double percent)
-    {
-        if (ItsBetween5And75Percent(percent))
-        {
-            return true; 
-        }
-        else
-        {
-            throw new InvalidPercentageForPromotionException("El porcentaje no es valido, debe estar entre 0.05 y 0.75");
+            throw new InvalidPercentageForPromotionException(InvalidPercentageForPromotionMessage);
         }
     }
 
-    private bool ItsBetween5And75Percent(double number)
+    private bool IsBetweenMinAndMaxPercentage(double number)
     {
-        return number >= 0.05 && number <= 0.75; 
-    }
-
-    public Double GetDiscountRate()
-    {
-        return _discountRate; 
-    }
-
-    public void SetValidityDate(DateRange validityDate)
-    {
-        _validityDate = validityDate; 
-    }
-
-    public DateRange GetValidityDate()
-    {
-        return _validityDate; 
-    }
-    
-    public int GetId()
-    {
-        return _id;
-    }
-    
-    public void AddDeposit(Deposit deposit)
-    {
-        _deposits.Add(deposit);
-    }
-    
-    public void RemoveDeposit(Deposit deposit)
-    {
-        _deposits.Remove(deposit);
-    }
-    
-    public List<Deposit> GetDeposits()
-    {
-        return _deposits; 
-    }
-    
-    public bool IsCurrentlyAvailable()
-    {
-        return _validityDate.GetInitialDate() <= DateTime.Now.AddDays(1) && _validityDate.GetFinalDate() >= DateTime.Now.AddDays(-1);
+        return number >= MinimumDiscountRate && number <= MaximumDiscountRate;
     }
 }

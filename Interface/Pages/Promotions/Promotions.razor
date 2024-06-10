@@ -1,8 +1,13 @@
 @page "/Promotions"
-@using BusinessLogic
+
+@using BusinessLogic.Controllers
+@using BusinessLogic.Exceptions.UserControllerExceptions
 @using DepoQuick.Domain
-@inject MemoryDataBase MemoryDataBase
+
+@inject SessionController SessionController
 @inject NavigationManager NavigationManager
+@inject PromotionController PromotionController
+@inject DepositController DepositController
 
 <html lang="es">
     <head>  
@@ -11,7 +16,7 @@
     </head>
 
     <body>
-        <h3>¡Hola, @_loggedInUser.GetName()! Aquí puedes encontrar nuestras promociones actuales.</h3>
+        <h3>¡Hola, @_loggedInUser.Name! Aquí puedes encontrar nuestras promociones.</h3>
 
     @if (_showAlertPromotionDeletedSuccessfully)
     {
@@ -21,11 +26,19 @@
         </div>
         <br/>
     }
-    @if (_showAlertPromotionDeletedUnsuccessfully)
+    @if (_showAlertPromotionIsTiedToReservedDeposit)
     {
         <br/>
         <div class="alert alert-danger" role="alert">
             La promoción no pudo ser eliminada porque está atada a un depósito reservado o con reservas pendientes.
+        </div>
+        <br/>
+    }
+    @if (_showAlertActionRestrictedToAdministrator)
+    {
+        <br/>
+        <div class="alert alert-danger" role="alert">
+            Solo un administrador puede eliminar promociones.
         </div>
         <br/>
     }
@@ -66,18 +79,18 @@
         @foreach (Promotion promotion in _listOfPromotions)
         {
             <tr>
-                <td>@promotion.GetLabel()</td>
-                <td>@promotion.GetValidityDate().GetInitialDate().ToString("dd/MM/yyyy")</td>
-                <td>@promotion.GetValidityDate().GetFinalDate().ToString("dd/MM/yyyy")</td>
-                <td>@(promotion.GetDiscountRate()*PercentageMultiplier)%</td>
+                <td>@promotion.Label</td>
+                <td>@promotion.ValidityDate.GetInitialDate().ToString("dd/MM/yyyy")</td>
+                <td>@promotion.ValidityDate.GetFinalDate().ToString("dd/MM/yyyy")</td>
+                <td>@(promotion.DiscountRate*PercentageMultiplier)%</td>
                 <td>
-                    @foreach (var deposit in promotion.GetDeposits())
+                    @foreach (var deposit in DepositController.GetDepositsByPromotion(promotion))
                     {
-                        <p>@deposit.GetId() - Area @deposit.GetArea()</p>
+                        <p>@deposit.Name (@deposit.Id)</p>
                     }
                 </td>
                 <td>@BoolToString(promotion.IsCurrentlyAvailable())</td>
-                @if (_loggedInUser.IsAdministrator())
+                @if (_loggedInUser.IsAdministrator)
                 {
                     <td>
                         <div class="btn-group">
@@ -95,7 +108,7 @@
         </tbody>
     </table>
     
-    @if (_loggedInUser.IsAdministrator())
+    @if (_loggedInUser.IsAdministrator)
     {
         <button class="btn btn-primary" @onclick="GoToAddPromotionPage">Crear promoción</button>
     }
@@ -104,46 +117,38 @@
 
 @code {
     private const double PercentageMultiplier = 100.0;
-    private Controller _controller;
     private List<Promotion> _listOfPromotions;
     private User _loggedInUser;
     
     Promotion _promotionToDelete;
     
     private bool _showAlertPromotionDeletedSuccessfully;
-    private bool _showAlertPromotionDeletedUnsuccessfully;
+    private bool _showAlertPromotionIsTiedToReservedDeposit;
     private bool _showAlertAboutToDeletePromotion;
     private bool _showAlertSomethingWentWrong;
+    private bool _showAlertActionRestrictedToAdministrator;
     
     protected override void OnInitialized()
     {
-        _controller = new Controller(MemoryDataBase);
-        _loggedInUser = _controller.GetActiveUser();
-        
-        _promotionToDelete = null;
-        
-        _controller.DeleteAllExpiredPromotions();
-        _listOfPromotions = _controller.GetPromotions();
+        InitializeVariables();
         HideAllAlerts();
     }
     
-    private string BoolToString(bool value)
+    private void InitializeVariables()
     {
-        return value ? "Si" : "No";
-    }
-    
-    private void GoToAddPromotionPage()
-    {
-        NavigationManager.NavigateTo("/AddPromotion");
+        _loggedInUser = SessionController.ActiveUser;        
+        _promotionToDelete = null;
+        
+        _listOfPromotions = PromotionController.GetPromotions();
     }
 
     private void AttemptToDeletePromotion(Promotion promotion)
     {
         HideAllAlerts();
         
-        if (PromotionIsTiedToReservedDeposit(promotion.GetId()))
+        if (PromotionController.PromotionIsTiedToReservedDeposit(promotion))
         {
-            _showAlertPromotionDeletedUnsuccessfully = true;
+            _showAlertPromotionIsTiedToReservedDeposit = true;
         } else
         {
             _showAlertAboutToDeletePromotion = true;
@@ -157,9 +162,14 @@
         
         try
         {
-            int id = _promotionToDelete.GetId();
-            _controller.DeletePromotion(id);
+            int id = _promotionToDelete.Id;
+            PromotionController.Delete(id);
             _showAlertPromotionDeletedSuccessfully = true;
+            _listOfPromotions = PromotionController.GetPromotions();
+        }
+        catch (ActionRestrictedToAdministratorException e)
+        {
+            _showAlertActionRestrictedToAdministrator = true;
         }
         catch (Exception e)
         {
@@ -169,29 +179,26 @@
     
     private void HideAllAlerts()
     {
-        _showAlertPromotionDeletedUnsuccessfully = false;
+        _showAlertActionRestrictedToAdministrator = false;
+        _showAlertPromotionIsTiedToReservedDeposit = false;
         _showAlertPromotionDeletedSuccessfully = false;
         _showAlertAboutToDeletePromotion = false;
         _showAlertSomethingWentWrong = false;
     }
     
-    private bool PromotionIsTiedToReservedDeposit(int id)
+    private string BoolToString(bool value)
     {
-        Promotion promotion = _controller.GetPromotion(id);
-        List<Deposit> deposits = promotion.GetDeposits();
-        foreach (Deposit deposit in deposits)
-        {
-            if (deposit.IsReserved())
-            {
-                return true;
-            }
-        }
-        return false;
+        return value ? "Si" : "No";
+    }
+    
+    private void GoToAddPromotionPage()
+    {
+        NavigationManager.NavigateTo("/AddPromotion");
     }
     
     private void GoToEditPromotionPage(Promotion promotion)
     {
-        int promotionId = promotion.GetId();
+        int promotionId = promotion.Id;
         NavigationManager.NavigateTo($"/EditPromotion/{promotionId}");
     }
 }

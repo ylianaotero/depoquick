@@ -1,0 +1,106 @@
+﻿@page "/NotificationsClient"
+
+@using BusinessLogic.Controllers
+@using DepoQuick.Domain
+
+@inject NavigationManager NavigationManager
+@inject SessionController SessionController
+@inject NotificationController NotificationController
+
+
+<html lang="es">
+    <head>  
+        <meta charset="utf-8"/> 
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+    </head>
+
+    <body>
+    <h3>¡Hola, @_loggedInUser.Name! Aquí puedes encontrar todas sus notificaciones.</h3>
+    
+    @if (_showAlertInvalidNotification)
+    {
+        <br>
+        <div class="alert alert-danger" role="alert">
+            ¡Error, no se encuentra la notificacion, intente de nuevo!
+            </div>
+        <br>
+                
+    }
+    
+    <table class="table table-striped table-hover">
+        <thead>
+        <tr>
+            <th>Nombre</th>
+            <th>Mensaje</th>
+            <th>Fecha</th>
+        </tr>
+        </thead>
+        
+        <tbody>
+        @foreach (Notification notification in _notifications)
+        {
+            <tr>
+                <td>@notification.Client.Name</td>
+                <td>@notification.Message</td>
+                <td>@notification.Timestamp.ToString("dd/MM/yyyy")</td>
+                <td>
+                    <button @onclick="() => DeleteNotification(notification)" class="btn btn-danger btn-sm">Eliminar</button>
+                </td>
+            </tr>
+        }
+        </tbody>
+    </table>
+    </body>
+</html>
+
+
+@code {
+    private User _loggedInUser;
+    private List<Notification> _notifications;
+    private bool _showAlertInvalidNotification; 
+    
+    protected override void OnInitialized()
+    {
+        if (SessionController.ActiveUser.IsAdministrator)
+        {
+            GoToHomePage();
+        }
+        else
+        {
+            InitializeVariables();
+
+            HideAllAlerts();
+        }
+    }
+    
+    private void InitializeVariables()
+    {
+        _loggedInUser = SessionController.ActiveUser;
+        _notifications = NotificationController.GetNotifications((Client)_loggedInUser);
+    }
+
+    private void DeleteNotification(Notification notification)
+    {
+        try
+        {
+            HideAllAlerts();
+            
+            NotificationController.Delete(notification); 
+            _notifications.Remove(notification);
+        }
+        catch (ArgumentNullException argumentNullException)
+        {
+            _showAlertInvalidNotification = true; 
+        }
+    }
+
+    private void HideAllAlerts()
+    {
+        _showAlertInvalidNotification = false; 
+    }
+    
+    private void GoToHomePage()
+    {
+        NavigationManager.NavigateTo($"../Home");
+    }
+}

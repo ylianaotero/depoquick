@@ -1,108 +1,323 @@
 ﻿@page "/GestionOfReservsAdmin"
 
-@inject MemoryDataBase MemoryDataBase
-@using BusinessLogic
+@using BusinessLogic.Controllers
+@using BusinessLogic.Exceptions.PaymentControllerExceptions
+@using BusinessLogic.ReservationReport
 @using DepoQuick.Domain
+@using DepoQuick.Exceptions.PaymentExceptions
 
+@inject SessionController SessionController
+@inject NavigationManager NavigationManager
+@inject ReservationController ReservationController
+@inject PaymentController PaymentController
 
 <html lang="es">
-  <head>
-      <meta charset="utf-8"/>
-      <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
-  </head>
+<head>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+</head>
 
-    <body>
+<body>
+<div class="my-3 p-3 bg-white rounded box-shadow">
+        
+    <h3>Gestión de reservas</h3>
+        
+    @if (_showAlertReservationNotFound)
+    {
+        <br>
+        <div class="alert alert-danger" role="alert">
+            "Lo sentimos, no encontramos ningún depósito con ese ID. No podemos aprobar ni rechazar. ¡Por favor, inténtalo de nuevo!"
+        </div>
+        <br>
+    }
+                
+    @if (_showAlertPaymentNotFound)
+    {
+        <br>
+        <div class="alert alert-danger" role="alert">
+            "Lo sentimos, no encontramos ningún pago realizado para esa reservacion. No podemos aprobar ni rechazar. ¡Por favor, inténtalo de nuevo!"
+                    
+        </div>
+        <br>
+    }
 
-        <h3>Gestión de reservas</h3>
+    @if (_showAlertDepositIsNotAvailable)
+    {
+        <br>
+        <div class="alert alert-danger" role="alert">
+            "Lo sentimos, no es posible aprobar la reserva porque el depósito ya está reservado en esa fecha."
+        </div>
+        <br>
+    }
+    
+    @if (_showAlertPaymentNotFound)
+    {
+    <br>
+    <div class="alert alert-danger" role="alert">
+        "Lo sentimos, no encontramos ningún pago realizado para esa reservacion. No podemos aprobar ni rechazar. ¡Por favor, inténtalo de nuevo!"
 
-        @if (_showAlertReservationNotFound)
+    </div>
+    <br>
+    }
+        
+        
+    <table class="table">
+        <thead>
+        <tr>
+            <th>Cliente</th>
+            <th>Depósito</th>
+            <th>Desde</th>
+            <th>Hasta</th>
+            <th>Precio</th>
+            <th>Acciones</th>
+            <th>Comentario</th>
+            <th>Estado del Pago</th>
+        </tr>
+        </thead>
+        <tbody>
+        @foreach (Reservation reservation in _listOfReservations)
         {
-            <br>
-            <div class="alert alert-danger" role="alert">
-                "Lo sentimos, no encontramos ningún depósito con ese ID. No podemos aprobar ni rechazar. ¡Por favor, inténtalo de nuevo!"
-            </div>
-            <br>
-        }
-
-
-        <table class="table">
-            <thead>
             <tr>
-                <th>Cliente</th>
-                <th>Depósito</th>
-                <th>Desde</th>
-                <th>Hasta</th>
-                <th>Acciones</th>
-                <th>Comentario</th>
-            </tr>
-            </thead>
-            <tbody>
-            @foreach (Reservation reservation in _listOfReservations)
-            {
-                <tr>
-                    <td>@reservation.GetClient().GetName()</td>
-                    <td>Depósito @reservation.GetDeposit().GetId()</td>
-                    <td>@reservation.GetDateRange().GetInitialDate().ToString("dd/MM/yyyy")</td>
-                    <td>@reservation.GetDateRange().GetFinalDate().ToString("dd/MM/yyyy")</td>
-                    @if (reservation.GetState() == 0)
+                <td>@reservation.Client.Name</td>
+                @if (reservation.Deposit != null)
+                {
+                    <td>@reservation.Deposit.Name (@reservation.Deposit.Id)</td>
+                }
+                else
+                {
+                    <td>Depósito eliminado</td>
+                }
+                <td>@reservation.Date.GetInitialDate().ToString("dd/MM/yyyy")</td>
+                <td>@reservation.Date.GetFinalDate().ToString("dd/MM/yyyy")</td>
+                <td>@reservation.Price</td>
+                @{
+                    GetPayment(reservation);
+                }
+                @if (reservation.Status == 0 && _paymentOfReservation != null)
+                {
+                                
+                    <td>
+                        <button @onclick="() => AttemptToApproveReservation(reservation)" class="btn btn-success btn-sm">Aprobar</button>
+                        <button @onclick="() =>  GoToRejectReservation(reservation.Id)" class="btn btn-danger btn-sm">Rechazar</button>
+                    </td>
+        
+                    <td>-</td>
+                }
+                else
+                {
+                    @if (reservation.Status == 1)
                     {
                         <td>
-                            <button @onclick="() => ApproveReservation(reservation)" class="btn btn-success btn-sm">Aprobar</button>
-                            <a href="/RejectReservation/@reservation.GetId()" class="btn btn-danger btn-sm">Rechazar</a>
+                            <button class="btn btn-primary btn-sm">Aprobada</button>
                         </td>
                         <td>-</td>
+        
                     }
                     else
                     {
-                        @if (reservation.GetState() == 1)
+                        @if (reservation.Status == -1)
                         {
                             <td>
-                                <button class="btn btn-primary btn-sm">Aprobada</button>
+                                <button class="btn btn-secondary btn-sm">Rechazada</button>
                             </td>
-                            <td>-</td>
-                                    
+                            <td>@reservation.Message</td>
                         }
                         else
                         {
-                            @if (reservation.GetState() == -1)
+                            <td>
+                                <button class="btn btn-secondary btn-sm">Pendiente de Pago</button>
+                            </td>
+                            <td>-</td>
+                        }
+                    }
+                }
+        
+                            
+                @if (reservation.Status == -1)
+                {
+                    <td>
+                        <button class="btn btn-secondary btn-sm">Rechazada</button>
+                    </td>
+                }
+                else
+                {
+                                
+                    @if (_paymentOfReservation == null)
+                    {
+                        <td>
+                            <button class="btn btn-secondary btn-sm">Pendiente de Pago</button>
+                        </td>
+                    }
+                    else
+                    {
+                        @if (_paymentOfReservation.Status == "reservado")
+                        {
+                            <td>
+                                <button class="btn btn-primary btn-sm">Pago reservado</button>
+                            </td>
+                        }
+                        else
+                        {
+                            @if (_paymentOfReservation.Status == "capturado")
                             {
                                 <td>
-                                    <button class="btn btn-secondary btn-sm">Rechazada</button>
+                                    <button class="btn btn-success btn-sm">Pago capturado</button>
                                 </td>
-                                <td>@reservation.GetMessage()</td>
                             }
                         }
                     }
-                </tr>
-            }
-            </tbody>
-        </table>
-    </body>
+                }                    
+            </tr>
+        }
+        </tbody>
+    </table>
+                
+
+
+</div>
+    
+<div class="my-3 p-3 bg-white rounded box-shadow">
+    <h3>Generar Reporte de Reservas</h3>
+                
+    <label for="reportFormat">Formato del reporte:</label>
+    <select id="reportFormat" class="form-control" @onchange="OnFormatChanged">
+        <option value="CSV" selected>CSV</option>
+        <option value="TXT">TXT</option>
+    </select>
+        
+            
+    <br> 
+    <button class="btn btn-primary mt-2" @onclick="GenerateReport">Generar Reporte</button>
+    <br> 
+        
+    @if (!string.IsNullOrEmpty(_urlReport) && _reportIsGenerated)
+    {
+        <div class="mt-3">
+            <a class="btn btn-success" href="@_urlReport" download="report.@_selectedFormat.ToString().ToLower()">Descargar Reporte</a>
+        </div>
+            
+    }
+</div>
+    
+</body>
+
 </html>
 
+
 @code {
-    private Controller _controller;
     private List<Reservation> _listOfReservations;
-
+    private Payment _paymentOfReservation;
+    
     private bool _showAlertReservationNotFound; 
-
+    private bool _showAlertPaymentNotFound;
+    private bool _showAlertDepositIsNotAvailable;
+    private bool _reportIsGenerated; 
+    
     private String _comment; 
+    private string _selectedFormat;
+    private string _urlReport;
+    private string _report;
     
     protected override void OnInitialized()
     {
-        _controller = new Controller(MemoryDataBase);
-        _listOfReservations = _controller.GetReservations();
-        HideAllAlerts(); 
+        if (!SessionController.ActiveUser.IsAdministrator)
+        {
+            GoToHomePage();
+        }
+        else
+        {
+            InitializeVariables();
+
+            HideAllAlerts();
+        }
     }
 
-    private void HideAllAlerts()
+    private void InitializeVariables()
     {
-        _showAlertReservationNotFound = false;
+        _listOfReservations = ReservationController.GetReservations();
+        _selectedFormat = "CSV";
+    }
 
+    private void AttemptToApproveReservation(Reservation reservation)
+    {
+        if (reservation.Deposit.IsReserved(reservation.Date))
+        {
+            _showAlertDepositIsNotAvailable = true;
+        }
+        else 
+        {
+            ApproveReservation(reservation);
+        }
     }
 
     private void ApproveReservation(Reservation reservation)
     {
-        _controller.ApproveReservation(reservation);
+        try
+        {
+            ReservationController.ApproveReservation(reservation);
+        }
+        catch (PaymentNotFoundException paymentNotFoundException)
+        {
+            _showAlertPaymentNotFound = true;
+        }
+        catch (CannotCapturePaymentIfDoesNotHaveAnAssociatedReservation cannotCapturePaymentIfDoesNotHaveAnAssociatedReservation)
+        {
+            _showAlertReservationNotFound = true;
+        }
+    }
+    
+    private void GetPayment(Reservation reservation)
+    {
+        try
+        {
+            _paymentOfReservation = PaymentController.Get(reservation);
+        }
+        catch (PaymentNotFoundException paymentNotFoundException)
+        {
+            _paymentOfReservation = null; 
+        }
+    }
+    
+    private void GenerateReport()
+    {
+        if (_selectedFormat == "TXT")
+        {
+            ReportUsingTXT reportService = new ReportUsingTXT(ReservationController, PaymentController);
+            _report = reportService.GenerateReport(); 
+        }
+        else
+        {
+            ReportUsingCSV reportService = new ReportUsingCSV(ReservationController, PaymentController);
+            _report = reportService.GenerateReport(); 
+        }
+        
+        var bytes = System.Text.Encoding.UTF8.GetBytes(_report);
+        var base64 = Convert.ToBase64String(bytes);
+        
+        _urlReport = $"data:text/plain;base64,{base64}";
+        _reportIsGenerated = true; 
+    }
+    
+    private void HideAllAlerts()
+    {
+        _showAlertReservationNotFound = false;
+        _showAlertPaymentNotFound = false; 
+        _showAlertDepositIsNotAvailable = false;
+    }
+    
+    private void OnFormatChanged(ChangeEventArgs e)
+    {
+        _selectedFormat = e.Value.ToString();
+        _reportIsGenerated = false;
+    }
+    
+    private void GoToHomePage()
+    {
+        NavigationManager.NavigateTo($"../Home");
+    }
+
+    private void GoToRejectReservation(int id)
+    {
+        NavigationManager.NavigateTo("/Reject/" + id);
     }
 }

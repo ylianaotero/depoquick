@@ -1,9 +1,10 @@
 ﻿@page "/Login"
-@using BusinessLogic
-@using BusinessLogic.Exceptions.ControllerExceptions
-@inject MemoryDataBase MemoryDataBase
-@inject NavigationManager NavigationManager
 
+@using BusinessLogic.Controllers
+@using BusinessLogic.Exceptions.UserControllerExceptions
+
+@inject SessionController SessionController
+@inject NavigationManager NavigationManager
 
 <html lang="es" xmlns="http://www.w3.org/1999/html">
   <head>
@@ -57,7 +58,7 @@
 
                             <div class="text-center">
                                 <button type="button" class="btn btn-primary mr-2" @onclick="LoginUser">Ingresar</button>
-                                <button type="button" class="btn btn-primary" @onclick="GoToIndex">Cancelar</button>
+                                <button type="button" class="btn btn-primary" @onclick="GoToIndexPage">Cancelar</button>
                             </div>
 
                         </form>
@@ -72,18 +73,14 @@
     private bool _showAlertUserDoesNotExist;
     private bool _showAlertInvalidPassword;
     
-    private Controller _controller;
-    
     private String _email;
     private String _password;
 
     
-    
-     protected override void OnInitialized()
+    protected override void OnInitialized()
     {
-        _controller = new Controller(MemoryDataBase);
+        HideAllAlerts();
     }
-    
     
     private void LoginUser()
     {
@@ -91,9 +88,9 @@
         
         try
         {
-            _controller.LoginUser(_email, _password); 
+            SessionController.LoginUser(_email, _password); 
 
-            GoHome(); 
+            GoToHomePage(); 
         }
         catch (UserDoesNotExistException userDoesNotExistException)
         {
@@ -112,14 +109,13 @@
         _showAlertInvalidPassword = false;
     }
     
-    private void GoHome()
+    private void GoToHomePage()
     {
         NavigationManager.NavigateTo("/Home", forceLoad:true);
     }
     
-    private void GoToIndex()
+    private void GoToIndexPage()
     {
         NavigationManager.NavigateTo("/", forceLoad:true);
     }
-    
 }

@@ -1,8 +1,13 @@
-@page "/EditRating/{Id:int}" 
-@using BusinessLogic
+@page "/EditRating/{Id:int}"
+@using BusinessLogic.Controllers
+@using BusinessLogic.Exceptions.UserControllerExceptions
 @using DepoQuick.Domain
-@inject MemoryDataBase MemoryDataBase
+@using DepoQuick.Exceptions.RatingException
+
+@inject SessionController SessionController
 @inject NavigationManager NavigationManager
+@inject RatingController RatingController
+@inject ReservationController ReservationController
 
 <html lang="es">
     <head>
@@ -19,6 +24,24 @@
                 El comentario debe tener entre 1 y 500 caracteres. Por favor inténtalo de nuevo.
             </div>
         }
+        @if (_showAlertStars)
+        {
+        <div class="alert alert-danger" role="alert">
+            Debes seleccionar al menos una estrella. Por favor inténtalo de nuevo.
+        </div>
+        }
+        @if (_showAlertActionRestrictedToClient)
+        {
+        <div class="alert alert-danger" role="alert">
+            Esta acción está restringida a los clientes. Por favor inténtalo de nuevo.
+        </div>
+        }
+        @if (_showAlertSomethingWentWrong)
+        {
+        <div class="alert alert-danger" role="alert">
+            Algo salió mal. Por favor inténtalo de nuevo.
+        </div>
+        }
 
         <form action="#" method="POST">
             <div class="mb-3">
@@ -32,8 +55,8 @@
                    <div class="rating">
                        @for (int i = 1; i <= 5; i++)
                        {
-                           <input type="radio" id="@($"star{i}")" name="rating" value="@i" class="rating__input" @onchange="((e) => UpdateStars(e.Value.ToString()))">
-                           <label for="@($"star{i}")" class="rating__label"><i class="fa fa-star"></i></label>
+                       <input type="radio" id="@($"star{i}")" name="rating" value="@(6 - i)" class="rating__input" @onchange="((e) => UpdateStars(e.Value.ToString()))">
+                       <label for="@($"star{i}")" class="rating__label"><i class="fa fa-star"></i></label>
                        }
                    </div>
                </div>
@@ -48,45 +71,77 @@
 
 @code {
     [Parameter] public int Id { get; set; }
-
-    private Controller _controller;
-    private Reservation _reservationToRate;
+    
     private string _comment;
     private int _stars;
     Rating _ratingToEdit;
+    Reservation _reservation;
 
     private bool _showAlertComment;
+    private bool _showAlertStars;
+    private bool _showAlertActionRestrictedToClient;
+    private bool _showAlertSomethingWentWrong;
+    
+    private bool _reservationRatedSuccessfully;
     
     protected override void OnParametersSet()
     {
-        _controller = new Controller(MemoryDataBase);
-        _reservationToRate = _controller.GetReservation(Id);
-        _ratingToEdit = _reservationToRate.GetRating();
-        _comment = _ratingToEdit.GetComment();
-        _stars = _ratingToEdit.GetStars();
+        _reservation = ReservationController.Get(Id);
         
-        HideAllAlerts();
+        if (SessionController.ActiveUser.IsAdministrator 
+            || SessionController.ActiveUser != _reservation.Client)
+        {
+            GoToHomePage();
+        }
+        else
+        {
+            InitializeVariables();
+
+            HideAllAlerts();
+        }
     }
     
-    private void UpdateStars(string value)
+    private void InitializeVariables()
     {
-        _stars = int.Parse(value);
+        _ratingToEdit = RatingController.GetRatingByReservation(_reservation);
+        _comment = _ratingToEdit.Comment;
+        _stars = _ratingToEdit.Stars;
     }
 
     private void AttemptToRate()
     {
-        ShowAlerts();
-        
-        if (IsAValidComment())
+        HideAllAlerts();
+        AddRating();
+
+        if (_reservationRatedSuccessfully)
         {
-            UpdateRating();
-        } 
+            GoToMyReservationsPage();
+        }
     }
     
-    private void UpdateRating()
+    private void AddRating()
     {
-        _ratingToEdit.UpdateRating(_stars, _comment);
-        GoToMyReservationsPage();
+        try
+        {
+            RatingController.UpdateRating(_ratingToEdit, _comment, _stars);
+            _reservationRatedSuccessfully = true;
+        }
+        catch (InvalidStarsForRatingException invalidStarsForRatingException)
+        {
+            _showAlertStars = true;
+        }
+        catch (InvalidCommentForRatingException invalidCommentForRatingException)
+        {
+            _showAlertComment = true;
+        }
+        catch (ActionRestrictedToClientException actionRestrictedToClientException)
+        {
+            _showAlertActionRestrictedToClient = true;
+        }
+        catch (Exception e)
+        {
+            _showAlertSomethingWentWrong = true;
+        }
     }
     
     private void GoToMyReservationsPage()
@@ -94,23 +149,21 @@
         NavigationManager.NavigateTo("/GestionOfReservsClient");
     }
     
-    private void ShowAlerts()
+    private void GoToHomePage()
     {
-        HideAllAlerts();
-        
-        if (!IsAValidComment())
-        {
-            _showAlertComment = true;
-        } 
+        NavigationManager.NavigateTo($"../Home");
     }
     
     private void HideAllAlerts()
     {
         _showAlertComment = false;
+        _showAlertStars = false;
+        _showAlertActionRestrictedToClient = false;
+        _showAlertSomethingWentWrong = false;
     }
     
-    private bool IsAValidComment()
+    private void UpdateStars(string value)
     {
-        return !string.IsNullOrEmpty(_comment) && _comment.Length <= 500;
+        _stars = int.Parse(value);
     }
 }

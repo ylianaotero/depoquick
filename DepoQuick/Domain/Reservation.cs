@@ -1,123 +1,84 @@
-﻿using DepoQuick.Exceptions.ReservationExceptions;
+﻿using System.ComponentModel.DataAnnotations;
+using DepoQuick.Exceptions.ReservationExceptions;
 
 namespace DepoQuick.Domain;
 
 public class Reservation
 {
-    private static int s_nextId = 0;
+    private const string ReservationWithEmptyMessage = "El mensaje no debe ser vacio";
+    private const string ReservationMessageHasMoreThan300Characters = "El mensaje no debe tener un largo mayor a 300 caracteres";
     
-    private int _id; 
     
-    private Deposit _deposit; 
-    private Client _client;
-    private DateRange _date;
+    private const int ReservationAccepted = 1;
+    private const int ReservationPending = 0;
+    private const int ReservationRejected = -1;
+    
+    private const int MinimumMessageLength = 1;
+    private const int MaximumMessageLength = 300;
+    
+    private const string DefaultMessage = "-";
+    
+    
+    [Key]
+    public int Id { get; set; }
+    
+    public Deposit Deposit  { get; set; }
+    public int Price { get; set; }
+    public DateTime RequestedAt {get; set;}
+    public Client Client { get; set; }
+    public DateRange Date { get; set; }
+    public int Status { get; set; }
+    
     private string _message;
-    private int _state;
-    private Rating _rating;
-
-    public int GetId()
+    
+    public string Message
     {
-        return _id; 
-    }
-
-    public Reservation(Deposit deposit, Client client, DateRange date)
-    {
-        _id = s_nextId; 
-        s_nextId++; 
-        _deposit = deposit;
-        _client = client;
-        _date = date;
-        _message = "";
-        _state = 0;
-    }
-
-    public void SetClient(Client expectedClient)
-    {
-        _client = expectedClient;
-    }
-
-    public Client GetClient()
-    {
-        return _client;
-    }
-
-    public void SetDeposit(Deposit expectedDeposit)
-    {
-        _deposit = expectedDeposit;
-    }
-
-    public Deposit GetDeposit()
-    {
-        return _deposit;
-    }
-
-    public void SetMessage(string expectedMessage)
-    {
-        if (MessageIsValid(expectedMessage))
+        get => _message;
+        set
         {
-            _message = expectedMessage;
+            ValidateMessage(value);
+            _message = value;
         }
     }
+    
+    public Reservation()
+    {
+        Message = DefaultMessage;
+        
+        Status = ReservationPending;
+    }
+    
+    public Reservation(Deposit deposit, Client client, DateRange date)
+    {
+        Deposit = deposit;
+        
+        Client = client;
+        Date = date;
 
-    private bool MessageIsValid(string expectedMessage)
+        Message = DefaultMessage;
+        Status = ReservationPending;
+    }
+
+    private void ValidateMessage(string expectedMessage)
     {
         if (MessageIsEmpty(expectedMessage))
         {
-            throw new ReservationWithEmptyMessageException("El mensaje no debe ser vacio");
+            throw new ReservationWithEmptyMessageException(ReservationWithEmptyMessage);
         }
-        else
+        
+        if (MessageHasMoreThanMaxCharacters(expectedMessage))
         {
-            if (MessageHasMoreThan300Characters(expectedMessage))
-            {
-                throw new ReservationMessageHasMoreThan300CharactersException("El mensaje no debe tener un largo mayor a 300 caracteres");
-            }
+            throw new ReservationMessageHasMoreThan300CharactersException(ReservationMessageHasMoreThan300Characters);
         }
-
-        return true;
     }
 
-    private bool MessageHasMoreThan300Characters(string expectedMessage)
+    private bool MessageHasMoreThanMaxCharacters(string expectedMessage)
     {
-        return expectedMessage.Length > 300;
+        return expectedMessage.Length > MaximumMessageLength;
     }
 
     private bool MessageIsEmpty(string expectedMessage)
     {
         return string.IsNullOrWhiteSpace(expectedMessage);
-    }
-
-    public string GetMessage()
-    {
-        return _message;
-    }
-
-    public void SetState(int expectedState)
-    {
-        _state = expectedState;
-    }
-
-    public int GetState()
-    {
-        return _state;
-    }
-
-    public void SetDateRange(DateRange newStay)
-    {
-        _date = newStay;
-    }
-
-    public DateRange GetDateRange()
-    {
-        return _date;
-    }
-    
-    public void SetRating(Rating rating)
-    {
-        _rating = rating;
-    }
-    
-    public Rating GetRating()
-    {
-        return _rating;
     }
 }
