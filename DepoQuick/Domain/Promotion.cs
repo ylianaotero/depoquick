@@ -41,8 +41,11 @@ public class Promotion
             _discountRate = value;
         }
     }
-    
-    public Promotion() {}
+
+    public Promotion()
+    {
+        this.Deposits = new List<Deposit>(); 
+    }
     
     public bool IsCurrentlyAvailable()
     {

@@ -1,6 +1,7 @@
 ﻿using BusinessLogic.Exceptions.DepositControllerExceptions;
 using BusinessLogic.Exceptions.UserControllerExceptions;
 using DepoQuick.Domain;
+using Microsoft.EntityFrameworkCore;
 
 namespace BusinessLogic.Controllers;
 
@@ -46,18 +47,12 @@ public class DepositController
     
     public List<Deposit> GetDepositsByPromotion(Promotion promotion)
     {
-        List<Deposit> deposits = GetDeposits();
-        List<Deposit> depositsWithPromotion = new List<Deposit>();
-        
-        foreach (Deposit deposit in deposits)
-        {
-            if (deposit.Promotions.Contains(promotion))
-            {
-                depositsWithPromotion.Add(deposit);
-            }
-        }
-        
-        return depositsWithPromotion; 
+       var deposits = _depositRepository.GetFilteredAndIncludedRelatedEntities<Deposit>(
+           d => d.Promotions.Any(p => p.Id == promotion.Id),
+           q => q.Include(d => d.Promotions)
+       );
+
+       return deposits; 
     }
 
     public bool DepositExists(string name)
@@ -67,7 +62,10 @@ public class DepositController
 
     public List<Deposit> GetDeposits()
     {
-        List<Deposit> deposits = _depositRepository.GetAll();
+        List<Deposit> deposits =  _depositRepository.GetFilteredAndIncludedRelatedEntities<Deposit>(
+                                            null,
+                                            q => q.Include(d => d.Promotions)
+                                        );
         
         return deposits; 
     }

@@ -32,7 +32,6 @@ public class DepoQuickContext : DbContext
         }
     }
     
-
     public DepoQuickContext()
     {
         UseInMemoryDatabase = false;
@@ -78,6 +77,7 @@ public class DepoQuickContext : DbContext
             entity.ToTable("Deposits");
             entity.HasMany(d => d.Promotions).WithMany(p => p.Deposits);
         });
+        
         
         modelBuilder.Entity<Deposit>().HasMany<Rating>(d=>d.Ratings);
         modelBuilder.Entity<Deposit>().Property(d => d.Id).ValueGeneratedOnAdd();

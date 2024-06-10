@@ -139,6 +139,9 @@
     
     protected override void OnInitialized()
     {
+
+        
+        
         InitializeVariables();
 
         HideAllAlerts();
@@ -149,7 +152,7 @@
         _loggedInUser = SessionController.ActiveUser;
 
         _listOfDeposits = DepositController.GetDeposits();
-
+        
         _depositToDelete = null;
     }
     

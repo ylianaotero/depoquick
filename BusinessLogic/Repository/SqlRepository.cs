@@ -1,5 +1,9 @@
+using System.Collections;
+using System.Linq.Expressions;
 using System.Reflection;
+using DepoQuick.Domain;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Query;
 
 namespace BusinessLogic;
 
@@ -52,13 +56,13 @@ public class SqlRepository<T> : IRepository<T> where T : class
     
     private void LoadEntities(List<T> entities)
     {
+        
         foreach (var element in entities)
         {
             List<PropertyInfo> properties = element.GetType().GetProperties().ToList();
             foreach (var property in properties)
             {
-                bool isList = property.PropertyType.IsGenericType &&
-                              property.PropertyType.GetGenericTypeDefinition() == typeof(List<>);
+                bool isList = typeof(IEnumerable).IsAssignableFrom(property.PropertyType) && property.PropertyType != typeof(string);
                 if (isList)
                 {
                     LoadCollections(element, property);
@@ -121,4 +125,27 @@ public class SqlRepository<T> : IRepository<T> where T : class
 
         return element;
     }
+    
+
+    public List<T> GetFilteredAndIncludedRelatedEntities<T>(
+        Expression<Func<T, bool>> filterExpression,
+        Func<IQueryable<T>, IIncludableQueryable<T, object>> include = null) where T : class
+    {
+        IQueryable<T> query = (IQueryable<T>)_entities;
+
+        if (include != null)
+        {
+            query = include(query);
+        }
+        
+        if (filterExpression != null)
+        {
+            query = query.Where(filterExpression);
+        }
+        
+        return query.ToList();
+    }
+    
+    
+    
 }

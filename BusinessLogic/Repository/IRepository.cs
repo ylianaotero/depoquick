@@ -1,3 +1,8 @@
+using System.Linq.Expressions;
+using DepoQuick.Domain;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Query;
+
 namespace BusinessLogic;
 
 public interface IRepository<T>
@@ -15,4 +20,8 @@ public interface IRepository<T>
     void Delete(int id);
 
     void Reload(T element);
+
+    List<T> GetFilteredAndIncludedRelatedEntities<T>(
+        Expression<Func<T, bool>> filterExpression,
+        Func<IQueryable<T>, IIncludableQueryable<T, object>> include = null) where T : class;
 }

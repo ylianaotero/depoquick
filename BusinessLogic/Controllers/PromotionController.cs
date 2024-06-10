@@ -1,6 +1,7 @@
 using BusinessLogic.Exceptions.PromotionControllerExceptions;
 using BusinessLogic.Exceptions.UserControllerExceptions;
 using DepoQuick.Domain;
+using Microsoft.EntityFrameworkCore;
 
 namespace BusinessLogic.Controllers;
 
@@ -24,9 +25,16 @@ public class PromotionController
     {
         RestrictActionToAdministrator();
         
+        foreach (var deposit in deposits)
+        {
+            promotion.Deposits.Add(deposit);
+            deposit.Promotions.Add(promotion);
+        }
+        
         Add(promotion);
-
-        ConectPromotionToDeposits(promotion, deposits);
+        
+        
+        
     }
     
     public List<Promotion> GetPromotions()
