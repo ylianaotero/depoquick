@@ -1,6 +1,5 @@
 using DepoQuick.Domain;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace BusinessLogic;
 
@@ -44,12 +43,6 @@ public class DepoQuickContext : DbContext
     
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
-        if (!optionsBuilder.IsConfigured)
-        {
-            optionsBuilder.UseSqlServer(@"Server=localhost,1433;Database=depoquick;User Id=sa;Password=Passw1rd;");
-
-        }
-
         optionsBuilder.EnableDetailedErrors(true);
         optionsBuilder.EnableSensitiveDataLogging(true);
     }
