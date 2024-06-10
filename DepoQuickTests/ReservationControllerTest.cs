@@ -1,7 +1,5 @@
 ﻿using BusinessLogic;
 using DepoQuick.Domain;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System;
 using BusinessLogic.Controllers;
 using BusinessLogic.Exceptions.PaymentControllerExceptions;
 using BusinessLogic.Exceptions.ReservationControllerExceptions;
@@ -13,8 +11,7 @@ namespace DepoQuickTests
     [TestClass]
     public class ReservationControllerTest
     {
-        private const string ExpectedMessageForAnApprovedReservation = " ha sido aprobada";
-        private const string ExpectedMessageForAnRejectedReservation = " ha sido rechazada";
+        private const string ExpectedMessageForAnApprovedReservation = " ha sido aprobada. ¡Gracias por confiar en nosotros!";
         
         private ReservationController _reservationController;
         private PaymentController _paymentController;
